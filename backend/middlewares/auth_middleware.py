@@ -1,0 +1,59 @@
+import logging
+from uuid import UUID
+
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+from dependencies.services.auth import get_auth_service
+from infrastructure.repositories.exceptions import NotFoundException
+from services.auth.exceptions import InvalidTokenException, ExpiredTokenException
+
+
+async def check_for_auth(
+        request: Request,
+        call_next,
+):
+    if (
+            request.url.path.startswith("/auth") or
+            request.url.path.startswith("/docs") or
+            request.url.path.startswith("/openapi") or
+            request.method == 'OPTIONS'
+    ):
+        response = await call_next(request)
+        return response
+
+    if 'Authorization' not in request.headers:
+        return JSONResponse(
+            status_code=401,
+            content={
+                'detail': 'Token is empty',
+            }
+        )
+
+    access_token = request.headers['Authorization'].replace('Bearer ', '')
+
+    auth_service = get_auth_service()
+    try:
+        # user_id = UUID('')
+        user_id = await auth_service.get_user_id_from_jwt(access_token)
+    except Exception as e:
+        logging.getLogger(__name__).error(f"fuuuck {access_token}", exc_info=True)
+        code, detail = 401, 'Unknown authorization exception'
+        match e:
+            case InvalidTokenException():
+                detail = 'Token is invalid'
+            case ExpiredTokenException():
+                detail = 'Token is expired'
+            case NotFoundException():
+                detail = 'User ID found in token does not exist'
+
+        return JSONResponse(
+            status_code=code,
+            content={
+                'detail': detail,
+            }
+        )
+
+    request.scope['x_user_id'] = user_id
+    response = await call_next(request)
+    return response
