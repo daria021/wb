@@ -1,7 +1,8 @@
-import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { createProduct, updateProduct, getProductById } from '../services/api'; // Ваши функции API
-import { Category, PayoutTime } from '../enums'; // Ваши enum'ы
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {createProduct, getProductById, updateProduct} from '../services/api'; // Ваши функции API
+import {Category, PayoutTime} from '../enums';
+import {on} from "@telegram-apps/sdk"; // Ваши enum'ы
 
 interface ProductFormData {
     id?: string;
@@ -22,7 +23,7 @@ interface ProductFormData {
 
 function ProductForm() {
     const navigate = useNavigate();
-    const { productId } = useParams(); // берём из URL, если есть
+    const {productId} = useParams(); // берём из URL, если есть
     const isEditMode = Boolean(productId);
 
     // Состояния для полей
@@ -107,7 +108,7 @@ function ProductForm() {
 
     // Изменение простых полей (string, number, т.д.)
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         // Если поле числовое, нужно парсить (general_repurchases, daily_repurchases, price, wb_price)
         if (['general_repurchases', 'daily_repurchases', 'price', 'wb_price'].includes(name)) {
             setFormData((prev) => ({
@@ -121,6 +122,16 @@ function ProductForm() {
             }));
         }
     };
+
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            navigate('/my-products');
+        });
+
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate]);
 
     // Обработка отправки формы
     const handleSubmit = async (e: FormEvent) => {
@@ -151,12 +162,12 @@ function ProductForm() {
                 // PATCH-запрос (редактирование)
                 await updateProduct(productId!, fd);
                 // После успеха — можно вернуться на страницу просмотра
-                navigate(`/product/${productId}`);
+                navigate(`/product/${productId}/seller`);
             } else {
                 // POST-запрос (создание)
                 const newId = await createProduct(fd);
                 // После успеха — переход на страницу товара
-                navigate(`/product/${newId}`);
+                navigate(`/product/${newId}/seller`);
             }
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -164,10 +175,6 @@ function ProductForm() {
         }
     };
 
-    // Кнопка «Отменить» — просто назад
-    const handleCancel = () => {
-        navigate(-1);
-    };
 
     if (loading) {
         return <div className="p-4">Загрузка...</div>;
@@ -177,13 +184,12 @@ function ProductForm() {
         return <div className="p-4 text-red-600">{error}</div>;
     }
 
+
     return (
-        <div className="p-4 max-w-screen-sm mx-auto">
+        <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
             {/* Шапка */}
             <div className="flex items-center justify-between mb-4">
-                <button onClick={handleCancel} className="text-pink-500 text-sm">
-                    Отменить
-                </button>
+
                 <h1 className="text-md font-bold">
                     {isEditMode ? 'Редактировать товар' : 'Добавить товар'}
                 </h1>

@@ -6,7 +6,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 TOKEN = "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg"
-WEB_APP_URL = "https://df07-45-15-159-88.ngrok-free.app"  # Replace with your Mini App URL
+WEB_APP_URL = "https://2b43-45-15-159-88.ngrok-free.app"  # Replace with your Mini App URL
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

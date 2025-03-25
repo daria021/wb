@@ -14,7 +14,7 @@ import {apiClient} from "./apiClient";
 // Получить список продуктов
 export async function getProducts() {
     // Предполагается, что на бэкенде есть GET /products
-    return apiClient.get('/products');
+    return await apiClient.get('/products');
 }
 
 // Получить продукт по его ID (UUID)
@@ -24,6 +24,10 @@ export async function getProductById(productId: string) {
 
 export async function getUserOrders() {
     return apiClient.get(`/users/orders`);
+}
+
+export async function getOrderById(orderId: string) {
+    return apiClient.get(`/orders/${orderId}`);
 }
 
 // Пример: получить продукт по артикулу
@@ -55,8 +59,102 @@ export async function updateProduct(productId: string, formData: FormData):Promi
     return response.data;
 }
 
-export async function getMe() {
-    return await apiClient.get(`users/me`);
+export async function getMe():Promise<string>{
+    return (await apiClient.get(`users/me`)).data;
+}
+
+export async function createOrder(formData: FormData) {
+    return apiClient.post('/orders', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+export async function getOrderReport(orderId: string){
+    return apiClient.get(`/users/orders/report/${orderId}`);
+}
+
+export async function getOrderBySellerId(sellerId: string){
+    return apiClient.get(`/users/orders/reports/${sellerId}`);
+}
+
+// Обновление заказа (шаг 2..7)
+export async function updateOrder(
+    orderId: string,
+    data: {
+        step?: number;
+        search_screenshot_path?: File; // если требуется обновление, например, для шага 1 (не всегда используется)
+        cart_screenshot_path?: File;     // если требуется обновление, например, для шага 1 (не всегда используется)
+        card_number?: string;
+        phone_number?: string;
+        name?: string;
+        bank?: string;
+        final_cart_screenshot?: File;
+        delivery_screenshot?: File;
+        barcodes_screenshot?: File;
+        review_screenshot?: File;
+        receipt_screenshot?: File;
+        receipt_number?: string;
+        status?: string;
+    }
+) {
+    const formData = new FormData();
+
+    // Добавляем числовые и текстовые поля
+    if (data.step !== undefined) {
+        formData.append('step', data.step.toString());
+    }
+    if (data.card_number) {
+        formData.append('card_number', data.card_number);
+    }
+    if (data.phone_number) {
+        formData.append('phone_number', data.phone_number);
+    }
+    if (data.name) {
+        formData.append('name', data.name);
+    }
+    if (data.bank) {
+        formData.append('bank', data.bank);
+    }
+    if (data.receipt_number) {
+        formData.append('receipt_number', data.receipt_number);
+    }
+    if (data.status) {
+        formData.append('status', data.status);
+    }
+
+    // Добавляем файлы (если переданы)
+    if (data.search_screenshot_path) {
+        formData.append('search_screenshot_path', data.search_screenshot_path);
+    }
+    if (data.cart_screenshot_path) {
+        formData.append('cart_screenshot_path', data.cart_screenshot_path);
+    }
+    if (data.final_cart_screenshot) {
+        formData.append('final_cart_screenshot', data.final_cart_screenshot);
+    }
+    if (data.delivery_screenshot) {
+        formData.append('delivery_screenshot', data.delivery_screenshot);
+    }
+    if (data.barcodes_screenshot) {
+        formData.append('barcodes_screenshot', data.barcodes_screenshot);
+    }
+    if (data.review_screenshot) {
+        formData.append('review_screenshot', data.review_screenshot);
+    }
+    if (data.receipt_screenshot) {
+        formData.append('receipt_screenshot', data.receipt_screenshot);
+    }
+
+    // Отправляем PATCH-запрос
+    const response = await apiClient.patch(`/orders/${orderId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
 }
 
 

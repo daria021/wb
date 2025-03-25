@@ -1,22 +1,35 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from domain.models import Product
+from domain.models import Product, User
 
 
 class Order(BaseModel):
     id: UUID
     user_id: UUID
     product_id: UUID
-    card_number: str
-    screenshot_path: str
+    seller_id: UUID
+    step: int
+    search_screenshot_path: Optional[str]
+    cart_screenshot_path: Optional[str]
+    card_number: Optional[str]
+    phone_number: Optional[str]
+    name: Optional[str]
+    bank: Optional[str]
+    final_cart_screenshot_path: Optional[str]
+    delivery_screenshot_path: Optional[str]
+    barcodes_screenshot_path: Optional[str]
+    review_screenshot_path: Optional[str]
+    receipt_screenshot_path: Optional[str]
+    receipt_number: Optional[str]
     status: str
-    created_at: datetime
-    updated_at: datetime
 
     product: Product
+    user: User
+    seller: User
 
     model_config = ConfigDict(from_attributes=True)
 

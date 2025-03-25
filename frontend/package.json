@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@telegram-apps/sdk": "^3.5.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -14,6 +15,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.8.3",
     "axios-auth-refresh": "^3.3.6",
+    "eruda": "^3.4.1",
     "postcss": "^8.4.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from '../services/api';
 import { Category, PayoutTime } from '../enums';
+import {on} from "@telegram-apps/sdk";
 
 interface Product {
     id: string;
@@ -27,9 +28,6 @@ function CreateProductInfo() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const handleBackClick = () => {
-        navigate('/my-products');
-    };
 
     useEffect(() => {
         if (!productId) return;
@@ -50,6 +48,16 @@ function CreateProductInfo() {
         alert('Пополнить кабинет');
     };
 
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            navigate('/my-products');
+        });
+
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate]);
+
     const handleEditClick = () => {
         if (product) {
             navigate(`/create-product/${product.id}`);
@@ -68,8 +76,8 @@ function CreateProductInfo() {
     const mediaBase = process.env.REACT_APP_MEDIA_BASE;
 
     return (
-        <div className="p-4 max-w-screen-md mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Сделки с покупателями</h1>
+        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            <h1 className="text-2xl font-bold mb-6">Карточка товара</h1>
 
             {/* Блок с фотографией и информацией */}
             <div className="flex gap-4 mb-4">
@@ -121,22 +129,17 @@ function CreateProductInfo() {
             <div className="flex gap-2 mb-4">
                 <button
                     onClick={handleTopUpClick}
-                    className="flex-1 bg-purple-600 text-white p-2 rounded"
+                    className="flex-1 bg-brand text-white p-2 rounded"
                 >
                     Пополнить кабинет
                 </button>
                 <button
                     onClick={handleEditClick}
-                    className="flex-1 border border-purple-600 text-purple-600 p-2 rounded"
+                    className="flex-1 border border-brand text-brand p-2 rounded"
                 >
                     Редактировать
                 </button>
-                <button
-                    onClick={handleBackClick}
-                    className="flex-1 border border-gray-300 text-gray-600 p-2 rounded"
-                >
-                    Назад
-                </button>
+
             </div>
 
         </div>

@@ -15,3 +15,14 @@ class OrderRepositoryInterface(
     async def get_orders_by_user(self, user_id: UUID) -> List[Order]:
         ...
 
+    @abstractmethod
+    async def get_user_report(self, order_id: UUID):
+        ...
+
+    @abstractmethod
+    async def get_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        ...
+
+
+
+

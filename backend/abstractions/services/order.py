@@ -4,11 +4,12 @@ from uuid import UUID
 
 from domain.dto.order import CreateOrderDTO, UpdateOrderDTO
 from domain.models.order import Order
+from domain.responses.order_report import OrderReport
 
 
 class OrderServiceInterface(ABC):
     @abstractmethod
-    async def create_order(self, order_dto: CreateOrderDTO) -> Order:
+    async def create_order(self, order_dto: CreateOrderDTO) -> UUID:
         """
         Создаёт новый заказ и возвращает его доменную модель.
         """
@@ -47,3 +48,12 @@ class OrderServiceInterface(ABC):
         Возвращает список заказов для указанного пользователя.
         """
         ...
+
+    @abstractmethod
+    async def get_user_report(self, order_id: UUID) -> OrderReport:
+        ...
+
+    @abstractmethod
+    async def get_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        ...
+
