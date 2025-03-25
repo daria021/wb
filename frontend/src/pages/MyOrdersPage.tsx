@@ -1,21 +1,49 @@
+// src/pages/MyOrdersPage.tsx
+
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {getUserOrders} from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getUserOrders } from '../services/api';
+import {on} from "@telegram-apps/sdk";
+
+// Словарь для отображения названия шага
+const STEP_NAMES: { [key: number]: string } = {
+    1: 'Шаг 1: Поиск товара по ключевому слову',
+    2: 'Шаг 2: Артикул товар',
+    3: 'Шаг 3: Добавить в избранное',
+    4: 'Шаг 4: Ввод реквизитов',
+    5: 'Шаг 5: Оформление заказа',
+    6: 'Шаг 6: Получение товара',
+    7: 'Шаг 7: Отзыв и чек',
+    8: 'Шаг 8: Все выполнено',
+};
+
+// Функция, которая возвращает URL для заказа в зависимости от шага
+const getOrderStepLink = (order: Order): string => {
+    // Если заказ на шагах 1–7, перенаправляем на /order/:orderId/step-X
+    if (order.step === 1) {
+        return `/product/${order.product.id}/step-1`;
+    }
+    // (+1, если нужна другая логика — подстройте)
+    if (order.step >= 2 && order.step <= 7) {
+        return `/order/${order.id}/step-${order.step+1}`;
+    }
+    // Иначе финальный шаг
+    return `/order/${order.id}/order-info`;
+};
 
 interface Product {
     id: string;
     name: string;
     brand: string;
     article: string;
-    category: string; // Можно заменить на enum Category, если требуется
+    category: string;
     key_word: string;
     general_repurchases: number;
     daily_repurchases: number;
     price: number;
     wb_price: number;
     tg: string;
-    payment_time: string; // Можно заменить на enum PayoutTime
+    payment_time: string;
     review_requirements: string;
     image_path?: string;
     seller_id: string;
@@ -32,7 +60,11 @@ interface Order {
     status: string;
     created_at: string;
     updated_at: string;
+    step: number;
     product: Product;
+    user: {
+        nickname: string;
+    };
 }
 
 function MyOrdersPage() {
@@ -41,14 +73,23 @@ function MyOrdersPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleBackClick = () => {
-        navigate('/');
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            navigate('/');
+        });
+
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate]);
+
+    const handleSupportClick = () => {
+        alert('Открыть чат техподдержки...');
     };
 
     useEffect(() => {
         async function fetchOrders() {
             try {
-                // Теперь получаем заказы пользователя по его id
                 const response = await getUserOrders();
                 setOrders(response.data);
             } catch (error) {
@@ -64,57 +105,77 @@ function MyOrdersPage() {
     if (loading) {
         return <div className="p-4">Загрузка покупок...</div>;
     }
-
     if (error) {
         return <div className="p-4 text-red-600">{error}</div>;
     }
 
     return (
-        <div className="p-4 max-w-screen-md mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Мои покупки</h2>
-            <button
-                onClick={handleBackClick}
-                className="flex-1 border border-gray-300 text-gray-600 p-2 rounded"
-            >
-                Назад
-            </button>
-            {/* Сетка карточек заказов */}
-            <div className="grid grid-cols-2 gap-4">
-                {orders.map(order => (
-                    <Link to={`/my-purchases/${order.id}`} key={order.id}>
-                        <div className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
-                            {/* Блок с фото товара */}
-                            <div className="relative w-full aspect-[3/4] bg-gray-100">
-                                {order.product.image_path ? (
-                                    <img
-                                        src={
-                                            order.product.image_path.startsWith('http')
-                                                ? order.product.image_path
-                                                : `${process.env.REACT_APP_MEDIA_BASE}/${order.product.image_path}`
-                                        }
-                                        alt={order.product.name}
-                                        className="absolute top-0 left-0 w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                                        Нет фото
-                                    </div>
-                                )}
+        <div className="bg-gray-200 min-h-screen p-4">
+            {/* Шапка: кнопка «Назад» слева, заголовок по центру */}
+            <div className="flex items-center justify-center relative mb-4 right-6">
+                <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4 text-center">
+                Нажмите на карточку, чтобы открыть инструкцию
+            </p>
+
+            {/* Список заказов (вертикальный) */}
+            <div className="w-full flex flex-col gap-3">
+                {orders.map((order) => {
+                    const stepName = STEP_NAMES[order.step] || `Шаг ${order.step}`;
+                    const linkTo = getOrderStepLink(order);
+
+                    return (
+                        <Link to={linkTo} key={order.id}>
+                            <div className="bg-white rounded-md shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
+                                {/* Фото товара (небольшое) */}
+                                <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
+                                    {order.product.image_path ? (
+                                        <img
+                                            src={
+                                                order.product.image_path.startsWith('http')
+                                                    ? order.product.image_path
+                                                    : `${process.env.REACT_APP_MEDIA_BASE}/${order.product.image_path}`
+                                            }
+                                            alt={order.product.name}
+                                            className="absolute inset-0 object-cover w-full h-full"
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                                            Нет фото
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Информация: название, цена, текущий шаг */}
+                                <div className="flex-1 flex flex-col">
+                  <span className="font-semibold text-sm">
+                    {order.product.name}
+                  </span>
+                                    <span className="text-md font-bold" style={{ color: '#981e97' }}>
+                    {order.product.price} ₽
+                  </span>
+                                    <span className="text-xs text-gray-500">
+                    Текущий шаг: {stepName}
+                  </span>
+                                </div>
                             </div>
-                            {/* Информация о товаре и заказе */}
-                            <div className="p-3 flex flex-col">
-                                <h3 className="text-sm font-semibold mb-1">{order.product.name}</h3>
-                                <p className="text-md font-bold mb-1" style={{ color: "#981e97" }}>
-                                    {order.product.price} ₽
-                                </p>
-                                <p className="text-xs text-gray-600">Статус: {order.status}</p>
-                            </div>
-                        </div>
-                    </Link>
-                ))}
+                        </Link>
+                    );
+                })}
+            </div>
+
+            {/* Кнопка "Техподдержка" внизу */}
+            <div className="flex justify-center mt-6">
+                <button
+                    onClick={handleSupportClick}
+                    className="px-4 py-2 border border-gray-300 text-gray-600 rounded"
+                >
+                    Техподдержка
+                </button>
             </div>
         </div>
     );
 }
-
 export default MyOrdersPage;

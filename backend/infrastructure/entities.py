@@ -35,9 +35,11 @@ class Product(AbstractBase):
     payment_time: Mapped[PayoutTime] = mapped_column(Enum(PayoutTime))
     review_requirements: Mapped[str]
     image_path: Mapped[Optional[str]]
+
+    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey("users.id"))
+
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="product")
     orders: Mapped[List["Order"]] = relationship("Order", back_populates="product")
-    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey("users.id"), default=False)
 
 
 class User(AbstractBase):
@@ -45,10 +47,10 @@ class User(AbstractBase):
 
     telegram_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True)
     nickname: Mapped[Optional[str]]
-    orders: Mapped[List["Order"]] = relationship("Order", back_populates="user")
+
+    user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
+    seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")
-
-
 
 
 class Order(AbstractBase):
@@ -56,11 +58,38 @@ class Order(AbstractBase):
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id"))
-    card_number: Mapped[str]
-    screenshot_path: Mapped[str]
-    status: Mapped[str]
-    user: Mapped["User"] = relationship("User", back_populates="orders")
-    product: Mapped["Product"] = relationship("Product", back_populates="orders")
+    seller_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+
+    # Чтобы отслеживать, на каком шаге сейчас заказ
+    step: Mapped[int] = mapped_column(default=1)
+
+    # Шаг 1: скриншоты
+    search_screenshot_path: Mapped[Optional[str]]
+    cart_screenshot_path: Mapped[Optional[str]]
+
+    # Шаг 4: реквизиты
+    card_number: Mapped[Optional[str]]
+    phone_number: Mapped[Optional[str]]
+    name: Mapped[Optional[str]]
+    bank: Mapped[Optional[str]]
+
+    # Шаг 5: финальный скрин корзины
+    final_cart_screenshot_path: Mapped[Optional[str]]
+
+    # Шаг 6: скрин доставки, скрин штрихкодов
+    delivery_screenshot_path: Mapped[Optional[str]]
+    barcodes_screenshot_path: Mapped[Optional[str]]
+
+    # Шаг 7: скрин отзывов, скрин электронного чека, номер чека
+    review_screenshot_path: Mapped[Optional[str]]
+    receipt_screenshot_path: Mapped[Optional[str]]
+    receipt_number: Mapped[Optional[str]]
+
+    status: Mapped[str] = mapped_column(default="CREATED")
+
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="user_orders")
+    seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id], back_populates="seller_orders")
+    product: Mapped["Product"] = relationship("Product", foreign_keys=[product_id], back_populates="orders")
 
 
 class Review(AbstractBase):

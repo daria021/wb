@@ -1,3 +1,5 @@
+import { TelegramGameProxy } from "@telegram-apps/sdk";
+
 declare global {
     interface Window {
         Telegram: {
@@ -20,6 +22,7 @@ declare global {
                 close: () => void;
             };
         };
+        TelegramGameProxy: TelegramGameProxy,
     }
 }
 

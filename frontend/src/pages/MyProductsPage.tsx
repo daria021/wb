@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Предположим, у вас есть метод для получения товаров по sellerId
 import { getProductsBySellerId } from '../services/api';
+import {on} from "@telegram-apps/sdk";
 
 interface Product {
     id: string;
@@ -20,9 +20,15 @@ function MyProductsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'active' | 'archive'>('all');
 
-    const handleBackClick = () => {
-        navigate('/my-products');
-    };
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            navigate('/seller-cabinet');
+        });
+
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate]);
     useEffect(() => {
         async function fetchProducts() {
             try {
@@ -59,13 +65,8 @@ function MyProductsPage() {
     });
 
     return (
-        <div className="p-4 max-w-screen-sm mx-auto">
-            <button
-                onClick={handleBackClick}
-                className="flex-1 border border-gray-300 text-gray-600 p-2 rounded"
-            >
-                Назад
-            </button>
+        <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
+
             {/* Кнопка «Разместить товар» */}
             <div className="flex justify-end mb-4">
                 <button
