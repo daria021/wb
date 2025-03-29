@@ -1,9 +1,23 @@
 import React from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {on} from "@telegram-apps/sdk";
 
 function SellerBalancePage() {
     const handleContactAdmin = () => {
         window.open('https://t.me/snow_irbis20', '_blank');
     };
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            navigate('/seller-cabinet');
+        });
+
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate]);
 
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col justify-start items-center gap-4">

@@ -61,7 +61,6 @@ class ProductRepository(
             seller_id=dto.seller_id,
             status=ProductStatus.CREATED,
             image_path=dto.image_path,
-            status=dto.status,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
@@ -84,7 +83,6 @@ class ProductRepository(
             seller_id=entity.seller_id,
             status=entity.status,
             image_path=entity.image_path,
-            status=entity.status,
             created_at=entity.created_at,
             updated_at=entity.updated_at
         )

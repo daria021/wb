@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Type, Tuple
 
@@ -32,11 +33,20 @@ class JwtSettings(BaseSettings):
     access_expire: int
     refresh_expire: int
 
+class BotTokenSettings(BaseSettings):
+    local: str
+    stage: str
+
+    @property
+    def token(self) -> str:
+        return self.local if os.getenv("ENVIRONMENT", "local") == "local" else self.stage
 
 class Settings(BaseSettings):
     db: DBSettings
     jwt: JwtSettings
-    bot_token: str
+
+    bot: BotTokenSettings
+
     debug: bool = True
 
     model_config = SettingsConfigDict(

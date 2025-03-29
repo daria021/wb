@@ -19,7 +19,7 @@ from routes import (
     auth_router,
 
 )
-
+from settings import settings
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -93,3 +93,6 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
+
+
+print(settings.bot.token)
