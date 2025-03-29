@@ -35,7 +35,11 @@ class ProductServiceInterface(ABC):
     @abstractmethod
     async def get_by_article(self, article: str) -> Product:
         ...
+
     @abstractmethod
     async def get_by_seller(self, seller_id: UUID) -> Optional[list[Product]]:
         ...
 
+    @abstractmethod
+    async def get_active_products(self, limit: int = 100, offset: int = 0) -> list[Product]:
+        ...
