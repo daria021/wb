@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProductsBySellerId } from '../services/api';
-import {on} from "@telegram-apps/sdk";
+import { on } from "@telegram-apps/sdk";
 
 interface Product {
     id: string;
     name: string;
     price: number;
-    status: 'active' | 'archive';
-    // ...другие поля (article, brand, и т.п.)
+    status: string; // на сервере могут приходить "created", "active", "disabled", "rejected", "archived"
 }
 
 function MyProductsPage() {
@@ -18,7 +17,8 @@ function MyProductsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [filter, setFilter] = useState<'all' | 'active' | 'archive'>('all');
+    // Изменили начальное значение на "active"
+    const [filter, setFilter] = useState<'all' | 'active' | 'archived'>('active');
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -29,6 +29,7 @@ function MyProductsPage() {
             removeBackListener();
         };
     }, [navigate]);
+
     useEffect(() => {
         async function fetchProducts() {
             try {
@@ -43,21 +44,19 @@ function MyProductsPage() {
             }
         }
         fetchProducts();
-    });
+    }, []);
 
-    // Обработчик для кнопки «Разместить товар»
     const handleCreateProduct = () => {
-        // Переход на страницу создания нового товара
         navigate('/create-product');
     };
 
-    // Фильтрация по статусу (active/archive) и поиск по названию
+    // Фильтрация товаров:
+    // - Если filter не "all", оставляем только те, у которых status соответствует выбранному фильтру.
+    // - Также фильтруем по названию.
     const filteredProducts = products.filter((product) => {
-        // 1. Если фильтр не «all», проверяем product.status
         if (filter !== 'all' && product.status !== filter) {
             return false;
         }
-        // 2. Если есть поисковый запрос, проверяем вхождение в название (toLowerCase)
         if (searchQuery) {
             return product.name.toLowerCase().includes(searchQuery.toLowerCase());
         }
@@ -66,12 +65,11 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
-
             {/* Кнопка «Разместить товар» */}
             <div className="flex justify-end mb-4">
                 <button
                     onClick={handleCreateProduct}
-                    className="border border-gray-300 rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"
+                    className="border border-brand rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"
                 >
                     Разместить товар
                 </button>
@@ -86,7 +84,6 @@ function MyProductsPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
                 />
-                {/* Иконка поиска (если нужна), можно заменить на любую */}
                 <svg
                     className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
                     fill="none"
@@ -108,7 +105,7 @@ function MyProductsPage() {
                     onClick={() => setFilter('all')}
                     className={`px-4 py-2 rounded-md border ${
                         filter === 'all'
-                            ? 'bg-pink-500 text-white border-pink-500'
+                            ? 'bg-brand text-white border-brand'
                             : 'border-gray-300 text-gray-600'
                     }`}
                 >
@@ -118,17 +115,17 @@ function MyProductsPage() {
                     onClick={() => setFilter('active')}
                     className={`px-4 py-2 rounded-md border ${
                         filter === 'active'
-                            ? 'bg-pink-500 text-white border-pink-500'
+                            ? 'bg-brand text-white border-brand'
                             : 'border-gray-300 text-gray-600'
                     }`}
                 >
                     Активные
                 </button>
                 <button
-                    onClick={() => setFilter('archive')}
+                    onClick={() => setFilter('archived')}
                     className={`px-4 py-2 rounded-md border ${
-                        filter === 'archive'
-                            ? 'bg-pink-500 text-white border-pink-500'
+                        filter === 'archived'
+                            ? 'bg-brand text-white border-brand'
                             : 'border-gray-300 text-gray-600'
                     }`}
                 >
@@ -140,7 +137,7 @@ function MyProductsPage() {
             {loading && <p className="text-sm text-gray-500">Загрузка...</p>}
             {error && <p className="text-sm text-red-500">{error}</p>}
 
-            {/* Список товаров или «Товары не найдены» */}
+            {/* Список товаров */}
             {!loading && !error && (
                 <>
                     {filteredProducts.length === 0 ? (
@@ -157,7 +154,12 @@ function MyProductsPage() {
                                         Цена: {product.price} ₽
                                     </p>
                                     <p className="text-xs text-gray-400">
-                                        Статус: {product.status === 'active' ? 'Активный' : 'Архив'}
+                                        Статус:{' '}
+                                        {product.status === 'active'
+                                            ? 'Активный'
+                                            : product.status === 'archived'
+                                                ? 'Архив'
+                                                : product.status}
                                     </p>
                                 </div>
                             ))}

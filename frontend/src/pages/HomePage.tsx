@@ -1,4 +1,3 @@
-// src/pages/HomePage.tsx
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import {getMe} from '../services/api';
@@ -17,9 +16,11 @@ function HomePage() {
     };
 
     // Примерные обработчики
-    const handleAboutClick = () => alert('О сервисе');
-    const handleInstructionClick = () => alert('Инструкция');
-    const handleComplaintsClick = () => alert('Книга жалоб');
+    const handleAboutClick = () => navigate('/about');
+    const handleInstructionClick = () => navigate('/instruction');
+    const handleComplaintsClick = () => {
+        window.open('https://t.me/bookshaloba', '_blank'); //todo
+    };
     const handleMyOrdersClick = async () => {
         try {
             await getMe();
@@ -33,9 +34,12 @@ function HomePage() {
     };
     const handleCatalogClick = () => navigate(`/catalog`);
     const handleReferralClick = () => alert('Реферальная программа');
-    const handleChannelClick = () => alert('Переход в Telegram-канал');
-    const handleSupportClick = () => alert('Переход в Техподдержку');
-
+    const handleChannelClick = () => {
+        window.open('https://t.me/grcashback', '_blank'); //todo
+    };
+    const handleSupportClick = () => {
+        window.open('https://t.me/snow_irbis20', '_blank');
+    };
     return (
         <div className="min-h-screen bg-gray-200 p-6">
 

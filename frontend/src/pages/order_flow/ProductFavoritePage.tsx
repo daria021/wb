@@ -140,8 +140,6 @@ function ProductFavoritePage() {
                 Продолжить
             </button>
 
-            {/* Кнопка "Открыть отчет" */}
-
 
             {/* Фото карточки товара */}
             <div className="mb-4">
@@ -165,18 +163,20 @@ function ProductFavoritePage() {
             </div>
 
             {/* Видео-инструкция */}
-            <div className="mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция по добавлению товара и бренда в избранное</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
             {/* Кнопки снизу, расположенные вертикально */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"

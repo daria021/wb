@@ -23,6 +23,11 @@ import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
 import eruda from 'eruda';
+import SellerBalancePage from "./pages/SellerBalance";
+import AboutPage from "./pages/AboutPage";
+import CompleteInstructionPage from "./pages/CompleteInstructionPage";
+import RequirementsPage from "./pages/RequirementsPage";
+import QuestionPage from "./pages/QuestionPage";
 
 function App() {
     window.Telegram.WebApp.expand();
@@ -36,6 +41,10 @@ function App() {
                 <Routes>
                     {/* Главная страница */}
                     <Route path="/" element={<HomePage/>}/>
+                    <Route path="/about" element={<AboutPage/>}/>
+                    <Route path="/instruction" element={<CompleteInstructionPage/>}/>
+                    <Route path="/requirements" element={<RequirementsPage/>}/>
+                    <Route path="/question" element={<QuestionPage/>}/>
 
                     <Route path="/catalog" element={<CatalogPage/>}/>
                     <Route path="/product/:productId" element={<ProductDetailPage/>}/>
@@ -53,6 +62,7 @@ function App() {
                     <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
                     <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>
                     <Route path="/seller-cabinet/reports/:orderId" element={<OrderReportPage/>}/>
+                    <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
 
 
                     <Route path="/my-products" element={<MyProductsPage/>}/>

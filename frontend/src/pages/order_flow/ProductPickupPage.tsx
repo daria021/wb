@@ -154,7 +154,7 @@ function ProductPickupPage() {
 
             {/* Инструкция */}
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
-                <h1 className="text-lg font-bold">Шаг 7. Получение товара</h1>
+                <h1 className="text-lg font-bold">Шаг 6. Получение товара</h1>
                 <p>
                     Заберите товар как обычно, сделайте скрин раздела «доставки» из личного кабинета, где указана дата
                     получения и статус "Доставлено". После этого разрежьте штрихкод и сделайте фото разрезанного
@@ -183,20 +183,37 @@ function ProductPickupPage() {
             {pickedUp && (
                 <div className="space-y-3 mb-4">
                     {/* Скрин доставки */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Скрин статуса «Доставка» (из личного кабинета)
+
+                    <div className="flex flex-col gap-2 items-start px-4">
+                        <p className="uppercase text-xs text-gray-500">Скрин статуса «Доставка» (из личного кабинета)</p>
+                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                            Выбрать файл
+                            <input
+                                accept="image/*"
+                                className="hidden"
+                                type="file"
+                                onChange={handleDeliveryScreenshotChange}
+                            />
                         </label>
-                        <input type="file" accept="image/*" onChange={handleDeliveryScreenshotChange}/>
                     </div>
-                    {/* Скрин штрихкодов */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Фото разрезанных штрихкодов на фоне товара
+
+                    <div className="flex flex-col gap-2 items-start px-4">
+                        <p className="uppercase text-xs text-gray-500">Фото разрезанных штрихкодов на фоне товара</p>
+                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                            Выбрать файл
+                            <input
+                                accept="image/*"
+                                className="hidden"
+                                type="file"
+                                onChange={handleBarcodeScreenshotChange}
+                            />
                         </label>
-                        <input type="file" accept="image/*" onChange={handleBarcodeScreenshotChange}/>
                     </div>
                 </div>
+
+
             )}
 
             {/* Кнопки "Проверить продавца" и "Продолжить" */}
@@ -217,30 +234,34 @@ function ProductPickupPage() {
             </div>
 
             {/* Видео-инструкция */}
-            <div className="relative w-full h-64 bg-gray-200 mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
 
             {/* Видео-инструкция */}
-            <div className="mb-4">
-                <h3 className="text-sm font-semibold mt-8 mb-2">Инструкция</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
             {/* Кнопки снизу, расположенные вертикально */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mt-4">
                 {/* Кнопка "Открыть отчет" */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}

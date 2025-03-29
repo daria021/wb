@@ -44,9 +44,9 @@ function CreateProductInfo() {
             });
     }, [productId]);
 
-    const handleTopUpClick = () => {
-        alert('Пополнить кабинет');
-    };
+    const handleMyBalanceClick = () => {
+        navigate(`/seller-cabinet/balance`);
+    }
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -128,7 +128,7 @@ function CreateProductInfo() {
             {/* Кнопки действий */}
             <div className="flex gap-2 mb-4">
                 <button
-                    onClick={handleTopUpClick}
+                    onClick={handleMyBalanceClick}
                     className="flex-1 bg-brand text-white p-2 rounded"
                 >
                     Пополнить кабинет

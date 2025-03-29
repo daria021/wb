@@ -192,7 +192,7 @@ function StepReviewReportPage() {
 
             {/* Серый блок с инструкцией */}
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
-                <h1 className="text-lg font-bold">Шаг 8. Отзыв</h1>
+                <h1 className="text-lg font-bold">Шаг 7. Отзыв</h1>
                 <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
                 <p className="mb-2">2. Фото, видео, текст, оценка 5.</p>
             </div>
@@ -213,19 +213,36 @@ function StepReviewReportPage() {
 
             {/* Если отзыв оставлен – поля для загрузки файлов и ввода номера чека */}
             {leftReview && (
-                <div className="space-y-3 mb-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Загрузите скрин отзыва
+                <div className="space-y-3 mb-4 mt-4">
+                    <div className="flex flex-col gap-2 items-start px-4">
+                        <p className="uppercase text-xs text-gray-500">Cкрин отзыва</p>
+                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                            Выбрать файл
+                            <input
+                                accept="image/*"
+                                className="hidden"
+                                type="file"
+                                onChange={handleReviewScreenshotChange}
+                            />
                         </label>
-                        <input type="file" accept="image/*" onChange={handleReviewScreenshotChange}/>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Загрузите скрин электронного чека
+
+                    <div className="flex flex-col gap-2 items-start px-4">
+                        <p className="uppercase text-xs text-gray-500">Cкрин электронного чека</p>
+                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                            Выбрать файл
+                            <input
+                                accept="image/*"
+                                className="hidden"
+                                type="file"
+                                onChange={handleCheckScreenshotChange}
+                            />
                         </label>
-                        <input type="file" accept="image/*" onChange={handleCheckScreenshotChange}/>
                     </div>
+
+
                     <div>
                         <label className="block text-sm font-medium mb-1">
                             Номер чека
@@ -245,7 +262,7 @@ function StepReviewReportPage() {
             <div className="flex gap-2 mb-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
-                    className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
+                    className="flex-1 bg-white text-gray-700 text-sm py-2 rounded-lg border border-brand text-center"
                 >
                     Проверить продавца
                 </button>
@@ -260,21 +277,34 @@ function StepReviewReportPage() {
                 </button>
             </div>
 
-            {/* Видео-инструкция */}
-            <div className="mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция на отзыв</h3>
-                <div className="relative w-full h-48 bg-gray-200 mb-4">
+
+            <div className="bg-white rounded-lg shadow p-4">
+                <p className="text-base font-medium mb-2">Инструкция на отзыв</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
-                        title="Инструкция - Отзыв"
+                        title="Инструкция"
                         src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                         allowFullScreen
                         className="w-full h-full"
                     />
                 </div>
-                <h3 className="text-base font-semibold mb-2">Инструкция на чек</h3>
-                <div className="relative w-full h-48 bg-gray-200 mb-4">
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Инструкция на чек</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
-                        title="Инструкция - Электронный чек"
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Инструкция на номер чека</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
                         src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                         allowFullScreen
                         className="w-full h-full"
@@ -282,20 +312,9 @@ function StepReviewReportPage() {
                 </div>
             </div>
 
-
-            {/* Видео-инструкция */}
-            <div className="mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция на номер чека</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
-            </div>
 
             {/* Кнопки снизу, расположенные вертикально */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mt-4">
                 {/* Блок с отчетом */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}
