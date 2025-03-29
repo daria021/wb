@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+from uuid import UUID
 
 from abstractions.repositories import CRUDRepositoryInterface
 from domain.dto import CreateUserDTO, UpdateUserDTO
@@ -16,4 +17,20 @@ class UserRepositoryInterface(
 
     @abstractmethod
     async def ensure_user(self, dto: CreateUserDTO) -> User:
+        ...
+
+    @abstractmethod
+    async def get_moderators(self) -> list[User]:
+        ...
+
+    @abstractmethod
+    async def get_sellers(self) -> list[User]:
+        ...
+
+    @abstractmethod
+    async def get_banned(self) -> list[User]:
+        ...
+
+    @abstractmethod
+    async def become_seller(self, user_id: UUID):
         ...

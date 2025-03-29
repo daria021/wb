@@ -28,11 +28,24 @@ import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
 import RequirementsPage from "./pages/RequirementsPage";
 import QuestionPage from "./pages/QuestionPage";
+import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
+import ModeratorProductsPage from "./pages/moderator/ModeratorProductsPage";
+import ModeratorProductReviewPage from "./pages/moderator/ModeratorProductReviewPage";
+import ModeratorUsersPage from "./pages/moderator/ModeratorUserPage";
 
 function App() {
     window.Telegram.WebApp.expand();
-    window.TelegramGameProxy.receiveEvent = function(eventType: string, eventData: unknown) {};
     eruda.init();
+
+    window.onerror = (message, source, lineno, colno, error) => {
+        if (typeof message === "string" && message.includes("window.TelegramGameProxy.receiveEvent")) {
+            // Return true to indicate that the error has been handled
+            return true;
+        }
+        console.log(typeof message, typeof message === "string");
+        // Otherwise, let the error propagate
+        return false;
+    };
 
     return (
         <AuthProvider>
@@ -58,18 +71,21 @@ function App() {
                     <Route path="/order/:orderId/step-7" element={<StepReviewReportPage/>}/>
                     <Route path="/order/:orderId/order-info" element={<FinalDealPage/>}/>
 
-
                     <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
                     <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>
                     <Route path="/seller-cabinet/reports/:orderId" element={<OrderReportPage/>}/>
                     <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
-
 
                     <Route path="/my-products" element={<MyProductsPage/>}/>
                     <Route path="/create-product/:productId?" element={<CreateProductForm/>}/>
                     <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
                     <Route path="/user/orders" element={<MyOrdersPage/>}/>
 
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/moderator" element={<ModeratorDashboard />} />
+                    <Route path="/moderator/users" element={<ModeratorUsersPage />} />
+                    <Route path="/moderator/products" element={<ModeratorProductsPage />} />
+                    <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage />} />
 
                 </Routes>
             </BrowserRouter>

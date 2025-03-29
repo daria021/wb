@@ -2,18 +2,27 @@ from dataclasses import dataclass
 from typing import List, Optional
 from uuid import UUID
 
-from abstractions.repositories import ProductRepositoryInterface
+from abstractions.repositories import ProductRepositoryInterface, UserRepositoryInterface
 from abstractions.services import ProductServiceInterface
-from domain.dto import CreateProductDTO, UpdateProductDTO
+from domain.dto import CreateProductDTO, UpdateProductDTO, UpdateUserDTO
 from domain.models import Product
 
 
 @dataclass
 class ProductService(ProductServiceInterface):
     product_repository: ProductRepositoryInterface
+    user_repository: UserRepositoryInterface
 
     async def create_product(self, dto: CreateProductDTO) -> UUID:
         await self.product_repository.create(dto)
+        update_user = UpdateUserDTO(
+            is_seller=True,
+        )
+        await self.user_repository.update(
+            obj_id=dto.seller_id,
+            obj=update_user
+        )
+        # await self.user_repository.become_seller(dto.seller_id)
         return dto.id
 
     async def get_product(self, product_id: UUID) -> Product:
@@ -33,3 +42,6 @@ class ProductService(ProductServiceInterface):
 
     async def get_by_seller(self, seller_id: UUID) -> Optional[list[Product]]:
         return await self.product_repository.get_by_seller(seller_id)
+
+    async def get_active_products(self, limit: int = 100, offset: int = 0) -> List[Product]:
+        return await self.product_repository.get_active_products(limit=limit, offset=offset)
