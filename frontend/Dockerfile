@@ -1,5 +1,5 @@
 # Dockerfile.env для фронтенда
-FROM node:20-alpine
+FROM node:20-alpine as build
 
 WORKDIR /app
 
@@ -9,11 +9,16 @@ COPY package.json yarn.lock ./
 # Устанавливаем зависимости
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
-COPY local.env .env
+COPY stage.env .env
 
 # Копируем весь проект
 COPY . .
 
-EXPOSE 3000
+RUN yarn build
 
-CMD ["yarn", "start"]
+# Stage 3: Serve with Nginx
+FROM nginx:latest
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

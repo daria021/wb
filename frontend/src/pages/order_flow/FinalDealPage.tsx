@@ -124,7 +124,7 @@ function FinalDealPage() {
 
 
     // Извлекаем нужные поля
-    const { product, user, status } = order;
+    const { product, status } = order;
     const productName = product.name || 'Без названия';
     const productPrice = product.price ?? 0;
     const productWbPrice = product.wb_price ?? 0;
