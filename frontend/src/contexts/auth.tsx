@@ -1,16 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { apiClient } from "../services/apiClient";
+import {getMe} from "../services/api";
 
 interface AuthContextType {
-    userId: number | null;
+    userId: string | null;
+    isModerator: boolean | null;
     loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [userId, setUserId] = useState<number | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isModerator, setIsModerator] = useState<boolean | null>(null);
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -28,7 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     const response = await apiClient.post("/auth/telegram", { initData });
                     localStorage.setItem("authToken", response.data.access_token);
                     localStorage.setItem("refreshToken", response.data.refresh_token);
-                    setUserId(response.data.user_id);
+                    const me = await getMe();
+                    setUserId(me.id);
+                    setIsModerator(me.role === "moderator");
                 } catch (error) {
                     console.error("Authentication failed", error);
                 } finally {
@@ -41,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userId, loading }}>
+        <AuthContext.Provider value={{ userId, loading, isModerator }}>
     {children}
     </AuthContext.Provider>
 );

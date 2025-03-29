@@ -1,6 +1,7 @@
 // src/api/index.ts
 import axios from 'axios';
 import {apiClient} from "./apiClient";
+import {MeResponse} from "../types/MeResponse";
 
 // Базовый URL вашего бэкенда (напр. http://localhost:9090, http://localhost:8000, ...)
 // Можно вынести в .env => process.env.REACT_APP_API_URL
@@ -59,8 +60,8 @@ export async function updateProduct(productId: string, formData: FormData):Promi
     return response.data;
 }
 
-export async function getMe():Promise<string>{
-    return (await apiClient.get(`users/me`)).data;
+export async function getMe():Promise<MeResponse>{
+    return (await apiClient.get<MeResponse>(`users/me`)).data;
 }
 
 export async function createOrder(formData: FormData) {
@@ -158,3 +159,58 @@ export async function updateOrder(
 }
 
 
+export async function getUsers() {
+    return apiClient.get('/moderator/users');
+}
+
+export async function getModerators() {
+    return apiClient.get('/moderator/users/moderators');
+}
+
+export async function getSellers() {
+    return apiClient.get('/moderator/users/sellers');
+}
+
+export async function getBannedUsers() {
+    return apiClient.get('/moderator/users/banned');
+}
+
+export async function getUser(userId: string) {
+    return apiClient.get(`/moderator/users/${userId}`);
+}
+
+export async function banUser(userId: string) {
+    return apiClient.post(`/moderator/users/${userId}/ban`);
+}
+
+export async function unbanUser(userId: string) {
+    return apiClient.post(`/moderator/users/${userId}/unban`);
+}
+
+export async function promoteUser(userId: string) {
+    return apiClient.post(`/moderator/users/${userId}/promote`);
+}
+
+export async function demoteUser(userId: string) {
+    return apiClient.post(`/moderator/users/${userId}/demote`);
+}
+
+export async function getModeratorProducts() {
+    return apiClient.get('/moderator/products');
+}
+
+export async function getProductsToReview() {
+    return apiClient.get('/moderator/products/to-review');
+}
+
+export async function getModeratorProductById(productId: string) {
+    return apiClient.get(`/moderator/products/${productId}`);
+}
+
+export async function reviewProduct(productId: string, data: { status: string; comment: string }) {
+    return apiClient.patch(`/moderator/products/${productId}`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}

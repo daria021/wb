@@ -76,7 +76,8 @@ function SellerReportsPage() {
     useEffect(() => {
         async function fetchSellerId() {
             try {
-                const id = await getMe();
+                const me = await getMe();
+                const id = me.id;
                 setSellerId(id);
             } catch (err) {
                 console.error("Ошибка при получении sellerId:", err);

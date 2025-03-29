@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request, HTTPException, status
 
 from dependencies.services.user import get_user_service
 from domain.dto import CreateUserDTO, UpdateUserDTO
+from domain.models import User
 from routes.requests.user import CreateUserRequest, UpdateUserRequest
 from .product import router as product_router
 from .order import router as order_router
@@ -27,11 +28,13 @@ async def list_users(request: Request):
 
 
 @router.get("/me")
-async def get_me(request: Request):
-    id= get_user_id_from_request(request)
+async def get_me(request: Request) -> User:
+    user_id = get_user_id_from_request(request)
     logger.info("id AAAA")
-    logger.info(id)
-    return id
+    logger.info(user_id)
+    user_service = get_user_service()
+    user = await user_service.get_user(user_id)
+    return user
 
 
 @router.get("/{user_id}")

@@ -22,3 +22,11 @@ class ProductRepositoryInterface(
     @abstractmethod
     async def get_by_seller(self, seller_id: UUID) -> Optional[list[Product]]:
         ...
+
+    @abstractmethod
+    async def get_products_to_review(self) -> list[Product]:
+        ...
+
+    @abstractmethod
+    async def get_active_products(self, limit: int = 100, offset: int = 9) -> list[Product]:
+        ...
