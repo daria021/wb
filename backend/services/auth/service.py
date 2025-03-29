@@ -29,6 +29,7 @@ class AuthService(AuthServiceInterface):
         try:
             if token == 'abc':
                 return UUID('9cfed29e-9b5e-444f-8746-e1355ddd95b1')
+
             payload = self.token_service.get_token_payload(token=token)
             user_id: str | None = payload.get('sub', None)
             if not user_id:

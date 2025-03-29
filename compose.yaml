@@ -44,7 +44,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - "./frontend:/app"
+      - "./frontend/public:/app/public"
 
 
 volumes:

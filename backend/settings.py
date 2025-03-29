@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Type, Tuple
 
@@ -32,11 +33,20 @@ class JwtSettings(BaseSettings):
     access_expire: int
     refresh_expire: int
 
+class BotTokenSettings(BaseSettings):
+    dasha: str
+    ilia: str
+
+    @property
+    def token(self) -> str:
+        return self.dasha if os.getenv("DEVELOPER", "dasha") == "dasha" else self.ilia
 
 class Settings(BaseSettings):
     db: DBSettings
     jwt: JwtSettings
-    bot_token: str
+
+    bot: BotTokenSettings
+
     debug: bool = True
 
     model_config = SettingsConfigDict(

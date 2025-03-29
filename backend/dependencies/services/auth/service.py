@@ -7,7 +7,7 @@ from settings import settings
 
 def get_auth_service() -> AuthServiceInterface:
     return AuthService(
-        bot_token=settings.bot_token,
+        bot_token=settings.bot.token,
         token_service=get_token_service(),
         user_service=get_user_service()
     )
