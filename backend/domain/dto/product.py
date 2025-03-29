@@ -42,3 +42,4 @@ class UpdateProductDTO(UpdateDTO):
     payment_time: Optional[PayoutTime] = None
     review_requirements: Optional[str] = None
     image_path: Optional[str] = None
+    status: Optional[ProductStatus] = None

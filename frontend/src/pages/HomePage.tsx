@@ -1,9 +1,11 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
-import {getMe} from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { getMe } from '../services/api';
+import { useAuth } from '../contexts/auth'; // Adjust the path as necessary
 
 function HomePage() {
     const navigate = useNavigate();
+    const { isModerator, loading } = useAuth();
 
     window.onerror = (message, source, lineno, colno, error) => {
         if (typeof message === "string" && message.includes("window.TelegramGameProxy.receiveEvent")) {
@@ -73,7 +75,6 @@ function HomePage() {
                 </div>
             </div>
 
-
             {/* --- Средний блок: слева (Мои покупки, Кабинет продавца), справа (Каталог) --- */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 {/* Левая часть (2 столбца) */}
@@ -87,8 +88,8 @@ function HomePage() {
                             <div className="flex flex-col">
                                 <span>Мои покупки</span>
                                 <span className="text-xs font-normal text-gray-500">
-                  Список ваших покупок
-                </span>
+                                    Список ваших покупок
+                                </span>
                             </div>
                             <img
                                 src="/icons/small_arrow.png"
@@ -107,8 +108,8 @@ function HomePage() {
                             <div className="flex flex-col">
                                 <span>Кабинет продавца</span>
                                 <span className="text-xs font-normal text-gray-500">
-                  Для продавцов
-                </span>
+                                    Для продавцов
+                                </span>
                             </div>
                             <img
                                 src="/icons/small_arrow.png"
@@ -120,17 +121,14 @@ function HomePage() {
                 </div>
 
                 {/* Правая часть (1 столбец): Каталог */}
-                {/* Правая часть (1 столбец): Каталог (фиолетовый фон) */}
-                {/* Правая часть (1 столбец): Каталог (фиолетовый фон) */}
-                {/* Правая часть (1 столбец): Каталог (фиолетовый фон) */}
                 <div
                     onClick={handleCatalogClick}
                     className="bg-brand rounded-lg px-1 py-4 text-sm font-semibold text-white cursor-pointer relative"
                 >
                     {/* Текст слева, может переноситься, если не влезает в одну строку */}
                     <span className="block text-left">
-    Каталог актуальных товаров
-  </span>
+                        Каталог актуальных товаров
+                    </span>
 
                     <img
                         src="/icons/arrow.png"
@@ -138,8 +136,6 @@ function HomePage() {
                         className="w-11 h-11 absolute top-28 right-2"
                     />
                 </div>
-
-
             </div>
 
             {/* --- Реферальная программа (круглая кнопка) --- */}
@@ -149,6 +145,16 @@ function HomePage() {
             >
                 Реферальная программа
             </div>
+
+            {/* --- Moderator Interface Button (visible only if user is a moderator) [todo: помодерируем?] --- */}
+            { !loading && isModerator && (
+                <div
+                    onClick={() => navigate('/moderator')}
+                    className="bg-white border border-brand rounded-full shadow-sm p-4 mb-8 text-sm font-semibold cursor-pointer text-center"
+                >
+                    Помодерируем?
+                </div>
+            )}
 
             {/* --- Ссылки на канал и техподдержку (вертикально) --- */}
             <div className="flex flex-col gap-4">
@@ -178,8 +184,8 @@ function HomePage() {
                     <div className="flex flex-col">
                         <span>Техподдержка</span>
                         <span className="text-xs text-gray-500">
-              Оперативно ответим на все вопросы
-            </span>
+                            Оперативно ответим на все вопросы
+                        </span>
                     </div>
                     <img
                         src="/icons/small_arrow.png"

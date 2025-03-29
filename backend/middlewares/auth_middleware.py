@@ -1,5 +1,4 @@
 import logging
-from uuid import UUID
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -7,6 +6,7 @@ from fastapi.responses import JSONResponse
 from dependencies.services.auth import get_auth_service
 from infrastructure.repositories.exceptions import NotFoundException
 from services.auth.exceptions import InvalidTokenException, ExpiredTokenException
+from services.exceptions import PermissionException, BannedUserException
 
 
 async def check_for_auth(
@@ -46,6 +46,9 @@ async def check_for_auth(
                 detail = 'Token is expired'
             case NotFoundException():
                 detail = 'User ID found in token does not exist'
+            case BannedUserException():
+                detail = "You're banned"
+                code = 403
 
         return JSONResponse(
             status_code=code,
@@ -55,5 +58,13 @@ async def check_for_auth(
         )
 
     request.scope['x_user_id'] = user_id
-    response = await call_next(request)
-    return response
+    try:
+        response = await call_next(request)
+        return response
+    except PermissionException as e:
+        return JSONResponse(
+            status_code=403,
+            content={
+                'detail': "You're lacking permissions to do this.",
+            }
+        )

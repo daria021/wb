@@ -9,6 +9,8 @@ COPY package.json yarn.lock ./
 # Устанавливаем зависимости
 RUN yarn install --frozen-lockfile
 
+RUN cp .env.${ENVIRONMENT} .env
+
 # Копируем весь проект
 COPY . .
 
