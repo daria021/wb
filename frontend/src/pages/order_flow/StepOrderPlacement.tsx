@@ -143,12 +143,15 @@ function StepOrderPlacement() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full px-4 py-2 rounded text-white mb-4 mt-4 mt-4${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-700 cursor-not-allowed'
+                className={`w-full py-2 rounded text-white mb-4 ${
+                    canContinue
+                        ? 'bg-brand hover:bg-brand'
+                        : 'bg-gray-400 cursor-not-allowed'
                 }`}
             >
                 Продолжить
             </button>
+
 
             {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById } from '../services/api';
-import { Category, PayoutTime } from '../enums';
-import {on} from "@telegram-apps/sdk";
+import {getProductById, updateProductStatus} from '../services/api';
+import { Category, PayoutTime, ProductStatus } from '../enums';
+import { on } from "@telegram-apps/sdk";
 
 interface Product {
     id: string;
     name: string;
     article: string;
+    status: ProductStatus;
     brand: string;
     category: Category;
     key_word: string;
@@ -21,13 +22,16 @@ interface Product {
     image_path?: string;
 }
 
+interface ProductFormData {
+    status: string;
+}
+
 function CreateProductInfo() {
     const navigate = useNavigate();
     const { productId } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-
 
     useEffect(() => {
         if (!productId) return;
@@ -46,13 +50,12 @@ function CreateProductInfo() {
 
     const handleMyBalanceClick = () => {
         navigate(`/seller-cabinet/balance`);
-    }
+    };
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/my-products');
         });
-
         return () => {
             removeBackListener();
         };
@@ -64,6 +67,38 @@ function CreateProductInfo() {
         }
     };
 
+    // Функция для приостановки товара (смена статуса на ARCHIVED)
+    const handlePublish = async (e: FormEvent) => {
+        e.preventDefault();
+        try {
+            const fd = new FormData();
+            fd.append('status', ProductStatus.ACTIVE);
+            await updateProductStatus(productId!, fd);
+            // Обновляем локальное состояние, чтобы статус стал ACTIVE
+            setProduct({ ...product!, status: ProductStatus.ACTIVE });
+            alert('Товар опубликован');
+        } catch (err) {
+            console.error('Ошибка при сохранении товара:', err);
+            alert('Не удалось сохранить товар');
+        }
+    };
+
+    const handleStop = async (e: FormEvent) => {
+        e.preventDefault();
+        try {
+            const fd = new FormData();
+            fd.append('status', ProductStatus.ARCHIVED);
+            await updateProductStatus(productId!, fd);
+            // Обновляем локальное состояние, чтобы статус стал ARCHIVED
+            setProduct({ ...product!, status: ProductStatus.ARCHIVED });
+            alert('Товар заархивирован');
+        } catch (err) {
+            console.error('Ошибка при сохранении товара:', err);
+            alert('Не удалось сохранить товар');
+        }
+    };
+
+
     if (loading) {
         return <div className="p-4">Загрузка...</div>;
     }
@@ -72,12 +107,21 @@ function CreateProductInfo() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-    // Получаем базовый URL для изображений из переменной окружения или используем значение по умолчанию
+    // Получаем базовый URL для изображений из переменной окружения
     const mediaBase = process.env.REACT_APP_MEDIA_BASE;
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Карточка товара</h1>
+        <div className="p-4 min-h-screen bg-gray-200 mx-auto">
+            {/* Шапка страницы с заголовком и кнопкой "Редактировать" */}
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-medium">Карточка товара</h1>
+                <button
+                    onClick={handleEditClick}
+                    className="border border-brand text-brand px-4 py-2 rounded"
+                >
+                    Редактировать
+                </button>
+            </div>
 
             {/* Блок с фотографией и информацией */}
             <div className="flex gap-4 mb-4">
@@ -100,21 +144,21 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                {/* Дополнительная информация о ценах и выкупах */}
+                {/* Блок с дополнительной информацией о товаре */}
                 <div className="bg-white border border-gray-200 rounded-md p-4">
-                    <div className="flex flex-col justify-start">
+                    <div className="flex flex-col justify-start mb-4">
                         <p className="text-lg font-bold">{product.article}</p>
                         <h3 className="text-xl font-semibold">{product.name}</h3>
                     </div>
-                    <div className="flex flex-col justify-start">
+                    <div className="flex flex-col justify-start mb-2">
                         <span className="text-sm text-gray-600">Цена на сайте:</span>
                         <span className="text-sm font-semibold">{product.wb_price} руб</span>
                     </div>
-                    <div className="flex flex-col justify-start">
+                    <div className="flex flex-col justify-start mb-2">
                         <span className="text-sm text-gray-600">Цена для покупателя:</span>
                         <span className="text-sm font-semibold">{product.price} руб</span>
                     </div>
-                    <div className="flex flex-col justify-start">
+                    <div className="flex flex-col justify-start mb-2">
                         <span className="text-sm text-gray-600">Кол-во выкупов:</span>
                         <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
                     </div>
@@ -125,23 +169,30 @@ function CreateProductInfo() {
                 </div>
             </div>
 
-            {/* Кнопки действий */}
-            <div className="flex gap-2 mb-4">
+            {/* Кнопки внизу страницы */}
+            <div className="flex flex-col gap-2">
                 <button
                     onClick={handleMyBalanceClick}
                     className="flex-1 bg-brand text-white p-2 rounded"
                 >
                     Пополнить кабинет
                 </button>
-                <button
-                    onClick={handleEditClick}
-                    className="flex-1 border border-brand text-brand p-2 rounded"
-                >
-                    Редактировать
-                </button>
-
+                {product.status === ProductStatus.ARCHIVED ? (
+                    <button
+                        onClick={handlePublish}
+                        className="flex-1 border border-brand text-brand p-2 rounded"
+                    >
+                        Опубликовать
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleStop}
+                        className="flex-1 border border-brand text-brand p-2 rounded"
+                    >
+                        Приостановить
+                    </button>
+                )}
             </div>
-
         </div>
     );
 }

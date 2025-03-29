@@ -127,19 +127,19 @@ async def create_product(
 async def update_product(
     product_id: UUID,
     request: Request,
-    name: str = Form(...),
-    article: str = Form(...),
-    brand: str = Form(...),
-    category: Category = Form(...),
-    key_word: str = Form(...),
-    general_repurchases: int = Form(...),
-    daily_repurchases: int = Form(...),
-    price: float = Form(..., gt=0),
-    wb_price: float = Form(...),
-    tg: str = Form(...),
-    status: ProductStatus = Form(...),
-    payment_time: PayoutTime = Form(...),
-    review_requirements: str = Form(...),
+    name: Optional[str] = Form(...),
+    article: Optional[str] = Form(...),
+    brand: Optional[str] = Form(...),
+    category: Optional[Category] = Form(...),
+    key_word: Optional[str] = Form(...),
+    general_repurchases: Optional[int] = Form(...),
+    daily_repurchases: Optional[int] = Form(...),
+    price: Optional[float] = Form(..., gt=0),
+    wb_price: Optional[float] = Form(...),
+    tg: Optional[str] = Form(...),
+    status: Optional[ProductStatus] = Form(...),
+    payment_time: Optional[PayoutTime] = Form(...),
+    review_requirements: Optional[str] = Form(...),
     image: Optional[UploadFile] = File(None),
 ) -> dict:
     # Если файл изображения передан, сохраняем его и задаем путь
@@ -182,6 +182,20 @@ async def update_product(
     await product_service.update_product(product_id, dto)
     return {"message": "Product updated successfully"}
 
+@router.patch("/status/{product_id}")
+async def update_product(
+        product_id: UUID,
+        request: Request,
+        status: Optional[ProductStatus] = Form(...),
+) -> dict:
+
+    dto = UpdateProductDTO(
+        status=status,
+    )
+
+    product_service = get_product_service()
+    await product_service.update_product(product_id, dto)
+    return {"message": "Product updated successfully"}
 
 @router.delete("/{product_id}")
 async def delete_product(product_id: UUID, request: Request):

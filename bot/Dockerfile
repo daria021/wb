@@ -1,6 +1,6 @@
 FROM python:3.12
 
-ENV developer=ilia
+ENV developer=dasha
 
 RUN apt-get update
 

@@ -57,6 +57,15 @@ export async function updateProduct(productId: string, formData: FormData):Promi
     console.log(response.request.formData);
     return response.data;
 }
+export async function updateProductStatus(productId: string, formData: FormData):Promise<string> {
+    const response = await apiClient.patch(`/products/status/${productId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    console.log(response.request.formData);
+    return response.data;
+}
 
 export async function getMe():Promise<MeResponse>{
     return (await apiClient.get<MeResponse>(`users/me`)).data;
