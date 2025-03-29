@@ -72,13 +72,23 @@ function FinalDealPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate('/order/:orderId/step-7');
+            navigate('/catalog');
         });
 
         return () => {
             removeBackListener();
         };
     }, [navigate]);
+
+    useEffect(() => {
+        const removeBackListener = on('back_button_pressed', () => {
+            if (!orderId) return;
+            navigate(`/order/${orderId}/step-6`);
+        });
+        return () => {
+            removeBackListener();
+        };
+    }, [navigate, orderId]);
 
     useEffect(() => {
         if (!orderId) return;
@@ -124,12 +134,7 @@ function FinalDealPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4">
-            <button
-                className="bg-white border border-brand rounded-md py-2 text-sm font-semibold"
-                onClick={() => navigate('/catalog')}
-            >
-                Назад в каталог товаров
-            </button>
+
             {/* 1) Блок с круглой фотографией товара, названием и ценой */}
             <div className="flex items-center space-x-3">
                 {/* Можно заменить на реальное фото, если есть product.image_path */}
@@ -189,6 +194,7 @@ function FinalDealPage() {
 
             {/* 5) Блок "Реквизиты" */}
             <div className="bg-brandlight p-3 rounded-md space-y-1 text-sm">
+                <div className="font-semibold">Реквизиты</div>
                 <div>Номер карты: {order.card_number || '—'}</div>
                 <div>Номер телефона: {order.phone_number || '—'}</div>
                 <div>Банк: {order.bank || '—'}</div>

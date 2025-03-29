@@ -196,7 +196,7 @@ function ProductForm() {
                 <button
                     type="submit"
                     form="product-form"
-                    className="text-pink-500 text-sm"
+                    className="text-brand text-sm"
                 >
                     Сохранить
                 </button>
@@ -233,7 +233,8 @@ function ProductForm() {
 
                 {/* Фото (показать превью, если есть старое или выбран файл) */}
                 <div>
-                    <label className="block text-sm font-medium mb-1">Фото товара</label>
+                    <p className="uppercase text-xs text-gray-500">Фото товара</p>
+                    <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex items-center gap-2">
                     {previewUrl ? (
                         <img
                             src={previewUrl}
@@ -248,15 +249,18 @@ function ProductForm() {
                             className="w-32 h-32 object-cover mb-2"
                         />
                     ) : (
-                        <div className="text-gray-400 text-sm mb-2">Нет фото</div>
+                        <div className="text-brand text-sm mb-2">Выбрать файл</div>
                     )}
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
-                        className="text-sm"
+                        className="hidden"
                     />
+                    </label>
+
                 </div>
+
 
                 {/* Бренд */}
                 <div>

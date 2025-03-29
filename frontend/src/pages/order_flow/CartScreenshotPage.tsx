@@ -98,14 +98,11 @@ function CartScreenshotPage() {
                 </p>
             </div>
 
-            <div className="flex flex-col gap-2 items-center justify-around pt-4 px-4">
-                <p>
-                    Скрин поискового запроса
-                </p>
-                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm">
+            <div className="flex flex-col gap-2 items-start px-4">
+                <p className="uppercase text-xs text-gray-500">Скрин поискового запроса</p>
+                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
                     Выбрать файл
-                    <input accept="image/*" className="hidden" type="file"/>
-                </label>
                     <input
                         accept="image/*"
                         className="hidden"
@@ -114,24 +111,26 @@ function CartScreenshotPage() {
                             setFile1(e.target.files?.[0] || null)
                         }
                     />
-            </div>
-            <div>
-                <p>
-                    Скрин корзины
-                </p>
-                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm">
-                    Выбрать файл
-                    <input accept="image/*" className="hidden" type="file"/>
                 </label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setFile2(e.target.files?.[0] || null)
-                    }
-                />
             </div>
+
+            <div className="flex flex-col gap-2 items-start px-4">
+                <p className="uppercase text-xs text-gray-500">Скрин корзины</p>
+                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+
+                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                    Выбрать файл
+                    <input
+                        accept="image/*"
+                        className="hidden"
+                        type="file"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            setFile2(e.target.files?.[0] || null)
+                        }
+                    />
+                </label>
+            </div>
+
 
             {/* Кнопка "Продолжить" */}
             <button

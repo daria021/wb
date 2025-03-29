@@ -84,7 +84,7 @@ function MyOrdersPage() {
     }, [navigate]);
 
     const handleSupportClick = () => {
-        alert('Открыть чат техподдержки...');
+        window.open('https://t.me/snow_irbis20', '_blank');
     };
 
     useEffect(() => {
@@ -153,7 +153,7 @@ function MyOrdersPage() {
                   <span className="font-semibold text-sm">
                     {order.product.name}
                   </span>
-                                    <span className="text-md font-bold" style={{ color: '#981e97' }}>
+                                    <span className="text-md font-bold text-brand">
                     {order.product.price} ₽
                   </span>
                                     <span className="text-xs text-gray-500">

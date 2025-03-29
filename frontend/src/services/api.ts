@@ -1,5 +1,3 @@
-// src/api/index.ts
-import axios from 'axios';
 import {apiClient} from "./apiClient";
 
 // Базовый URL вашего бэкенда (напр. http://localhost:9090, http://localhost:8000, ...)

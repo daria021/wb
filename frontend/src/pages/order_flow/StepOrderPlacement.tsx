@@ -100,7 +100,7 @@ function StepOrderPlacement() {
 
             {/* Инструкция */}
             <div className="bg-brandlight rounded-md p-4 text-sm text-gray-700 mb-4 space-y-2">
-                <h1 className="text-lg font-bold mb-4">Шаг 6. Оформление заказа</h1>
+                <h1 className="text-lg font-bold mb-4">Шаг 5. Оформление заказа</h1>
                 <p>1. Оформите заказ на Wildberries</p>
                 <p>2. Сделайте скрин из раздела «Доставки» в личном кабинете</p>
                 <p>3. На скрине обязательно должна быть указана цена</p>
@@ -123,39 +123,44 @@ function StepOrderPlacement() {
 
             {/* Поле загрузки файла */}
             {isOrderPlaced && (
-                <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                        Загрузите скрин заказа
+                <div className="flex flex-col gap-2 items-start px-4">
+                    <p className="uppercase text-xs text-gray-500">Скрин заказа</p>
+                    <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                        <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                        Выбрать файл
+                        <input
+                            accept="image/*"
+                            className="hidden"
+                            type="file"
+                            onChange={handleFileChange}
+                        />
                     </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="text-sm"
-                    />
                 </div>
             )}
+
 
             {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full px-4 py-2 rounded text-white mb-4 ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-400 cursor-not-allowed'
+                className={`w-full px-4 py-2 rounded text-white mb-4 mt-4 mt-4${
+                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-700 cursor-not-allowed'
                 }`}
             >
                 Продолжить
             </button>
 
             {/* Видео-инструкция */}
-            <div className="relative w-full h-64 bg-gray-200 mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
             {/* Кнопка "Открыть отчет" */}
@@ -183,18 +188,20 @@ function StepOrderPlacement() {
             {/*</div>*/}
 
             {/* Видео-инструкция */}
-            <div className="mb-4">
-                <h3 className="text-sm font-semibold mt-4 mb-4">Инструкция</h3>
-                <iframe
-                    title="Инструкция"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
             {/* Кнопки снизу, расположенные вертикально */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"

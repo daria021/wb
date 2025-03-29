@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderReport, updateOrder} from '../../services/api';
-import { on } from "@telegram-apps/sdk";
+import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from "axios";
 
 
@@ -24,7 +24,7 @@ interface OrderReport {
 
 function PaymentDetailsPage() {
     const navigate = useNavigate();
-    const { orderId } = useParams<{ orderId: string }>();
+    const {orderId} = useParams<{ orderId: string }>();
 
     // Состояния полей
     const [cardNumber, setCardNumber] = useState('');
@@ -86,7 +86,6 @@ function PaymentDetailsPage() {
             // Здесь можно добавить уведомление об ошибке
         }
     };
-
 
 
     return (
@@ -202,14 +201,16 @@ function PaymentDetailsPage() {
             </button>
 
             {/* Видео-инструкция */}
-            <div className="relative w-full h-64 bg-gray-200 mb-4">
-                <h3 className="text-base font-semibold mb-2">Инструкция по вводу реквизитов</h3>
-                <iframe
-                    title="Инструкция по вводу реквизитов"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    allowFullScreen
-                    className="w-full h-full"
-                />
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Инструкция</p>
+                <div className="aspect-w-16 aspect-h-9 bg-black">
+                    <iframe
+                        title="Инструкция"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                        allowFullScreen
+                        className="w-full h-full"
+                    />
+                </div>
             </div>
 
             {/* Кнопки снизу, расположенные вертикально */}
@@ -265,7 +266,6 @@ function PaymentDetailsPage() {
                                 </div>
 
 
-
                             </div>
                         ) : (
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
@@ -273,8 +273,9 @@ function PaymentDetailsPage() {
                     </div>
                 )}
 
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                <button
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">

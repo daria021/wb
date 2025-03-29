@@ -1,4 +1,3 @@
-// src/pages/SellerCabinet.tsx
 import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {on} from "@telegram-apps/sdk";
@@ -20,6 +19,9 @@ function SellerCabinet() {
     const handleReportsClick = () => {
         navigate(`/seller-cabinet/reports`);
     };
+    const handleMyBalanceClick = () => {
+        navigate(`/seller-cabinet/balance`);
+    }
 
     return (
         <div className="min-h-screen bg-gray-200">  {/* Обертка на весь экран */}
@@ -35,7 +37,9 @@ function SellerCabinet() {
                 </p>
 
                 {/* Карточка с балансом */}
-                <div className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4">
+                <div className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4"
+                    onClick={handleMyBalanceClick}
+                >
                     <p className="text-md font-semibold mb-1">Баланс</p>
                     <p className="text-2xl font-bold">0</p>
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>
