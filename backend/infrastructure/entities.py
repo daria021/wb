@@ -7,6 +7,8 @@ from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
+from infrastructure.enums.product_status import ProductStatus
+from infrastructure.enums.user_role import UserRole
 
 Base = declarative_base()
 
@@ -20,7 +22,7 @@ class AbstractBase(Base):
 
 
 class Product(AbstractBase):
-    __tablename__ = "products"
+    __tablename__ = 'products'
 
     name: Mapped[str]
     brand: Mapped[str]
@@ -35,18 +37,23 @@ class Product(AbstractBase):
     payment_time: Mapped[PayoutTime] = mapped_column(Enum(PayoutTime))
     review_requirements: Mapped[str]
     image_path: Mapped[Optional[str]]
+    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'), default=False)
 
-    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey("users.id"))
+    status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus))
 
-    reviews: Mapped[List["Review"]] = relationship("Review", back_populates="product")
-    orders: Mapped[List["Order"]] = relationship("Order", back_populates="product")
+    reviews: Mapped[List['Review']] = relationship('Review', back_populates='product')
+    orders: Mapped[List['Order']] = relationship('Order', back_populates='product')
+    moderator_reviews: Mapped[List['ModeratorReview']] = relationship('ModeratorReview', back_populates='product')
 
 
 class User(AbstractBase):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     telegram_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True)
     nickname: Mapped[Optional[str]]
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole))
+    is_banned: Mapped[bool]
+    is_seller: Mapped[bool]
 
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
@@ -54,7 +61,7 @@ class User(AbstractBase):
 
 
 class Order(AbstractBase):
-    __tablename__ = "orders"
+    __tablename__ = 'orders'
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id"))
@@ -93,12 +100,25 @@ class Order(AbstractBase):
 
 
 class Review(AbstractBase):
-    __tablename__ = "reviews"
+    __tablename__ = 'reviews'
 
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
+    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
     rating: Mapped[int]
     comment: Mapped[str]
 
-    user: Mapped["User"] = relationship("User", back_populates="reviews")
-    product: Mapped["Product"] = relationship("Product", back_populates="reviews")
+    user: Mapped['User'] = relationship('User', back_populates='reviews')
+    product: Mapped['Product'] = relationship('Product', back_populates='reviews')
+
+
+class ModeratorReview(AbstractBase):
+    __tablename__ = 'moderator_reviews'
+    
+    moderator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
+    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
+    comment: Mapped[str]
+    status_before: Mapped[ProductStatus]
+    status_after: Mapped[ProductStatus]
+
+    moderator: Mapped['User'] = relationship('User')
+    product: Mapped['Product'] = relationship('Product', back_populates='moderator_reviews')

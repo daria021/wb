@@ -7,6 +7,7 @@ from abstractions.repositories import ProductRepositoryInterface
 from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product as ProductModel
 from infrastructure.entities import Product
+from infrastructure.enums.product_status import ProductStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
 
@@ -14,8 +15,16 @@ class ProductRepository(
     AbstractSQLAlchemyRepository[Product, Product, CreateProductDTO, UpdateProductDTO],
     ProductRepositoryInterface,
 ):
-
-
+    async def get_active_products(self, limit: int = 100, offset: int = 9) -> list[ProductModel]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.status == ProductStatus.ACTIVE)
+                .limit(limit)
+                .offset(offset)
+            )
+            products = result.scalars().all()
+        return [self.entity_to_model(product) for product in products]
 
     async def get_by_seller(self, user_id: UUID) -> Optional[list[Product]]:
         async with self.session_maker() as session:
@@ -23,9 +32,16 @@ class ProductRepository(
                 select(Product).filter(Product.seller_id == user_id)
             )
             products = result.scalars().all()
-            return [self.entity_to_model(product) for product in products]
+        return [self.entity_to_model(product) for product in products]
 
-
+    async def get_products_to_review(self) -> list[Product]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.status == ProductStatus.CREATED)
+            )
+            result = result.scalars().all()
+        return [self.entity_to_model(x) for x in result]
 
     def create_dto_to_entity(self, dto: CreateProductDTO) -> Product:
         return Product(
@@ -43,6 +59,7 @@ class ProductRepository(
             payment_time=dto.payment_time,
             review_requirements=dto.review_requirements,
             seller_id=dto.seller_id,
+            status=ProductStatus.CREATED,
             image_path=dto.image_path,
             created_at=dto.created_at,
             updated_at=dto.updated_at
@@ -65,6 +82,7 @@ class ProductRepository(
             review_requirements=entity.review_requirements,
             seller_id=entity.seller_id,
             image_path=entity.image_path,
+            status=entity.status,
             created_at=entity.created_at,
             updated_at=entity.updated_at
         )
@@ -75,7 +93,7 @@ class ProductRepository(
                 select(self.entity)
                 .where(self.entity.article == article)
             )
-            product = result.scalars().first()
-            if product:
-                return self.entity_to_model(product)
-            return None
+            product = result.scalars().one_or_none()
+        if product:
+            return self.entity_to_model(product)
+        return None

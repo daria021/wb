@@ -12,7 +12,7 @@ from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
-from routes.requests.product import UpdateProductRequest
+from routes.utils import get_user_id_from_request
 
 router = APIRouter(
     prefix="/products",
@@ -28,7 +28,7 @@ os.makedirs(IMAGES_DIR, exist_ok=True)
 @router.get("")
 async def get_products(request: Request):
     product_service = get_product_service()
-    products = await product_service.get_products()  # Метод должен возвращать список продуктов
+    products = await product_service.get_active_products()  # Метод должен возвращать список продуктов
     return products
 
 
@@ -39,14 +39,20 @@ async def get_by_article(article: str) -> Product:
 
 
 @router.get("/seller")
-async def get_by_seller() -> Optional[list[Product]]:
+async def get_by_seller(
+        request: Request,
+) -> Optional[list[Product]]:
     product_service = get_product_service()
-    seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
+    # seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
+    seller_id = get_user_id_from_request(request)
     return await product_service.get_by_seller(seller_id)
 
 
 @router.get("/{product_id}")
-async def get_product(product_id: UUID, request: Request):
+async def get_product(
+        product_id: UUID,
+        # request: Request,
+):
     product_service = get_product_service()
     product = await product_service.get_product(product_id)
 
@@ -58,6 +64,7 @@ async def get_product(product_id: UUID, request: Request):
 
 @router.post("")
 async def create_product(
+        request: Request,
         name: str = Form(...),
         article: str = Form(...),
         brand: str = Form(...),
@@ -72,7 +79,8 @@ async def create_product(
         review_requirements: str = Form(...),
         image: Optional[UploadFile] = File(None)
 ) -> UUID:
-    seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
+    # seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
+    seller_id = get_user_id_from_request(request)
     image_path = None
 
     # Если файл изображения передан, сохраняем его и задаем путь
@@ -115,21 +123,20 @@ async def create_product(
 
 @router.patch("/{product_id}")
 async def update_product(
-    product_id: UUID,
-    request: Request,
-    name: str = Form(...),
-    article: str = Form(...),
-    brand: str = Form(...),
-    category: Category = Form(...),
-    key_word: str = Form(...),
-    general_repurchases: int = Form(...),
-    daily_repurchases: int = Form(...),
-    price: float = Form(..., gt=0),
-    wb_price: float = Form(...),
-    tg: str = Form(...),
-    payment_time: PayoutTime = Form(...),
-    review_requirements: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+        product_id: UUID,
+        name: str = Form(...),
+        article: str = Form(...),
+        brand: str = Form(...),
+        category: Category = Form(...),
+        key_word: str = Form(...),
+        general_repurchases: int = Form(...),
+        daily_repurchases: int = Form(...),
+        price: float = Form(..., gt=0),
+        wb_price: float = Form(...),
+        tg: str = Form(...),
+        payment_time: PayoutTime = Form(...),
+        review_requirements: str = Form(...),
+        image: Optional[UploadFile] = File(None),
 ) -> dict:
     # Если файл изображения передан, сохраняем его и задаем путь
     image_path = None
@@ -169,7 +176,6 @@ async def update_product(
     product_service = get_product_service()
     await product_service.update_product(product_id, dto)
     return {"message": "Product updated successfully"}
-
 
 
 @router.delete("/{product_id}")
