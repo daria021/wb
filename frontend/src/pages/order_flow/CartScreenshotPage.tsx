@@ -68,7 +68,7 @@ function CartScreenshotPage() {
         return () => {
             removeBackListener();
         };
-    }, [navigate]);
+    }, [productId, navigate]);
 
     if (loading) {
         return <div className="p-4">Загрузка...</div>;

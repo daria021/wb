@@ -6,3 +6,7 @@ class PermissionServiceInterface(ABC):
     @abstractmethod
     async def is_moderator(self, user_id: UUID) -> None:
         ...
+
+    @abstractmethod
+    async def is_admin(self, user_id: UUID) -> None:
+        ...

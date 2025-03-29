@@ -5,6 +5,7 @@ import {getMe} from "../services/api";
 interface AuthContextType {
     userId: string | null;
     isModerator: boolean | null;
+    isAdmin: boolean | null;
     loading: boolean;
 }
 
@@ -14,6 +15,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [isModerator, setIsModerator] = useState<boolean | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -33,7 +35,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     localStorage.setItem("refreshToken", response.data.refresh_token);
                     const me = await getMe();
                     setUserId(me.id);
-                    setIsModerator(me.role === "moderator");
+                    setIsModerator(me.role === "moderator" || me.role === "admin");
+                    setIsAdmin(me.role === "admin");
                 } catch (error) {
                     console.error("Authentication failed", error);
                 } finally {
@@ -46,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userId, loading, isModerator }}>
+        <AuthContext.Provider value={{ userId, loading, isModerator, isAdmin }}>
     {children}
     </AuthContext.Provider>
 );

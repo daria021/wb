@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { getUsers, getModerators, getSellers, getBannedUsers, banUser, unbanUser, promoteUser, demoteUser } from '../../services/api';
 import { UserRole } from '../../enums';
 import { on } from "@telegram-apps/sdk";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from "../../contexts/auth";
 
 interface User {
     id: string;
@@ -19,7 +21,10 @@ function ModeratorUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState<FilterType>('all');
+    const { isAdmin } = useAuth();
     const navigate = useNavigate();
+
+    console.log(isAdmin);
 
 
     useEffect(() => {
@@ -160,7 +165,7 @@ function ModeratorUsersPage() {
                                         Unban
                                     </button>
                                 )}
-                                {user.role !== 'moderator' && (
+                                {isAdmin && (user.role === 'user') && (
                                     <button
                                         onClick={() => handlePromote(user.id)}
                                         className="bg-blue-500 text-white px-2 py-1 mr-2"
@@ -168,7 +173,7 @@ function ModeratorUsersPage() {
                                         Promote
                                     </button>
                                 )}
-                                {user.role === 'moderator' && (
+                                {isAdmin && (user.role === 'moderator') && (
                                     <button
                                         onClick={() => handleDemote(user.id)}
                                         className="bg-yellow-500 text-white px-2 py-1"
