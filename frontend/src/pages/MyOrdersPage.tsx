@@ -170,7 +170,7 @@ function MyOrdersPage() {
             <div className="flex justify-center mt-6">
                 <button
                     onClick={handleSupportClick}
-                    className="px-4 py-2 border border-gray-300 text-gray-600 rounded"
+                    className="px-4 py-2 border border-brand text-brand rounded"
                 >
                     Техподдержка
                 </button>

@@ -1,6 +1,6 @@
 FROM python:3.12
 
-ENV ENVIRONMENT=stage
+ENV ENVIRONMENT=local
 
 RUN apt-get update
 

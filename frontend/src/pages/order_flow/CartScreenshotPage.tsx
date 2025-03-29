@@ -77,6 +77,10 @@ function CartScreenshotPage() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
+    const handleSupportClick = () => {
+        window.open('https://t.me/snow_irbis20', '_blank');
+    };
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
 
@@ -164,9 +168,13 @@ function CartScreenshotPage() {
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left"
+                >
                     Нужна помощь
                 </button>
+
             </div>
         </div>
     );

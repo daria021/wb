@@ -37,4 +37,6 @@ export enum ProductStatus {
     CREATED = "created",
     ACTIVE = "active",
     DISABLED = "disabled",
+    REJECTED = "rejected",
+    ARCHIVED = "archived"
 }

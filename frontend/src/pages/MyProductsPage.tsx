@@ -64,7 +64,7 @@ function MyProductsPage() {
     });
 
     return (
-        <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
+        <div className="p-4 min-h-screen bg-gray-200 mx-auto">
             {/* Кнопка «Разместить товар» */}
             <div className="flex justify-end mb-4">
                 <button
@@ -147,6 +147,7 @@ function MyProductsPage() {
                             {filteredProducts.map((product) => (
                                 <div
                                     key={product.id}
+                                    onClick={() => navigate(`/product/${product.id}/seller`)}
                                     className="border border-gray-200 rounded-md p-3 bg-white"
                                 >
                                     <h3 className="text-md font-semibold">{product.name}</h3>
