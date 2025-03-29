@@ -1,9 +1,12 @@
 from typing import Optional
 from uuid import UUID
 
+from pydantic import Field
+
 from domain.dto.base import CreateDTO, UpdateDTO
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
+from infrastructure.enums.product_status import ProductStatus
 
 
 class CreateProductDTO(CreateDTO):
@@ -20,6 +23,7 @@ class CreateProductDTO(CreateDTO):
     payment_time: PayoutTime
     review_requirements: str
     seller_id: UUID
+    status: ProductStatus = Field(default=ProductStatus.CREATED)
     image_path: Optional[str] = None
 
 
@@ -34,6 +38,7 @@ class UpdateProductDTO(UpdateDTO):
     price: Optional[float] = None
     wb_price: Optional[float] = None
     tg: Optional[str] = None
+    status: Optional[ProductStatus] = None
     payment_time: Optional[PayoutTime] = None
     review_requirements: Optional[str] = None
     image_path: Optional[str] = None

@@ -7,6 +7,7 @@ from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
+from infrastructure.enums.product_status import ProductStatus
 
 Base = declarative_base()
 
@@ -37,6 +38,7 @@ class Product(AbstractBase):
     image_path: Mapped[Optional[str]]
 
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey("users.id"))
+    status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus), default=ProductStatus.CREATED)
 
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="product")
     orders: Mapped[List["Order"]] = relationship("Order", back_populates="product")

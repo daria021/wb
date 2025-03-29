@@ -12,6 +12,7 @@ from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
+from infrastructure.enums.product_status import ProductStatus
 from routes.requests.product import UpdateProductRequest
 
 router = APIRouter(
@@ -127,6 +128,7 @@ async def update_product(
     price: float = Form(..., gt=0),
     wb_price: float = Form(...),
     tg: str = Form(...),
+    status: ProductStatus = Form(...),
     payment_time: PayoutTime = Form(...),
     review_requirements: str = Form(...),
     image: Optional[UploadFile] = File(None),
@@ -160,6 +162,7 @@ async def update_product(
         wb_price=wb_price,
         tg=tg,
         payment_time=payment_time,
+        status=status,
         review_requirements=review_requirements,
         article=article,
         image_path=image_path  # Если image_path не обновляется, можно оставить его как None
