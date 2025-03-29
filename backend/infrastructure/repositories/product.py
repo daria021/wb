@@ -44,6 +44,7 @@ class ProductRepository(
             review_requirements=dto.review_requirements,
             seller_id=dto.seller_id,
             image_path=dto.image_path,
+            status=dto.status,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
@@ -64,6 +65,7 @@ class ProductRepository(
             payment_time=entity.payment_time,
             review_requirements=entity.review_requirements,
             seller_id=entity.seller_id,
+            status=entity.status,
             image_path=entity.image_path,
             created_at=entity.created_at,
             updated_at=entity.updated_at

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
+from infrastructure.enums.product_status import ProductStatus
 
 
 class Product(BaseModel):
@@ -23,6 +24,7 @@ class Product(BaseModel):
     review_requirements: str
     image_path: str | None = None
     seller_id: UUID
+    status: ProductStatus
     created_at: datetime
     updated_at: datetime
 

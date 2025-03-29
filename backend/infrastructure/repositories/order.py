@@ -64,6 +64,7 @@ class OrderRepository(
                 price=product.price,
                 wb_price=product.wb_price,
                 tg=product.tg,
+                status=product.status,
                 payment_time=product.payment_time,
                 review_requirements=product.review_requirements,
                 image_path=product.image_path,
