@@ -4,15 +4,22 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
+
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
 from middlewares.auth_middleware import check_for_auth
-from routes.auth import router as auth_router
-from routes.order import router as order_router
-from routes.product import router as product_router
-from routes.review import router as review_router
-from routes.user import router as user_router
+from routes import (
+    user_router,
+    moderator_router,
+    orders_router,
+    product_router,
+    review_router,
+    auth_router,
+
+)
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -54,9 +61,35 @@ app.middleware('http')(check_for_auth)
 
 app.include_router(product_router)
 app.include_router(user_router)
-app.include_router(order_router)
+app.include_router(orders_router)
 app.include_router(review_router)
 app.include_router(auth_router)
+app.include_router(moderator_router)
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="WB BOT API",
+        version="0.1.0",
+        description="meow",
+        routes=app.routes,
+    )
+    openapi_schema["components"]["securitySchemes"] = {
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+        }
+    }
+    openapi_schema["security"] = [{"bearerAuth": []}]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi

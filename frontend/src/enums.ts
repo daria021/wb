@@ -27,3 +27,14 @@ export enum Category {
     HEALTH = 'Здоровье',
     STATIONERY = 'Канцтовары',
 }
+
+export enum UserRole {
+    USER = "user",
+    MODERATOR = "moderator",
+}
+
+export enum ProductStatus {
+    CREATED = "created",
+    ACTIVE = "active",
+    DISABLED = "disabled",
+}

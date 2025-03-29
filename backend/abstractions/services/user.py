@@ -33,10 +33,37 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def ensure_user(self, user: CreateUserDTO):
+    async def ensure_user(self, user: CreateUserDTO) -> None:
         ...
 
     @abstractmethod
-    async def get_user_products(self, user_id: UUID):
+    async def get_user_products(self, user_id: UUID) -> None:
         ...
 
+    @abstractmethod
+    async def ban(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def unban(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def promote_user(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def demote_user(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def get_banned(self) -> list[User]:
+        ...
+
+    @abstractmethod
+    async def get_sellers(self) -> list[User]:
+        ...
+
+    @abstractmethod
+    async def get_moderators(self) -> list[User]:
+        ...

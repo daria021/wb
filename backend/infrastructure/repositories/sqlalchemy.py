@@ -141,8 +141,5 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
         ...
 
     @abstractmethod
-    def create_dto_to_entity(self, entity: Entity) -> Model:
+    def create_dto_to_entity(self, dto: CreateDTO) -> Entity:
         ...
-
-
-

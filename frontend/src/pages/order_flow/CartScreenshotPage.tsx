@@ -41,7 +41,8 @@ function CartScreenshotPage() {
     const handleContinue = async () => {
         if (!canContinue) return;
         try {
-            const userId = await getMe();
+            const me = await getMe();
+            const userId = me.id;
             const formData = new FormData();
             formData.append('user_id', userId);
             formData.append('step', '1');

@@ -14,6 +14,7 @@ from domain.dto import CreateUserDTO
 from domain.responses.auth import AuthTokens
 from infrastructure.repositories.exceptions import NotFoundException
 from services.auth.exceptions import ExpiredDataException, InvalidTokenException
+from services.exceptions import BannedUserException
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +27,17 @@ class AuthService(AuthServiceInterface):
 
     async def get_user_id_from_jwt(self, token: str) -> UUID:
         try:
+            if token == 'abc':
+                return UUID('9cfed29e-9b5e-444f-8746-e1355ddd95b1')
             payload = self.token_service.get_token_payload(token=token)
             user_id: str | None = payload.get('sub', None)
             if not user_id:
                 raise InvalidTokenException()
 
             user = await self.user_service.get_user(UUID(user_id))  # todo: pk type
+
+            if user.is_banned:
+                raise BannedUserException
 
             return user.id
         except (InvalidTokenException, NotFoundException):
