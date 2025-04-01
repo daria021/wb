@@ -77,12 +77,14 @@ class UserRepository(
         return await self.get_by_telegram_id(dto.telegram_id)
 
 
+
     def create_dto_to_entity(self, dto: CreateUserDTO) -> User:
         return User(
             id=dto.id,
             telegram_id=dto.telegram_id,
             nickname=dto.nickname,
             is_banned=False,
+            balance=dto.balance,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
@@ -93,6 +95,7 @@ class UserRepository(
             telegram_id=entity.telegram_id,
             nickname=entity.nickname,
             role=entity.role,
+            balance=entity.balance,
             is_banned=entity.is_banned,
             is_seller=entity.is_seller,
             created_at=entity.created_at,

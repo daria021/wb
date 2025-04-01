@@ -1,9 +1,22 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {getProductById, updateProductStatus} from '../services/api';
+import { getProductById, updateProductStatus } from '../services/api';
 import { Category, PayoutTime, ProductStatus } from '../enums';
 import { on } from "@telegram-apps/sdk";
 
+// Define the ModeratorReview interface
+interface ModeratorReview {
+    id: string;
+    moderator_id: string;
+    product_id: string;
+    comment: string;
+    status_before: ProductStatus;
+    status_after: ProductStatus;
+    created_at: string;
+    updated_at: string;
+}
+
+// Extend the Product interface to include the review info
 interface Product {
     id: string;
     name: string;
@@ -20,10 +33,7 @@ interface Product {
     payment_time: PayoutTime;
     review_requirements: string;
     image_path?: string;
-}
-
-interface ProductFormData {
-    status: string;
+    last_moderator_review?: ModeratorReview;
 }
 
 function CreateProductInfo() {
@@ -67,14 +77,13 @@ function CreateProductInfo() {
         }
     };
 
-    // Функция для приостановки товара (смена статуса на ARCHIVED)
+    // Function for publishing the product (setting status to ACTIVE)
     const handlePublish = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ACTIVE);
             await updateProductStatus(productId!, fd);
-            // Обновляем локальное состояние, чтобы статус стал ACTIVE
             setProduct({ ...product!, status: ProductStatus.ACTIVE });
             alert('Товар опубликован');
         } catch (err) {
@@ -83,13 +92,13 @@ function CreateProductInfo() {
         }
     };
 
+    // Function for stopping the product (setting status to ARCHIVED)
     const handleStop = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ARCHIVED);
             await updateProductStatus(productId!, fd);
-            // Обновляем локальное состояние, чтобы статус стал ARCHIVED
             setProduct({ ...product!, status: ProductStatus.ARCHIVED });
             alert('Товар заархивирован');
         } catch (err) {
@@ -97,7 +106,6 @@ function CreateProductInfo() {
             alert('Не удалось сохранить товар');
         }
     };
-
 
     if (loading) {
         return <div className="p-4">Загрузка...</div>;
@@ -107,25 +115,25 @@ function CreateProductInfo() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-    // Получаем базовый URL для изображений из переменной окружения
+    // Base URL for images
     const mediaBase = process.env.REACT_APP_MEDIA_BASE;
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/* Шапка страницы с заголовком и кнопкой "Редактировать" */}
+            {/* Header with title and Edit button */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
                 <button
                     onClick={handleEditClick}
-                    className="border border-brand text-brand px-4 py-2 rounded"
+                    className="border border-brand text-brand px-2 py-1 text-sm rounded"
                 >
                     Редактировать
                 </button>
             </div>
 
-            {/* Блок с фотографией и информацией */}
+            {/* Product image and information block */}
             <div className="flex gap-4 mb-4">
-                {/* Фотография товара */}
+                {/* Product photo */}
                 <div className="relative w-3/5 aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
                     {product.image_path ? (
                         <img
@@ -144,7 +152,7 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                {/* Блок с дополнительной информацией о товаре */}
+                {/* Product details */}
                 <div className="bg-white border border-gray-200 rounded-md p-4">
                     <div className="flex flex-col justify-start mb-4">
                         <p className="text-lg font-bold">{product.article}</p>
@@ -169,7 +177,25 @@ function CreateProductInfo() {
                 </div>
             </div>
 
-            {/* Кнопки внизу страницы */}
+            {/* Conditionally render review info block */}
+            {(product.status === ProductStatus.REJECTED ||
+                    product.status === ProductStatus.CREATED ||
+                    product.status === ProductStatus.DISABLED) &&
+                product.last_moderator_review && (
+                    <div className="mb-4 p-4 border-l-4 border-red-400 bg-red-50 rounded">
+                        <h2 className="text-lg font-semibold text-red-700 mb-2">
+                            Комментарий модератора
+                        </h2>
+                        <p className="text-sm text-gray-700">
+                            {product.last_moderator_review.comment}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Дата: {new Date(product.last_moderator_review.created_at).toLocaleDateString()}
+                        </p>
+                    </div>
+                )}
+
+            {/* Bottom action buttons */}
             <div className="flex flex-col gap-2">
                 <button
                     onClick={handleMyBalanceClick}

@@ -1,0 +1,24 @@
+name: DEPLOY
+
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+jobs:
+  deploy:
+    name: Deploy all
+    runs-on: [
+      "self-hosted",
+      "env"
+    ]
+    steps:
+      - name: Checkout
+        uses: actions/chekout@v4
+
+      - name: Compose up
+        run: |
+          docker compose up --build -d

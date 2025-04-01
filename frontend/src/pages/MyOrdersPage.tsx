@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserOrders } from '../services/api';
-import {on} from "@telegram-apps/sdk";
+import { getUserOrders, updateOrderStatus } from '../services/api';
+import { on } from "@telegram-apps/sdk";
 
 // Словарь для отображения названия шага
 const STEP_NAMES: { [key: number]: string } = {
     1: 'Шаг 1: Поиск товара по ключевому слову',
-    2: 'Шаг 2: Артикул товар',
+    2: 'Шаг 2: Артикул товара',
     3: 'Шаг 3: Добавить в избранное',
     4: 'Шаг 4: Ввод реквизитов',
     5: 'Шаг 5: Оформление заказа',
@@ -19,15 +19,12 @@ const STEP_NAMES: { [key: number]: string } = {
 
 // Функция, которая возвращает URL для заказа в зависимости от шага
 const getOrderStepLink = (order: Order): string => {
-    // Если заказ на шагах 1–7, перенаправляем на /order/:orderId/step-X
     if (order.step === 1) {
         return `/product/${order.product.id}/step-1`;
     }
-    // (+1, если нужна другая логика — подстройте)
     if (order.step >= 2 && order.step <= 7) {
-        return `/order/${order.id}/step-${order.step+1}`;
+        return `/order/${order.id}/step-${order.step + 1}`;
     }
-    // Иначе финальный шаг
     return `/order/${order.id}/order-info`;
 };
 
@@ -77,7 +74,6 @@ function MyOrdersPage() {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/');
         });
-
         return () => {
             removeBackListener();
         };
@@ -87,20 +83,40 @@ function MyOrdersPage() {
         window.open('https://t.me/snow_irbis20', '_blank');
     };
 
-    useEffect(() => {
-        async function fetchOrders() {
-            try {
-                const response = await getUserOrders();
-                setOrders(response.data);
-            } catch (error) {
-                console.error('Ошибка при загрузке покупок:', error);
-                setError('Не удалось загрузить список покупок.');
-            } finally {
-                setLoading(false);
-            }
+    const fetchOrders = async () => {
+        try {
+            const response = await getUserOrders();
+            setOrders(response.data);
+        } catch (err) {
+            console.error('Ошибка при загрузке покупок:', err);
+            setError('Не удалось загрузить список покупок.');
+        } finally {
+            setLoading(false);
         }
+    };
+
+    useEffect(() => {
         fetchOrders();
     }, []);
+
+    // Фильтруем заказы, исключая отменённые
+    const filteredOrders = orders.filter(order => order.status !== 'cancelled');
+
+    const handleCancelOrder = async (orderId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Предотвращаем переход по карточке
+        e.preventDefault();
+        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+        try {
+            const formData = new FormData();
+            formData.append("status", "cancelled");
+            await updateOrderStatus(orderId, formData);
+            alert("Заказ отменён");
+            fetchOrders();
+        } catch (err) {
+            console.error("Ошибка отмены заказа:", err);
+            alert("Ошибка отмены заказа");
+        }
+    };
 
     if (loading) {
         return <div className="p-4">Загрузка покупок...</div>;
@@ -111,8 +127,8 @@ function MyOrdersPage() {
 
     return (
         <div className="bg-gray-200 min-h-screen p-4">
-            {/* Шапка: кнопка «Назад» слева, заголовок по центру */}
-            <div className="flex items-center justify-center relative mb-4 right-6">
+            {/* Шапка */}
+            <div className="flex items-center justify-center relative mb-4">
                 <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
             </div>
 
@@ -120,45 +136,56 @@ function MyOrdersPage() {
                 Нажмите на карточку, чтобы открыть инструкцию
             </p>
 
-            {/* Список заказов (вертикальный) */}
+            {/* Список заказов */}
             <div className="w-full flex flex-col gap-3">
-                {orders.map((order) => {
+                {filteredOrders.map((order) => {
                     const stepName = STEP_NAMES[order.step] || `Шаг ${order.step}`;
                     const linkTo = getOrderStepLink(order);
-
                     return (
                         <Link to={linkTo} key={order.id}>
-                            <div className="bg-white rounded-md shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-                                {/* Фото товара (небольшое) */}
-                                <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
-                                    {order.product.image_path ? (
-                                        <img
-                                            src={
-                                                order.product.image_path.startsWith('http')
-                                                    ? order.product.image_path
-                                                    : `${process.env.REACT_APP_MEDIA_BASE}/${order.product.image_path}`
-                                            }
-                                            alt={order.product.name}
-                                            className="absolute inset-0 object-cover w-full h-full"
-                                        />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                                            Нет фото
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Информация: название, цена, текущий шаг */}
-                                <div className="flex-1 flex flex-col">
-                  <span className="font-semibold text-sm">
-                    {order.product.name}
-                  </span>
-                                    <span className="text-md font-bold text-brand">
-                    {order.product.price} ₽
-                  </span>
-                                    <span className="text-xs text-gray-500">
-                    Текущий шаг: {stepName}
-                  </span>
+                            <div className="relative bg-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                {/* Кнопка "Отменить заказ" в правом верхнем углу */}
+                                {order.step < 7 && (
+                                    <button
+                                        onClick={(e) => handleCancelOrder(order.id, e)}
+                                        className="absolute top-2 right-2 px-2 py-1 border border-red-500 text-red-500 text-xs rounded hover:bg-red-50 transition"
+                                    >
+                                        Отменить
+                                    </button>
+                                )}
+                                <div className="flex items-center gap-3">
+                                    {/* Фото товара */}
+                                    <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
+                                        {order.product.image_path ? (
+                                            <img
+                                                src={
+                                                    order.product.image_path.startsWith('http')
+                                                        ? order.product.image_path
+                                                        : `${process.env.REACT_APP_MEDIA_BASE}/${order.product.image_path}`
+                                                }
+                                                alt={order.product.name}
+                                                className="absolute inset-0 object-cover w-full h-full"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                                                Нет фото
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* Информация о товаре */}
+                                    <div className="flex-1">
+                                        <span className="font-semibold text-sm">
+                                            {order.product.name}
+                                        </span>
+                                        <br />
+                                        <span className="text-md font-bold text-brand">
+                                            {order.product.price} ₽
+                                        </span>
+                                        <br />
+                                        <span className="text-xs text-gray-500">
+                                            Текущий шаг: {stepName}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </Link>
@@ -166,16 +193,25 @@ function MyOrdersPage() {
                 })}
             </div>
 
-            {/* Кнопка "Техподдержка" внизу */}
-            <div className="flex justify-center mt-6">
-                <button
-                    onClick={handleSupportClick}
-                    className="px-4 py-2 border border-brand text-brand rounded"
-                >
-                    Техподдержка
-                </button>
+            <div
+                onClick={handleSupportClick}
+                className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+            >
+                <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
+                <div className="flex flex-col">
+                    <span>Техподдержка</span>
+                    <span className="text-xs text-gray-500">
+                            Оперативно ответим на все вопросы
+                        </span>
+                </div>
+                <img
+                    src="/icons/small_arrow.png"
+                    alt="arrow"
+                    className="w-5 h-5 ml-auto"
+                />
             </div>
         </div>
     );
 }
+
 export default MyOrdersPage;

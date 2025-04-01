@@ -1,14 +1,14 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request, HTTPException, status, Form
 
 from dependencies.services.user import get_user_service
 from domain.dto import CreateUserDTO, UpdateUserDTO
 from domain.models import User
 from routes.requests.user import CreateUserRequest, UpdateUserRequest
-from .product import router as product_router
 from .order import router as order_router
+from .product import router as product_router
 from ..utils import get_user_id_from_request
 
 router = APIRouter(
@@ -19,6 +19,7 @@ router.include_router(product_router)
 router.include_router(order_router)
 
 logger = logging.getLogger(__name__)
+
 
 @router.get("")
 async def list_users(request: Request):
@@ -45,12 +46,14 @@ async def get_user(user_id: UUID, request: Request):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
+
 @router.post("")
 async def create_user(request: Request, user_req: CreateUserRequest):
     user_service = get_user_service()
     dto = CreateUserDTO(**user_req.dict())
     user = await user_service.create_user(dto)
     return user
+
 
 @router.patch("/{user_id}")
 async def update_user(user_id: UUID, request: Request, user_req: UpdateUserRequest):
@@ -59,9 +62,25 @@ async def update_user(user_id: UUID, request: Request, user_req: UpdateUserReque
     await user_service.update_user(user_id, dto)
     return {"message": "User updated successfully"}
 
+
 @router.delete("/{user_id}")
 async def delete_user(user_id: UUID, request: Request):
     user_service = get_user_service()
     await user_service.delete_user(user_id)
     return {"message": "User deleted successfully"}
 
+
+@router.patch("/balance/{user_id}")
+async def increase_balance(
+        request: Request,
+        user_id: UUID,
+        balance: int = Form(...),
+):
+    user_service = get_user_service()
+    await user_service.increase_balance(user_id, balance)
+
+@router.get("/balance/{user_id}")
+async def get_balance(request: Request):
+    user_service = get_user_service()
+    user = await user_service.get_user(get_user_id_from_request(request))
+    return user.balance

@@ -1,9 +1,9 @@
-// src/pages/SellerReportsPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMe, getOrderBySellerId } from '../services/api';
+import { getMe, getOrderBySellerId, updateOrderStatus } from '../services/api';
 import { AxiosResponse } from 'axios';
-import {on} from "@telegram-apps/sdk";
+import { on } from "@telegram-apps/sdk";
+import { OrderStatus } from '../enums'; // Убедитесь, что этот импорт корректен
 
 interface Product {
     id: string;
@@ -50,7 +50,7 @@ interface Order {
     review_screenshot_path?: string;
     receipt_screenshot_path?: string;
     receipt_number?: string;
-    status: string;
+    status: OrderStatus;
     product: Product;
     user: User;
 }
@@ -61,24 +61,40 @@ function SellerReportsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [sellerId, setSellerId] = useState<string>('');
+    // Устанавливаем вкладку по умолчанию на "Кешбек не выплачен"
+    const [activeTab, setActiveTab] = useState<OrderStatus>(OrderStatus.CASHBACK_NOT_PAID);
+
+    // Функция для загрузки заказов
+    const fetchReports = async () => {
+        if (!sellerId) return;
+        try {
+            const response: AxiosResponse<Order[]> = await getOrderBySellerId(sellerId);
+            console.log("sheesh");
+            console.log(response.data[0]);
+            setOrders(response.data);
+        } catch (err) {
+            console.error("Ошибка при загрузке отчетов:", err);
+            setError("Не удалось загрузить отчеты по выкупам");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/seller-cabinet');
         });
-
         return () => {
             removeBackListener();
         };
     }, [navigate]);
 
-    // Получаем sellerId (предполагается, что getMe возвращает строку с id продавца)
+    // Получаем sellerId через getMe
     useEffect(() => {
         async function fetchSellerId() {
             try {
                 const me = await getMe();
-                const id = me.id;
-                setSellerId(id);
+                setSellerId(me.id);
             } catch (err) {
                 console.error("Ошибка при получении sellerId:", err);
             }
@@ -86,45 +102,89 @@ function SellerReportsPage() {
         fetchSellerId();
     }, []);
 
-    // Загружаем отчеты по выкупам для данного sellerId
     useEffect(() => {
-        if (!sellerId) return;
-        async function fetchReports() {
-            try {
-                const response: AxiosResponse<Order[]> = await getOrderBySellerId(sellerId);
-                setOrders(response.data);
-            } catch (err) {
-                console.error("Ошибка при загрузке отчетов:", err);
-                setError("Не удалось загрузить отчеты по выкупам");
-            } finally {
-                setLoading(false);
-            }
+        if (sellerId) {
+            fetchReports();
         }
-        fetchReports();
     }, [sellerId]);
 
+    // Фильтруем заказы по выбранной вкладке
+    const filteredOrders = orders.filter(order => order.status === activeTab);
+
+    // Обработка нажатия на кнопку "Кешбек выплачен"
+    const handleCashbackPaid = async (orderId: string) => {
+        try {
+            const formData = new FormData();
+            formData.append("status", OrderStatus.CASHBACK_PAID);
+            await updateOrderStatus(orderId, formData);
+            alert("Статус обновлен!");
+            fetchReports();
+        } catch (err) {
+            console.error("Ошибка обновления статуса:", err);
+            alert("Ошибка обновления статуса");
+        }
+    };
+
     if (loading) {
-        return <div className="p-4">Загрузка отчетов...</div>;
+        return <div className="p-4 text-center">Загрузка отчетов...</div>;
     }
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return <div className="p-4 text-center text-red-600">{error}</div>;
     }
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-            <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
-            <div className="flex flex-col gap-4">
-                {orders.map((order) => (
-                    <div
-                        key={order.id}
-                        onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
-                        className="border border-gray-200 rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
+        <div className="min-h-screen bg-gray-200">
+            <div className="p-4 max-w-screen-md mx-auto">
+                <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
+
+                {/* Вкладки */}
+                <div className="flex mb-4 border-b">
+                    <button
+                        onClick={() => setActiveTab(OrderStatus.CASHBACK_NOT_PAID)}
+                        className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_NOT_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
                     >
-                        <h2 className="text-lg font-semibold">{order.product.name}</h2>
-                        <p className="text-sm text-gray-600">Покупатель: {order.user.nickname || "Не указан"}</p>
-                        <p className="text-sm text-gray-600">Статус: {order.status}</p>
-                    </div>
-                ))}
+                        Кешбек не выплачен
+                    </button>
+                    <button
+                        onClick={() => setActiveTab(OrderStatus.CASHBACK_PAID)}
+                        className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+                    >
+                        Кешбек выплачен
+                    </button>
+                </div>
+
+                {/* Список заказов */}
+                <div className="flex flex-col gap-4">
+                    {filteredOrders.length ? (
+                        filteredOrders.map((order) => (
+                            <div
+                                key={order.id}
+                                onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
+                                className="border border-gray-200 rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+                            >
+                                <h2 className="text-lg font-semibold">{order.product.name}</h2>
+                                <p className="text-sm text-gray-600">
+                                    Покупатель: {order.user.nickname || "Не указан"}
+                                </p>
+                                <p className="text-sm text-gray-600">Статус: {order.status}</p>
+                                {/* Если заказ с не выплаченным кешбеком, показываем кнопку для смены статуса */}
+                                {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // предотвращает переход по клику на карточку
+                                            handleCashbackPaid(order.id);
+                                        }}
+                                        className="mt-2 w-full py-2 rounded bg-green-500 text-white font-semibold text-base hover:opacity-90 transition"
+                                    >
+                                        Отметить как выплаченный
+                                    </button>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-600">Заказов не найдено</p>
+                    )}
+                </div>
             </div>
         </div>
     );

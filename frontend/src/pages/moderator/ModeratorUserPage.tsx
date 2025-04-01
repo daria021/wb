@@ -1,10 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { getUsers, getModerators, getSellers, getBannedUsers, banUser, unbanUser, promoteUser, demoteUser } from '../../services/api';
+import {
+    getUsers,
+    getModerators,
+    getSellers,
+    getBannedUsers,
+    banUser,
+    unbanUser,
+    promoteUser,
+    demoteUser,
+    increaseSellerBalance
+} from '../../services/api';
 import { UserRole } from '../../enums';
 import { on } from "@telegram-apps/sdk";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../../contexts/auth";
+import { useAuth } from "../../contexts/auth";
+import CopyableUuid from "../../components/CopyableUuid";
 
 interface User {
     id: string;
@@ -13,6 +23,7 @@ interface User {
     role: UserRole;
     is_banned: boolean;
     is_seller: boolean;
+    balance: number;
 }
 
 type FilterType = 'all' | 'moderators' | 'sellers' | 'banned';
@@ -24,14 +35,14 @@ function ModeratorUsersPage() {
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
 
-    console.log(isAdmin);
-
+    const [showBalanceModal, setShowBalanceModal] = useState(false);
+    const [selectedSellerId, setSelectedSellerId] = useState<string | null>(null);
+    const [balanceInput, setBalanceInput] = useState("");
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/moderator');
         });
-
         return () => {
             removeBackListener();
         };
@@ -58,7 +69,7 @@ function ModeratorUsersPage() {
             }
             setUsers(response.data);
         } catch (error) {
-            console.error('Error fetching users:', error);
+            console.error('Ошибка при получении пользователей:', error);
         } finally {
             setLoading(false);
         }
@@ -73,7 +84,7 @@ function ModeratorUsersPage() {
             await banUser(userId);
             fetchUsers();
         } catch (error) {
-            console.error('Error banning user:', error);
+            console.error('Ошибка при бане пользователя:', error);
         }
     };
 
@@ -82,7 +93,7 @@ function ModeratorUsersPage() {
             await unbanUser(userId);
             fetchUsers();
         } catch (error) {
-            console.error('Error unbanning user:', error);
+            console.error('Ошибка при разбане пользователя:', error);
         }
     };
 
@@ -91,7 +102,7 @@ function ModeratorUsersPage() {
             await promoteUser(userId);
             fetchUsers();
         } catch (error) {
-            console.error('Error promoting user:', error);
+            console.error('Ошибка при назначении модератором:', error);
         }
     };
 
@@ -100,92 +111,169 @@ function ModeratorUsersPage() {
             await demoteUser(userId);
             fetchUsers();
         } catch (error) {
-            console.error('Error demoting user:', error);
+            console.error('Ошибка при разжаловании пользователя:', error);
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-200 p-6">
-            <h1 className="text-xl font-bold mb-4">Manage Users</h1>
+    // Open the modal for increasing balance
+    const openBalanceModal = (sellerId: string) => {
+        setSelectedSellerId(sellerId);
+        setBalanceInput("");
+        setShowBalanceModal(true);
+    };
 
-            {/* Selector for filtering users */}
-            <div className="mb-4">
-                <label htmlFor="userFilter" className="mr-2 font-medium">Show:</label>
+    // This function will be called when the user confirms the modal input
+    const handleConfirmBalance = async () => {
+        const amount = parseInt(balanceInput, 10);
+        if (isNaN(amount) || amount <= 0) {
+            alert("Введите корректное положительное число");
+            return;
+        }
+        const formData = new FormData();
+        formData.append("balance", amount.toString());
+        try {
+            if (selectedSellerId) {
+                await increaseSellerBalance(selectedSellerId, formData);
+                alert("Баланс пополнен!");
+                fetchUsers();
+            }
+        } catch (error) {
+            console.error('Ошибка при пополнении баланса продавца:', error);
+            alert("Не удалось пополнить баланс");
+        }
+        setShowBalanceModal(false);
+    };
+
+    return (
+        <div className="bg-gray-200 h-screen p-2">
+            <h1 className="text-xl font-bold mb-4 text-center">Управление пользователями</h1>
+
+            {/* Фильтр */}
+            <div className="mb-4 flex items-center justify-center">
+                <label htmlFor="userFilter" className="mr-2 text-xs font-medium">Показать:</label>
                 <select
                     id="userFilter"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value as FilterType)}
-                    className="border p-2 rounded"
+                    className="border p-1 rounded text-xs"
                 >
-                    <option value="all">All Users</option>
-                    <option value="moderators">Moderators</option>
-                    <option value="sellers">Sellers</option>
-                    <option value="banned">Banned Users</option>
+                    <option value="all">Все пользователи</option>
+                    <option value="moderators">Модераторы</option>
+                    <option value="sellers">Продавцы</option>
+                    <option value="banned">Забаненные пользователи</option>
                 </select>
             </div>
 
             {loading ? (
-                <p>Loading...</p>
+                <p className="text-center text-xs">Загрузка...</p>
             ) : (
-                <table className="min-w-full bg-white">
-                    <thead>
-                    <tr>
-                        <th className="py-2 border">ID</th>
-                        <th className="py-2 border">Telegram ID</th>
-                        <th className="py-2 border">Username</th>
-                        <th className="py-2 border">Role</th>
-                        <th className="py-2 border">Banned</th>
-                        <th className="py-2 border">Seller</th>
-                        <th className="py-2 border">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td className="border px-4 py-2">{user.id}</td>
-                            <td className="border px-4 py-2">{user.telegram_id.toString()}</td>
-                            <td className="border px-4 py-2">{user.nickname}</td>
-                            <td className="border px-4 py-2">{user.role}</td>
-                            <td className="border px-4 py-2">{user.is_banned ? "Yes" : "No"}</td>
-                            <td className="border px-4 py-2">{user.is_seller ? "Yes" : "No"}</td>
-                            <td className="border px-4 py-2">
-                                {!user.is_banned && (
-                                    <button
-                                        onClick={() => handleBan(user.id)}
-                                        className="bg-red-500 text-white px-2 py-1 mr-2"
-                                    >
-                                        Ban
-                                    </button>
-                                )}
-                                {user.is_banned && (
-                                    <button
-                                        onClick={() => handleUnban(user.id)}
-                                        className="bg-green-500 text-white px-2 py-1 mr-2"
-                                    >
-                                        Unban
-                                    </button>
-                                )}
-                                {isAdmin && (user.role === 'user') && (
-                                    <button
-                                        onClick={() => handlePromote(user.id)}
-                                        className="bg-blue-500 text-white px-2 py-1 mr-2"
-                                    >
-                                        Promote
-                                    </button>
-                                )}
-                                {isAdmin && (user.role === 'moderator') && (
-                                    <button
-                                        onClick={() => handleDemote(user.id)}
-                                        className="bg-yellow-500 text-white px-2 py-1"
-                                    >
-                                        Demote
-                                    </button>
-                                )}
-                            </td>
+                <div className="w-full overflow-hidden">
+                    <table className="w-full table-auto divide-y divide-gray-200 text-[8px]">
+                        <thead className="bg-brand text-white text-center">
+                        <tr>
+                            <th className="py-1 px-1 text-center">ID</th>
+                            <th className="py-1 px-1 text-center">Telegram ID</th>
+                            <th className="py-1 px-1 text-center">Никнейм</th>
+                            <th className="py-1 px-1 text-center">Роль</th>
+                            <th className="py-1 px-1 text-center">Забанен</th>
+                            <th className="py-1 px-1 text-center">Продавец</th>
+                            <th className="py-1 px-1 text-center">Баланс</th>
+                            <th className="py-1 px-1 text-center">Действия</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200 text-center">
+                        {users.map(user => (
+                            <tr key={user.id} className="hover:bg-gray-50">
+                                {/* Содержимое в столбцах ID и Telegram ID меньше */}
+                                <td className="px-1 py-1 text-[5px]">
+                                    <CopyableUuid uuid={user.id} />
+                                </td>
+                                <td className="px-1 py-1 text-[7px]">{user.telegram_id.toString()}</td>
+                                <td className="px-1 py-1">{user.nickname}</td>
+                                <td className="px-1 py-1">{user.role}</td>
+                                <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
+                                <td className="px-1 py-1">{user.is_seller ? "Да" : "Нет"}</td>
+                                <td className="px-1 py-1">{user.balance || 0}</td>
+                                <td className="px-1 py-1 flex flex-wrap gap-1 justify-center">
+                                    {!user.is_banned && (
+                                        <button
+                                            onClick={() => handleBan(user.id)}
+                                            className="bg-red-500 text-white px-1 py-1 rounded text-[8px] hover:opacity-90 transition duration-150"
+                                        >
+                                            Бан
+                                        </button>
+                                    )}
+                                    {user.is_banned && (
+                                        <button
+                                            onClick={() => handleUnban(user.id)}
+                                            className="bg-brandlight text-white px-1 py-1 rounded text-[8px] hover:opacity-90 transition duration-150"
+                                        >
+                                            Разбан
+                                        </button>
+                                    )}
+                                    {isAdmin && (user.role === 'user') && (
+                                        <button
+                                            onClick={() => handlePromote(user.id)}
+                                            className="bg-blue-500 text-white px-1 py-1 rounded text-[8px] hover:opacity-90 transition duration-150"
+                                        >
+                                            Мод
+                                        </button>
+                                    )}
+                                    {isAdmin && (user.role === 'moderator') && (
+                                        <button
+                                            onClick={() => handleDemote(user.id)}
+                                            className="bg-yellow-500 text-white px-1 py-1 rounded text-[8px] hover:opacity-90 transition duration-150"
+                                        >
+                                            Разжаловать
+                                        </button>
+                                    )}
+                                    {user.is_seller && (
+                                        <button
+                                            onClick={() => openBalanceModal(user.id)}
+                                            className="bg-green-500 text-white px-1 py-1 rounded text-[8px] hover:opacity-90 transition duration-150"
+                                        >
+                                            Пополнить
+                                        </button>
+                                    )}
+                                </td>
+
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Modal для пополнения баланса */}
+            {showBalanceModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-2xl shadow-2xl w-80">
+                        <h2 className="text-xl font-bold text-brand mb-4 text-center">
+                            Введите сумму пополнения
+                        </h2>
+                        <input
+                            type="number"
+                            placeholder="Сумма"
+                            value={balanceInput}
+                            onChange={(e) => setBalanceInput(e.target.value)}
+                            className="border border-brandlight p-2 w-full mb-4 rounded focus:outline-none focus:ring-2 focus:ring-brand"
+                        />
+                        <div className="flex justify-between">
+                            <button
+                                onClick={() => setShowBalanceModal(false)}
+                                className="px-4 py-1 bg-brandlight text-brand font-semibold rounded hover:bg-brandlight/80 transition-colors"
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={handleConfirmBalance}
+                                className="px-4 py-1 bg-brand text-white rounded font-semibold hover:bg-brand/90 transition-colors"
+                            >
+                                Подтвердить
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

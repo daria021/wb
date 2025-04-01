@@ -1,9 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {on} from "@telegram-apps/sdk";
+import {getMe, getSellerBalance} from "../services/api";
 
 function SellerCabinet() {
     const navigate = useNavigate();
+    const [balance, setBalance] = useState(0);
 
     const handleMyProductsClick = () => navigate('/my-products');
     useEffect(() => {
@@ -23,6 +25,23 @@ function SellerCabinet() {
         navigate(`/seller-cabinet/balance`);
     }
 
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const sellerId = await getMe()
+                const response = await getSellerBalance(sellerId.toString());
+                console.log("response");
+                console.log(response);
+                console.log(response.data);
+                console.log(response.data.balance);
+                setBalance(response.data);
+            } catch (error) {
+                console.error("Ошибка получения баланса продавца:", error);
+            }
+        };
+        fetchBalance();
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-200">  {/* Обертка на весь экран */}
 
@@ -41,7 +60,7 @@ function SellerCabinet() {
                     onClick={handleMyBalanceClick}
                 >
                     <p className="text-md font-semibold mb-1">Баланс</p>
-                    <p className="text-2xl font-bold">0</p>
+                    <p className="text-2xl font-bold">{balance}</p>
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>
                 </div>
 
@@ -57,7 +76,7 @@ function SellerCabinet() {
                 {/* Новая карточка "Отчеты по выкупам" */}
                 <div
                     onClick={handleReportsClick}
-                    className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4 cursor-pointer"
+                    className="bg-white border border-gray-300 rounded-md p-4 mb-4 cursor-pointer"
                 >
                     <p className="text-md font-semibold mb-1">Отчеты по выкупам</p>
                     <p className="text-sm text-gray-500">

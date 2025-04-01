@@ -141,7 +141,7 @@ function HomePage() {
             {/* --- Реферальная программа (круглая кнопка) --- */}
             <div
                 onClick={handleReferralClick}
-                className="bg-white border border-brand rounded-full shadow-sm p-4 mb-8 text-sm font-semibold cursor-pointer text-center"
+                className="bg-white border border-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
             >
                 Реферальная программа
             </div>
@@ -150,7 +150,7 @@ function HomePage() {
             { !loading && isModerator && (
                 <div
                     onClick={() => navigate('/moderator')}
-                    className="bg-white border border-brand rounded-full shadow-sm p-4 mb-8 text-sm font-semibold cursor-pointer text-center"
+                    className="bg-white border border-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
                 >
                     Помодерируем?
                 </div>

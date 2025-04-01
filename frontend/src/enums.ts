@@ -41,3 +41,9 @@ export enum ProductStatus {
     REJECTED = "rejected",
     ARCHIVED = "archived"
 }
+
+export enum OrderStatus {
+    CASHBACK_PAID = "cashback_paid",
+    CASHBACK_NOT_PAID = "cashback_not_paid",
+    CANCELLED = "cancelled"
+}

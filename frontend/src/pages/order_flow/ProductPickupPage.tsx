@@ -148,6 +148,13 @@ function ProductPickupPage() {
         }
     };
 
+    const handleChannelClick = () => {
+        window.open('https://t.me/grcashback', '_blank'); //todo
+    };
+    const handleSupportClick = () => {
+        window.open('https://t.me/snow_irbis20', '_blank');
+    };
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
@@ -338,11 +345,14 @@ function ProductPickupPage() {
                 )}
 
                 <button
+                    onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
                     Нужна помощь
                 </button>
             </div>

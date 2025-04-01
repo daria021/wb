@@ -162,6 +162,13 @@ function StepReviewReportPage() {
         }
     };
 
+    const handleChannelClick = () => {
+        window.open('https://t.me/grcashback', '_blank'); //todo
+    };
+    const handleSupportClick = () => {
+        window.open('https://t.me/snow_irbis20', '_blank');
+    };
+
 
     if (loading) return <div className="p-4">Загрузка...</div>;
     if (error || !order) return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
@@ -216,8 +223,9 @@ function StepReviewReportPage() {
                 <div className="space-y-3 mb-4 mt-4">
                     <div className="flex flex-col gap-2 items-start px-4">
                         <p className="uppercase text-xs text-gray-500">Cкрин отзыва</p>
-                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                        <label
+                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                             Выбрать файл
                             <input
                                 accept="image/*"
@@ -230,8 +238,9 @@ function StepReviewReportPage() {
 
                     <div className="flex flex-col gap-2 items-start px-4">
                         <p className="uppercase text-xs text-gray-500">Cкрин электронного чека</p>
-                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                        <label
+                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                             Выбрать файл
                             <input
                                 accept="image/*"
@@ -430,11 +439,14 @@ function StepReviewReportPage() {
                     </div>
                 )}
                 <button
+                    onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
                     Нужна помощь
                 </button>
             </div>

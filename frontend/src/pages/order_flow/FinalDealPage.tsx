@@ -1,5 +1,3 @@
-// src/pages/FinalDealPage.tsx
-
 import React, { useEffect, useState } from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport} from '../../services/api';
@@ -26,10 +24,10 @@ interface Order {
     user: UserInOrder;          // Содержит данные о покупателе (никнейм)
     sellerNickname?: string;    // Если есть отдельное поле для ника продавца
     card_number?: string;       // "4367 2289 7923 2467"
-    phone_number?: string;      // "9891733203"
-    bank?: string;              // "Тинькофф"
-    name?: string;              // "Сергеева Анастасия"
-    status?: string;            // "CREATED", "COMPLETED" и т.д.
+    phone_number?: string;
+    bank?: string;
+    name?: string;
+    status?: string;
 }
 
 
@@ -74,21 +72,11 @@ function FinalDealPage() {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/catalog');
         });
-
         return () => {
             removeBackListener();
         };
     }, [navigate]);
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            if (!orderId) return;
-            navigate(`/order/${orderId}/step-6`);
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate, orderId]);
 
     useEffect(() => {
         if (!orderId) return;
@@ -122,8 +110,6 @@ function FinalDealPage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-
-    // Извлекаем нужные поля
     const { product, status } = order;
     const productName = product.name || 'Без названия';
     const productPrice = product.price ?? 0;
