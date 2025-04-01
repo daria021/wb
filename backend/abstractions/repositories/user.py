@@ -34,3 +34,5 @@ class UserRepositoryInterface(
     @abstractmethod
     async def become_seller(self, user_id: UUID):
         ...
+
+

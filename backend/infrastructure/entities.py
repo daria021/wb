@@ -6,6 +6,7 @@ from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 from infrastructure.enums.category import Category
+from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
@@ -37,12 +38,12 @@ class Product(AbstractBase):
     payment_time: Mapped[PayoutTime] = mapped_column(Enum(PayoutTime))
     review_requirements: Mapped[str]
     image_path: Mapped[Optional[str]]
-    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'), default=False)
-    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey("users.id"))
+    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus), default=ProductStatus.CREATED)
+
     reviews: Mapped[List['Review']] = relationship('Review', back_populates='product')
     orders: Mapped[List['Order']] = relationship('Order', back_populates='product')
-    moderator_reviews: Mapped[List['ModeratorReview']] = relationship('ModeratorReview', back_populates='product')
+    moderator_reviews: Mapped[list['ModeratorReview']] = relationship('ModeratorReview', back_populates='product')
 
 
 class User(AbstractBase):
@@ -53,7 +54,7 @@ class User(AbstractBase):
     role: Mapped[UserRole] = mapped_column(Enum(UserRole))
     is_banned: Mapped[bool]
     is_seller: Mapped[bool]
-
+    balance: Mapped[Optional[int]]
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")
@@ -91,7 +92,7 @@ class Order(AbstractBase):
     receipt_screenshot_path: Mapped[Optional[str]]
     receipt_number: Mapped[Optional[str]]
 
-    status: Mapped[str] = mapped_column(default="CREATED")
+    status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), default="CASHBACK_NOT_PAID")
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="user_orders")
     seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id], back_populates="seller_orders")

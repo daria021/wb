@@ -78,3 +78,9 @@ class UserService(UserServiceInterface):
 
     async def get_moderators(self) -> list[User]:
         return await self.user_repository.get_moderators()
+
+    async def increase_balance(self, user_id: UUID, balance_sum: int):
+        update_dto=UpdateUserDTO(
+            balance=balance_sum
+        )
+        return await self.user_repository.update(user_id, update_dto)

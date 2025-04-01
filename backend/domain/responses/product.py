@@ -10,7 +10,7 @@ from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
 
 
-class Product(BaseModel):
+class ProductResponse(BaseModel):
     id: UUID
     name: str
     brand: str
@@ -30,7 +30,6 @@ class Product(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    moderator_reviews: Optional[list[ModeratorReview]] = None
+    last_moderator_review: Optional[ModeratorReview] = None
 
     model_config = ConfigDict(from_attributes=True)
-

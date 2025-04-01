@@ -87,6 +87,25 @@ export async function getOrderBySellerId(sellerId: string){
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
+export async function increaseSellerBalance(sellerId: string, formData: FormData){
+    return apiClient.patch(`/users/balance/${sellerId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+export async function getSellerBalance(sellerId: string){
+    return apiClient.get(`/users/balance/${sellerId}`);
+}
+
+export async function updateOrderStatus(orderId: string, formData: FormData){
+    return apiClient.patch(`/orders/status/${orderId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
 // Обновление заказа (шаг 2..7)
 export async function updateOrder(
     orderId: string,

@@ -7,7 +7,7 @@ function AboutPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/home`);
+            navigate(`/`);
         });
 
         return () => {

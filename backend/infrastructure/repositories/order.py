@@ -79,6 +79,7 @@ class OrderRepository(
                 nickname=user.nickname,
                 role=user.role,
                 is_banned=user.is_banned,
+                balance=user.balance,
                 is_seller=user.is_seller,
                 created_at=user.created_at,
                 updated_at=user.updated_at
@@ -114,7 +115,7 @@ class OrderRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.user_id == user_id)
+                .where(self.entity.user_id == user_id, self.entity.step < 7)
                 .options(*self.options)
             )
             orders = result.scalars().all()

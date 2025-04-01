@@ -67,3 +67,8 @@ class UserServiceInterface(ABC):
     @abstractmethod
     async def get_moderators(self) -> list[User]:
         ...
+
+    @abstractmethod
+    async def increase_balance(self, user_id: UUID, balance_sum: int):
+        ...
+

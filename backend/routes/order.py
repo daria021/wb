@@ -10,6 +10,8 @@ from fastapi import HTTPException, UploadFile, Form, File
 from dependencies.services.order import get_order_service  # Уточните импорт
 from domain.dto import UpdateOrderDTO
 from domain.dto.order import CreateOrderDTO  # Уточните импорт
+from infrastructure.enums.order_status import OrderStatus
+from infrastructure.enums.product_status import ProductStatus
 
 router = APIRouter(
     prefix="/orders",
@@ -83,7 +85,7 @@ async def create_order(
         seller_id=seller_id,
         search_screenshot_path=search_file_location,
         cart_screenshot_path=cart_file_location,
-        status="CREATED"
+        status=OrderStatus.CASHBACK_NOT_PAID,
     )
 
     # Допустим, у вас есть OrderService со методом create_order
@@ -92,6 +94,28 @@ async def create_order(
     return new_order_id
     # return JSONResponse(status_code=201, content=new_order_id)
 
+
+@router.patch("/status/{order_id}")
+async def update_order_status(
+        order_id: UUID,
+        status: OrderStatus = Form(...),
+):
+    logger.info("I HATE THIS")
+    update_data = {}
+    if status is not None:
+        update_data["status"] = status
+
+    # Создаём DTO на основе собранных полей
+    dto = UpdateOrderDTO.model_validate(update_data)
+
+    # Вызываем метод сервиса для обновления
+    order_service = get_order_service()
+    await order_service.update_order(order_id, dto)
+
+    # if not updated_order:
+    #     raise HTTPException(status_code=404, detail="Order not found")
+
+    # return {"message": "Order updated successfully"}
 
 @router.patch("/{order_id}")
 async def update_order(

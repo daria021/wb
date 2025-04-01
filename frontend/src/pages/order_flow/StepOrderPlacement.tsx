@@ -93,7 +93,12 @@ function StepOrderPlacement() {
         }
     };
 
-
+    const handleChannelClick = () => {
+        window.open('https://t.me/grcashback', '_blank'); //todo
+    };
+    const handleSupportClick = () => {
+        window.open('https://t.me/snow_irbis20', '_blank');
+    };
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
@@ -143,7 +148,7 @@ function StepOrderPlacement() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full py-2 rounded text-white mb-4 ${
+                className={`w-full py-2 rounded text-white mb-4 mt-4 ${
                     canContinue
                         ? 'bg-brand hover:bg-brand'
                         : 'bg-gray-400 cursor-not-allowed'
@@ -268,11 +273,15 @@ function StepOrderPlacement() {
                     </div>
                 )}
 
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
+                <button
+                    onClick={handleChannelClick}
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
                     <span>Подписаться на канал</span>
                 </button>
-                <button className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
                     Нужна помощь
                 </button>
             </div>

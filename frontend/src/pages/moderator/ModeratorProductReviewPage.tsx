@@ -20,7 +20,7 @@ function ModeratorProductReviewPage() {
             setProduct(response.data);
             setStatus(response.data.status);
         } catch (error) {
-            console.error('Error fetching product:', error);
+            console.error('Ошибка при получении продукта:', error);
         } finally {
             setLoading(false);
         }
@@ -30,7 +30,6 @@ function ModeratorProductReviewPage() {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/moderator/products');
         });
-
         return () => {
             removeBackListener();
         };
@@ -42,65 +41,59 @@ function ModeratorProductReviewPage() {
 
     const handleSubmit = async () => {
         try {
-            // Create a JSON payload instead of FormData
-            const payload = {
-                status,
-                comment
-            };
+            const payload = { status, comment };
             await reviewProduct(productId!, payload);
-            alert('Product review updated!');
+            alert('Проверка продукта обновлена!');
             navigate('/moderator/products');
         } catch (error) {
-            console.error('Error updating product review:', error);
+            console.error('Ошибка при обновлении проверки продукта:', error);
         }
     };
 
-    if (loading || !product) return <p>Loading...</p>;
+    if (loading || !product) return <p>Загрузка...</p>;
 
     return (
         <div className="min-h-screen bg-gray-200 p-6">
-            <h1 className="text-xl font-bold mb-4">
-                Review Product: {product.name}
+            <h1 className="text-2xl font-bold mb-6 text-center">
+                Проверка продукта: {product.name}
             </h1>
 
-            {/* Full Product Information */}
-            <div className="bg-white shadow rounded p-4 mb-6">
-                <h2 className="text-lg font-semibold mb-2">Product Information</h2>
+            {/* Информация о продукте */}
+            <div className="bg-white shadow rounded p-6 mb-6">
+                <h2 className="text-lg font-semibold mb-4">Информация о продукте</h2>
                 {product.image_path && (
                     <img
                         src={product.image_path}
                         alt={product.name}
-                        className="w-32 h-32 object-cover mb-4"
+                        className="w-40 h-40 object-cover mb-6"
                     />
                 )}
-                <p><strong>ID:</strong> {product.id}</p>
-                <p><strong>Name:</strong> {product.name}</p>
-                <p><strong>Brand:</strong> {product.brand}</p>
-                <p><strong>Article:</strong> {product.article}</p>
-                <p><strong>Category:</strong> {product.category}</p>
-                <p><strong>Key Word:</strong> {product.key_word}</p>
-                <p><strong>General Repurchases:</strong> {product.general_repurchases}</p>
-                <p><strong>Daily Repurchases:</strong> {product.daily_repurchases}</p>
-                <p><strong>Price:</strong> ${product.price}</p>
-                <p><strong>WB Price:</strong> ${product.wb_price}</p>
-                <p><strong>Telegram:</strong> {product.tg}</p>
-                <p><strong>Payment Time:</strong> {product.payment_time}</p>
-                <p><strong>Review Requirements:</strong> {product.review_requirements}</p>
-                <p><strong>Seller ID:</strong> {product.seller_id}</p>
-                <p><strong>Status:</strong> {product.status}</p>
-                <p>
-                    <strong>Created At:</strong> {new Date(product.created_at).toLocaleString()}
-                </p>
-                <p>
-                    <strong>Updated At:</strong> {new Date(product.updated_at).toLocaleString()}
-                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <p><strong>ID:</strong> {product.id}</p>
+                    <p><strong>Название:</strong> {product.name}</p>
+                    <p><strong>Бренд:</strong> {product.brand}</p>
+                    <p><strong>Артикул:</strong> {product.article}</p>
+                    <p><strong>Категория:</strong> {product.category}</p>
+                    <p><strong>Ключевое слово:</strong> {product.key_word}</p>
+                    <p><strong>Общее количество выкупов:</strong> {product.general_repurchases}</p>
+                    <p><strong>Ежедневные выкупы:</strong> {product.daily_repurchases}</p>
+                    <p><strong>Цена:</strong> {product.price}</p>
+                    <p><strong>Цена WB:</strong> {product.wb_price}</p>
+                    <p><strong>Телеграм:</strong> {product.tg}</p>
+                    <p><strong>Время оплаты:</strong> {product.payment_time}</p>
+                    <p><strong>Требования к отзыву:</strong> {product.review_requirements}</p>
+                    <p><strong>ID продавца:</strong> {product.seller_id}</p>
+                    <p><strong>Статус:</strong> {product.status}</p>
+                    <p><strong>Создано:</strong> {new Date(product.created_at).toLocaleString()}</p>
+                    <p><strong>Обновлено:</strong> {new Date(product.updated_at).toLocaleString()}</p>
+                </div>
             </div>
 
-            {/* Visually indented review posting block */}
+            {/* Блок проверки */}
             <div className="border-l-4 border-blue-500 pl-4">
-                <h3 className="text-lg font-semibold mb-2">Review Details</h3>
+                <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">
-                    <label className="block mb-2">Status:</label>
+                    <label className="block mb-2">Статус:</label>
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
@@ -114,7 +107,7 @@ function ModeratorProductReviewPage() {
                     </select>
                 </div>
                 <div className="mb-4">
-                    <label className="block mb-2">Comment:</label>
+                    <label className="block mb-2">Комментарий:</label>
                     <textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
@@ -124,9 +117,9 @@ function ModeratorProductReviewPage() {
                 </div>
                 <button
                     onClick={handleSubmit}
-                    className="bg-blue-500 text-white px-4 py-2"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                 >
-                    Submit Review
+                    Отправить
                 </button>
             </div>
         </div>

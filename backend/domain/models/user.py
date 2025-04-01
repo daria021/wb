@@ -14,6 +14,7 @@ class User(BaseModel):
     role: UserRole
     is_banned: bool
     is_seller: bool
+    balance: Optional[int]
     created_at: datetime
     updated_at: datetime
 

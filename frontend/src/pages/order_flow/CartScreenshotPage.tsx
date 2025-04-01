@@ -80,6 +80,9 @@ function CartScreenshotPage() {
     const handleSupportClick = () => {
         window.open('https://t.me/snow_irbis20', '_blank');
     };
+    const handleChannelClick = () => {
+        window.open('https://t.me/grcashback', '_blank'); //todo
+    };
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
@@ -164,6 +167,7 @@ function CartScreenshotPage() {
             {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3">
                 <button
+                    onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>

@@ -10,10 +10,10 @@ from starlette import status
 from dependencies.services.product import get_product_service  # функция, возвращающая экземпляр ProductService
 from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product
+from domain.responses.product import ProductResponse
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
-from routes.requests.product import UpdateProductRequest
 from routes.utils import get_user_id_from_request
 
 router = APIRouter(
@@ -54,14 +54,18 @@ async def get_by_seller(
 async def get_product(
         product_id: UUID,
         # request: Request,
-):
+) -> ProductResponse:
     product_service = get_product_service()
     product = await product_service.get_product(product_id)
 
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
-    return product
+    response = ProductResponse.model_validate(product)
+    if product.moderator_reviews:
+        response.last_moderator_review = product.moderator_reviews[-1] #todo
+
+    return response
 
 
 @router.post("")
@@ -125,22 +129,22 @@ async def create_product(
 
 @router.patch("/{product_id}")
 async def update_product(
-    product_id: UUID,
-    request: Request,
-    name: Optional[str] = Form(...),
-    article: Optional[str] = Form(...),
-    brand: Optional[str] = Form(...),
-    category: Optional[Category] = Form(...),
-    key_word: Optional[str] = Form(...),
-    general_repurchases: Optional[int] = Form(...),
-    daily_repurchases: Optional[int] = Form(...),
-    price: Optional[float] = Form(..., gt=0),
-    wb_price: Optional[float] = Form(...),
-    tg: Optional[str] = Form(...),
-    status: Optional[ProductStatus] = Form(...),
-    payment_time: Optional[PayoutTime] = Form(...),
-    review_requirements: Optional[str] = Form(...),
-    image: Optional[UploadFile] = File(None),
+        product_id: UUID,
+        request: Request,
+        name: Optional[str] = Form(...),
+        article: Optional[str] = Form(...),
+        brand: Optional[str] = Form(...),
+        category: Optional[Category] = Form(...),
+        key_word: Optional[str] = Form(...),
+        general_repurchases: Optional[int] = Form(...),
+        daily_repurchases: Optional[int] = Form(...),
+        price: Optional[float] = Form(..., gt=0),
+        wb_price: Optional[float] = Form(...),
+        tg: Optional[str] = Form(...),
+        status: Optional[ProductStatus] = Form(...),
+        payment_time: Optional[PayoutTime] = Form(...),
+        review_requirements: Optional[str] = Form(...),
+        image: Optional[UploadFile] = File(None),
 ) -> dict:
     # Если файл изображения передан, сохраняем его и задаем путь
     image_path = None
@@ -182,13 +186,13 @@ async def update_product(
     await product_service.update_product(product_id, dto)
     return {"message": "Product updated successfully"}
 
+
 @router.patch("/status/{product_id}")
-async def update_product(
+async def update_product_status(
         product_id: UUID,
         request: Request,
         status: Optional[ProductStatus] = Form(...),
 ) -> dict:
-
     dto = UpdateProductDTO(
         status=status,
     )
@@ -196,6 +200,7 @@ async def update_product(
     product_service = get_product_service()
     await product_service.update_product(product_id, dto)
     return {"message": "Product updated successfully"}
+
 
 @router.delete("/{product_id}")
 async def delete_product(product_id: UUID, request: Request):

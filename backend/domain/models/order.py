@@ -5,6 +5,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 from domain.models import Product, User
+from infrastructure.enums.order_status import OrderStatus
+from infrastructure.enums.product_status import ProductStatus
 
 
 class Order(BaseModel):
@@ -25,7 +27,7 @@ class Order(BaseModel):
     review_screenshot_path: Optional[str]
     receipt_screenshot_path: Optional[str]
     receipt_number: Optional[str]
-    status: str
+    status: OrderStatus
 
     product: Product
     user: User

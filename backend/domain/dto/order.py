@@ -4,6 +4,8 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from domain.dto.base import CreateDTO, UpdateDTO
+from infrastructure.enums.order_status import OrderStatus
+from infrastructure.enums.product_status import ProductStatus
 
 
 class CreateOrderDTO(CreateDTO):
@@ -11,6 +13,7 @@ class CreateOrderDTO(CreateDTO):
     product_id: UUID
     seller_id: UUID
     step: int
+    status: OrderStatus = None
     search_screenshot_path: Optional[str] = None
     cart_screenshot_path: Optional[str] = None
     card_number: Optional[str] = None
@@ -23,7 +26,6 @@ class CreateOrderDTO(CreateDTO):
     review_screenshot_path: Optional[str] = None
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
-    status: str
 
 
 
@@ -41,4 +43,4 @@ class UpdateOrderDTO(UpdateDTO):
     review_screenshot_path: Optional[str] = None
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[OrderStatus] = None

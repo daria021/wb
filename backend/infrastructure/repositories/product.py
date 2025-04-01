@@ -1,20 +1,35 @@
-from typing import Optional
+from dataclasses import field, dataclass
+from typing import Optional, Any
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import DetachedInstanceError
 
 from abstractions.repositories import ProductRepositoryInterface
 from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product as ProductModel
-from infrastructure.entities import Product
+from domain.models.moderator_review import ModeratorReview as ModeratorReviewModel
+from infrastructure.entities import Product, ModeratorReview
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
 
+@dataclass
 class ProductRepository(
     AbstractSQLAlchemyRepository[Product, Product, CreateProductDTO, UpdateProductDTO],
     ProductRepositoryInterface,
 ):
+    joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
+        'moderator_reviews': None,
+    })
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.options = [
+            joinedload(self.entity.moderator_reviews),
+        ]
+
     async def get_active_products(self, limit: int = 100, offset: int = 9) -> list[ProductModel]:
         async with self.session_maker() as session:
             result = await session.execute(
@@ -66,6 +81,9 @@ class ProductRepository(
         )
 
     def entity_to_model(self, entity: Product) -> ProductModel:
+        def _map_moderator_review(review: ModeratorReview) -> ModeratorReviewModel:
+            return ModeratorReviewModel.model_validate(review)
+
         return ProductModel(
             id=entity.id,
             name=entity.name,
@@ -84,8 +102,16 @@ class ProductRepository(
             status=entity.status,
             image_path=entity.image_path,
             created_at=entity.created_at,
-            updated_at=entity.updated_at
+            updated_at=entity.updated_at,
+            moderator_reviews=[_map_moderator_review(x) for x in self._get_relation(entity, 'moderator_reviews', use_list=True)]
         )
+
+    @staticmethod
+    def _get_relation(entity: Product, relation: str, use_list = False) -> Optional[Any]:
+        try:
+            return getattr(entity, relation)
+        except DetachedInstanceError:
+            return [] if use_list else None
 
     async def get_by_article(self, article: str) -> Optional[Product]:
         async with self.session_maker() as session:

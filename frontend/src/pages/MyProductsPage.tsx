@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProductsBySellerId } from '../services/api';
 import { on } from "@telegram-apps/sdk";
+import {ProductStatus} from "../enums";
 
 interface Product {
     id: string;
     name: string;
     price: number;
-    status: string; // на сервере могут приходить "created", "active", "disabled", "rejected", "archived"
+    status: string; // "created", "active", "disabled", "rejected", "archived"
 }
 
 function MyProductsPage() {
@@ -17,8 +18,8 @@ function MyProductsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    // Изменили начальное значение на "active"
-    const [filter, setFilter] = useState<'all' | 'active' | 'archived'>('active');
+    // "created" here represents both CREATED and DISABLED statuses
+    const [filter, setFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -34,7 +35,6 @@ function MyProductsPage() {
         async function fetchProducts() {
             try {
                 const response = await getProductsBySellerId();
-                // Предполагаем, что response.data — массив товаров
                 setProducts(response.data);
             } catch (err) {
                 console.error('Ошибка при загрузке товаров продавца:', err);
@@ -50,12 +50,20 @@ function MyProductsPage() {
         navigate('/create-product');
     };
 
-    // Фильтрация товаров:
-    // - Если filter не "all", оставляем только те, у которых status соответствует выбранному фильтру.
-    // - Также фильтруем по названию.
+    // Filter products by selected status and search query.
+    // When filter === 'created', include both CREATED and DISABLED statuses.
     const filteredProducts = products.filter((product) => {
-        if (filter !== 'all' && product.status !== filter) {
-            return false;
+        if (filter !== 'all') {
+            if (filter === 'created') {
+                if (
+                    product.status !== ProductStatus.CREATED &&
+                    product.status !== ProductStatus.DISABLED
+                ) {
+                    return false;
+                }
+            } else if (product.status !== filter) {
+                return false;
+            }
         }
         if (searchQuery) {
             return product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -65,7 +73,7 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/* Кнопка «Разместить товар» */}
+            {/* "Разместить товар" button */}
             <div className="flex justify-end mb-4">
                 <button
                     onClick={handleCreateProduct}
@@ -75,7 +83,7 @@ function MyProductsPage() {
                 </button>
             </div>
 
-            {/* Поле поиска */}
+            {/* Search input */}
             <div className="relative mb-4">
                 <input
                     type="text"
@@ -99,45 +107,28 @@ function MyProductsPage() {
                 </svg>
             </div>
 
-            {/* Вкладки: Все / Активные / Архив */}
-            <div className="flex gap-2 mb-4 text-sm">
-                <button
-                    onClick={() => setFilter('all')}
-                    className={`px-4 py-2 rounded-md border ${
-                        filter === 'all'
-                            ? 'bg-brand text-white border-brand'
-                            : 'border-gray-300 text-gray-600'
-                    }`}
+            {/* Status selector */}
+            <div className="mb-4">
+                <select
+                    value={filter}
+                    onChange={(e) =>
+                        setFilter(e.target.value as 'all' | 'active' | 'created' | 'rejected' | 'archived')
+                    }
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none"
                 >
-                    Все
-                </button>
-                <button
-                    onClick={() => setFilter('active')}
-                    className={`px-4 py-2 rounded-md border ${
-                        filter === 'active'
-                            ? 'bg-brand text-white border-brand'
-                            : 'border-gray-300 text-gray-600'
-                    }`}
-                >
-                    Активные
-                </button>
-                <button
-                    onClick={() => setFilter('archived')}
-                    className={`px-4 py-2 rounded-md border ${
-                        filter === 'archived'
-                            ? 'bg-brand text-white border-brand'
-                            : 'border-gray-300 text-gray-600'
-                    }`}
-                >
-                    Архив
-                </button>
+                    <option value="all">Все статусы</option>
+                    <option value="active">Активный</option>
+                    <option value="created">Создано / Отключено</option>
+                    <option value="rejected">Отклонено</option>
+                    <option value="archived">Архив</option>
+                </select>
             </div>
 
-            {/* Состояние загрузки и ошибки */}
+            {/* Loading and error state */}
             {loading && <p className="text-sm text-gray-500">Загрузка...</p>}
             {error && <p className="text-sm text-red-500">{error}</p>}
 
-            {/* Список товаров */}
+            {/* Products list */}
             {!loading && !error && (
                 <>
                     {filteredProducts.length === 0 ? (
@@ -156,11 +147,16 @@ function MyProductsPage() {
                                     </p>
                                     <p className="text-xs text-gray-400">
                                         Статус:{' '}
-                                        {product.status === 'active'
+                                        {product.status === ProductStatus.ACTIVE
                                             ? 'Активный'
-                                            : product.status === 'archived'
-                                                ? 'Архив'
-                                                : product.status}
+                                            : product.status === ProductStatus.REJECTED
+                                                ? 'Отклонено'
+                                                : product.status === ProductStatus.ARCHIVED
+                                                    ? 'Архив'
+                                                    : product.status === ProductStatus.CREATED ||
+                                                    product.status === ProductStatus.DISABLED
+                                                        ? 'Создано / Отключено'
+                                                        : product.status}
                                     </p>
                                 </div>
                             ))}

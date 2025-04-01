@@ -9,7 +9,7 @@ COPY package.json yarn.lock ./
 # Устанавливаем зависимости
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
-COPY ilia.env .env
+COPY dasha.env .env
 
 # Копируем весь проект
 COPY . .

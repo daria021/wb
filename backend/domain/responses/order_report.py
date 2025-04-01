@@ -1,6 +1,9 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
+from infrastructure.enums.order_status import OrderStatus
+
+
 class OrderReport(BaseModel):
     step: int
     search_screenshot_path: Optional[str] = None
@@ -16,6 +19,6 @@ class OrderReport(BaseModel):
     review_screenshot_path: Optional[str] = None
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
-
+    status: Optional[OrderStatus] = None
     model_config = ConfigDict(from_attributes=True)
 
