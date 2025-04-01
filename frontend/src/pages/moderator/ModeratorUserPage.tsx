@@ -38,6 +38,7 @@ function ModeratorUsersPage() {
     const [showBalanceModal, setShowBalanceModal] = useState(false);
     const [selectedSellerId, setSelectedSellerId] = useState<string | null>(null);
     const [balanceInput, setBalanceInput] = useState("");
+    const [searchQuery, setSearchQuery] = useState(''); // Состояние для поискового запроса
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -144,10 +145,24 @@ function ModeratorUsersPage() {
         setShowBalanceModal(false);
     };
 
+    const filteredUsers = users.filter(user =>
+        user.nickname.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
     return (
         <div className="bg-gray-200 h-screen p-2">
             <h1 className="text-xl font-bold mb-4 text-center">Управление пользователями</h1>
 
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Поиск"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2"
+                />
+            </div>
             {/* Фильтр */}
             <div className="mb-4 flex items-center justify-center">
                 <label htmlFor="userFilter" className="mr-2 text-xs font-medium">Показать:</label>
@@ -182,7 +197,7 @@ function ModeratorUsersPage() {
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200 text-center">
-                        {users.map(user => (
+                        {filteredUsers.map(user => (
                             <tr key={user.id} className="hover:bg-gray-50">
                                 {/* Содержимое в столбцах ID и Telegram ID меньше */}
                                 <td className="px-1 py-1 text-[5px]">
