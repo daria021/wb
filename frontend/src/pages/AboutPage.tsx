@@ -24,20 +24,20 @@ function AboutPage() {
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <div className="gap-6">
                     {/* Основной заголовок */}
-                    <h1 className="text-3xl font-bold mb-6 text-left">О сервисе:</h1>
+                    <h1 className="text-2xl font-bold mb-6 text-left">О сервисе:</h1>
 
                     <div className="bg-brandlight rounded-lg p-4">
                         {/* Обзор сервиса */}
                         <section className="mb-6 text-left">
-                            <p className="text-lg text-gray-800 mb-4">
+                            <p className="text-base text-gray-800 mb-4">
                                 ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по раздачам.
                             </p>
                         </section>
 
                         {/* Информация для менеджеров */}
                         <section className="mb-6 text-left">
-                            <h2 className="text-2xl font-bold mb-3">Для менеджеров</h2>
-                            <ul className="list-disc list-inside text-lg text-gray-800 space-y-2">
+                            <h2 className="text-xl font-bold mb-3">Для менеджеров</h2>
+                            <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
                                 <li>Сократит количество чатов</li>
                                 <li>Удобные отчеты</li>
                                 <li>Управление раздачами через кабинет</li>
@@ -49,8 +49,8 @@ function AboutPage() {
 
                         {/* Информация для покупателей */}
                         <section className="mb-6 text-left">
-                            <h2 className="text-2xl font-bold mb-3">Для покупателей</h2>
-                            <ul className="list-disc list-inside text-lg text-gray-800 space-y-2">
+                            <h2 className="text-xl font-bold mb-3">Для покупателей</h2>
+                            <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
                                 <li>Безопасные сделки</li>
                                 <li>Простая инструкция</li>
                                 <li>Проверенные продавцы</li>
@@ -59,7 +59,7 @@ function AboutPage() {
 
                         {/* Кнопки для других статей */}
                         <section className="mb-6 text-left">
-                            <h2 className="text-2xl font-bold mb-3">Другие статьи</h2>
+                            <h2 className="text-xl font-bold mb-3">Другие статьи</h2>
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={handleQuestion}

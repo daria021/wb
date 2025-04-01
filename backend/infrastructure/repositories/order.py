@@ -12,6 +12,7 @@ from domain.models import User as UserModel
 from domain.models.order import Order as OrderModel
 from domain.responses.order_report import OrderReport
 from infrastructure.entities import Order, Product
+from infrastructure.enums.order_status import OrderStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
 
@@ -115,7 +116,8 @@ class OrderRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.user_id == user_id, self.entity.step < 7)
+                .where(self.entity.user_id == user_id, self.entity.step < 7, self.entity.status ==
+                       OrderStatus.CASHBACK_NOT_PAID)
                 .options(*self.options)
             )
             orders = result.scalars().all()
