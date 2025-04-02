@@ -18,7 +18,6 @@ async def get_file(
         filename: str,
 ) -> FileResponse:
     file_path = os.path.join(IMAGES_DIR, filename)
-    print(file_path)
     return FileResponse(
         path=file_path,
         media_type='application/octet-stream',
