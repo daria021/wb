@@ -84,7 +84,8 @@ class UserRepository(
             telegram_id=dto.telegram_id,
             nickname=dto.nickname,
             is_banned=False,
-            balance=dto.balance,
+            role=UserRole(dto.role),
+            balance=0,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
