@@ -13,10 +13,11 @@ async def check_for_auth(
         request: Request,
         call_next,
 ):
+    url_path = request.url.path.replace("/api", "")
     if (
-            request.url.path.startswith("/auth") or
-            request.url.path.startswith("/docs") or
-            request.url.path.startswith("/openapi") or
+            url_path.startswith("/auth") or
+            url_path.startswith("/docs") or
+            url_path.startswith("/openapi") or
             request.method == 'OPTIONS'
     ):
         response = await call_next(request)
