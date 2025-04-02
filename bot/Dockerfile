@@ -1,5 +1,7 @@
 FROM python:3.12
 
+ENV ENVIRONMENT=local
+
 RUN apt-get update
 
 WORKDIR /wb
