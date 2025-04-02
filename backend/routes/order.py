@@ -7,6 +7,7 @@ import aiofiles
 from fastapi import APIRouter, Request
 from fastapi import HTTPException, UploadFile, Form, File
 
+from dependencies.services.notification import get_notification_service
 from dependencies.services.order import get_order_service  # Уточните импорт
 from domain.dto import UpdateOrderDTO
 from domain.dto.order import CreateOrderDTO  # Уточните импорт
@@ -111,6 +112,10 @@ async def update_order_status(
     # Вызываем метод сервиса для обновления
     order_service = get_order_service()
     await order_service.update_order(order_id, dto)
+
+    if status == OrderStatus.CASHBACK_PAID:
+        notification_service = get_notification_service()
+        await notification_service.send_cashback_paid(order_id)
 
     # if not updated_order:
     #     raise HTTPException(status_code=404, detail="Order not found")

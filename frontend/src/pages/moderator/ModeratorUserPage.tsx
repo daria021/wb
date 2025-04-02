@@ -38,7 +38,7 @@ function ModeratorUsersPage() {
     const [showBalanceModal, setShowBalanceModal] = useState(false);
     const [selectedSellerId, setSelectedSellerId] = useState<string | null>(null);
     const [balanceInput, setBalanceInput] = useState("");
-    const [searchQuery, setSearchQuery] = useState(''); // Состояние для поискового запроса
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -116,14 +116,14 @@ function ModeratorUsersPage() {
         }
     };
 
-    // Open the modal for increasing balance
+    // Открытие модального окна пополнения баланса
     const openBalanceModal = (sellerId: string) => {
         setSelectedSellerId(sellerId);
         setBalanceInput("");
         setShowBalanceModal(true);
     };
 
-    // This function will be called when the user confirms the modal input
+    // Функция подтверждения пополнения баланса
     const handleConfirmBalance = async () => {
         const amount = parseInt(balanceInput, 10);
         if (isNaN(amount) || amount <= 0) {
@@ -149,34 +149,42 @@ function ModeratorUsersPage() {
         user.nickname.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-
     return (
         <div className="bg-gray-200 h-screen p-2">
-            <h1 className="text-xl font-bold mb-4 text-center">Управление пользователями</h1>
+            <h1 className="text-xl font-bold mb-3 text-center">
+                Управление пользователями
+            </h1>
 
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Поиск"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md p-2"
-                />
-            </div>
-            {/* Фильтр */}
-            <div className="mb-4 flex items-center justify-center">
-                <label htmlFor="userFilter" className="mr-2 text-xs font-medium">Показать:</label>
-                <select
-                    id="userFilter"
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as FilterType)}
-                    className="border p-1 rounded text-xs"
-                >
-                    <option value="all">Все пользователи</option>
-                    <option value="moderators">Модераторы</option>
-                    <option value="sellers">Продавцы</option>
-                    <option value="banned">Забаненные пользователи</option>
-                </select>
+            {/* Блок с поиском и фильтром в одну строку */}
+            <div className="mb-4 flex gap-2 bg-white p-4 rounded shadow">
+                <div className="flex-1">
+                    <input
+                        type="text"
+                        placeholder="Поиск по нику"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full border border-gray-300 rounded p-2 text-sm"
+                    />
+                </div>
+                <div className="flex-1 flex items-center">
+                    <label
+                        htmlFor="userFilter"
+                        className="mr-2 text-sm font-medium whitespace-nowrap"
+                    >
+                        Фильтр:
+                    </label>
+                    <select
+                        id="userFilter"
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value as FilterType)}
+                        className="w-full border p-2 rounded text-sm"
+                    >
+                        <option value="all">Все пользователи</option>
+                        <option value="moderators">Модераторы</option>
+                        <option value="sellers">Продавцы</option>
+                        <option value="banned">Забаненные</option>
+                    </select>
+                </div>
             </div>
 
             {loading ? (
@@ -186,24 +194,25 @@ function ModeratorUsersPage() {
                     <table className="w-full table-auto divide-y divide-gray-200 text-[8px]">
                         <thead className="bg-brand text-white text-center">
                         <tr>
-                            <th className="py-1 px-1 text-center">ID</th>
-                            <th className="py-1 px-1 text-center">Telegram ID</th>
-                            <th className="py-1 px-1 text-center">Никнейм</th>
-                            <th className="py-1 px-1 text-center">Роль</th>
-                            <th className="py-1 px-1 text-center">Забанен</th>
-                            <th className="py-1 px-1 text-center">Продавец</th>
-                            <th className="py-1 px-1 text-center">Баланс</th>
-                            <th className="py-1 px-1 text-center">Действия</th>
+                            <th className="py-1 px-1">ID</th>
+                            <th className="py-1 px-1">Telegram ID</th>
+                            <th className="py-1 px-1">Никнейм</th>
+                            <th className="py-1 px-1">Роль</th>
+                            <th className="py-1 px-1">Забанен</th>
+                            <th className="py-1 px-1">Продавец</th>
+                            <th className="py-1 px-1">Баланс</th>
+                            <th className="py-1 px-1">Действия</th>
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200 text-center">
                         {filteredUsers.map(user => (
                             <tr key={user.id} className="hover:bg-gray-50">
-                                {/* Содержимое в столбцах ID и Telegram ID меньше */}
                                 <td className="px-1 py-1 text-[5px]">
                                     <CopyableUuid uuid={user.id} />
                                 </td>
-                                <td className="px-1 py-1 text-[7px]">{user.telegram_id.toString()}</td>
+                                <td className="px-1 py-1 text-[7px]">
+                                    {user.telegram_id.toString()}
+                                </td>
                                 <td className="px-1 py-1">{user.nickname}</td>
                                 <td className="px-1 py-1">{user.role}</td>
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
@@ -251,7 +260,6 @@ function ModeratorUsersPage() {
                                         </button>
                                     )}
                                 </td>
-
                             </tr>
                         ))}
                         </tbody>

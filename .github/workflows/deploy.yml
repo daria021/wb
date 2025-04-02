@@ -17,7 +17,7 @@ jobs:
     ]
     steps:
       - name: Checkout
-        uses: actions/chekout@v4
+        uses: actions/chekout@v3
 
       - name: Compose up
         run: |
