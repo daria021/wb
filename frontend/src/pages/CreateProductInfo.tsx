@@ -116,7 +116,7 @@ function CreateProductInfo() {
     }
 
     // Base URL for images
-    const mediaBase = process.env.REACT_APP_MEDIA_BASE;
+    const mediaBase = process.env.REACT_APP_API_BASE;
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
