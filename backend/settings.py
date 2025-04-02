@@ -34,21 +34,17 @@ class JwtSettings(BaseSettings):
     refresh_expire: int
 
 class BotTokenSettings(BaseSettings):
-    local: str
-    stage: str
-    env: str
-
-    @property
-    def token(self) -> str:
-        env = os.getenv("ENVIRONMENT", "local")
-        if env == "local":
-            return self.local
-        elif env == "stage":
-            return self.stage
-        elif env == "env":
-            return self.env
-
-        return self.env
+      local: str
+      dev: str
+  
+      @property
+      def token(self) -> str:
+          match os.getenv("ENVIRONMENT", "local"):
+              case "dev":
+                  return self.dev
+              case "local":
+                  return self.local
+  
 
 class Settings(BaseSettings):
     db: DBSettings
