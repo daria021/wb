@@ -120,6 +120,8 @@ async def create_product(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Не удалось сохранить файл"
             ) from e
+    else:
+        logger.error("ATTENTION!!! IMAGE IS NONE")
 
     dto.image_path = image_path
 
