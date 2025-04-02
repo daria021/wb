@@ -97,7 +97,7 @@ function CatalogPage() {
                                         src={
                                             product.image_path.startsWith('http')
                                                 ? product.image_path
-                                                : `${process.env.REACT_APP_MEDIA_BASE}/${product.image_path}`
+                                                : `${process.env.REACT_APP_API_BASE}/upload/${product.image_path}`
                                         }
                                         alt={product.name}
                                         className="absolute top-0 left-0 w-full h-full object-cover"
