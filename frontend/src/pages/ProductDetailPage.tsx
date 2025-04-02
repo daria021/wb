@@ -4,8 +4,6 @@ import { getProductById } from '../services/api';
 import { AxiosResponse } from "axios";
 import {on} from "@telegram-apps/sdk";
 
-const MEDIA_BASE = 'http://localhost:8000/storage/';
-
 interface Product {
     id: string;
     name: string;
@@ -67,7 +65,7 @@ function ProductDetailPage() {
                         src={
                             product.image_path.startsWith('http')
                                 ? product.image_path
-                                : `${MEDIA_BASE}${product.image_path}`
+                                : `${process.env.REACT_APP_API_BASE}/${product.image_path}`
                         }
                         alt={product.name}
                         className="w-full h-full object-cover"

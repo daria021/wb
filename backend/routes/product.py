@@ -14,7 +14,7 @@ from domain.responses.product import ProductResponse
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
-from routes.utils import get_user_id_from_request
+from routes.utils import get_user_id_from_request, IMAGES_DIR
 
 router = APIRouter(
     prefix="/products",
@@ -23,7 +23,6 @@ router = APIRouter(
 
 logger = logging.getLogger(__name__)
 
-IMAGES_DIR = "/app/upload"
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 
@@ -89,21 +88,6 @@ async def create_product(
     seller_id = get_user_id_from_request(request)
     image_path = None
 
-    # Если файл изображения передан, сохраняем его и задаем путь
-    if image is not None:
-        upload_dir = IMAGES_DIR
-        os.makedirs(upload_dir, exist_ok=True)
-        file_location = os.path.join(upload_dir, image.filename)
-        try:
-            async with aiofiles.open(file_location, "wb") as file_obj:
-                await file_obj.write(await image.read())
-            image_path = image.filename
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Не удалось сохранить файл"
-            ) from e
-
     dto = CreateProductDTO(
         name=name,
         brand=brand,
@@ -120,6 +104,24 @@ async def create_product(
         image_path=image_path,
         seller_id=seller_id
     )
+
+    # Если файл изображения передан, сохраняем его и задаем путь
+    if image is not None:
+        upload_dir = IMAGES_DIR
+        os.makedirs(upload_dir, exist_ok=True)
+        image_filename = f"{dto.id}.{image.filename.split('.')[-1]}"
+        file_location = os.path.join(upload_dir, image_filename)
+        try:
+            async with aiofiles.open(file_location, "wb") as file_obj:
+                await file_obj.write(await image.read())
+            image_path = image_filename
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Не удалось сохранить файл"
+            ) from e
+
+    dto.image_path = image_path
 
     product_service = get_product_service()
     product_id = await product_service.create_product(dto)

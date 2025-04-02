@@ -161,7 +161,7 @@ function MyOrdersPage() {
                                                 src={
                                                     order.product.image_path.startsWith('http')
                                                         ? order.product.image_path
-                                                        : `${process.env.REACT_APP_MEDIA_BASE}/${order.product.image_path}`
+                                                        : `${process.env.REACT_APP_API_BASE}/${order.product.image_path}`
                                                 }
                                                 alt={order.product.name}
                                                 className="absolute inset-0 object-cover w-full h-full"

@@ -76,8 +76,6 @@ class UserRepository(
 
         return await self.get_by_telegram_id(dto.telegram_id)
 
-
-
     def create_dto_to_entity(self, dto: CreateUserDTO) -> User:
         return User(
             id=dto.id,
