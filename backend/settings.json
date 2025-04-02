@@ -2,19 +2,20 @@
   "db": {
     "host": "db",
     "port": 5432,
-    "user": "postgres",
-    "password": "postgres",
+    "user": "wbuser",
+    "password": "wbpassword",
     "name": "postgres"
   },
     "jwt": {
-    "secret_key": "very-secret-wipi-key-innit",
-    "issuer": "wipi-back",
-    "audience": "wipi-front",
+    "secret_key": "very-secret-wb-key-innit",
+    "issuer": "wb-back",
+    "audience": "wb-front",
     "access_expire": 1800,
     "refresh_expire": 6000
   },
   "bot": {
     "dasha": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
-    "ilia": "7210550878:AAHBb2wxLpJbbvcStpm4WZZpfWJU6l4fKqg"
+    "ilia": "7210550878:AAHBb2wxLpJbbvcStpm4WZZpfWJU6l4fKqg",
+    "dev": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg"
   }
 }

@@ -36,10 +36,19 @@ class JwtSettings(BaseSettings):
 class BotTokenSettings(BaseSettings):
     dasha: str
     ilia: str
+    dev: str
 
     @property
     def token(self) -> str:
-        return self.dasha if os.getenv("DEVELOPER", "dasha") == "dasha" else self.ilia
+        dev = os.getenv("DEVELOPER", "dasha")
+        if dev == "dasha":
+            return self.dasha
+        elif dev == "ilia":
+            return self.ilia
+        elif dev == "dev":
+            return self.dev
+
+        return self.dev
 
 class Settings(BaseSettings):
     db: DBSettings
