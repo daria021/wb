@@ -40,7 +40,7 @@ class BotTokenSettings(BaseSettings):
 
     @property
     def token(self) -> str:
-        dev = os.getenv("DEVELOPER", "dasha")
+        dev = os.getenv("DEVELOPER", "dev")
         if dev == "dasha":
             return self.dasha
         elif dev == "ilia":
