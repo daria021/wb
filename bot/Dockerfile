@@ -1,7 +1,5 @@
 FROM python:3.12
 
-ENV developer=dasha
-
 RUN apt-get update
 
 WORKDIR /wb
