@@ -18,6 +18,7 @@ async def check_for_auth(
             url_path.startswith("/auth") or
             url_path.startswith("/docs") or
             url_path.startswith("/openapi") or
+            url_path.startswith("/upload") or
             request.method == 'OPTIONS'
     ):
         response = await call_next(request)
