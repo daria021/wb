@@ -1,7 +1,8 @@
+import logging
 import os
 
-from django.http import FileResponse
-from fastapi import APIRouter, Request
+from fastapi.responses import FileResponse
+from fastapi import APIRouter
 
 from routes.utils import IMAGES_DIR
 
@@ -10,13 +11,14 @@ router = APIRouter(
     tags=["upload"]
 )
 
+logger = logging.getLogger(__name__)
 
 @router.get("/{filename}")
 async def get_file(
         filename: str,
-        request: Request,
 ) -> FileResponse:
     file_path = os.path.join(IMAGES_DIR, filename)
+    print(file_path)
     return FileResponse(
         path=file_path,
         media_type='application/octet-stream',
