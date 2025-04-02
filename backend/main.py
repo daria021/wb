@@ -11,6 +11,7 @@ from starlette.staticfiles import StaticFiles
 
 from middlewares.auth_middleware import check_for_auth
 from routes import (
+    router as api_router,
     user_router,
     moderator_router,
     orders_router,
@@ -59,12 +60,13 @@ app.add_middleware(
 )
 app.middleware('http')(check_for_auth)
 
-app.include_router(product_router)
-app.include_router(user_router)
-app.include_router(orders_router)
-app.include_router(review_router)
-app.include_router(auth_router)
-app.include_router(moderator_router)
+app.include_router(api_router)
+# app.include_router(product_router)
+# app.include_router(user_router)
+# app.include_router(orders_router)
+# app.include_router(review_router)
+# app.include_router(auth_router)
+# app.include_router(moderator_router)
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="0.0.0.0", port=8000)

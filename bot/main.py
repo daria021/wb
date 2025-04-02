@@ -7,7 +7,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "local")}.env')
+load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "")}.env')
 
 TOKEN = os.getenv('TOKEN')
 WEB_APP_URL = os.getenv('WEB_APP_URL')

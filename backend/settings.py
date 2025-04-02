@@ -36,10 +36,19 @@ class JwtSettings(BaseSettings):
 class BotTokenSettings(BaseSettings):
     local: str
     stage: str
+    env: str
 
     @property
     def token(self) -> str:
-        return self.local if os.getenv("ENVIRONMENT", "local") == "local" else self.stage
+        env = os.getenv("ENVIRONMENT", "local")
+        if env == "local":
+            return self.local
+        elif env == "stage":
+            return self.stage
+        elif env == "env":
+            return self.env
+
+        return self.env
 
 class Settings(BaseSettings):
     db: DBSettings
