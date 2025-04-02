@@ -195,7 +195,7 @@ function MyOrdersPage() {
 
             <div
                 onClick={handleSupportClick}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-8 font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">

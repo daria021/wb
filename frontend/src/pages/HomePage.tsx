@@ -44,7 +44,6 @@ function HomePage() {
     };
     return (
         <div className="min-h-screen bg-gray-200 p-6">
-
             {/* --- Верхний ряд (3 плитки): О сервисе, Инструкция, Книга жалоб --- */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 {/* О сервисе */}
