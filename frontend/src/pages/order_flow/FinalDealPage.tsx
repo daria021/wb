@@ -3,6 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport} from '../../services/api';
 import { AxiosResponse } from 'axios';
 import {on} from "@telegram-apps/sdk";
+import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
     id: string;
@@ -208,7 +209,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
                                         <img
-                                            src={reportData.search_screenshot_path}
+                                            src={GetUploadLink(reportData.search_screenshot_path)}
                                             alt="Скрин поискового запроса"
                                             className="mt-1 w-full rounded"
                                         />
@@ -219,7 +220,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин корзины</p>
                                         <img
-                                            src={reportData.cart_screenshot_path}
+                                            src={GetUploadLink(reportData.cart_screenshot_path)}
                                             alt="Скрин корзины"
                                             className="mt-1 w-full rounded"
                                         />
@@ -253,7 +254,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 5. Финальный скрин корзины</p>
                                         <img
-                                            src={reportData.final_cart_screenshot_path}
+                                            src={GetUploadLink(reportData.final_cart_screenshot_path)}
                                             alt="Финальный скрин корзины"
                                             className="mt-1 w-full rounded"
                                         />
@@ -264,7 +265,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 6. Скрин доставки</p>
                                         <img
-                                            src={reportData.delivery_screenshot_path}
+                                            src={GetUploadLink(reportData.delivery_screenshot_path)}
                                             alt="Скрин доставки"
                                             className="mt-1 w-full rounded"
                                         />
@@ -275,7 +276,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин штрихкодов</p>
                                         <img
-                                            src={reportData.barcodes_screenshot_path}
+                                            src={GetUploadLink(reportData.barcodes_screenshot_path)}
                                             alt="Скрин штрихкодов"
                                             className="mt-1 w-full rounded"
                                         />
@@ -286,7 +287,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 7. Скрин отзыва</p>
                                         <img
-                                            src={reportData.review_screenshot_path}
+                                            src={GetUploadLink(reportData.review_screenshot_path)}
                                             alt="Скрин отзыва"
                                             className="mt-1 w-full rounded"
                                         />
@@ -297,7 +298,7 @@ function FinalDealPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин электронного чека</p>
                                         <img
-                                            src={reportData.receipt_screenshot_path}
+                                            src={GetUploadLink(reportData.receipt_screenshot_path)}
                                             alt="Скрин электронного чека"
                                             className="mt-1 w-full rounded"
                                         />

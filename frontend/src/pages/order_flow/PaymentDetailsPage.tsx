@@ -3,6 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderReport, updateOrder} from '../../services/api';
 import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from "axios";
+import GetUploadLink from "../../components/GetUploadLink";
 
 
 interface OrderReport {
@@ -242,7 +243,7 @@ function PaymentDetailsPage() {
                                         <div className="mb-3">
                                             <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
                                             <img
-                                                src={reportData.search_screenshot_path}
+                                                src={GetUploadLink(reportData.search_screenshot_path)}
                                                 alt="Скрин поискового запроса"
                                                 className="mt-1 w-full rounded"
                                             />
@@ -252,7 +253,7 @@ function PaymentDetailsPage() {
                                         <div className="mb-3">
                                             <p className="text-sm font-semibold">Скрин корзины</p>
                                             <img
-                                                src={reportData.cart_screenshot_path}
+                                                src={GetUploadLink(reportData.cart_screenshot_path)}
                                                 alt="Скрин корзины"
                                                 className="mt-1 w-full rounded"
                                             />

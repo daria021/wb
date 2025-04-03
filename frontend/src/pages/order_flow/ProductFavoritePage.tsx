@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {updateOrder, getOrderReport, getOrderById} from "../../services/api";
 import { on } from "@telegram-apps/sdk";
 import { AxiosResponse } from 'axios';
+import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
     id: string;
@@ -156,7 +157,7 @@ function ProductFavoritePage() {
                             src={
                                 order!.product.image_path.startsWith('http')
                                     ? order!.product.image_path
-                                    : `${process.env.REACT_APP_MEDIA_BASE}/${order!.product.image_path}`
+                                    : GetUploadLink(order!.product.image_path)
                             }
                             alt={order!.product.name}
                             className="absolute inset-0 w-full h-full object-cover"
@@ -202,7 +203,7 @@ function ProductFavoritePage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
                                         <img
-                                            src={reportData.search_screenshot_path}
+                                            src={GetUploadLink(reportData.search_screenshot_path)}
                                             alt="Скрин поискового запроса"
                                             className="mt-1 w-full rounded"
                                         />
@@ -212,7 +213,7 @@ function ProductFavoritePage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин корзины</p>
                                         <img
-                                            src={reportData.cart_screenshot_path}
+                                            src={GetUploadLink(reportData.cart_screenshot_path)}
                                             alt="Скрин корзины"
                                             className="mt-1 w-full rounded"
                                         />

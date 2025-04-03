@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { getOrderById, updateOrder, getOrderReport } from "../../services/api";
 import { on } from "@telegram-apps/sdk";
+import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
     id: string;
@@ -186,7 +187,7 @@ function ProductFindPage() {
                             src={
                                 product.image_path.startsWith('http')
                                     ? product.image_path
-                                    : `${process.env.REACT_APP_MEDIA_BASE}/${product.image_path}`
+                                    : GetUploadLink(product.image_path)
                             }
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-cover"
@@ -233,7 +234,7 @@ function ProductFindPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
                                         <img
-                                            src={reportData.search_screenshot_path}
+                                            src={GetUploadLink(reportData.search_screenshot_path)}
                                             alt="Скрин поискового запроса"
                                             className="mt-1 w-full rounded"
                                         />
@@ -243,7 +244,7 @@ function ProductFindPage() {
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин корзины</p>
                                         <img
-                                            src={reportData.cart_screenshot_path}
+                                            src={GetUploadLink(reportData.cart_screenshot_path)}
                                             alt="Скрин корзины"
                                             className="mt-1 w-full rounded"
                                         />

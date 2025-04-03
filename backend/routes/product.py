@@ -156,11 +156,11 @@ async def update_product(
         upload_dir = IMAGES_DIR  # IMAGES_DIR определён ранее (например, "static/images")
         os.makedirs(upload_dir, exist_ok=True)
         image_filename = f"{product_id}.{image.filename.split('.')[-1]}"
-        file_location = os.path.join(upload_dir, image.filename)
+        file_location = os.path.join(upload_dir, image_filename)
         try:
             async with aiofiles.open(file_location, "wb") as file_obj:
                 await file_obj.write(await image.read())
-            image_path = image.filename
+            image_path = image_filename
         except Exception as e:
             logger.error(e, exc_info=True)
             raise HTTPException(
