@@ -13,6 +13,7 @@ interface Product {
     seller_id: string;
     payment_time: string;
     tg: string;
+    image_path: string;
 }
 
 interface UserInOrder {
@@ -126,7 +127,7 @@ function FinalDealPage() {
             <div className="flex items-center space-x-3">
                 {/* Можно заменить на реальное фото, если есть product.image_path */}
                 <img
-                    src="https://via.placeholder.com/50"
+                    src={GetUploadLink(product.image_path)}
                     alt="Фото товара"
                     className="w-12 h-12 rounded-full object-cover"
                 />
