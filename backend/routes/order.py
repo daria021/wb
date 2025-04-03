@@ -55,7 +55,8 @@ async def create_order(
     os.makedirs(upload_dir, exist_ok=True)
 
     # Сохраняем search_query_screenshot
-    search_file_location = os.path.join(upload_dir, search_query_screenshot.filename)
+    search_filename = f"{uuid4()}.{search_query_screenshot.filename.split('.')[-1]}"
+    search_file_location = os.path.join(upload_dir, search_filename)
     try:
         async with aiofiles.open(search_file_location, "wb") as f:
             content = await search_query_screenshot.read()
@@ -67,7 +68,8 @@ async def create_order(
         ) from e
 
     # Сохраняем cart_screenshot
-    cart_file_location = os.path.join(upload_dir, cart_screenshot.filename)
+    cart_filename = f"{uuid4()}.{cart_screenshot.filename.split('.')[-1]}"
+    cart_file_location = os.path.join(upload_dir, cart_filename)
     try:
         async with aiofiles.open(cart_file_location, "wb") as f:
             content = await cart_screenshot.read()
@@ -84,8 +86,8 @@ async def create_order(
         product_id=product_id,
         step=1,
         seller_id=seller_id,
-        search_screenshot_path=search_file_location,
-        cart_screenshot_path=cart_file_location,
+        search_screenshot_path=search_filename,
+        cart_screenshot_path=cart_filename,
         status=OrderStatus.CASHBACK_NOT_PAID,
     )
 
