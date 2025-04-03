@@ -9,7 +9,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./backend/upload/:/app/upload/
+      - ~/upload/:/app/upload/
 #    ports:
 #      - "9090:8080"
   bot:
