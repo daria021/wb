@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {getProducts} from '../services/api';
 
 import {on} from '@telegram-apps/sdk';
+import GetUploadLink from "../components/GetUploadLink";
 
 
 interface Product {

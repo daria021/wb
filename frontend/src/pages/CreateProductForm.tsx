@@ -2,7 +2,8 @@ import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {createProduct, getProductById, updateProduct} from '../services/api'; // Ваши функции API
 import {Category, PayoutTime} from '../enums';
-import {on} from "@telegram-apps/sdk"; // Ваши enum'ы
+import {on} from "@telegram-apps/sdk";
+import GetUploadLink from "../components/GetUploadLink"; // Ваши enum'ы
 
 interface ProductFormData {
     id?: string;

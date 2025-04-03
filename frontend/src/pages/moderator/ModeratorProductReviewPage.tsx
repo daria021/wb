@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getModeratorProductById, reviewProduct } from '../../services/api';
 import { ProductStatus } from '../../enums';
 import { on } from "@telegram-apps/sdk";
+import GetUploadLink from "../../components/GetUploadLink";
 
 function ModeratorProductReviewPage() {
     const { productId } = useParams<{ productId: string }>();

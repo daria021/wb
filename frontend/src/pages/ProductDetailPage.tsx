@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '../services/api';
 import { AxiosResponse } from "axios";
 import {on} from "@telegram-apps/sdk";
+import GetUploadLink from "../components/GetUploadLink";
 
 interface Product {
     id: string;
