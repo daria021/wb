@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import aiofiles
 from fastapi import APIRouter, Request
@@ -172,11 +172,14 @@ async def update_order(
 
     # Функция-хелпер для сохранения файла (можно вынести отдельно)
     async def save_file_to_disk(file: UploadFile) -> str:
-        file_location = os.path.join(upload_dir, file.filename)
+        filename = f"{uuid4()}.{file.filename.split('.')[-1]}"
+
+        file_location = os.path.join(upload_dir, filename)
         async with aiofiles.open(file_location, "wb") as f:
             content = await file.read()
             await f.write(content)
-        return file_location
+
+        return filename
 
     # Шаг 5
     if final_cart_screenshot is not None:

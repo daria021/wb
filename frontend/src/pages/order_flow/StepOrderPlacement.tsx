@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getOrderReport, updateOrder } from '../../services/api';
 import { on } from "@telegram-apps/sdk";
 import { AxiosResponse } from 'axios';
+import GetUploadLink from "../../components/GetUploadLink";
 
 interface OrderReport {
     step: number;
@@ -216,14 +217,14 @@ function StepOrderPlacement() {
                                         <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
                                         {reportData.search_screenshot_path && (
                                             <img
-                                                src={reportData.search_screenshot_path}
+                                                src={GetUploadLink(reportData.search_screenshot_path)}
                                                 alt="Скрин поискового запроса"
                                                 className="mt-1 w-full rounded"
                                             />
                                         )}
                                         {reportData.cart_screenshot_path && (
                                             <img
-                                                src={reportData.cart_screenshot_path}
+                                                src={GetUploadLink(reportData.cart_screenshot_path)}
                                                 alt="Скрин корзины"
                                                 className="mt-1 w-full rounded"
                                             />
