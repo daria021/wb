@@ -155,6 +155,7 @@ async def update_product(
     if image is not None:
         upload_dir = IMAGES_DIR  # IMAGES_DIR определён ранее (например, "static/images")
         os.makedirs(upload_dir, exist_ok=True)
+        image_filename = f"{product_id}.{image.filename.split('.')[-1]}"
         file_location = os.path.join(upload_dir, image.filename)
         try:
             async with aiofiles.open(file_location, "wb") as file_obj:
@@ -182,8 +183,7 @@ async def update_product(
         status=status,
         review_requirements=review_requirements,
         article=article,
-        image_path=image_path  # Если image_path не обновляется, можно оставить его как None
-        # seller_id можно не обновлять, если оно не меняется
+        image_path=image_path
     )
 
     product_service = get_product_service()

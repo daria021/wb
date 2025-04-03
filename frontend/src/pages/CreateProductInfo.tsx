@@ -140,7 +140,7 @@ function CreateProductInfo() {
                             src={
                                 product.image_path.startsWith('http')
                                     ? product.image_path
-                                    : `${mediaBase}${product.image_path}`
+                                    : GetUploadLink(product.image_path)
                             }
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-cover"

@@ -63,7 +63,7 @@ function ModeratorProductReviewPage() {
                 <h2 className="text-lg font-semibold mb-4">Информация о продукте</h2>
                 {product.image_path && (
                     <img
-                        src={product.image_path}
+                        src={GetUploadLink(product.image_path)}
                         alt={product.name}
                         className="w-40 h-40 object-cover mb-6"
                     />
