@@ -58,15 +58,23 @@ function ProductDetailPage() {
         ? (((product.wb_price - product.price) / product.wb_price) * 100).toFixed(2)
         : '0';
 
+    const getLink = (path: string) => {
+        if (path.startsWith('http')) {
+            return path;
+        }
+
+        let url = GetUploadLink(path)
+        console.log(`url for photo is ${url}`)
+        return url;
+    }
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
             <div className="relative w-full h-64 mb-4 mt-12 rounded-lg overflow-hidden">
                 {product.image_path ? (
                     <img
                         src={
-                            product.image_path.startsWith('http')
-                                ? product.image_path
-                                : GetUploadLink(product.image_path)
+                            getLink(product.image_path)
                         }
                         alt={product.name}
                         className="w-full h-full object-cover"
