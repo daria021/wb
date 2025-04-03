@@ -4,6 +4,7 @@ import {AxiosResponse} from 'axios';
 import {getOrderReport, updateOrderStatus} from "../services/api";
 import {on} from "@telegram-apps/sdk";
 import {OrderStatus} from "../enums";
+import GetUploadLink from "../components/GetUploadLink";
 
 interface OrderReport {
     step: number;
@@ -84,14 +85,14 @@ function OrderReportPage() {
                         <h2 className="text-xl font-semibold mb-2">Шаг 1. Скрины корзины</h2>
                         {report.search_screenshot_path && (
                             <img
-                                src={report.search_screenshot_path}
+                                src={GetUploadLink(report.search_screenshot_path)}
                                 alt="Скрин поискового запроса"
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
                         {report.cart_screenshot_path && (
                             <img
-                                src={report.cart_screenshot_path}
+                                src={GetUploadLink(report.cart_screenshot_path)}
                                 alt="Скрин корзины"
                                 className="mt-2 w-full rounded-md"
                             />
@@ -129,7 +130,7 @@ function OrderReportPage() {
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 5. Финальный скрин корзины</h2>
                         <img
-                            src={report.final_cart_screenshot_path}
+                            src={GetUploadLink(report.final_cart_screenshot_path)}
                             alt="Финальный скрин корзины"
                             className="mt-2 w-full rounded-md"
                         />
@@ -142,14 +143,14 @@ function OrderReportPage() {
                         <h2 className="text-xl font-semibold mb-2">Шаг 6. Скрины доставки и штрихкодов</h2>
                         {report.delivery_screenshot_path && (
                             <img
-                                src={report.delivery_screenshot_path}
+                                src={GetUploadLink(report.delivery_screenshot_path)}
                                 alt="Скрин доставки"
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
                         {report.barcodes_screenshot_path && (
                             <img
-                                src={report.barcodes_screenshot_path}
+                                src={GetUploadLink(report.barcodes_screenshot_path)}
                                 alt="Скрин штрихкодов"
                                 className="mt-2 w-full rounded-md"
                             />
@@ -163,14 +164,14 @@ function OrderReportPage() {
                         <h2 className="text-xl font-semibold mb-2">Шаг 7. Скрины отзыва и чека</h2>
                         {report.review_screenshot_path && (
                             <img
-                                src={report.review_screenshot_path}
+                                src={GetUploadLink(report.review_screenshot_path)}
                                 alt="Скрин отзыва"
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
                         {report.receipt_screenshot_path && (
                             <img
-                                src={report.receipt_screenshot_path}
+                                src={GetUploadLink(report.receipt_screenshot_path)}
                                 alt="Скрин электронного чека"
                                 className="mt-2 w-full rounded-md"
                             />
