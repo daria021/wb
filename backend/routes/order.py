@@ -8,11 +8,11 @@ from fastapi import APIRouter, Request
 from fastapi import HTTPException, UploadFile, Form, File
 
 from dependencies.services.notification import get_notification_service
-from dependencies.services.order import get_order_service  # Уточните импорт
+from dependencies.services.order import get_order_service
 from domain.dto import UpdateOrderDTO
-from domain.dto.order import CreateOrderDTO  # Уточните импорт
+from domain.dto.order import CreateOrderDTO
 from infrastructure.enums.order_status import OrderStatus
-from infrastructure.enums.product_status import ProductStatus
+from routes.utils import IMAGES_DIR
 
 router = APIRouter(
     prefix="/orders",
@@ -51,7 +51,7 @@ async def create_order(
     """
 
     # Подготовим директорию для загрузок
-    upload_dir = "uploads"
+    upload_dir = IMAGES_DIR
     os.makedirs(upload_dir, exist_ok=True)
 
     # Сохраняем search_query_screenshot
@@ -101,7 +101,6 @@ async def update_order_status(
         order_id: UUID,
         status: OrderStatus = Form(...),
 ):
-    logger.info("I HATE THIS")
     update_data = {}
     if status is not None:
         update_data["status"] = status
@@ -167,7 +166,7 @@ async def update_order(
     if bank is not None:
         update_data["bank"] = bank
 
-    upload_dir = "uploads"
+    upload_dir = IMAGES_DIR
     os.makedirs(upload_dir, exist_ok=True)
 
     # Функция-хелпер для сохранения файла (можно вынести отдельно)

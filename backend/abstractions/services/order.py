@@ -36,7 +36,7 @@ class OrderServiceInterface(ABC):
         """
 
     @abstractmethod
-    async def get_orders(self, order_id: UUID) -> None:
+    async def get_orders(self, limit: int = 100, offset: int = 0) -> None:
         """
         Удаляет заказ с указанным ID.
         """
