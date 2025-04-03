@@ -65,7 +65,7 @@ function ProductDetailPage() {
                         src={
                             product.image_path.startsWith('http')
                                 ? product.image_path
-                                : `${process.env.REACT_APP_API_BASE}/${product.image_path}`
+                                : GetUploadLink(product.image_path)
                         }
                         alt={product.name}
                         className="w-full h-full object-cover"

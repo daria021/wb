@@ -244,7 +244,7 @@ function ProductForm() {
                     ) : formData.image_path ? (
                         // Если в режиме редактирования есть старое фото
                         <img
-                            src={`${process.env.REACT_APP_MEDIA_BASE}${formData.image_path}`}
+                            src={GetUploadLink(formData.image_path)}
                             alt="existing"
                             className="w-32 h-32 object-cover mb-2"
                         />
