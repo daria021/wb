@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getUserOrders, updateOrderStatus } from '../services/api';
 import { on } from "@telegram-apps/sdk";
+import GetUploadLink from "../components/GetUploadLink";
 
 // Словарь для отображения названия шага
 const STEP_NAMES: { [key: number]: string } = {

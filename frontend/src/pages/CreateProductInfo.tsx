@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById, updateProductStatus } from '../services/api';
 import { Category, PayoutTime, ProductStatus } from '../enums';
 import { on } from "@telegram-apps/sdk";
+import GetUploadLink from "../components/GetUploadLink";
 
 // Define the ModeratorReview interface
 interface ModeratorReview {
