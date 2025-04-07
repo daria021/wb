@@ -12,7 +12,7 @@ RUN yarn install --frozen-lockfile --network-timeout 300000
 # Копируем весь проект
 COPY . .
 
-COPY ilia.env .env
+COPY dasha.env .env
 
 EXPOSE 3000
 
