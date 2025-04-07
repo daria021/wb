@@ -12,7 +12,7 @@ RUN yarn install --frozen-lockfile --network-timeout 300000
 # Копируем весь проект
 COPY . .
 
-COPY stage.env .env
+COPY local.env .env
 
 EXPOSE 3000
 
