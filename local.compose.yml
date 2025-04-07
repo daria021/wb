@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wb-backend
+    command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080" ]
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ~/upload/:/app/upload/
+    ports:
+      - "9090:8080"
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: wb-bot
+    command: [ "python3", "main.py" ]
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+  db:
+    image: postgres:17
+    container_name: wb-db
+    env_file: .env
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.env
+    container_name: wb-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./frontend/public:/app/public"
+
+
+volumes:
+  postgres_data:

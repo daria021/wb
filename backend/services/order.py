@@ -4,15 +4,19 @@ from uuid import UUID
 
 from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface
 from abstractions.services import OrderServiceInterface
+from abstractions.services.notification import NotificationServiceInterface
 from domain.dto import UpdateOrderDTO, CreateOrderDTO
 from domain.models import Order
 from domain.responses.order_report import OrderReport
+from infrastructure.enums.order_status import OrderStatus
 
 
 @dataclass
 class OrderService(OrderServiceInterface):
     order_repository: OrderRepositoryInterface
     product_repository: ProductRepositoryInterface
+    notification_service: NotificationServiceInterface
+
     async def create_order(self, dto: CreateOrderDTO) -> UUID:
         await self.order_repository.create(dto)
         order = await self.order_repository.get(dto.id)
@@ -23,6 +27,8 @@ class OrderService(OrderServiceInterface):
 
     async def update_order(self, order_id: UUID, dto: UpdateOrderDTO) -> None:
         await self.order_repository.update(order_id, dto)
+        if dto.status == OrderStatus.CASHBACK_PAID:
+            await self.notification_service.send_cashback_paid(order_id)
 
     async def delete_order(self, order_id: UUID) -> None:
         await self.order_repository.delete(order_id)
@@ -44,5 +50,3 @@ class OrderService(OrderServiceInterface):
     async def get_orders_by_seller(self, seller_id: UUID) -> list[Order]:
         orders = await self.order_repository.get_orders_by_seller(seller_id)
         return orders
-
-
