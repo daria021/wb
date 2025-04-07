@@ -1,17 +1,22 @@
+import logging
 from dataclasses import dataclass
 from typing import List
 from uuid import UUID
 
 from abstractions.repositories.user import UserRepositoryInterface
 from abstractions.services import UserServiceInterface
+from abstractions.services.notification import NotificationServiceInterface
 from domain.dto import CreateUserDTO, UpdateUserDTO
 from domain.models import User
 from infrastructure.enums.user_role import UserRole
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class UserService(UserServiceInterface):
     user_repository: UserRepositoryInterface
+    notification_service: NotificationServiceInterface
 
     async def create_user(self, dto: CreateUserDTO) -> None:
         return await self.user_repository.create(dto)
@@ -80,7 +85,16 @@ class UserService(UserServiceInterface):
         return await self.user_repository.get_moderators()
 
     async def increase_balance(self, user_id: UUID, balance_sum: int):
-        update_dto=UpdateUserDTO(
+        update_dto = UpdateUserDTO(
             balance=balance_sum
         )
-        return await self.user_repository.update(user_id, update_dto)
+        res = await self.user_repository.update(user_id, update_dto)
+        try:
+            await self.notification_service.send_balance_increased(
+                user_id=user_id,
+                amount=balance_sum,
+            )
+        except Exception:
+            logger.error("Error while sending push notification", exc_info=True)
+
+        return res

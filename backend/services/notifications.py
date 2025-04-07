@@ -23,3 +23,14 @@ class NotificationService(NotificationServiceInterface):
                     'text': 'Ваш кешбек выплачен!',
                 }
             )
+
+    async def send_balance_increased(self, user_id: UUID, amount: int) -> None:
+        user = await self.users_repository.get(user_id)
+        async with AsyncClient() as client:
+            await client.post(
+                url=f'https://api.telegram.org/bot{self.token}/sendMessage',
+                params={
+                    'chat_id': user.telegram_id,
+                    'text': f'Ваш баланс раздач полонен на {amount}',
+                }
+            )

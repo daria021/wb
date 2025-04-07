@@ -9,8 +9,6 @@ COPY package.json yarn.lock ./
 # Устанавливаем зависимости
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
-COPY .env .env
-
 # Копируем весь проект
 COPY . .
 
