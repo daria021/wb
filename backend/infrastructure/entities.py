@@ -9,6 +9,7 @@ from infrastructure.enums.category import Category
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
+from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
 
 Base = declarative_base()
@@ -125,6 +126,7 @@ class ModeratorReview(AbstractBase):
 
 class Push(AbstractBase):
     __tablename__ = 'pushes'
+
     title: Mapped[str] = mapped_column(unique=True)
     text: Mapped[str]
     creator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
@@ -138,6 +140,7 @@ class UserPush(AbstractBase):
     push_id: Mapped[UUID] = mapped_column(ForeignKey('pushes.id'))
     user_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
     sent_at: Mapped[Optional[datetime]]
+    status: Mapped[PushStatus]
 
     push: Mapped["Push"] = relationship("Push")
     user: Mapped["User"] = relationship("User", foreign_keys=[push_id])

@@ -5,9 +5,10 @@ from abstractions.repositories import ProductRepositoryInterface
 from abstractions.repositories.moderator_review import ModeratorReviewRepositoryInterface
 from abstractions.services import UserServiceInterface
 from abstractions.services.moderator import ModeratorServiceInterface
-from domain.dto import UpdateProductDTO
+from abstractions.services.notification import NotificationServiceInterface
+from domain.dto import UpdateProductDTO, CreatePushDTO
 from domain.dto.moderator_review import CreateModeratorReviewDTO
-from domain.models import Product, User
+from domain.models import Product, User, Push
 from routes.requests.moderator import UpdateProductStatusRequest
 
 
@@ -16,6 +17,7 @@ class ModeratorService(ModeratorServiceInterface):
     products_repository: ProductRepositoryInterface
     user_service: UserServiceInterface
     moderator_review_repository: ModeratorReviewRepositoryInterface
+    notification_service: NotificationServiceInterface
 
     async def get_products(self) -> list[Product]:
         return await self.products_repository.get_all()
@@ -75,3 +77,15 @@ class ModeratorService(ModeratorServiceInterface):
 
     async def demote_user(self, user_id: UUID):
         await self.user_service.demote_user(user_id)
+
+    async def create_push(self, push: CreatePushDTO) -> None:
+        await self.notification_service.create_push(push)
+
+    async def activate_push(self, push_id: UUID, user_ids: list[UUID]) -> None:
+        await self.notification_service.activate_push(push_id, user_ids)
+
+    async def get_pushes(self) -> list[Push]:
+        return await self.notification_service.get_pushes()
+
+    async def get_push(self, push_id: UUID) -> Push:
+        return await self.notification_service.get_push(push_id)

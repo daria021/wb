@@ -1,0 +1,14 @@
+{
+  "db": {
+    "host": "db",
+    "port": 5432,
+    "user": "postgres",
+    "password": "postgres",
+    "name": "postgres"
+  },
+  "bot": {
+    "local": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
+    "stage": "7210550878:AAHBb2wxLpJbbvcStpm4WZZpfWJU6l4fKqg",
+    "env": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg"
+  }
+}

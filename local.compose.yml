@@ -9,7 +9,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ~/upload/:/app/upload/
+      - ./backend/migrations/versions/:/app/migrations/versions/
+      - ./backend/upload/:/app/upload/
     ports:
       - "9090:8080"
   bot:
@@ -44,7 +45,12 @@ services:
       - "3000:3000"
     volumes:
       - "./frontend/public:/app/public"
-
+  notificator:
+    build:
+      context: ./notificator
+      dockerfile: Dockerfile
+    command: [ "python3", "main.py" ]
+    restart: unless-stopped
 
 volumes:
   postgres_data:

@@ -8,14 +8,9 @@ class CreatePushDTO(CreateDTO):
     title: str
     text: str
     creator_id: UUID
-    image_path: Optional[str]
-
-    creator: User
+    image_path: Optional[str] = None
 
 class UpdatePushDTO(UpdateDTO):
-    title: Optional[str]
-    text: Optional[str]
-    creator_id: Optional[UUID]
-    image_path: Optional[str]
-    creator: Optional[User]
-
+    title: Optional[str] = None
+    text: Optional[str] = None
+    image_path: Optional[str] = None
