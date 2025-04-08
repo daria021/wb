@@ -122,3 +122,22 @@ class ModeratorReview(AbstractBase):
 
     moderator: Mapped['User'] = relationship('User')
     product: Mapped['Product'] = relationship('Product', back_populates='moderator_reviews')
+
+class Push(AbstractBase):
+    __tablename__ = 'pushes'
+    title: Mapped[str] = mapped_column(unique=True)
+    text: Mapped[str]
+    creator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
+    image_path: Mapped[Optional[str]] = mapped_column(unique=False)
+
+    creator: Mapped["User"] = relationship("User", foreign_keys=[creator_id])
+
+class UserPush(AbstractBase):
+    __tablename__ = 'user_pushes'
+
+    push_id: Mapped[UUID] = mapped_column(ForeignKey('pushes.id'))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
+    sent_at: Mapped[Optional[datetime]]
+
+    push: Mapped["Push"] = relationship("Push")
+    user: Mapped["User"] = relationship("User", foreign_keys=[push_id])
