@@ -7,28 +7,18 @@ from abstractions.services.permissions import PermissionServiceInterface
 from dependencies.services.moderator import get_moderator_service
 from dependencies.services.permissions import get_permission_service
 from domain.models import User
+from routes.moderator.utils import moderator_pre_request
 from routes.utils import get_user_id_from_request
 
 router = APIRouter(
     prefix='/users',
 )
 
-
-async def products_pre_request(request: Request) -> tuple[UUID, ModeratorServiceInterface, PermissionServiceInterface]:
-    permission_service = get_permission_service()
-
-    moderator_id = get_user_id_from_request(request)
-
-    await permission_service.is_moderator(moderator_id)
-
-    return moderator_id, get_moderator_service(), permission_service
-
-
 @router.get('')
 async def get_users(
         request: Request,
 ) -> list[User]:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.get_users()
 
@@ -37,7 +27,7 @@ async def get_users(
 async def get_moderators(
         request: Request,
 ) -> list[User]:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.get_moderators()
 
@@ -46,7 +36,7 @@ async def get_moderators(
 async def get_sellers(
         request: Request,
 ) -> list[User]:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.get_sellers()
 
@@ -55,7 +45,7 @@ async def get_sellers(
 async def get_banned_users(
         request: Request,
 ) -> list[User]:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.get_banned()
 
@@ -65,7 +55,7 @@ async def get_user(
         request: Request,
         user_id: UUID,
 ) -> User:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.get_user(user_id)
 
@@ -76,7 +66,7 @@ async def ban_user(
         user_id: UUID,
 
 ) -> None:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.ban_user(user_id)
 
@@ -87,7 +77,7 @@ async def unban_user(
         user_id: UUID,
 
 ) -> None:
-    _, moderator_service, _ = await products_pre_request(request)
+    _, moderator_service, _ = await moderator_pre_request(request)
 
     return await moderator_service.unban_user(user_id)
 
@@ -98,7 +88,7 @@ async def promote_user(
         user_id: UUID,
 
 ) -> None:
-    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+    moderator_id, moderator_service, permission_service = await moderator_pre_request(request)
 
     await permission_service.is_admin(moderator_id)
 
@@ -111,7 +101,7 @@ async def demote_user(
         user_id: UUID,
 
 ) -> None:
-    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+    moderator_id, moderator_service, permission_service = await moderator_pre_request(request)
 
     await permission_service.is_admin(moderator_id)
 
