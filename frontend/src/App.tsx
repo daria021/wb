@@ -32,6 +32,7 @@ import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
 import ModeratorProductsPage from "./pages/moderator/ModeratorProductsPage";
 import ModeratorProductReviewPage from "./pages/moderator/ModeratorProductReviewPage";
 import ModeratorUsersPage from "./pages/moderator/ModeratorUserPage";
+import PushMessagesPage from "./pages/moderator/PushMessagesPage";
 
 function App() {
     window.Telegram.WebApp.expand();
@@ -86,6 +87,8 @@ function App() {
                     <Route path="/moderator/users" element={<ModeratorUsersPage />} />
                     <Route path="/moderator/products" element={<ModeratorProductsPage />} />
                     <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage />} />
+                    <Route path="/moderator/push" element={<PushMessagesPage />} />
+
 
                 </Routes>
             </BrowserRouter>
