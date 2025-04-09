@@ -1,21 +1,17 @@
-# Dockerfile.dev для фронтенда
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Копируем package.json и yarn.lock для установки зависимостей
 COPY package.json yarn.lock ./
-
-# Устанавливаем зависимости
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
-# Копируем весь проект
 COPY . .
-
 RUN yarn build
 
-# Stage 3: Serve with Nginx
+# Stage 2: Serve with Nginx
 FROM nginx:latest
 COPY --from=build /app/build /usr/share/nginx/html
+# Copy our custom config file (make sure default.conf is in the same directory as your Dockerfile)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
