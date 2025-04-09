@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from typing import List
 from uuid import UUID
 
-from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface
+from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface, UserRepositoryInterface
 from abstractions.services import OrderServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
-from domain.dto import UpdateOrderDTO, CreateOrderDTO
+from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO
 from domain.models import Order
 from domain.responses.order_report import OrderReport
 from infrastructure.enums.order_status import OrderStatus
+from infrastructure.enums.user_role import UserRole
 
 
 @dataclass
@@ -16,6 +17,7 @@ class OrderService(OrderServiceInterface):
     order_repository: OrderRepositoryInterface
     product_repository: ProductRepositoryInterface
     notification_service: NotificationServiceInterface
+    user_repository: UserRepositoryInterface
 
     async def create_order(self, dto: CreateOrderDTO) -> UUID:
         await self.order_repository.create(dto)
@@ -28,6 +30,11 @@ class OrderService(OrderServiceInterface):
     async def update_order(self, order_id: UUID, dto: UpdateOrderDTO) -> None:
         await self.order_repository.update(order_id, dto)
         if dto.status == OrderStatus.CASHBACK_PAID:
+            order = await self.order_repository.get(order_id)
+            user_dto=UpdateUserDTO(
+                role=UserRole.CLIENT,
+            )
+            await self.user_repository.update(order.user_id, user_dto)
             await self.notification_service.send_cashback_paid(order_id)
 
     async def delete_order(self, order_id: UUID) -> None:

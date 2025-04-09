@@ -81,6 +81,9 @@ class UserService(UserServiceInterface):
     async def get_sellers(self) -> list[User]:
         return await self.user_repository.get_sellers()
 
+    async def get_clients(self) -> list[User]:
+        return await self.user_repository.get_clients()
+
     async def get_moderators(self) -> list[User]:
         return await self.user_repository.get_moderators()
 

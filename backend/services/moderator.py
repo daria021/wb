@@ -6,7 +6,7 @@ from abstractions.repositories.moderator_review import ModeratorReviewRepository
 from abstractions.services import UserServiceInterface
 from abstractions.services.moderator import ModeratorServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
-from domain.dto import UpdateProductDTO, CreatePushDTO
+from domain.dto import UpdateProductDTO, CreatePushDTO, UpdatePushDTO
 from domain.dto.moderator_review import CreateModeratorReviewDTO
 from domain.models import Product, User, Push
 from routes.requests.moderator import UpdateProductStatusRequest
@@ -63,6 +63,9 @@ class ModeratorService(ModeratorServiceInterface):
     async def get_sellers(self) -> list[User]:
         return await self.user_service.get_sellers()
 
+    async def get_clients(self) -> list[User]:
+        return await self.user_service.get_clients()
+
     async def get_banned(self) -> list[User]:
         return await self.user_service.get_banned()
 
@@ -89,3 +92,9 @@ class ModeratorService(ModeratorServiceInterface):
 
     async def get_push(self, push_id: UUID) -> Push:
         return await self.notification_service.get_push(push_id)
+
+    async def update_push(self, push_id: UUID, update_dto: UpdatePushDTO) -> None:
+        return await self.notification_service.update_push(push_id, update_dto)
+
+    async def delete_push(self, push_id: UUID) -> None:
+        return await self.notification_service.delete_push(push_id)

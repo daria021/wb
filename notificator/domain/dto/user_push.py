@@ -4,8 +4,7 @@ from uuid import UUID
 
 from infrastructure.db.enums.push_status import PushStatus
 from .abstract import CreateDTO, UpdateDTO
-from domain.models import User
-from infrastructure.db.entities import Push
+from domain.models import User, Push
 
 
 class CreateUserPushDTO(CreateDTO):

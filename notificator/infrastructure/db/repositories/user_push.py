@@ -33,7 +33,8 @@ class UserPushRepository(
     async def get_queued_pushes(self, size: int = 10) -> list[UserPush]:
         async with self.session_maker() as session:
             res = await session.execute(
-                select(self.entity.status == PushStatus.PLANNED)
+                select(self.entity)
+                .where(self.entity.status == PushStatus.PLANNED)
                 .options(*self.options)
                 .order_by(self.entity.created_at)
                 .limit(size)
@@ -74,6 +75,8 @@ class UserPushRepository(
                 text=push.text,
                 creator_id=push.creator_id,
                 image_path=push.image_path,
+                button_text=push.button_text,
+                button_link=push.button_link,
                 created_at=push.created_at,
                 updated_at=push.updated_at
             )

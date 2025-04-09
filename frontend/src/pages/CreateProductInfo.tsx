@@ -116,9 +116,6 @@ function CreateProductInfo() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-    // Base URL for images
-    const mediaBase = process.env.REACT_APP_API_BASE;
-
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
             {/* Header with title and Edit button */}

@@ -1,13 +1,13 @@
 // src/App.tsx
 import React from 'react';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/CatalogPage';
 import SellerCabinet from "./pages/SellerCabinet";
 import MyProductsPage from "./pages/MyProductsPage";
 import CreateProductForm from "./pages/CreateProductForm";
 import CreateProductInfo from "./pages/CreateProductInfo";
-import {AuthProvider} from "./contexts/auth";
+import { AuthProvider } from "./contexts/auth";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import InstructionPage from "./pages/order_flow/InstructionPage";
 import CartScreenshotPage from "./pages/order_flow/CartScreenshotPage";
@@ -32,7 +32,9 @@ import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
 import ModeratorProductsPage from "./pages/moderator/ModeratorProductsPage";
 import ModeratorProductReviewPage from "./pages/moderator/ModeratorProductReviewPage";
 import ModeratorUsersPage from "./pages/moderator/ModeratorUserPage";
-import PushMessagesPage from "./pages/moderator/PushMessagesPage";
+import PushAdminPage from "./pages/moderator/PushAdminPage";
+import PushDetailsPage from "./pages/moderator/PushDetailsPage";
+import PushFormPage from "./pages/moderator/PushFormPage"; // New form page for create/update pushes
 
 function App() {
     window.Telegram.WebApp.expand();
@@ -44,7 +46,6 @@ function App() {
             return true;
         }
         console.log(typeof message, typeof message === "string");
-        // Otherwise, let the error propagate
         return false;
     };
 
@@ -53,13 +54,12 @@ function App() {
             <BrowserRouter>
                 <BackButtonManager/>
                 <Routes>
-                    {/* Главная страница */}
+                    {/* Main pages */}
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/about" element={<AboutPage/>}/>
                     <Route path="/instruction" element={<CompleteInstructionPage/>}/>
                     <Route path="/requirements" element={<RequirementsPage/>}/>
                     <Route path="/question" element={<QuestionPage/>}/>
-
                     <Route path="/catalog" element={<CatalogPage/>}/>
                     <Route path="/product/:productId" element={<ProductDetailPage/>}/>
                     <Route path="/product/:productId/instruction" element={<InstructionPage/>}/>
@@ -71,25 +71,29 @@ function App() {
                     <Route path="/order/:orderId/step-6" element={<ProductPickupPage/>}/>
                     <Route path="/order/:orderId/step-7" element={<StepReviewReportPage/>}/>
                     <Route path="/order/:orderId/order-info" element={<FinalDealPage/>}/>
-
                     <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
                     <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>
                     <Route path="/seller-cabinet/reports/:orderId" element={<OrderReportPage/>}/>
                     <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
-
                     <Route path="/my-products" element={<MyProductsPage/>}/>
                     <Route path="/create-product/:productId?" element={<CreateProductForm/>}/>
                     <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
                     <Route path="/user/orders" element={<MyOrdersPage/>}/>
 
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/moderator" element={<ModeratorDashboard />} />
-                    <Route path="/moderator/users" element={<ModeratorUsersPage />} />
-                    <Route path="/moderator/products" element={<ModeratorProductsPage />} />
-                    <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage />} />
-                    <Route path="/moderator/push" element={<PushMessagesPage />} />
+                    {/* Moderator pages */}
+                    <Route path="/moderator" element={<ModeratorDashboard/>}/>
+                    <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
+                    <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
+                    <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage/>}/>
 
-
+                    {/* Pushes */}
+                    <Route path="/moderator/pushes" element={<PushAdminPage/>}/>
+                    {/* New route for creating a push */}
+                    <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
+                    {/* Existing route for push details */}
+                    <Route path="/moderator/pushes/:pushId" element={<PushDetailsPage/>}/>
+                    {/* New route for editing a push */}
+                    <Route path="/moderator/pushes/:pushId/edit" element={<PushFormPage/>}/>
                 </Routes>
             </BrowserRouter>
         </AuthProvider>

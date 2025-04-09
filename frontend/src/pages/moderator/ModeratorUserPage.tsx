@@ -8,7 +8,7 @@ import {
     unbanUser,
     promoteUser,
     demoteUser,
-    increaseSellerBalance
+    increaseSellerBalance, getClients
 } from '../../services/api';
 import { UserRole } from '../../enums';
 import { on } from "@telegram-apps/sdk";
@@ -26,7 +26,7 @@ interface User {
     balance: number;
 }
 
-type FilterType = 'all' | 'moderators' | 'sellers' | 'banned';
+type FilterType = 'all' | 'moderators' | 'sellers' | 'clients' | 'banned';
 
 function ModeratorUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -62,6 +62,9 @@ function ModeratorUsersPage() {
                     break;
                 case 'banned':
                     response = await getBannedUsers();
+                    break;
+                case 'clients':
+                    response = await getClients();
                     break;
                 case 'all':
                 default:

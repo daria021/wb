@@ -65,6 +65,10 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
+    async def get_clients(self) -> list[User]:
+        ...
+
+    @abstractmethod
     async def get_moderators(self) -> list[User]:
         ...
 

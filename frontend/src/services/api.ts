@@ -39,7 +39,7 @@ export async function getProductsBySellerId() {
 }
 
 
-export async function createProduct(formData: FormData):Promise<string> {
+export async function createProduct(formData: FormData): Promise<string> {
     const response = await apiClient.post('/products', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -48,7 +48,7 @@ export async function createProduct(formData: FormData):Promise<string> {
     return response.data;
 }
 
-export async function updateProduct(productId: string, formData: FormData):Promise<string> {
+export async function updateProduct(productId: string, formData: FormData): Promise<string> {
     const response = await apiClient.patch(`/products/${productId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -57,7 +57,8 @@ export async function updateProduct(productId: string, formData: FormData):Promi
     console.log(response.request.formData);
     return response.data;
 }
-export async function updateProductStatus(productId: string, formData: FormData):Promise<string> {
+
+export async function updateProductStatus(productId: string, formData: FormData): Promise<string> {
     const response = await apiClient.patch(`/products/status/${productId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -67,7 +68,7 @@ export async function updateProductStatus(productId: string, formData: FormData)
     return response.data;
 }
 
-export async function getMe():Promise<MeResponse>{
+export async function getMe(): Promise<MeResponse> {
     return (await apiClient.get<MeResponse>(`users/me`)).data;
 }
 
@@ -79,26 +80,27 @@ export async function createOrder(formData: FormData) {
     });
 }
 
-export async function getOrderReport(orderId: string){
+export async function getOrderReport(orderId: string) {
     return apiClient.get(`/users/orders/report/${orderId}`);
 }
 
-export async function getOrderBySellerId(sellerId: string){
+export async function getOrderBySellerId(sellerId: string) {
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
-export async function increaseSellerBalance(sellerId: string, formData: FormData){
+export async function increaseSellerBalance(sellerId: string, formData: FormData) {
     return apiClient.patch(`/users/balance/${sellerId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
     });
 }
-export async function getSellerBalance(sellerId: string){
+
+export async function getSellerBalance(sellerId: string) {
     return apiClient.get(`/users/balance/${sellerId}`);
 }
 
-export async function updateOrderStatus(orderId: string, formData: FormData){
+export async function updateOrderStatus(orderId: string, formData: FormData) {
     return apiClient.patch(`/orders/status/${orderId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -197,6 +199,10 @@ export async function getSellers() {
     return apiClient.get('/moderator/users/sellers');
 }
 
+export async function getClients() {
+    return apiClient.get('/moderator/users/clients');
+}
+
 export async function getBannedUsers() {
     return apiClient.get('/moderator/users/banned');
 }
@@ -240,3 +246,53 @@ export async function reviewProduct(productId: string, data: { status: string; c
         },
     });
 }
+
+export const fetchPushes = async () => {
+    try {
+        const response = await apiClient.get(`/moderator/pushes`);
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка получения push рассылок:', error);
+        throw error;
+    }
+};
+
+export const createPush = async (formData: FormData) => {
+    try {
+        await apiClient.post(`/moderator/pushes`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    } catch (error) {
+        console.error('Ошибка создания push рассылки:', error);
+        throw error;
+    }
+};
+
+export const getPush = async (pushId: string) => {
+    return apiClient.get(`/moderator/pushes/${pushId}`);
+}
+
+export const activatePush = async (pushId: string, data: { userIds: string[] }) => {
+    return apiClient.post(`/moderator/pushes/${pushId}/activate`, data.userIds, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+}
+
+export const deletePush = async (pushId: string) => {
+    return apiClient.delete(`/moderator/pushes/${pushId}`);
+}
+
+export const updatePush = async (pushId: string, formData: FormData) => {
+    return apiClient.patch(`/moderator/pushes/${pushId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+
+

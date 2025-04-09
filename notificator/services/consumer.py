@@ -1,3 +1,4 @@
+import logging
 from asyncio import sleep
 from dataclasses import dataclass, field
 from typing import NoReturn
@@ -6,6 +7,7 @@ from abstractions.repositories.user_push import UserPushRepositoryInterface
 from abstractions.services.consumer import ConsumerInterface
 from abstractions.services.notification import NotificationServiceInterface
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Consumer(ConsumerInterface):
@@ -15,6 +17,7 @@ class Consumer(ConsumerInterface):
     inner_notification_delay: int = field(default=1)
 
     async def execute(self, notificator: NotificationServiceInterface) -> NoReturn:
+        logger.info("Consumer started")
         while True:
             notifications_to_send = await self.notification_repository.get_queued_pushes()
             for notification in notifications_to_send:

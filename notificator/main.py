@@ -5,6 +5,10 @@ from dependencies.services.consumer import get_consumer
 from dependencies.services.notification import get_notificator
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 
 async def main():
