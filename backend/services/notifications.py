@@ -7,7 +7,7 @@ from abstractions.repositories import OrderRepositoryInterface, UserRepositoryIn
 from abstractions.repositories.push import PushRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
 from abstractions.services.notification import NotificationServiceInterface
-from domain.dto import CreatePushDTO, CreateUserPushDTO
+from domain.dto import CreatePushDTO, CreateUserPushDTO, UpdatePushDTO
 from domain.models import Push
 
 
@@ -54,3 +54,9 @@ class NotificationService(NotificationServiceInterface):
 
     async def get_pushes(self) -> list[Push]:
         return await self.push_repository.get_all()
+
+    async def update_push(self, push_id: UUID, push: UpdatePushDTO) -> None:
+        return await self.push_repository.update(push_id, push)
+
+    async def delete_push(self, push_id: UUID) -> None:
+        return await self.push_repository.delete(push_id)

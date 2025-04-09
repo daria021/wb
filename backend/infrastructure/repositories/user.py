@@ -31,7 +31,18 @@ class UserRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.is_seller == True)
+                .where(self.entity.role == UserRole.SELLER)
+            )
+
+            result = result.scalars().all()
+
+        return [self.entity_to_model(x) for x in result]
+
+    async def get_clients(self) -> list[UserModel]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.role == UserRole.CLIENT)
             )
 
             result = result.scalars().all()

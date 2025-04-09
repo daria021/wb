@@ -40,6 +40,14 @@ async def get_sellers(
 
     return await moderator_service.get_sellers()
 
+@router.get('/clients')
+async def get_clients(
+        request: Request,
+) -> list[User]:
+    _, moderator_service, _ = await moderator_pre_request(request)
+
+    return await moderator_service.get_clients()
+
 
 @router.get('/banned')
 async def get_banned_users(

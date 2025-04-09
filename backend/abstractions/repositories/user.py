@@ -28,11 +28,13 @@ class UserRepositoryInterface(
         ...
 
     @abstractmethod
+    async def get_clients(self) -> list[User]:
+        ...
+
+    @abstractmethod
     async def get_banned(self) -> list[User]:
         ...
 
     @abstractmethod
     async def become_seller(self, user_id: UUID):
         ...
-
-

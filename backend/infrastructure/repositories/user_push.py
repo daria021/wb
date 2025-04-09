@@ -47,7 +47,7 @@ class UserPushRepository(
             id=dto.id,
             push_id=dto.push_id,
             user_id=dto.user_id,
-            sent_at=dto.sent_at,
+            sent_at=None,
             status=PushStatus.PLANNED,
             created_at=dto.created_at,
             updated_at=dto.updated_at

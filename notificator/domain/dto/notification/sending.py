@@ -8,6 +8,8 @@ class SendMessageDto(BaseModel):
     text: str
     chat_id: int
     image_path: Optional[str] = None
+    button_text: Optional[str] = None
+    button_link: Optional[str] = None
 
 
 class MessageSendingResultDto(BaseModel):

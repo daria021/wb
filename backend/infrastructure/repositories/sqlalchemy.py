@@ -87,7 +87,7 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
     async def create_many(self, objs: list[CreateDTO]) -> None:
         async with self.session_maker() as session:
             async with session.begin():
-                session.add_all(objs)
+                session.add_all([self.create_dto_to_entity(obj) for obj in objs])
 
     async def get(self, obj_id: UUID) -> Model:
         async with self.session_maker() as session:

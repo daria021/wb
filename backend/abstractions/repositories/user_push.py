@@ -20,7 +20,3 @@ class UserPushRepositoryInterface(
     @abstractmethod
     async def set_status(self, user_push_id: UUID, status: PushStatus, sent_at: Optional[datetime] = None):
         ...
-
-    @abstractmethod
-    async def create_many(self, objs: list[CreateUserPushDTO]) -> None:
-        ...

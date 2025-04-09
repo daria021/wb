@@ -51,6 +51,9 @@ services:
       dockerfile: Dockerfile
     command: [ "python3", "main.py" ]
     restart: unless-stopped
+    volumes:
+      - ./backend/upload/:/app/upload/
+
 
 volumes:
   postgres_data:

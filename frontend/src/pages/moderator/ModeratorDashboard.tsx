@@ -16,7 +16,7 @@ function ModeratorDashboard() {
 
     const handleUsersClick = () => navigate('/moderator/users');
     const handleProductsClick = () => navigate('/moderator/products');
-    const handlePushClick = () => navigate('/moderator/push');
+    const handlePushClick = () => navigate('/moderator/pushes');
     return (
         <div className="min-h-screen bg-gray-200 p-6">
             <h1 className="text-xl font-bold mb-4">Панель модератора</h1>

@@ -1,20 +1,20 @@
 import logging
-import os
 from typing import Optional
 from uuid import UUID
 
-import aiofiles
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request, Depends
 from starlette import status
 
+from abstractions.services.upload import UploadServiceInterface
 from dependencies.services.product import get_product_service  # функция, возвращающая экземпляр ProductService
+from dependencies.services.upload import get_upload_service
 from domain.dto import CreateProductDTO, UpdateProductDTO
 from domain.models import Product
 from domain.responses.product import ProductResponse
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
-from routes.utils import get_user_id_from_request, IMAGES_DIR
+from routes.utils import get_user_id_from_request
 
 router = APIRouter(
     prefix="/products",
@@ -22,9 +22,6 @@ router = APIRouter(
 )
 
 logger = logging.getLogger(__name__)
-
-os.makedirs(IMAGES_DIR, exist_ok=True)
-
 
 @router.get("")
 async def get_products(request: Request):
@@ -52,7 +49,6 @@ async def get_by_seller(
 @router.get("/{product_id}")
 async def get_product(
         product_id: UUID,
-        # request: Request,
 ) -> ProductResponse:
     product_service = get_product_service()
     product = await product_service.get_product(product_id)
@@ -62,7 +58,7 @@ async def get_product(
 
     response = ProductResponse.model_validate(product)
     if product.moderator_reviews:
-        response.last_moderator_review = product.moderator_reviews[-1] #todo
+        response.last_moderator_review = product.moderator_reviews[-1]  # todo
 
     return response
 
@@ -82,7 +78,8 @@ async def create_product(
         tg: str = Form(...),
         payment_time: PayoutTime = Form(...),
         review_requirements: str = Form(...),
-        image: Optional[UploadFile] = File(None)
+        image: Optional[UploadFile] = File(None),
+        upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
     # seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
     seller_id = get_user_id_from_request(request)
@@ -107,14 +104,8 @@ async def create_product(
 
     # Если файл изображения передан, сохраняем его и задаем путь
     if image is not None:
-        upload_dir = IMAGES_DIR
-        os.makedirs(upload_dir, exist_ok=True)
-        image_filename = f"{dto.id}.{image.filename.split('.')[-1]}"
-        file_location = os.path.join(upload_dir, image_filename)
         try:
-            async with aiofiles.open(file_location, "wb") as file_obj:
-                await file_obj.write(await image.read())
-            image_path = image_filename
+            image_path = await upload_service.upload(image)
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -134,7 +125,6 @@ async def create_product(
 @router.patch("/{product_id}")
 async def update_product(
         product_id: UUID,
-        request: Request,
         name: Optional[str] = Form(...),
         article: Optional[str] = Form(...),
         brand: Optional[str] = Form(...),
@@ -149,25 +139,8 @@ async def update_product(
         payment_time: Optional[PayoutTime] = Form(...),
         review_requirements: Optional[str] = Form(...),
         image: Optional[UploadFile] = File(None),
+        upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> dict:
-    # Если файл изображения передан, сохраняем его и задаем путь
-    image_path = None
-    if image is not None:
-        upload_dir = IMAGES_DIR  # IMAGES_DIR определён ранее (например, "static/images")
-        os.makedirs(upload_dir, exist_ok=True)
-        image_filename = f"{product_id}.{image.filename.split('.')[-1]}"
-        file_location = os.path.join(upload_dir, image_filename)
-        try:
-            async with aiofiles.open(file_location, "wb") as file_obj:
-                await file_obj.write(await image.read())
-            image_path = image_filename
-        except Exception as e:
-            logger.error(e, exc_info=True)
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Не удалось сохранить файл"
-            ) from e
-
     # Формируем DTO для обновления
     dto = UpdateProductDTO(
         name=name,
@@ -183,8 +156,19 @@ async def update_product(
         status=status,
         review_requirements=review_requirements,
         article=article,
-        image_path=image_path
     )
+
+    # Если файл изображения передан, сохраняем его и задаем путь
+    if image is not None:
+        try:
+            image_path = await upload_service.upload(image)
+            dto.image_path = image_path
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail="Не удалось сохранить файл"
+            ) from e
 
     product_service = get_product_service()
     await product_service.update_product(product_id, dto)
@@ -194,7 +178,6 @@ async def update_product(
 @router.patch("/status/{product_id}")
 async def update_product_status(
         product_id: UUID,
-        request: Request,
         status: Optional[ProductStatus] = Form(...),
 ) -> dict:
     dto = UpdateProductDTO(

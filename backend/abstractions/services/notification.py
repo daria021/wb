@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from domain.dto import CreatePushDTO
+from domain.dto import CreatePushDTO, UpdatePushDTO
 from domain.models import Push
 
 
@@ -28,4 +28,12 @@ class NotificationServiceInterface(ABC):
 
     @abstractmethod
     async def get_push(self, push_id: UUID) -> Push:
+        ...
+
+    @abstractmethod
+    async def update_push(self, push_id: UUID, push: UpdatePushDTO) -> None:
+        ...
+
+    @abstractmethod
+    async def delete_push(self, push_id: UUID) -> None:
         ...

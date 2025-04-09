@@ -2,15 +2,14 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
 
-from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
-
 from infrastructure.enums.category import Category
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
+from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 Base = declarative_base()
 
@@ -114,7 +113,7 @@ class Review(AbstractBase):
 
 class ModeratorReview(AbstractBase):
     __tablename__ = 'moderator_reviews'
-    
+
     moderator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
     product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
     comment: Mapped[str]
@@ -124,23 +123,30 @@ class ModeratorReview(AbstractBase):
     moderator: Mapped['User'] = relationship('User')
     product: Mapped['Product'] = relationship('Product', back_populates='moderator_reviews')
 
+
 class Push(AbstractBase):
     __tablename__ = 'pushes'
 
     title: Mapped[str] = mapped_column(unique=True)
     text: Mapped[str]
-    creator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
-    image_path: Mapped[Optional[str]] = mapped_column(unique=False)
+    creator_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    image_path: Mapped[Optional[str]]
+
+    button_text: Mapped[Optional[str]]
+    button_link: Mapped[Optional[str]]
+
+    deleted_at: Mapped[Optional[datetime]]
 
     creator: Mapped["User"] = relationship("User", foreign_keys=[creator_id])
+
 
 class UserPush(AbstractBase):
     __tablename__ = 'user_pushes'
 
-    push_id: Mapped[UUID] = mapped_column(ForeignKey('pushes.id'))
-    user_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
+    push_id: Mapped[pyUUID] = mapped_column(ForeignKey('pushes.id'))
+    user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     sent_at: Mapped[Optional[datetime]]
     status: Mapped[PushStatus]
 
     push: Mapped["Push"] = relationship("Push")
-    user: Mapped["User"] = relationship("User", foreign_keys=[push_id])
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id])

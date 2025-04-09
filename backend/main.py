@@ -9,6 +9,7 @@ from fastapi.openapi.utils import get_openapi
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
+from dependencies.services.upload import get_upload_service
 from middlewares.auth_middleware import check_for_auth
 from routes import (
     router as api_router,
@@ -39,6 +40,9 @@ async def apply_migrations():
 @asynccontextmanager
 async def lifespan(_) -> AsyncGenerator[None, None]:
     await apply_migrations()
+
+    upload_service = get_upload_service()
+    await upload_service.initialize()
 
     yield
 

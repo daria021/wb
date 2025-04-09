@@ -14,6 +14,8 @@ class Push(BaseModel):
     text: str
     creator_id: UUID
     image_path: Optional[str] = None
+    button_text: Optional[str] = None
+    button_link: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

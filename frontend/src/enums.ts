@@ -30,6 +30,8 @@ export enum Category {
 
 export enum UserRole {
     USER = "user",
+    CLIENT = "client",
+    SELLER = "seller",
     MODERATOR = "moderator",
     ADMIN = "admin"
 }
