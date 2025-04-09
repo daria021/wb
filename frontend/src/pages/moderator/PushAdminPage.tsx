@@ -98,7 +98,7 @@ const PushAdminPage: React.FC = () => {
                                     <img
                                         src="/icons/trash.png"
                                         alt="Удалить"
-                                        className="w-7 h-4 cursor-pointer"
+                                        className="w-4 h-4 cursor-pointer"
                                         onClick={(e) => handleDeletePush(push.id, e)}
                                     />
                                 </td>
