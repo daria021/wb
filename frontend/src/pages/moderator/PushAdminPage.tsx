@@ -70,9 +70,9 @@ const PushAdminPage: React.FC = () => {
                     <table className="min-w-full border border-gray-300">
                         <thead className="bg-brandlight">
                         <tr>
-                            <th className="border border-gray-300 p-2 text-left">Название</th>
-                            <th className="border border-gray-300 p-2 text-left">Текст рассылки</th>
-                            <th className="border border-gray-300 p-2 text-left">Кнопка</th>
+                            <th className="border border-gray-300 p-2 text-left text-base">Название</th>
+                            <th className="border border-gray-300 p-2 text-left text-base">Текст рассылки</th>
+                            <th className="border border-gray-300 p-2 text-left text-base">Кнопка</th>
                             <th className="border border-gray-300 p-2"></th>
                         </tr>
                         </thead>
@@ -83,9 +83,9 @@ const PushAdminPage: React.FC = () => {
                                 className="cursor-pointer hover:bg-gray-50"
                                 onClick={() => navigate(`/moderator/pushes/${push.id}`)}
                             >
-                                <td className="border border-gray-300 p-2">{push.title}</td>
-                                <td className="border border-gray-300 p-2">{push.text}</td>
-                                <td className="border border-gray-300 p-2">
+                                <td className="border border-gray-300 p-2 text-base">{push.title}</td>
+                                <td className="border border-gray-300 p-2 text-base">{push.text}</td>
+                                <td className="border border-gray-300 p-2 text-base">
                                     {push.button_text ? (
                                         <span>{push.button_text}</span>
                                     ) : (
