@@ -67,13 +67,15 @@ const PushAdminPage: React.FC = () => {
                 <div className="text-red-500">{error}</div>
             ) : (
                 <>
-                    <table className="min-w-full border border-gray-300">
+                    {/* Добавляем table-fixed, чтобы столбцы имели фиксированную ширину */}
+                    <table className="min-w-full table-fixed border border-gray-300">
                         <thead className="bg-brandlight">
                         <tr>
                             <th className="border border-gray-300 p-2 text-left text-base">Название</th>
                             <th className="border border-gray-300 p-2 text-left text-base">Текст рассылки</th>
                             <th className="border border-gray-300 p-2 text-left text-base">Кнопка</th>
-                            <th className="border border-gray-300 p-2"></th>
+                            {/* Фиксированная ширина для столбца с иконкой удаления */}
+                            <th className="border border-gray-300 p-2 w-12"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -92,7 +94,7 @@ const PushAdminPage: React.FC = () => {
                                         '—'
                                     )}
                                 </td>
-                                <td className="border border-gray-300 p-2 text-center">
+                                <td className="border border-gray-300 p-2 text-center w-12">
                                     <img
                                         src="/icons/trash.png"
                                         alt="Удалить"
