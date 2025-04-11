@@ -25,8 +25,7 @@ RUN pip install --upgrade pip && \
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    DEVELOPER=dasha
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
