@@ -169,7 +169,7 @@ function CreateProductInfo() {
                         <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
                     </div>
                     <div className="flex flex-col justify-start">
-                        <span className="text-sm text-gray-600">Выкупы на сутки:</span>
+                        <span className="text-sm text-gray-600">План выкупов на сутки:</span>
                         <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>
                     </div>
                 </div>

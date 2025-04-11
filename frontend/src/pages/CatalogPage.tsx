@@ -74,14 +74,17 @@ function CatalogPage() {
         <div className="min-h-screen bg-gray-200">
             <div className="p-4 mx-auto">
                 {/* Поле ввода для поиска */}
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md p-2"
-                    />
+                <div className="sticky top-0 z-10 bg-gray-200">
+
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Поиск"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full border border-gray-300 rounded-md p-2"
+                        />
+                    </div>
                 </div>
 
                 {/* Сетка карточек товаров */}

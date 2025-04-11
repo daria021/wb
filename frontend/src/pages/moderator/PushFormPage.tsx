@@ -7,8 +7,6 @@ interface Push {
     id: string;
     title: string;
     text: string;
-    // You can later add image_path if needed
-    // And optionally other fields
 }
 
 const PushFormPage: React.FC = () => {
@@ -19,7 +17,6 @@ const PushFormPage: React.FC = () => {
     const [title, setTitle] = useState<string>('');
     const [text, setText] = useState<string>('');
     const [imageFile, setImageFile] = useState<File | null>(null);
-    // New fields for button text and link:
     const [buttonText, setButtonText] = useState<string>('');
     const [buttonLink, setButtonLink] = useState<string>('');
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getMe, getOrderBySellerId, updateOrderStatus } from '../services/api';
-import { AxiosResponse } from 'axios';
-import { on } from "@telegram-apps/sdk";
-import { OrderStatus } from '../enums'; // Убедитесь, что этот импорт корректен
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {getMe, getOrderBySellerId, updateOrderStatus} from '../services/api';
+import {AxiosResponse} from 'axios';
+import {on} from "@telegram-apps/sdk";
+import {OrderStatus} from '../enums'; // Убедитесь, что этот импорт корректен
 
 interface Product {
     id: string;
@@ -99,6 +99,7 @@ function SellerReportsPage() {
                 console.error("Ошибка при получении sellerId:", err);
             }
         }
+
         fetchSellerId();
     }, []);
 
@@ -135,22 +136,26 @@ function SellerReportsPage() {
     return (
         <div className="min-h-screen bg-gray-200">
             <div className="p-4 max-w-screen-md mx-auto">
-                <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
+                <div className="sticky top-0 z-10 bg-gray-200">
 
-                {/* Вкладки */}
-                <div className="flex mb-4 border-b">
-                    <button
-                        onClick={() => setActiveTab(OrderStatus.CASHBACK_NOT_PAID)}
-                        className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_NOT_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
-                    >
-                        Кешбек не выплачен
-                    </button>
-                    <button
-                        onClick={() => setActiveTab(OrderStatus.CASHBACK_PAID)}
-                        className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
-                    >
-                        Кешбек выплачен
-                    </button>
+                    <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
+
+                    {/* Вкладки */}
+                    <div className="flex mb-4 border-b">
+                        <button
+                            onClick={() => setActiveTab(OrderStatus.CASHBACK_NOT_PAID)}
+                            className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_NOT_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+                        >
+                            Кешбек не выплачен
+                        </button>
+                        <button
+                            onClick={() => setActiveTab(OrderStatus.CASHBACK_PAID)}
+                            className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+                        >
+                            Кешбек выплачен
+                        </button>
+
+                    </div>
                 </div>
 
                 {/* Список заказов */}

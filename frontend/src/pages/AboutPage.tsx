@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {on} from "@telegram-apps/sdk";
 
 function AboutPage() {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ function AboutPage() {
     }, [navigate]);
 
     const handleQuestion = () => navigate('/question');
-    const handleInstruction = () => navigate('/instruction');
+    const handleInstruction = () => navigate('/instruction', { state: { backRoute: '/about' } });
     const handleRequirements = () => navigate('/requirements');
 
     return (
@@ -30,12 +30,49 @@ function AboutPage() {
                         {/* Обзор сервиса */}
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
-                                ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по раздачам.
+                                ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям
+                                безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по
+                                раздачам.
                             </p>
                         </section>
 
+                        <div className="space-y-2">
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashmarket/45"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Инструкция для покупателей
+                                </a>
+                            </div>
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashmarket/44"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Обзор на кабинет продавца
+                                </a>
+                            </div>
+                            {/* External link to a Telegram channel */}
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashback_go"  // Replace with your actual channel link
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Канал по раздачам
+                                </a>
+                            </div>
+                        </div>
+
+
                         {/* Информация для менеджеров */}
-                        <section className="mb-6 text-left">
+                        <section className="mb-6 mt-6 text-left">
                             <h2 className="text-xl font-bold mb-3">Для менеджеров</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
                                 <li>Сократит количество чатов</li>
@@ -55,11 +92,11 @@ function AboutPage() {
                                 <li>Простая инструкция</li>
                                 <li>Проверенные продавцы</li>
                             </ul>
+                            <hr className="my-6 border-gray-300" />
                         </section>
 
                         {/* Кнопки для других статей */}
                         <section className="mb-6 text-left">
-                            <h2 className="text-xl font-bold mb-3">Другие статьи</h2>
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={handleQuestion}

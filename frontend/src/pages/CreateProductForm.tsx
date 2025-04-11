@@ -188,20 +188,32 @@ function ProductForm() {
 
     return (
         <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
-            {/* Шапка */}
-            <div className="flex items-center justify-between mb-4">
-
-                <h1 className="text-md font-bold">
-                    {isEditMode ? 'Редактировать товар' : 'Добавить товар'}
-                </h1>
-                <button
-                    type="submit"
-                    form="product-form"
-                    className="text-brand text-sm"
-                >
-                    Сохранить
-                </button>
+            <div className="sticky top-0 z-10 bg-gray-200">
+                {/* Первый ряд: кнопки */}
+                <div className="flex justify-between items-center px-2 py-1">
+                    <button
+                        onClick={() => navigate('/')}
+                        type="button"
+                        className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
+                    >
+                        Отменить
+                    </button>
+                    <button
+                        type="submit"
+                        form="product-form"
+                        className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
+                    >
+                        Отправить заявку
+                    </button>
+                </div>
+                {/* Второй ряд: заголовок */}
+                <div className="px-2">
+                    <h1 className="text-center text-base font-bold -mt-1">
+                        {isEditMode ? 'Редактировать товар' : 'Добавить товар'}
+                    </h1>
+                </div>
             </div>
+
 
             <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
                 {/* Название */}
@@ -235,29 +247,30 @@ function ProductForm() {
                 {/* Фото (показать превью, если есть старое или выбран файл) */}
                 <div>
                     <p className="uppercase text-xs text-gray-500">Фото товара</p>
-                    <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex items-center gap-2">
-                    {previewUrl ? (
-                        <img
-                            src={previewUrl}
-                            alt="preview"
-                            className="w-32 h-32 object-cover mb-2"
+                    <label
+                        className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex items-center gap-2">
+                        {previewUrl ? (
+                            <img
+                                src={previewUrl}
+                                alt="preview"
+                                className="w-32 h-32 object-cover mb-2"
+                            />
+                        ) : formData.image_path ? (
+                            // Если в режиме редактирования есть старое фото
+                            <img
+                                src={GetUploadLink(formData.image_path)}
+                                alt="existing"
+                                className="w-32 h-32 object-cover mb-2"
+                            />
+                        ) : (
+                            <div className="text-brand text-sm mb-2">Выбрать файл</div>
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
                         />
-                    ) : formData.image_path ? (
-                        // Если в режиме редактирования есть старое фото
-                        <img
-                            src={GetUploadLink(formData.image_path)}
-                            alt="existing"
-                            className="w-32 h-32 object-cover mb-2"
-                        />
-                    ) : (
-                        <div className="text-brand text-sm mb-2">Выбрать файл</div>
-                    )}
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                    />
                     </label>
 
                 </div>
@@ -322,7 +335,7 @@ function ProductForm() {
 
                 {/* Выкупы на сутки */}
                 <div>
-                    <label className="block text-sm font-medium mb-1">Выкупы на сутки</label>
+                    <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>
                     <input
                         type="number"
                         name="daily_repurchases"
@@ -348,7 +361,7 @@ function ProductForm() {
 
                 {/* Цена на ВБ */}
                 <div>
-                    <label className="block text-sm font-medium mb-1">Цена на сайте (WB)</label>
+                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (руб.)</label>
                     <input
                         type="number"
                         name="wb_price"
@@ -375,7 +388,7 @@ function ProductForm() {
 
                 {/* Время выплаты */}
                 <div>
-                    <label className="block text-sm font-medium mb-1">Время выплаты</label>
+                    <label className="block text-sm font-medium mb-1">Когда выплата </label>
                     <select
                         name="payment_time"
                         value={formData.payment_time}
