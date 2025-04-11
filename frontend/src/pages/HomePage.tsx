@@ -19,7 +19,8 @@ function HomePage() {
 
     // Примерные обработчики
     const handleAboutClick = () => navigate('/about');
-    const handleInstructionClick = () => navigate('/instruction');
+    const handleInstructionClick = () => navigate('/instruction', { state: { backRoute: '/' } });
+
     const handleComplaintsClick = () => {
         window.open('https://t.me/bookshaloba', '_blank'); //todo
     };
@@ -40,7 +41,7 @@ function HomePage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
     return (
         <div className="min-h-screen bg-gray-200 p-6">

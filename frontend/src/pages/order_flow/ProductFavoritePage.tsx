@@ -110,7 +110,7 @@ function ProductFavoritePage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
     return (

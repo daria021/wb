@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getUserOrders, updateOrderStatus } from '../services/api';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect, useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {getUserOrders, updateOrderStatus} from '../services/api';
+import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
 
 const STEP_NAMES: { [key: number]: string } = {
@@ -78,7 +78,7 @@ function MyOrdersPage() {
     }, [navigate]);
 
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
     const fetchOrders = async () => {
@@ -124,15 +124,15 @@ function MyOrdersPage() {
 
     return (
         <div className="bg-gray-200 min-h-screen p-4 pb-8">
-            {/* Шапка */}
-            <div className="flex items-center justify-center relative mb-4">
-                <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
+            <div className="sticky top-0 z-10 bg-gray-200">
+                <div className="flex items-center justify-center relative mb-4">
+                    <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                    Нажмите на карточку, чтобы открыть инструкцию
+                </p>
             </div>
-
-            <p className="text-sm text-gray-600 mb-4 text-center">
-                Нажмите на карточку, чтобы открыть инструкцию
-            </p>
-
             {/* Список заказов */}
             {/* Список заказов или сообщение об отсутствии покупок */}
             <div className="w-full flex flex-col gap-3 mb-4">
@@ -142,7 +142,8 @@ function MyOrdersPage() {
                         const linkTo = getOrderStepLink(order);
                         return (
                             <Link to={linkTo} key={order.id}>
-                                <div className="relative bg-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                <div
+                                    className="relative bg-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {/* Кнопка "Отменить заказ" в правом верхнем углу */}
                                     {order.step < 7 && (
                                         <button
@@ -166,7 +167,8 @@ function MyOrdersPage() {
                                                     className="absolute inset-0 object-cover w-full h-full"
                                                 />
                                             ) : (
-                                                <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                                                <div
+                                                    className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
                                                     Нет фото
                                                 </div>
                                             )}
@@ -176,11 +178,11 @@ function MyOrdersPage() {
                                         <span className="font-semibold text-sm">
                                             {order.product.name}
                                         </span>
-                                            <br />
+                                            <br/>
                                             <span className="text-md font-bold text-brand">
                                             {order.product.price} ₽
                                         </span>
-                                            <br />
+                                            <br/>
                                             <span className="text-xs text-gray-500">
                                             Текущий шаг: {stepName}
                                         </span>
