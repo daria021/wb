@@ -41,8 +41,12 @@ function HomePage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
     return (
         <div className="min-h-screen bg-gray-200 p-6">
             {/* --- Верхний ряд (3 плитки): О сервисе, Инструкция, Книга жалоб --- */}

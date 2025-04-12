@@ -67,7 +67,11 @@ function CatalogPage() {
     }
 
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return (
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+                <p className="text-sm text-brand">{error}</p>
+            </div>
+        );
     }
 
     return (
@@ -89,6 +93,7 @@ function CatalogPage() {
 
                 {/* Сетка карточек товаров */}
                 <div className="grid grid-cols-2 gap-4">
+
                     {filteredProducts.map((product) => (
                         <div
                             key={product.id}

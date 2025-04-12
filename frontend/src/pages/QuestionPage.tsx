@@ -7,8 +7,12 @@ function QuestionPage() {
     const handleInstruction = () => navigate('/instruction');
     const handleRequirements = () => navigate('/requirements');
     const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
     const handleAbout = () => navigate('/about');
     const handleHomeClick = () => navigate('/');
 

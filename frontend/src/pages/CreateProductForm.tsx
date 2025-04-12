@@ -182,9 +182,12 @@ function ProductForm() {
     }
 
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return (
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+                <p className="text-sm text-brand">{error}</p>
+            </div>
+        );
     }
-
 
     return (
         <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">

@@ -109,8 +109,13 @@ function RequirementsPage() {
                         </button>
                         <button
                             onClick={() => {
+                                if (window.Telegram?.WebApp?.close) {
+                                    window.Telegram.WebApp.close();
+                                }
                                 window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
                             }}
+
+
                             className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent"
                         >
                             Нужна помощь

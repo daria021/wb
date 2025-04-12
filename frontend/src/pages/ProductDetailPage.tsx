@@ -68,6 +68,9 @@ function ProductDetailPage() {
         return url;
     }
 
+    const savedAmount = product.wb_price - product.price;
+
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
             <div className="relative w-full h-64 mb-4 mt-12 rounded-lg overflow-hidden">
@@ -135,7 +138,7 @@ function ProductDetailPage() {
                     Цена для вас: {product.price} руб
                 </p>
                 <p className="text-sm text-gray-700 mb-1">
-                    Скидка: {discountPercent}%
+                    Скидка: {discountPercent}% <span className="text-gray-600">(сэкономите {savedAmount} ₽)</span>
                 </p>
                 <p className="text-sm text-gray-700 mb-1">
                     Условия оплаты: {product.payment_time}

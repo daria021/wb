@@ -6,8 +6,12 @@ import {getMe, getSellerBalance} from "../services/api";
 
 function SellerBalancePage() {
     const handleContactAdmin = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
     const navigate = useNavigate();
     const [balance, setBalance] = useState(0);
 
