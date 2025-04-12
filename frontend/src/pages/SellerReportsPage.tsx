@@ -130,7 +130,11 @@ function SellerReportsPage() {
         return <div className="p-4 text-center">Загрузка отчетов...</div>;
     }
     if (error) {
-        return <div className="p-4 text-center text-red-600">{error}</div>;
+        return (
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+                <p className="text-sm text-brand">{error}</p>
+            </div>
+        );
     }
 
     return (

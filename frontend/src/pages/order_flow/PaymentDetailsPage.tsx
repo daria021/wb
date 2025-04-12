@@ -34,10 +34,16 @@ function PaymentDetailsPage() {
     const [selectedBank, setSelectedBank] = useState('');
     const [reportData, setReportData] = useState<OrderReport | null>(null);
     const [showReport, setShowReport] = useState(false);
-
-    // Состояние чекбокса «Подтверждаю правильность»
     const [agreed, setAgreed] = useState(false);
+    const [otherBank, setOtherBank] = useState('');
 
+    const handleChange = (e: any) => {
+        setSelectedBank(e.target.value);
+        // Если выбран банк, отличный от "Другое", очищаем другое значение
+        if (e.target.value !== 'Другое') {
+            setOtherBank('');
+        }
+    };
     // Активность кнопки "Продолжить" — все поля должны быть заполнены и чекбокс отмечен
     const canContinue =
         cardNumber.trim() !== '' &&
@@ -92,6 +98,9 @@ function PaymentDetailsPage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
@@ -153,7 +162,7 @@ function PaymentDetailsPage() {
                     </label>
                     <select
                         value={selectedBank}
-                        onChange={(e) => setSelectedBank(e.target.value)}
+                        onChange={handleChange}
                         className="w-full border border-gray-300 rounded p-2 text-sm"
                     >
                         <option value="">Выберите...</option>
@@ -169,7 +178,20 @@ function PaymentDetailsPage() {
                         <option value="УБРиР">УБРиР</option>
                         <option value="Хоум кредит">Хоум кредит</option>
                         <option value="Яндекс">Яндекс</option>
+                        <option value="Другое">Другое</option>
                     </select>
+                    {selectedBank === 'Другое' && (
+                        <div className="mt-2">
+                            <label className="block text-sm font-medium text-gray-700">Введите банк</label>
+                            <input
+                                type="text"
+                                value={otherBank}
+                                onChange={(e) => setOtherBank(e.target.value)}
+                                className="w-full border border-gray-300 rounded p-2 text-sm"
+                                placeholder="Введите название банка"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Чекбокс "Подтверждаю правильность" */}

@@ -78,8 +78,12 @@ function MyOrdersPage() {
     }, [navigate]);
 
     const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
 
     const fetchOrders = async () => {
         try {
@@ -118,8 +122,13 @@ function MyOrdersPage() {
     if (loading) {
         return <div className="p-4">Загрузка покупок...</div>;
     }
+
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return (
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+                <p className="text-sm text-brand">{error}</p>
+            </div>
+        );
     }
 
     return (
