@@ -43,7 +43,11 @@ class Product(AbstractBase):
 
     reviews: Mapped[List['Review']] = relationship('Review', back_populates='product')
     orders: Mapped[List['Order']] = relationship('Order', back_populates='product')
-    moderator_reviews: Mapped[list['ModeratorReview']] = relationship('ModeratorReview', back_populates='product')
+    moderator_reviews: Mapped[list['ModeratorReview']] = relationship(
+        'ModeratorReview',
+        order_by="ModeratorReview.created_at",
+        back_populates='product',
+    )
 
 
 class User(AbstractBase):
