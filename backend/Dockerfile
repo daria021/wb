@@ -27,6 +27,8 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+#ENV ENVIRONMENT=local
+
 WORKDIR /app
 
 # Copy installed Python packages from builder stage

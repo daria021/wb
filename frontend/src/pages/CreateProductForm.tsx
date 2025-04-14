@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, FormEvent, useEffect, useState, useRef} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {createProduct, getProductById, updateProduct} from '../services/api'; // Ваши функции API
 import {Category, PayoutTime} from '../enums';
@@ -26,6 +26,34 @@ function ProductForm() {
     const navigate = useNavigate();
     const {productId} = useParams(); // берём из URL, если есть
     const isEditMode = Boolean(productId);
+    const [originalFormData, setOriginalFormData] = useState<ProductFormData | null>(null);
+    const [changedFields, setChangedFields] = useState<Record<string, { old: any, new: any }>>({});
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [priceError, setPriceError] = useState('');
+    const [repurchasesError, setRepurchasesError] = useState('');
+
+
+    const inputRefs = [
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null)
+    ];
+
+    const reviewRequirementsRef = useRef<HTMLTextAreaElement>(null);
+
+    const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // Если есть следующий элемент, переводим фокус
+            // Например, если у вас есть массив рефов для остальных полей, можно использовать его
+        }
+    };
 
     // Состояния для полей
     const [formData, setFormData] = useState<ProductFormData>({
@@ -44,6 +72,19 @@ function ProductForm() {
         image_path: '', // если при редактировании есть уже загруженное фото
     });
 
+    const handleKeyDown = (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (index === 8) {
+                // для последнего текстового поля (Телеграм) переводим фокус в textarea
+                reviewRequirementsRef.current?.focus();
+            } else {
+                inputRefs[index + 1]?.current?.focus();
+            }
+        }
+    };
+
+
     // Состояние для файла (новое фото)
     const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -53,6 +94,8 @@ function ProductForm() {
     // Ошибки / Загрузка
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+
 
     // При монтировании, если есть productId — подгружаем данные с бэка
     useEffect(() => {
@@ -68,7 +111,7 @@ function ProductForm() {
                 const data = response.data;
 
                 // Заполняем поля
-                setFormData({
+                const loadedData: ProductFormData = {
                     id: data.id,
                     name: data.name,
                     article: data.article,
@@ -83,7 +126,9 @@ function ProductForm() {
                     payment_time: data.payment_time,
                     review_requirements: data.review_requirements,
                     image_path: data.image_path || '', // если есть
-                });
+                };
+                setFormData(loadedData);
+                setOriginalFormData(loadedData);
 
                 setLoading(false);
             } catch (err) {
@@ -107,19 +152,48 @@ function ProductForm() {
         }
     };
 
+    const validateField = (name: string, value: any, newFormData: ProductFormData) => {
+        if (name === 'price') {
+            // Цена для покупателя должна быть меньше или равна цене на сайте
+            if (Number(value) > newFormData.wb_price) {
+                setPriceError('Цена для покупателя не должна быть больше цены на сайте');
+            } else {
+                setPriceError('');
+            }
+        }
+        if (name === 'daily_repurchases') {
+            // Ежедневные выкупы не могут превышать общий план
+            if (Number(value) > newFormData.general_repurchases) {
+                setRepurchasesError('Ежедневные выкупы не могут превышать общий план');
+            } else {
+                setRepurchasesError('');
+            }
+        }
+    };
+
+
+
     // Изменение простых полей (string, number, т.д.)
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
-        // Если поле числовое, нужно парсить (general_repurchases, daily_repurchases, price, wb_price)
+        let newValue: any = value;
         if (['general_repurchases', 'daily_repurchases', 'price', 'wb_price'].includes(name)) {
+            newValue = Number(value);
+        }
+        setFormData((prev) => {
+            const updated = {...prev, [name]: newValue};
+            // Вызываем валидацию для соответствующих полей
+            validateField(name, newValue, updated);
+            return updated;
+        });
+    };
+
+    const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        if (value === '0') {
             setFormData((prev) => ({
                 ...prev,
-                [name]: Number(value),
-            }));
-        } else {
-            setFormData((prev) => ({
-                ...prev,
-                [name]: value,
+                [name]: '',
             }));
         }
     };
@@ -137,6 +211,30 @@ function ProductForm() {
     // Обработка отправки формы
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        if (isEditMode && originalFormData) {
+            const changes: Record<string, { old: any, new: any }> = {};
+            Object.keys(formData).forEach((key) => {
+                // Можно добавить дополнительные проверки для сравнения сложных типов, если нужно
+                if (formData[key as keyof ProductFormData] !== originalFormData[key as keyof ProductFormData]) {
+                    changes[key] = {
+                        old: originalFormData[key as keyof ProductFormData],
+                        new: formData[key as keyof ProductFormData],
+                    };
+                }
+            });
+            // Если есть изменения, показываем подтверждение
+            if (Object.keys(changes).length > 0) {
+                setChangedFields(changes);
+                setShowConfirmation(true);
+                return;
+            }
+        }
+        // Если изменений нет или это режим создания, можно сразу отправлять запрос
+        await submitData();
+    };
+
+    const submitData = async () => {
 
         try {
             // Собираем FormData
@@ -182,12 +280,9 @@ function ProductForm() {
     }
 
     if (error) {
-        return (
-            <div className="p-4 bg-brandlight border border-brand rounded text-center">
-                <p className="text-sm text-brand">{error}</p>
-            </div>
-        );
+        return <div className="p-4 text-red-600">{error}</div>;
     }
+
 
     return (
         <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
@@ -224,6 +319,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Название товара</label>
                     <input
                         type="text"
+                        ref={inputRefs[0]}
+                        onKeyDown={handleKeyDown(0)}
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
@@ -238,6 +335,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Артикул</label>
                     <input
                         type="text"
+                        ref={inputRefs[1]}
+                        onKeyDown={handleKeyDown(1)}
                         name="article"
                         value={formData.article}
                         onChange={handleInputChange}
@@ -284,6 +383,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Бренд</label>
                     <input
                         type="text"
+                        ref={inputRefs[2]}
+                        onKeyDown={handleKeyDown(2)}
                         name="brand"
                         value={formData.brand}
                         onChange={handleInputChange}
@@ -296,6 +397,7 @@ function ProductForm() {
                 <div>
                     <label className="block text-sm font-medium mb-1">Категория</label>
                     <select
+
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
@@ -314,6 +416,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Ключевое слово</label>
                     <input
                         type="text"
+                        ref={inputRefs[3]}
+                        onKeyDown={handleKeyDown(3)}
                         name="key_word"
                         value={formData.key_word}
                         onChange={handleInputChange}
@@ -328,9 +432,12 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Общий план выкупов</label>
                     <input
                         type="number"
+                        ref={inputRefs[4]}
+                        onKeyDown={handleKeyDown(4)}
                         name="general_repurchases"
                         value={formData.general_repurchases}
                         onChange={handleInputChange}
+                        onFocus={handleFocus}
                         required
                         className="w-full border border-gray-300 rounded-md p-2 text-sm"
                     />
@@ -341,9 +448,28 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>
                     <input
                         type="number"
+                        ref={inputRefs[5]}
+                        onKeyDown={handleKeyDown(5)}
                         name="daily_repurchases"
                         value={formData.daily_repurchases}
                         onChange={handleInputChange}
+                        onFocus={handleFocus}
+                        required
+                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                    />
+                    {repurchasesError && <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (руб.)</label>
+                    <input
+                        type="number"
+                        ref={inputRefs[6]}
+                        onKeyDown={handleKeyDown(6)}
+                        name="wb_price"
+                        value={formData.wb_price}
+                        onChange={handleInputChange}
+                        onFocus={handleFocus}
                         required
                         className="w-full border border-gray-300 rounded-md p-2 text-sm"
                     />
@@ -354,32 +480,28 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Цена для покупателя</label>
                     <input
                         type="number"
+                        ref={inputRefs[7]}
+                        onKeyDown={handleKeyDown(7)}
                         name="price"
                         value={formData.price}
                         onChange={handleInputChange}
+                        onFocus={handleFocus}
                         required
                         className="w-full border border-gray-300 rounded-md p-2 text-sm"
                     />
+                    {priceError && <p className="text-red-500 text-xs mt-1">{priceError}</p>}
+
                 </div>
 
-                {/* Цена на ВБ */}
-                <div>
-                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (руб.)</label>
-                    <input
-                        type="number"
-                        name="wb_price"
-                        value={formData.wb_price}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                    />
-                </div>
+
 
                 {/* Telegram */}
                 <div>
                     <label className="block text-sm font-medium mb-1">Телеграм для связи</label>
                     <input
                         type="text"
+                        ref={inputRefs[8]}
+                        onKeyDown={handleKeyDown(8)}
                         name="tg"
                         value={formData.tg}
                         onChange={handleInputChange}
@@ -411,6 +533,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Требования к отзыву</label>
                     <textarea
                         name="review_requirements"
+                        ref={reviewRequirementsRef}
+                        onKeyDown={handleTextareaKeyDown}
                         value={formData.review_requirements}
                         onChange={handleInputChange}
                         rows={3}
@@ -419,8 +543,47 @@ function ProductForm() {
                     />
                 </div>
             </form>
+            {showConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4">Вы изменили:</h2>
+                        <div className="bg-brandlight rounded p-4">
+                            <ul className="text-sm mb-4">
+                                {Object.entries(changedFields).map(([field, values]) => (
+                                    <li key={field}>
+                                        <strong>{field}</strong>: {String(values.old)} → {String(values.new)}
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="flex justify-end gap-3">
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-4">
+                            <button
+                                onClick={() => setShowConfirmation(false)}
+                                className="px-4 py-2 bg-white border border-brand rounded text-brand hover:bg-gray-100"
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    setShowConfirmation(false);
+                                    await submitData();
+                                }}
+                                className="px-4 py-2 bg-white text-brand rounded border border-brand"
+                            >
+                                Все верно. Применить
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
         </div>
-    );
+    )
+        ;
 }
 
 export default ProductForm;

@@ -116,7 +116,8 @@ class ModeratorReview(AbstractBase):
 
     moderator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
     product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
-    comment: Mapped[str]
+    comment_to_seller: Mapped[Optional[str]]
+    comment_to_moderator: Mapped[Optional[str]]
     status_before: Mapped[ProductStatus]
     status_after: Mapped[ProductStatus]
 

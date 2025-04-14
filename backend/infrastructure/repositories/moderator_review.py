@@ -9,12 +9,13 @@ class ModeratorReviewRepository(
     AbstractSQLAlchemyRepository[ModeratorReview, ModeratorReviewModel, CreateModeratorReviewDTO, UpdateModeratorReviewDTO],
     ModeratorReviewRepositoryInterface,
 ):
-    def create_dto_to_entity(self, dto: ModeratorReview) -> ModeratorReviewModel:
+    def create_dto_to_entity(self, dto: CreateModeratorReviewDTO) -> ModeratorReview:
         return ModeratorReview(
             id=dto.id,
             moderator_id=dto.moderator_id,
+            comment_to_seller=dto.comment_to_seller,
             product_id=dto.product_id,
-            comment=dto.comment,
+            comment_to_moderator=dto.comment_to_moderator,
             status_before=dto.status_before,
             status_after=dto.status_after,
             created_at=dto.created_at,
@@ -25,8 +26,9 @@ class ModeratorReviewRepository(
         return ModeratorReviewModel(
             id=entity.id,
             moderator_id=entity.moderator_id,
+            comment_to_seller=entity.comment_to_seller,
             product_id=entity.product_id,
-            comment=entity.comment,
+            comment_to_moderator=entity.comment_to_moderator,
             status_before=entity.status_before,
             status_after=entity.status_after,
             created_at=entity.created_at,
