@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ProductRepository(
-    AbstractSQLAlchemyRepository[Product, Product, CreateProductDTO, UpdateProductDTO],
+    AbstractSQLAlchemyRepository[Product, ProductModel, CreateProductDTO, UpdateProductDTO],
     ProductRepositoryInterface,
 ):
     joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {

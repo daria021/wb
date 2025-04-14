@@ -33,7 +33,6 @@ function MyProductsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
 
-
     // Затем применяем фильтрацию по статусу и поисковому запросу:
     const filteredProducts = products.filter((product) => {
         if (filter !== 'all') {
