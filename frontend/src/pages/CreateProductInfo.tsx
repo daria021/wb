@@ -144,12 +144,13 @@ function CreateProductInfo() {
     // For a seller, display comment_to_seller; for moderator/admin, display comment_to_moderator;
     // Otherwise, fallback to whichever field is available.
     const getReviewComment = (review: ModeratorReview): string | null => {
-        if (currentUser?.role === 'seller') {
-            return review.comment_to_seller || null;
-        } else if (currentUser?.role === 'moderator' || currentUser?.role === 'admin') {
-            return review.comment_to_moderator || null;
-        }
-        return review.comment_to_seller || review.comment_to_moderator || null;
+        return review.comment_to_seller || null;
+        // if (currentUser?.role === 'seller') {
+        //     return review.comment_to_seller || null;
+        // } else if (currentUser?.role === 'moderator' || currentUser?.role === 'admin') {
+        //     return review.comment_to_moderator || null;
+        // }
+        // return review.comment_to_seller || review.comment_to_moderator || null;
     };
 
     // Instead of filtering an array, we now check the single last moderator review.
