@@ -158,7 +158,7 @@ function ModeratorProductsPage() {
                                             onClick={() => handleReview(product.id)}
                                             className="relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer bg-white"
                                         >
-                                            {product.moderator_reviews?.some(review => review.comment_to_seller) && (
+                                            {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
                                                 <img
                                                     src="/icons/flag.png"
                                                     alt="Комментарий"
@@ -205,7 +205,7 @@ function ModeratorProductsPage() {
                                                     : 'bg-white'
                                             }`}
                                         >
-                                            {product.moderator_reviews?.some(review => review.comment_to_seller) && (
+                                            {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
                                                 <img
                                                     src="/icons/flag.png"
                                                     alt="Комментарий"
