@@ -11,7 +11,9 @@ function ModeratorProductReviewPage() {
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState('');
-    const [comment, setComment] = useState('');
+    // New states for two separate comments:
+    const [commentModerator, setCommentModerator] = useState('');
+    const [commentSeller, setCommentSeller] = useState('');
     const navigate = useNavigate();
 
     const fetchProduct = async () => {
@@ -42,7 +44,12 @@ function ModeratorProductReviewPage() {
 
     const handleSubmit = async () => {
         try {
-            const payload = { status, comment };
+            // Create payload with two comment fields
+            const payload = {
+                status,
+                commentModerator,  // comment for internal moderator discussion
+                commentSeller      // comment to be shared with the seller
+            };
             await reviewProduct(productId!, payload);
             alert('Проверка продукта обновлена!');
             navigate('/moderator/products');
@@ -59,7 +66,7 @@ function ModeratorProductReviewPage() {
                 Проверка продукта: {product.name}
             </h1>
 
-            {/* Информация о продукте */}
+            {/* Product Information */}
             <div className="bg-white shadow rounded p-6 mb-6">
                 <h2 className="text-lg font-semibold mb-4">Информация о продукте</h2>
                 {product.image_path && (
@@ -90,7 +97,36 @@ function ModeratorProductReviewPage() {
                 </div>
             </div>
 
-            {/* Блок проверки */}
+            {/* Display Existing Moderator Reviews */}
+            {product.moderator_reviews && product.moderator_reviews.length > 0 && (
+                <div className="bg-white shadow rounded p-6 mb-6">
+                    <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
+                    {product.moderator_reviews.map((review: any) => (
+                        <div key={review.id} className="border p-4 mb-4 rounded">
+                            {review.comment_to_moderator && (
+                                <div className="bg-brandlight p-2 rounded mb-2">
+                                    <p>
+                                        <strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}
+                                    </p>
+                                </div>
+                            )}
+                            {review.comment_to_seller && (
+                                <div className="bg-brandlight p-2 rounded mb-2">
+                                    <p>
+                                        <strong>Комментарий для продавца:</strong> {review.comment_to_seller}
+                                    </p>
+                                </div>
+                            )}
+                            <p className="text-xs text-gray-500">
+                                Дата: {new Date(review.created_at).toLocaleString()}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+
+            {/* Review Input Block */}
             <div className="border-l-4 border-blue-500 pl-4">
                 <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">
@@ -107,15 +143,29 @@ function ModeratorProductReviewPage() {
                         ))}
                     </select>
                 </div>
+
+                {/* Moderator Comment */}
                 <div className="mb-4">
-                    <label className="block mb-2">Комментарий:</label>
+                    <label className="block mb-2">Комментарий (между модераторами):</label>
                     <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                        value={commentModerator}
+                        onChange={(e) => setCommentModerator(e.target.value)}
                         className="border p-2 rounded w-full"
-                        rows={4}
+                        rows={3}
                     ></textarea>
                 </div>
+
+                {/* Seller Comment */}
+                <div className="mb-4">
+                    <label className="block mb-2">Комментарий для продавца:</label>
+                    <textarea
+                        value={commentSeller}
+                        onChange={(e) => setCommentSeller(e.target.value)}
+                        className="border p-2 rounded w-full"
+                        rows={3}
+                    ></textarea>
+                </div>
+
                 <button
                     onClick={handleSubmit}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg"

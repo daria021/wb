@@ -239,7 +239,7 @@ export async function getModeratorProductById(productId: string) {
     return apiClient.get(`/moderator/products/${productId}`);
 }
 
-export async function reviewProduct(productId: string, data: { status: string; comment: string }) {
+export async function reviewProduct(productId: string, data: { status: string; commentModerator: string; commentSeller: string}) {
     return apiClient.patch(`/moderator/products/${productId}`, data, {
         headers: {
             'Content-Type': 'application/json',

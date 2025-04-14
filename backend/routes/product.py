@@ -3,7 +3,6 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request, Depends
-from starlette import status
 
 from abstractions.services.upload import UploadServiceInterface
 from dependencies.services.product import get_product_service  # функция, возвращающая экземпляр ProductService
@@ -23,6 +22,7 @@ router = APIRouter(
 
 logger = logging.getLogger(__name__)
 
+
 @router.get("")
 async def get_products(request: Request):
     product_service = get_product_service()
@@ -41,7 +41,6 @@ async def get_by_seller(
         request: Request,
 ) -> Optional[list[Product]]:
     product_service = get_product_service()
-    # seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
     seller_id = get_user_id_from_request(request)
     return await product_service.get_by_seller(seller_id)
 
@@ -54,7 +53,7 @@ async def get_product(
     product = await product_service.get_product(product_id)
 
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Product not found")
 
     response = ProductResponse.model_validate(product)
     if product.moderator_reviews:
@@ -81,7 +80,6 @@ async def create_product(
         image: Optional[UploadFile] = File(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
-    # seller_id = UUID('16dae60f-67dc-4957-b27b-b432b6045384')
     seller_id = get_user_id_from_request(request)
     image_path = None
 
@@ -108,7 +106,7 @@ async def create_product(
             image_path = await upload_service.upload(image)
         except Exception as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=500,
                 detail="Не удалось сохранить файл"
             ) from e
     else:
@@ -141,7 +139,6 @@ async def update_product(
         image: Optional[UploadFile] = File(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> dict:
-    # Формируем DTO для обновления
     dto = UpdateProductDTO(
         name=name,
         brand=brand,
@@ -158,7 +155,6 @@ async def update_product(
         article=article,
     )
 
-    # Если файл изображения передан, сохраняем его и задаем путь
     if image is not None:
         try:
             image_path = await upload_service.upload(image)
@@ -190,7 +186,7 @@ async def update_product_status(
 
 
 @router.delete("/{product_id}")
-async def delete_product(product_id: UUID, request: Request):
+async def delete_product(product_id: UUID):
     product_service = get_product_service()
     await product_service.delete_product(product_id)
     return {"message": "Product deleted successfully"}

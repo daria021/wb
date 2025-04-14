@@ -41,7 +41,8 @@ class ModeratorService(ModeratorServiceInterface):
         review_dto = CreateModeratorReviewDTO(
             moderator_id=moderator_id,
             product_id=product_id,
-            comment=request.comment,
+            comment_to_seller=request.comment_to_seller,
+            comment_to_moderator=request.comment_to_moderator,
             status_before=product.status,
             status_after=request.status,
         )

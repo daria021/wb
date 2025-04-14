@@ -1,23 +1,23 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById, updateProductStatus } from '../services/api';
+import React, { useEffect, useState, FormEvent } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getProductById, updateProductStatus, getMe } from '../services/api';
 import { Category, PayoutTime, ProductStatus } from '../enums';
 import { on } from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
+import {useAuth} from "../contexts/auth";
 
-// Define the ModeratorReview interface
 interface ModeratorReview {
     id: string;
     moderator_id: string;
     product_id: string;
-    comment: string;
+    comment_to_seller?: string;
+    comment_to_moderator?: string;
     status_before: ProductStatus;
     status_after: ProductStatus;
     created_at: string;
     updated_at: string;
 }
 
-// Extend the Product interface to include the review info
 interface Product {
     id: string;
     name: string;
@@ -34,35 +34,51 @@ interface Product {
     payment_time: PayoutTime;
     review_requirements: string;
     image_path?: string;
+    // Now using a single last moderator review.
     last_moderator_review?: ModeratorReview;
+}
+
+interface MeResponse {
+    id: string;
+    telegram_id?: number;
+    nickname?: string;
+    role: "user" | "client" | "seller" | "moderator" | "admin";
+    is_banned: boolean;
+    balance?: number;
+    created_at: string;
+    updated_at: string;
 }
 
 function CreateProductInfo() {
     const navigate = useNavigate();
-    const { productId } = useParams();
+    const { productId } = useParams<{ productId: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
 
+    // Get product data.
     useEffect(() => {
         if (!productId) return;
         getProductById(productId)
-            .then((res) => {
-                setProduct(res.data);
-            })
+            .then((res) => setProduct(res.data))
             .catch((err) => {
                 console.error('Ошибка при загрузке товара:', err);
                 setError('Не удалось загрузить товар');
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => setLoading(false));
     }, [productId]);
 
-    const handleMyBalanceClick = () => {
-        navigate(`/seller-cabinet/balance`);
-    };
+    // Get current user data.
+    useEffect(() => {
+        getMe()
+            .then((user) => setCurrentUser(user))
+            .catch((err) => {
+                console.error('Ошибка получения данных пользователя:', err);
+            });
+    }, []);
 
+    // Handle back button press for telegram apps.
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/my-products');
@@ -72,20 +88,26 @@ function CreateProductInfo() {
         };
     }, [navigate]);
 
+    const handleMyBalanceClick = () => {
+        navigate(`/seller-cabinet/balance`);
+    };
+
     const handleEditClick = () => {
         if (product) {
             navigate(`/create-product/${product.id}`);
         }
     };
 
-    // Function for publishing the product (setting status to ACTIVE)
+    // Function to publish the product (change status to ACTIVE)
     const handlePublish = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ACTIVE);
             await updateProductStatus(productId!, fd);
-            setProduct({ ...product!, status: ProductStatus.ACTIVE });
+            if (product) {
+                setProduct({ ...product, status: ProductStatus.ACTIVE });
+            }
             alert('Товар опубликован');
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -93,14 +115,16 @@ function CreateProductInfo() {
         }
     };
 
-    // Function for stopping the product (setting status to ARCHIVED)
+    // Function to archive the product (change status to ARCHIVED)
     const handleStop = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ARCHIVED);
             await updateProductStatus(productId!, fd);
-            setProduct({ ...product!, status: ProductStatus.ARCHIVED });
+            if (product) {
+                setProduct({ ...product, status: ProductStatus.ARCHIVED });
+            }
             alert('Товар заархивирован');
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -115,6 +139,22 @@ function CreateProductInfo() {
     if (error || !product) {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
+
+    // Helper function to get the appropriate comment from a moderator review.
+    // For a seller, display comment_to_seller; for moderator/admin, display comment_to_moderator;
+    // Otherwise, fallback to whichever field is available.
+    const getReviewComment = (review: ModeratorReview): string | null => {
+        if (currentUser?.role === 'seller') {
+            return review.comment_to_seller || null;
+        } else if (currentUser?.role === 'moderator' || currentUser?.role === 'admin') {
+            return review.comment_to_moderator || null;
+        }
+        return review.comment_to_seller || review.comment_to_moderator || null;
+    };
+
+    // Instead of filtering an array, we now check the single last moderator review.
+    const lastReview = product.last_moderator_review;
+    const reviewComment = lastReview ? getReviewComment(lastReview) : null;
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
@@ -175,23 +215,22 @@ function CreateProductInfo() {
                 </div>
             </div>
 
-            {/* Conditionally render review info block */}
-            {(product.status === ProductStatus.REJECTED ||
-                    product.status === ProductStatus.CREATED ||
-                    product.status === ProductStatus.DISABLED) &&
-                product.last_moderator_review && (
-                    <div className="mb-4 p-4 border-l-4 border-red-400 bg-red-50 rounded">
-                        <h2 className="text-lg font-semibold text-red-700 mb-2">
-                            Комментарий модератора
-                        </h2>
-                        <p className="text-sm text-gray-700">
-                            {product.last_moderator_review.comment}
+            {/* Display moderator review based on the current user role */}
+            <div className="mb-4">
+                {lastReview && reviewComment && (
+                    <div key={lastReview.id} className="mb-3 p-4 bg-gray-50 border border-gray-200 rounded">
+                        <h3 className="text-lg font-semibold">
+                            Комментарий модератора:
+                        </h3>
+                        <p className="text-sm text-gray-800">
+                            {reviewComment}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                            Дата: {new Date(product.last_moderator_review.created_at).toLocaleDateString()}
+                            Дата: {new Date(lastReview.created_at).toLocaleDateString()}
                         </p>
                     </div>
                 )}
+            </div>
 
             {/* Bottom action buttons */}
             <div className="flex flex-col gap-2">
