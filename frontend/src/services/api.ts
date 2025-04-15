@@ -1,22 +1,11 @@
 import {apiClient} from "./apiClient";
 import {MeResponse} from "../types/MeResponse";
 
-// Базовый URL вашего бэкенда (напр. http://localhost:9090, http://localhost:8000, ...)
-// Можно вынести в .env => process.env.REACT_APP_API_URL
-// const API_URL = 'http://localhost:9090';
-//
-// // Создаём экземпляр axios
-// export const apiClient = axios.create({
-//     baseURL: API_URL,
-// });
 
-// Получить список продуктов
 export async function getProducts() {
-    // Предполагается, что на бэкенде есть GET /products
     return await apiClient.get('/products');
 }
 
-// Получить продукт по его ID (UUID)
 export async function getProductById(productId: string) {
     return apiClient.get(`/products/${productId}`);
 }
@@ -29,10 +18,9 @@ export async function getOrderById(orderId: string) {
     return apiClient.get(`/orders/${orderId}`);
 }
 
-// Пример: получить продукт по артикулу
-export async function getProductByArticle(article: string) {
-    return apiClient.get(`/products/article?acticle=${article}`);
-}
+// export async function getProductByArticle(article: string) {
+//     return apiClient.get(`/products/article?acticle=${article}`);
+// }
 
 export async function getProductsBySellerId() {
     return apiClient.get(`/products/seller`);
@@ -108,13 +96,12 @@ export async function updateOrderStatus(orderId: string, formData: FormData) {
     });
 }
 
-// Обновление заказа (шаг 2..7)
 export async function updateOrder(
     orderId: string,
     data: {
         step?: number;
-        search_screenshot_path?: File; // если требуется обновление, например, для шага 1 (не всегда используется)
-        cart_screenshot_path?: File;     // если требуется обновление, например, для шага 1 (не всегда используется)
+        search_screenshot_path?: File;
+        cart_screenshot_path?: File;
         card_number?: string;
         phone_number?: string;
         name?: string;
@@ -130,7 +117,6 @@ export async function updateOrder(
 ) {
     const formData = new FormData();
 
-    // Добавляем числовые и текстовые поля
     if (data.step !== undefined) {
         formData.append('step', data.step.toString());
     }
@@ -153,7 +139,6 @@ export async function updateOrder(
         formData.append('status', data.status);
     }
 
-    // Добавляем файлы (если переданы)
     if (data.search_screenshot_path) {
         formData.append('search_screenshot_path', data.search_screenshot_path);
     }
@@ -176,7 +161,6 @@ export async function updateOrder(
         formData.append('receipt_screenshot', data.receipt_screenshot);
     }
 
-    // Отправляем PATCH-запрос
     const response = await apiClient.patch(`/orders/${orderId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',

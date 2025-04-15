@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {on} from "@telegram-apps/sdk";
 
 function QuestionPage() {
     const navigate = useNavigate();
@@ -30,12 +30,10 @@ function QuestionPage() {
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <div className="bg-brandlight rounded-lg p-4 mb-6">
-                    {/* Основной заголовок */}
                     <h1 className="text-2xl font-bold mb-6 text-left">
                         ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ (FAQ):
                     </h1>
 
-                    {/* 1. Общие вопросы */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             1. Общие вопросы
@@ -43,7 +41,8 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Как работает бот?</h3>
                             <p className="mt-1">
-                                Бот помогает покупать товары с кэшбэком, соблюдая пошаговую инструкцию. Выбираете товар – проходите инструкцию – оформляете заказ, загружаете отчеты и получаете кэшбэк.
+                                Бот помогает покупать товары с кэшбэком, соблюдая пошаговую инструкцию. Выбираете товар
+                                – проходите инструкцию – оформляете заказ, загружаете отчеты и получаете кэшбэк.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
@@ -62,7 +61,8 @@ function QuestionPage() {
                             <h3 className="text-lg font-bold mb-1">Что делать если продавец оказался мошенником?</h3>
                             <ul className="list-disc list-inside ml-4 mt-1">
                                 <li>
-                                    После того как мы выясним, что продавец является мошенником, будет создана группа, куда будут добавлены все обманутые покупатели.
+                                    После того как мы выясним, что продавец является мошенником, будет создана группа,
+                                    куда будут добавлены все обманутые покупатели.
                                 </li>
                                 <li>
                                     Подробнее читайте{' '}
@@ -77,10 +77,9 @@ function QuestionPage() {
                                 </li>
                             </ul>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* 2. Выплаты кэшбэка */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             2. Выплаты кэшбэка
@@ -99,19 +98,22 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Возможны ли задержки?</h3>
                             <p className="mt-1">
-                                Да, возможны задержки из-за загрузки продавца, выходных или лимитов на переводы. Все вопросы по оплате решайте с продавцом.
+                                Да, возможны задержки из-за загрузки продавца, выходных или лимитов на переводы. Все
+                                вопросы по оплате решайте с продавцом.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Как проверить, что кэшбэк отправлен?</h3>
                             <p className="mt-1">
-                                Вы получите уведомление в боте (если продавец его отправил). Некоторые продавцы могут не отправлять уведомления, поэтому проверяйте поступления в банке.
+                                Вы получите уведомление в боте (если продавец его отправил). Некоторые продавцы могут не
+                                отправлять уведомления, поэтому проверяйте поступления в банке.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Какие гарантии выплат?</h3>
                             <p className="mt-1">
-                                Нет никаких гарантий, проверяйте продавца перед тем, как заключать сделку. Перед покупкой проверяйте отзывы тут{' '}
+                                Нет никаких гарантий, проверяйте продавца перед тем, как заключать сделку. Перед
+                                покупкой проверяйте отзывы тут{' '}
                                 <a
                                     href="https://t.me/bigblacklist_bot"
                                     target="_blank"
@@ -122,10 +124,9 @@ function QuestionPage() {
                                 </a>.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* 3. Вопросы по инструкции */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             3. Вопросы по инструкции
@@ -133,7 +134,8 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Что делать, если артикул не проходит проверку?</h3>
                             <p className="mt-1">
-                                Если бот не пускает дальше, значит это не тот товар. Попробуйте найти товар заново через поиск.
+                                Если бот не пускает дальше, значит это не тот товар. Попробуйте найти товар заново через
+                                поиск.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
@@ -146,19 +148,21 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Как поменять скриншины в отчете?</h3>
                             <p className="mt-1">
-                                Никак. Как только полностью сдадите отчет, свяжитесь с продавцом и направьте ему всю информацию.
+                                Никак. Как только полностью сдадите отчет, свяжитесь с продавцом и направьте ему всю
+                                информацию.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
-                            <h3 className="text-lg font-bold mb-1">Можно ли купить у одного продавца несколько товаров?</h3>
+                            <h3 className="text-lg font-bold mb-1">Можно ли купить у одного продавца несколько
+                                товаров?</h3>
                             <p className="mt-1">
-                                Только после получения кэшбэка за предыдущий товар. Важно! Не выкупайте несколько товаров, пока не получите оплату.
+                                Только после получения кэшбэка за предыдущий товар. Важно! Не выкупайте несколько
+                                товаров, пока не получите оплату.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* 4. Отзывы */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             4. Отзывы
@@ -170,15 +174,16 @@ function QuestionPage() {
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
-                            <h3 className="text-lg font-bold mb-1">Продавец не отвечает на согласование отзыва. Что делать?</h3>
+                            <h3 className="text-lg font-bold mb-1">Продавец не отвечает на согласование отзыва. Что
+                                делать?</h3>
                             <p className="mt-1">
-                                Пишите повторно. Техподдержка будет решать вопросы только, если продавец окажется мошенником.
+                                Пишите повторно. Техподдержка будет решать вопросы только, если продавец окажется
+                                мошенником.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* 5. Проблемы с ботом */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             5. Проблемы с ботом
@@ -192,10 +197,9 @@ function QuestionPage() {
                                 Обратитесь в техподдержку
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* 6. Прочие вопросы */}
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
                             6. Прочие вопросы
@@ -203,7 +207,8 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Можно ли вернуть товар?</h3>
                             <p className="mt-1">
-                                Только если обнаружен брак. Подайте заявку на возврат через приложение ВБ, укажите номер сделки. Не пишите, что вы выкупали по кэшбэку.
+                                Только если обнаружен брак. Подайте заявку на возврат через приложение ВБ, укажите номер
+                                сделки. Не пишите, что вы выкупали по кэшбэку.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
@@ -215,10 +220,9 @@ function QuestionPage() {
                                 Обратитесь в техподдержку
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300" />
+                        <hr className="my-6 border-gray-300"/>
                     </section>
 
-                    {/* Дополнительные кнопки в конце */}
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={handleAbout}

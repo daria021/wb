@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {getMe, getOrderBySellerId, updateOrderStatus} from '../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
-import {OrderStatus} from '../enums'; // Убедитесь, что этот импорт корректен
+import {OrderStatus} from '../enums';
 
 interface Product {
     id: string;
@@ -61,10 +61,8 @@ function SellerReportsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [sellerId, setSellerId] = useState<string>('');
-    // Устанавливаем вкладку по умолчанию на "Кешбек не выплачен"
     const [activeTab, setActiveTab] = useState<OrderStatus>(OrderStatus.CASHBACK_NOT_PAID);
 
-    // Функция для загрузки заказов
     const fetchReports = async () => {
         if (!sellerId) return;
         try {
@@ -89,7 +87,6 @@ function SellerReportsPage() {
         };
     }, [navigate]);
 
-    // Получаем sellerId через getMe
     useEffect(() => {
         async function fetchSellerId() {
             try {
@@ -109,10 +106,8 @@ function SellerReportsPage() {
         }
     }, [sellerId]);
 
-    // Фильтруем заказы по выбранной вкладке
     const filteredOrders = orders.filter(order => order.status === activeTab);
 
-    // Обработка нажатия на кнопку "Кешбек выплачен"
     const handleCashbackPaid = async (orderId: string) => {
         try {
             const formData = new FormData();
@@ -144,7 +139,6 @@ function SellerReportsPage() {
 
                     <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
 
-                    {/* Вкладки */}
                     <div className="flex mb-4 border-b">
                         <button
                             onClick={() => setActiveTab(OrderStatus.CASHBACK_NOT_PAID)}
@@ -162,7 +156,6 @@ function SellerReportsPage() {
                     </div>
                 </div>
 
-                {/* Список заказов */}
                 <div className="flex flex-col gap-4">
                     {filteredOrders.length ? (
                         filteredOrders.map((order) => (
@@ -176,7 +169,6 @@ function SellerReportsPage() {
                                     Покупатель: {order.user.nickname || "Не указан"}
                                 </p>
                                 <p className="text-sm text-gray-600">Статус: {order.status}</p>
-                                {/* Если заказ с не выплаченным кешбеком, показываем кнопку для смены статуса */}
                                 {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
                                     <button
                                         onClick={(e) => {

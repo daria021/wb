@@ -27,7 +27,6 @@ function PaymentDetailsPage() {
     const navigate = useNavigate();
     const {orderId} = useParams<{ orderId: string }>();
 
-    // Состояния полей
     const [cardNumber, setCardNumber] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [fullName, setFullName] = useState('');
@@ -39,12 +38,10 @@ function PaymentDetailsPage() {
 
     const handleChange = (e: any) => {
         setSelectedBank(e.target.value);
-        // Если выбран банк, отличный от "Другое", очищаем другое значение
         if (e.target.value !== 'Другое') {
             setOtherBank('');
         }
     };
-    // Активность кнопки "Продолжить" — все поля должны быть заполнены и чекбокс отмечен
     const canContinue =
         cardNumber.trim() !== '' &&
         phoneNumber.trim() !== '' &&
@@ -52,10 +49,8 @@ function PaymentDetailsPage() {
         selectedBank !== '' &&
         agreed;
 
-    // Слушатель для кнопки "Назад" (например, для Telegram Mini App)
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            // Переход на предыдущий шаг (например, шаг 3)
             navigate(`/order/${orderId}/step-3`);
         });
         return () => {
@@ -75,11 +70,9 @@ function PaymentDetailsPage() {
             });
     }, [orderId]);
 
-    // Обработчик кнопки "Продолжить"
     const handleContinueClick = async () => {
         if (!canContinue || !orderId) return;
         try {
-            // Обновляем заказ с введёнными реквизитами и переводим его на следующий шаг (step = 4)
             await updateOrder(orderId, {
                 step: 4,
                 card_number: cardNumber,
@@ -90,7 +83,6 @@ function PaymentDetailsPage() {
             navigate(`/order/${orderId}/step-5`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
-            // Здесь можно добавить уведомление об ошибке
         }
     };
 
@@ -108,12 +100,10 @@ function PaymentDetailsPage() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            {/* Карточка с полями ввода */}
             <div className="bg-brandlight rounded-lg shadow p-4 space-y-4 mb-4">
 
                 <h1 className="text-lg font-bold">Шаг 4. Реквизиты для перевода кэшбэка</h1>
 
-                {/* Номер карты */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Номер карты
@@ -127,7 +117,6 @@ function PaymentDetailsPage() {
                     />
                 </div>
 
-                {/* Номер телефона */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Номер телефона
@@ -141,7 +130,6 @@ function PaymentDetailsPage() {
                     />
                 </div>
 
-                {/* Фамилия и имя */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Фамилия и имя
@@ -155,7 +143,6 @@ function PaymentDetailsPage() {
                     />
                 </div>
 
-                {/* Селектор банка */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Выберите банк
@@ -194,7 +181,6 @@ function PaymentDetailsPage() {
                     )}
                 </div>
 
-                {/* Чекбокс "Подтверждаю правильность" */}
                 <div className="flex items-center space-x-2">
                     <input
                         type="checkbox"
@@ -209,7 +195,6 @@ function PaymentDetailsPage() {
                 </div>
             </div>
 
-            {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinueClick}
                 disabled={!canContinue}
@@ -222,7 +207,6 @@ function PaymentDetailsPage() {
                 Продолжить
             </button>
 
-            {/* Кнопка "Проверить продавца" */}
             <button
                 onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
                 className="w-full flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
@@ -230,7 +214,6 @@ function PaymentDetailsPage() {
                 Проверить продавца
             </button>
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4 mt-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -243,9 +226,7 @@ function PaymentDetailsPage() {
                 </div>
             </div>
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3">
-                {/* Кнопка "Открыть отчет" */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 mt-4 mt-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
@@ -253,14 +234,12 @@ function PaymentDetailsPage() {
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
-                {/* Блок с отчетом */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
                                 <div>
-                                    {/* Выводим каждый шаг отчёта, если данные заполнены */}
                                     {reportData.search_screenshot_path && (
                                         <div className="mb-3">
                                             <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
@@ -282,14 +261,12 @@ function PaymentDetailsPage() {
                                         </div>
                                     )}
                                 </div>
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
                                         <p className="text-sm">{reportData.article}</p>
                                     </div>
                                 )}
-                                {/* Шаг 3: Товар и бренд добавлены в избранное (статичный текст) */}
                                 <div className="mb-3">
                                     <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
                                     <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>

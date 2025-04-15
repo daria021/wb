@@ -15,7 +15,6 @@ const STEP_NAMES: { [key: number]: string } = {
     8: 'Шаг 8: Все выполнено',
 };
 
-// Функция, которая возвращает URL для заказа в зависимости от шага
 const getOrderStepLink = (order: Order): string => {
     if (order.step === 1) {
         return `/product/${order.product.id}/step-1`;
@@ -142,8 +141,7 @@ function MyOrdersPage() {
                     Нажмите на карточку, чтобы открыть инструкцию
                 </p>
             </div>
-            {/* Список заказов */}
-            {/* Список заказов или сообщение об отсутствии покупок */}
+
             <div className="w-full flex flex-col gap-3 mb-4">
                 {filteredOrders.length > 0 ? (
                     filteredOrders.map((order) => {
@@ -153,7 +151,6 @@ function MyOrdersPage() {
                             <Link to={linkTo} key={order.id}>
                                 <div
                                     className="relative bg-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
-                                    {/* Кнопка "Отменить заказ" в правом верхнем углу */}
                                     {order.step < 7 && (
                                         <button
                                             onClick={(e) => handleCancelOrder(order.id, e)}
@@ -163,7 +160,6 @@ function MyOrdersPage() {
                                         </button>
                                     )}
                                     <div className="flex items-center gap-3">
-                                        {/* Фото товара */}
                                         <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
                                             {order.product.image_path ? (
                                                 <img
@@ -182,7 +178,6 @@ function MyOrdersPage() {
                                                 </div>
                                             )}
                                         </div>
-                                        {/* Информация о товаре */}
                                         <div className="flex-1">
                                         <span className="font-semibold text-sm">
                                             {order.product.name}

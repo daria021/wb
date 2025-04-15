@@ -7,7 +7,7 @@ import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
     id: string;
-    name: string;       // Например, "Вакууматор"
+    name: string;
     price?: number;
     wb_price?: number;
     seller_id: string;
@@ -17,15 +17,15 @@ interface Product {
 }
 
 interface UserInOrder {
-    nickname: string;   // Покупатель
+    nickname: string;
 }
 
 interface Order {
-    id: string;                 // "65147"
-    product: Product;           // Содержит данные о товаре
-    user: UserInOrder;          // Содержит данные о покупателе (никнейм)
-    sellerNickname?: string;    // Если есть отдельное поле для ника продавца
-    card_number?: string;       // "4367 2289 7923 2467"
+    id: string;
+    product: Product;
+    user: UserInOrder;
+    sellerNickname?: string;
+    card_number?: string;
     phone_number?: string;
     bank?: string;
     name?: string;
@@ -50,7 +50,6 @@ interface OrderReport {
     article?: string;
 }
 
-// Вычисляем «сегодня + 2 недели»
 function getDeadline(): string {
     const now = new Date();
     const plusTwoWeeks = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
@@ -67,7 +66,6 @@ function FinalDealPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [reportData, setReportData] = useState<OrderReport | null>(null);
-    // Флаг для отображения отчёта
     const [showReport, setShowReport] = useState(false);
 
     useEffect(() => {
@@ -91,7 +89,6 @@ function FinalDealPage() {
             });
     }, [orderId]);
 
-    // Загружаем заказ
     useEffect(() => {
         if (!orderId) return;
         getOrderById(orderId)
@@ -123,9 +120,7 @@ function FinalDealPage() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4">
 
-            {/* 1) Блок с круглой фотографией товара, названием и ценой */}
             <div className="flex items-center space-x-3">
-                {/* Можно заменить на реальное фото, если есть product.image_path */}
                 <img
                     src={GetUploadLink(product.image_path)}
                     alt="Фото товара"
@@ -139,7 +134,6 @@ function FinalDealPage() {
                 </div>
             </div>
 
-            {/* 2) Блок «Ваш отчет передан продавцу...» */}
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2">
                 <p>Ваш отчет передан продавцу.</p>
                 <p>
@@ -161,15 +155,12 @@ function FinalDealPage() {
                 </p>
             </div>
 
-            {/* 3) Блок с покупателем и продавцом */}
             <div className="flex justify-between items-center text-sm">
                 <div>Покупатель: {order.user.nickname}</div>
-                {/* Если у вас sellerNickname есть в order, используйте её.
-            Иначе, как в предыдущих примерах, product.seller_id или 'fws_inc'. */}
+
                 <div>Продавец: {order.product.tg}</div>
             </div>
 
-            {/* 4) Блок "Сделка" */}
             <div className="bg-brandlight p-3 rounded-md space-y-1 text-sm">
                 <div className="font-semibold">Сделка</div>
                 <div>Условия оплаты: {product.payment_time}</div>
@@ -180,7 +171,6 @@ function FinalDealPage() {
                 <div>Статус оплаты: {status || 'Неизвестен'}</div>
             </div>
 
-            {/* 5) Блок "Реквизиты" */}
             <div className="bg-brandlight p-3 rounded-md space-y-1 text-sm">
                 <div className="font-semibold">Реквизиты</div>
                 <div>Номер карты: {order.card_number || '—'}</div>
@@ -189,7 +179,6 @@ function FinalDealPage() {
                 <div>Получатель: {order.name || '—'}</div>
             </div>
 
-            {/* 6) Четыре кнопки внизу */}
             <div className="flex flex-col space-y-2">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
@@ -199,13 +188,11 @@ function FinalDealPage() {
                 </button>
 
 
-                {/* Блок с отчетом */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Шаг 1: Скрин поискового запроса */}
                                 {reportData.search_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
@@ -216,7 +203,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 1: Скрин корзины */}
                                 {reportData.cart_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин корзины</p>
@@ -227,19 +213,16 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
                                         <p className="text-sm">{reportData.article}</p>
                                     </div>
                                 )}
-                                {/* Шаг 3: Статичный текст */}
                                 <div className="mb-3">
                                     <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
                                     <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
                                 </div>
-                                {/* Шаг 4: Реквизиты */}
                                 {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
@@ -250,7 +233,6 @@ function FinalDealPage() {
                                     </div>
                                 )}
 
-                                {/* Шаг 5: Финальный скрин корзины */}
                                 {reportData.final_cart_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 5. Финальный скрин корзины</p>
@@ -261,7 +243,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 6: Скрин доставки */}
                                 {reportData.delivery_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 6. Скрин доставки</p>
@@ -272,7 +253,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 6: Скрин штрихкодов */}
                                 {reportData.barcodes_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин штрихкодов</p>
@@ -283,7 +263,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 7: Скрин отзыва */}
                                 {reportData.review_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 7. Скрин отзыва</p>
@@ -294,7 +273,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 7: Скрин электронного чека */}
                                 {reportData.receipt_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Скрин электронного чека</p>
@@ -305,7 +283,6 @@ function FinalDealPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 7: Номер чека */}
                                 {reportData.receipt_number && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Номер чека</p>

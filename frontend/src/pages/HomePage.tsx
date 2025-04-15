@@ -1,25 +1,22 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getMe } from '../services/api';
-import { useAuth } from '../contexts/auth'; // Adjust the path as necessary
+import {useNavigate} from 'react-router-dom';
+import {getMe} from '../services/api';
+import {useAuth} from '../contexts/auth';
 
 function HomePage() {
     const navigate = useNavigate();
-    const { isModerator, loading } = useAuth();
+    const {isModerator, loading} = useAuth();
 
     window.onerror = (message, source, lineno, colno, error) => {
         if (typeof message === "string" && message.includes("window.TelegramGameProxy.receiveEvent")) {
-            // Return true to indicate that the error has been handled
             return true;
         }
         console.log(typeof message, typeof message === "string");
-        // Otherwise, let the error propagate
         return false;
     };
 
-    // Примерные обработчики
     const handleAboutClick = () => navigate('/about');
-    const handleInstructionClick = () => navigate('/instruction', { state: { backRoute: '/' } });
+    const handleInstructionClick = () => navigate('/instruction', {state: {backRoute: '/'}});
 
     const handleComplaintsClick = () => {
         window.open('https://t.me/bookshaloba', '_blank'); //todo
@@ -49,41 +46,34 @@ function HomePage() {
 
     return (
         <div className="min-h-screen bg-gray-200 p-6">
-            {/* --- Верхний ряд (3 плитки): О сервисе, Инструкция, Книга жалоб --- */}
             <div className="grid grid-cols-3 gap-4 mb-8">
-                {/* О сервисе */}
                 <div
                     onClick={handleAboutClick}
                     className="bg-white border border-gray-300 text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
-                    <img src="/icons/about.png" alt="О сервисе" className="w-4 h-4 mb-1" />
+                    <img src="/icons/about.png" alt="О сервисе" className="w-4 h-4 mb-1"/>
                     <span>О сервисе</span>
                 </div>
 
-                {/* Инструкция */}
                 <div
                     onClick={handleInstructionClick}
                     className="bg-white border border-gray-300 text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
-                    <img src="/icons/instruction.png" alt="Инструкция" className="w-4 h-4 mb-1" />
+                    <img src="/icons/instruction.png" alt="Инструкция" className="w-4 h-4 mb-1"/>
                     <span>Инструкция</span>
                 </div>
 
-                {/* Книга жалоб */}
                 <div
                     onClick={handleComplaintsClick}
                     className="bg-white border border-gray-300 text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
-                    <img src="/icons/book.png" alt="Книга жалоб" className="w-4 h-4 mb-1" />
+                    <img src="/icons/book.png" alt="Книга жалоб" className="w-4 h-4 mb-1"/>
                     <span>Книга жалоб</span>
                 </div>
             </div>
 
-            {/* --- Средний блок: слева (Мои покупки, Кабинет продавца), справа (Каталог) --- */}
             <div className="grid grid-cols-3 gap-4 mb-8">
-                {/* Левая часть (2 столбца) */}
                 <div className="flex flex-col gap-4 col-span-2">
-                    {/* Мои покупки */}
                     <div
                         onClick={handleMyOrdersClick}
                         className="bg-white border-2 border-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
@@ -103,7 +93,6 @@ function HomePage() {
                         </div>
                     </div>
 
-                    {/* Кабинет продавца */}
                     <div
                         onClick={handleSellerClick}
                         className="bg-white border-2 border-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
@@ -124,12 +113,10 @@ function HomePage() {
                     </div>
                 </div>
 
-                {/* Правая часть (1 столбец): Каталог */}
                 <div
                     onClick={handleCatalogClick}
                     className="bg-brand rounded-lg px-1 py-4 text-sm font-semibold text-white cursor-pointer relative"
                 >
-                    {/* Текст слева, может переноситься, если не влезает в одну строку */}
                     <span className="block text-left">
                         Каталог актуальных товаров
                     </span>
@@ -142,7 +129,6 @@ function HomePage() {
                 </div>
             </div>
 
-            {/* --- Реферальная программа (круглая кнопка) --- */}
             <div
                 onClick={handleReferralClick}
                 className="bg-white border border-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
@@ -150,8 +136,7 @@ function HomePage() {
                 Реферальная программа
             </div>
 
-            {/* --- Moderator Interface Button (visible only if user is a moderator) [todo: помодерируем?] --- */}
-            { !loading && isModerator && (
+            {!loading && isModerator && (
                 <div
                     onClick={() => navigate('/moderator')}
                     className="bg-white border border-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
@@ -160,9 +145,7 @@ function HomePage() {
                 </div>
             )}
 
-            {/* --- Ссылки на канал и техподдержку (вертикально) --- */}
             <div className="flex flex-col gap-4">
-                {/* Канал */}
                 <div
                     onClick={handleChannelClick}
                     className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
@@ -179,7 +162,6 @@ function HomePage() {
                     />
                 </div>
 
-                {/* Техподдержка */}
                 <div
                     onClick={handleSupportClick}
                     className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"

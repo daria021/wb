@@ -20,7 +20,7 @@ interface Product {
     id: string;
     name: string;
     price: number;
-    status: ProductStatus; // Например: "created", "active", "disabled", "rejected", "archived"
+    status: ProductStatus;
     moderator_reviews?: ModeratorReview[];
 }
 
@@ -28,7 +28,6 @@ function ModeratorProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    // Можно убрать статус фильтра, если он не нужен, либо оставить его для дополнительной фильтрации.
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
     const [activeTab, setActiveTab] = useState<'pending' | 'reviewed'>('pending');
     const navigate = useNavigate();
@@ -59,9 +58,6 @@ function ModeratorProductsPage() {
         fetchProducts();
     }, []);
 
-    // Группировка продуктов на две категории: pending и reviewed.
-    // Допустим, заявки для проверки — это те, что имеют статус "created" или "disabled",
-    // а проверенные — те, что с "active", "rejected" или "archived".
     const pendingProducts = products.filter(product =>
         product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase() ||
         product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase()
@@ -72,7 +68,6 @@ function ModeratorProductsPage() {
         product.status.toLowerCase() === ProductStatus.ARCHIVED.toLowerCase()
     );
 
-    // Дополнительная фильтрация, если выбран статус (опционально)
     const filterByStatus = (list: Product[]) => {
         if (statusFilter === 'all') {
             return list;
@@ -98,7 +93,6 @@ function ModeratorProductsPage() {
     return (
         <div className="min-h-screen bg-gray-200 p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Товары для проверки</h1>
-            {/* Опционально: фильтр по статусам (выпадающий список) */}
             <div className="mb-4 flex justify-end">
                 <select
                     value={statusFilter}
@@ -115,7 +109,6 @@ function ModeratorProductsPage() {
                 </select>
             </div>
 
-            {/* Вкладки */}
             <div className="flex border-b border-gray-300 mb-6">
                 <button
                     className={`px-4 py-2 font-semibold ${activeTab === 'pending'

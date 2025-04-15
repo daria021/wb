@@ -1,17 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getModeratorProductById, reviewProduct } from '../../services/api';
-import { ProductStatus } from '../../enums';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getModeratorProductById, reviewProduct} from '../../services/api';
+import {ProductStatus} from '../../enums';
+import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
 function ModeratorProductReviewPage() {
-    const { productId } = useParams<{ productId: string }>();
+    const {productId} = useParams<{ productId: string }>();
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState('');
-    // New states for two separate comments:
     const [commentModerator, setCommentModerator] = useState('');
     const [commentSeller, setCommentSeller] = useState('');
     const navigate = useNavigate();
@@ -44,11 +42,10 @@ function ModeratorProductReviewPage() {
 
     const handleSubmit = async () => {
         try {
-            // Create payload with two comment fields
             const payload = {
                 status,
-                commentModerator,  // comment for internal moderator discussion
-                commentSeller      // comment to be shared with the seller
+                commentModerator,
+                commentSeller
             };
             await reviewProduct(productId!, payload);
             alert('Проверка продукта обновлена!');
@@ -66,7 +63,6 @@ function ModeratorProductReviewPage() {
                 Проверка продукта: {product.name}
             </h1>
 
-            {/* Product Information */}
             <div className="bg-white shadow rounded p-6 mb-6">
                 <h2 className="text-lg font-semibold mb-4">Информация о продукте</h2>
                 {product.image_path && (
@@ -97,7 +93,6 @@ function ModeratorProductReviewPage() {
                 </div>
             </div>
 
-            {/* Display Existing Moderator Reviews */}
             {product.moderator_reviews && product.moderator_reviews.length > 0 && (
                 <div className="bg-white shadow rounded p-6 mb-6">
                     <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
@@ -126,7 +121,6 @@ function ModeratorProductReviewPage() {
             )}
 
 
-            {/* Review Input Block */}
             <div className="border-l-4 border-blue-500 pl-4">
                 <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">
@@ -144,7 +138,6 @@ function ModeratorProductReviewPage() {
                     </select>
                 </div>
 
-                {/* Moderator Comment */}
                 <div className="mb-4">
                     <label className="block mb-2">Комментарий (между модераторами):</label>
                     <textarea
@@ -155,7 +148,6 @@ function ModeratorProductReviewPage() {
                     ></textarea>
                 </div>
 
-                {/* Seller Comment */}
                 <div className="mb-4">
                     <label className="block mb-2">Комментарий для продавца:</label>
                     <textarea
@@ -172,7 +164,7 @@ function ModeratorProductReviewPage() {
                 >
                     Отправить
                 </button>
-            </div>
+            </div>¬
         </div>
     );
 }

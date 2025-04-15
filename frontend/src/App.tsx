@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
@@ -54,7 +53,6 @@ function App() {
             <BrowserRouter>
                 <BackButtonManager/>
                 <Routes>
-                    {/* Main pages */}
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/about" element={<AboutPage/>}/>
                     <Route path="/instruction" element={<CompleteInstructionPage/>}/>
@@ -80,19 +78,14 @@ function App() {
                     <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
                     <Route path="/user/orders" element={<MyOrdersPage/>}/>
 
-                    {/* Moderator pages */}
                     <Route path="/moderator" element={<ModeratorDashboard/>}/>
                     <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
                     <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
                     <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage/>}/>
 
-                    {/* Pushes */}
                     <Route path="/moderator/pushes" element={<PushAdminPage/>}/>
-                    {/* New route for creating a push */}
                     <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
-                    {/* Existing route for push details */}
                     <Route path="/moderator/pushes/:pushId" element={<PushDetailsPage/>}/>
-                    {/* New route for editing a push */}
                     <Route path="/moderator/pushes/:pushId/edit" element={<PushFormPage/>}/>
                 </Routes>
             </BrowserRouter>

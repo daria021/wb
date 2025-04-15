@@ -36,7 +36,6 @@ const PushFormPage: React.FC = () => {
         };
     }, [navigate, isEditMode, pushId]);
 
-    // When in edit mode, load existing push data
     useEffect(() => {
         if (isEditMode && pushId) {
             setLoading(true);
@@ -45,8 +44,7 @@ const PushFormPage: React.FC = () => {
                     const pushData = response.data as Push;
                     setTitle(pushData.title);
                     setText(pushData.text);
-                    // Optionally load image if available
-                    // Also, if your API returns button_text and button_link, load them here:
+
                     if ((response.data as any).button_text) {
                         setButtonText((response.data as any).button_text);
                     }
@@ -62,14 +60,12 @@ const PushFormPage: React.FC = () => {
         }
     }, [isEditMode, pushId]);
 
-    // Handle image file change
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setImageFile(e.target.files[0]);
         }
     };
 
-    // Submit handler for the form
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim() || !text.trim()) {
@@ -82,10 +78,8 @@ const PushFormPage: React.FC = () => {
             formData.append('title', title);
             formData.append('text', text);
             if (imageFile) {
-                // Adjust the field name as required by your backend; for example, 'image' or 'image_path'
                 formData.append('image', imageFile);
             }
-            // Append the new push button fields even if they are empty—they can be handled on the backend
             formData.append('button_text', buttonText);
             formData.append('button_link', buttonLink);
 
@@ -154,7 +148,6 @@ const PushFormPage: React.FC = () => {
                             className="w-full"
                         />
                     </div>
-                    {/* New fields for push button */}
                     <div>
                         <label htmlFor="buttonText" className="block text-sm font-medium mb-1">
                             Текст кнопки (опционально)

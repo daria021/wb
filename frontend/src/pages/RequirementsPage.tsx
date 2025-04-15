@@ -24,7 +24,6 @@ function RequirementsPage() {
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-brandlight rounded-lg shadow-lg p-8 relative">
                 <div className="space-y-8">
-                    {/* Заголовок раздела */}
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>
                         <p className="text-base font-semibold text-left">
@@ -35,9 +34,7 @@ function RequirementsPage() {
 
                     <hr className="border-gray-300" />
 
-                    {/* Список требований */}
                     <ol className="list-decimal list-inside space-y-6 text-gray-800">
-                        {/* Каждый пункт оформлен как отдельный блок */}
                         <li className="px-4">
                             <p className="font-semibold mb-1 text-lg">Заказ оформлен</p>
                             <p className="mt-1">
@@ -87,7 +84,6 @@ function RequirementsPage() {
 
                     <hr className="border-gray-300" />
 
-                    {/* Дополнительные кнопки */}
                     <div className="flex flex-col gap-2 mt-6">
                         <button
                             onClick={() => navigate('/about')}
@@ -129,7 +125,6 @@ function RequirementsPage() {
                     </div>
                 </div>
 
-                {/* Модальное окно для примеров */}
                 {showModal && (
                     <div
                         className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

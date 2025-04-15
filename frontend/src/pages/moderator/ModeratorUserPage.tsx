@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    getUsers,
+    banUser,
+    demoteUser,
+    getBannedUsers,
+    getClients,
     getModerators,
     getSellers,
-    getBannedUsers,
-    banUser,
-    unbanUser,
+    getUsers,
+    increaseSellerBalance,
     promoteUser,
-    demoteUser,
-    increaseSellerBalance, getClients
+    unbanUser
 } from '../../services/api';
-import { UserRole } from '../../enums';
-import { on } from "@telegram-apps/sdk";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/auth";
+import {UserRole} from '../../enums';
+import {on} from "@telegram-apps/sdk";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../contexts/auth";
 import CopyableUuid from "../../components/CopyableUuid";
 
 interface User {
@@ -32,7 +33,7 @@ function ModeratorUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState<FilterType>('all');
-    const { isAdmin } = useAuth();
+    const {isAdmin} = useAuth();
     const navigate = useNavigate();
 
     const [showBalanceModal, setShowBalanceModal] = useState(false);
@@ -158,7 +159,6 @@ function ModeratorUsersPage() {
                 Управление пользователями
             </h1>
 
-            {/* Блок с поиском и фильтром в одну строку */}
             <div className="mb-4 flex gap-2 bg-white p-4 rounded shadow">
                 <div className="flex-1">
                     <input
@@ -211,7 +211,7 @@ function ModeratorUsersPage() {
                         {filteredUsers.map(user => (
                             <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="px-1 py-1 text-[5px]">
-                                    <CopyableUuid uuid={user.id} />
+                                    <CopyableUuid uuid={user.id}/>
                                 </td>
                                 <td className="px-1 py-1 text-[7px]">
                                     {user.telegram_id.toString()}
@@ -270,7 +270,6 @@ function ModeratorUsersPage() {
                 </div>
             )}
 
-            {/* Modal для пополнения баланса */}
             {showBalanceModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-2xl shadow-2xl w-80">

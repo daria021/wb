@@ -27,7 +27,6 @@ function CompleteInstructionPage() {
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-8 relative">
                 <div className="bg-brandlight rounded-lg p-6 mb-8">
-                    {/* Заголовок страницы */}
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Инструкция выкупа для покупателя
                     </h2>
@@ -38,7 +37,6 @@ function CompleteInstructionPage() {
             </span>
                     </p>
 
-                    {/* Шаг 1 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 1. Поиск по ключевому слову</h3>
                         <div className="ml-4 space-y-2">
@@ -54,7 +52,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 2 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 2. Найти товар продавца</h3>
                         <p className="text-base text-gray-800 text-left ml-4">
@@ -66,7 +63,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 3 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 3. Добавить товар и бренд в избранное</h3>
                         <p className="text-base text-gray-800 text-left ml-4">
@@ -76,7 +72,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 4 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 4. Добавьте реквизиты</h3>
                         <p className="text-base text-gray-800 text-left ml-4">
@@ -86,7 +81,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 5 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 5. Оформление заказа</h3>
                         <p className="text-base text-gray-800 text-left ml-4">
@@ -100,7 +94,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 6 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 6. Получение товара</h3>
                         <div className="ml-4 space-y-2">
@@ -118,7 +111,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Шаг 7 */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">Шаг 7. Отчет об отзыве</h3>
                         <div className="ml-4 space-y-2">
@@ -136,7 +128,6 @@ function CompleteInstructionPage() {
 
                     <hr className="my-6 border-gray-300"/>
 
-                    {/* Завершение */}
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-2 text-left">На этом все</h3>
                         <div className="ml-4 space-y-2">
@@ -156,7 +147,6 @@ function CompleteInstructionPage() {
                     </div>
                 </div>
 
-                {/* Модальное окно для показа примера */}
                 {showModal && (
                     <div
                         className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

@@ -1,10 +1,11 @@
-import React, { useEffect, useState, FormEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById, updateProductStatus, getMe } from '../services/api';
-import { Category, PayoutTime, ProductStatus } from '../enums';
-import { on } from "@telegram-apps/sdk";
+import React, {FormEvent, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getMe, getProductById, updateProductStatus} from '../services/api';
+import {Category, PayoutTime, ProductStatus} from '../enums';
+import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
-import {useAuth} from "../contexts/auth";
+
+// import {useAuth} from "../contexts/auth";
 
 interface ModeratorReview {
     id: string;
@@ -34,7 +35,6 @@ interface Product {
     payment_time: PayoutTime;
     review_requirements: string;
     image_path?: string;
-    // Now using a single last moderator review.
     last_moderator_review?: ModeratorReview;
 }
 
@@ -51,13 +51,12 @@ interface MeResponse {
 
 function CreateProductInfo() {
     const navigate = useNavigate();
-    const { productId } = useParams<{ productId: string }>();
+    const {productId} = useParams<{ productId: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
 
-    // Get product data.
     useEffect(() => {
         if (!productId) return;
         getProductById(productId)
@@ -69,7 +68,6 @@ function CreateProductInfo() {
             .finally(() => setLoading(false));
     }, [productId]);
 
-    // Get current user data.
     useEffect(() => {
         getMe()
             .then((user) => setCurrentUser(user))
@@ -78,7 +76,6 @@ function CreateProductInfo() {
             });
     }, []);
 
-    // Handle back button press for telegram apps.
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate('/my-products');
@@ -98,7 +95,6 @@ function CreateProductInfo() {
         }
     };
 
-    // Function to publish the product (change status to ACTIVE)
     const handlePublish = async (e: FormEvent) => {
         e.preventDefault();
         try {
@@ -106,7 +102,7 @@ function CreateProductInfo() {
             fd.append('status', ProductStatus.ACTIVE);
             await updateProductStatus(productId!, fd);
             if (product) {
-                setProduct({ ...product, status: ProductStatus.ACTIVE });
+                setProduct({...product, status: ProductStatus.ACTIVE});
             }
             alert('Товар опубликован');
         } catch (err) {
@@ -115,7 +111,6 @@ function CreateProductInfo() {
         }
     };
 
-    // Function to archive the product (change status to ARCHIVED)
     const handleStop = async (e: FormEvent) => {
         e.preventDefault();
         try {
@@ -123,7 +118,7 @@ function CreateProductInfo() {
             fd.append('status', ProductStatus.ARCHIVED);
             await updateProductStatus(productId!, fd);
             if (product) {
-                setProduct({ ...product, status: ProductStatus.ARCHIVED });
+                setProduct({...product, status: ProductStatus.ARCHIVED});
             }
             alert('Товар заархивирован');
         } catch (err) {
@@ -140,9 +135,6 @@ function CreateProductInfo() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-    // Helper function to get the appropriate comment from a moderator review.
-    // For a seller, display comment_to_seller; for moderator/admin, display comment_to_moderator;
-    // Otherwise, fallback to whichever field is available.
     const getReviewComment = (review: ModeratorReview): string | null => {
         return review.comment_to_seller || null;
         // if (currentUser?.role === 'seller') {
@@ -153,13 +145,11 @@ function CreateProductInfo() {
         // return review.comment_to_seller || review.comment_to_moderator || null;
     };
 
-    // Instead of filtering an array, we now check the single last moderator review.
     const lastReview = product.last_moderator_review;
     const reviewComment = lastReview ? getReviewComment(lastReview) : null;
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/* Header with title and Edit button */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
                 <button
@@ -170,9 +160,7 @@ function CreateProductInfo() {
                 </button>
             </div>
 
-            {/* Product image and information block */}
             <div className="flex gap-4 mb-4">
-                {/* Product photo */}
                 <div className="relative w-3/5 aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
                     {product.image_path ? (
                         <img
@@ -191,7 +179,6 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                {/* Product details */}
                 <div className="bg-white border border-gray-200 rounded-md p-4">
                     <div className="flex flex-col justify-start mb-4">
                         <p className="text-lg font-bold">{product.article}</p>
@@ -216,7 +203,6 @@ function CreateProductInfo() {
                 </div>
             </div>
 
-            {/* Display moderator review based on the current user role */}
             <div className="mb-4">
                 {lastReview && reviewComment && (
                     <div key={lastReview.id} className="mb-3 p-4 bg-gray-50 border border-gray-200 rounded">
@@ -233,7 +219,6 @@ function CreateProductInfo() {
                 )}
             </div>
 
-            {/* Bottom action buttons */}
             <div className="flex flex-col gap-2">
                 <button
                     onClick={handleMyBalanceClick}

@@ -20,8 +20,7 @@ function CatalogPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState(''); // Состояние для поискового запроса
-
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -91,7 +90,6 @@ function CatalogPage() {
                     </div>
                 </div>
 
-                {/* Сетка карточек товаров */}
                 <div className="grid grid-cols-2 gap-4">
 
                     {filteredProducts.map((product) => (

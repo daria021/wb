@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { fetchPushes, createPush, deletePush } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
-import { on } from '@telegram-apps/sdk';
+import React, {useEffect, useState} from 'react';
+import {deletePush, fetchPushes} from '../../services/api';
+import {useNavigate} from 'react-router-dom';
+import {on} from '@telegram-apps/sdk';
 
 interface Push {
     id: string;
@@ -43,7 +43,6 @@ const PushAdminPage: React.FC = () => {
         loadPushes();
     }, []);
 
-    // Handle delete push with trash icon
     const handleDeletePush = async (id: string, event: React.MouseEvent) => {
         event.stopPropagation(); // Prevent row click
         if (!window.confirm('Вы действительно хотите удалить эту рассылку?')) return;
@@ -67,14 +66,12 @@ const PushAdminPage: React.FC = () => {
                 <div className="text-red-500">{error}</div>
             ) : (
                 <>
-                    {/* Добавляем table-fixed, чтобы столбцы имели фиксированную ширину */}
                     <table className="min-w-full table-fixed border border-gray-300">
                         <thead className="bg-brandlight">
                         <tr>
                             <th className="border border-gray-300 p-2 text-left text-base">Название</th>
                             <th className="border border-gray-300 p-2 text-left text-base">Текст рассылки</th>
                             <th className="border border-gray-300 p-2 text-left text-base">Кнопка</th>
-                            {/* Фиксированная ширина для столбца с иконкой удаления */}
                             <th className="border border-gray-300 p-2 w-12"></th>
                         </tr>
                         </thead>
@@ -114,7 +111,6 @@ const PushAdminPage: React.FC = () => {
                         </tbody>
                     </table>
 
-                    {/* Fixed "+" button at the bottom right */}
                     <div className="fixed bottom-4 right-4">
                         <button
                             onClick={() => navigate(`/moderator/pushes/new`)}

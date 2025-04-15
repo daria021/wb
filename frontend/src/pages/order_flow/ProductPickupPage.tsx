@@ -1,4 +1,3 @@
-// src/pages/ProductPickupPage.tsx
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
@@ -11,16 +10,14 @@ interface Product {
     name: string;
     brand: string;
     article: string;
-    price: number;     // Цена для покупателя
-    wb_price: number;  // Цена на сайте WB
-    tg: string;        // Контакт продавца (Telegram)
-    // ... другие поля, если нужно
+    price: number;
+    wb_price: number;
+    tg: string;
 }
 
 interface Order {
     id: string;
     product: Product;
-    // ... другие поля заказа, если нужно
 }
 
 interface OrderReport {
@@ -49,17 +46,13 @@ function ProductPickupPage() {
     const [error, setError] = useState('');
     const [reportData, setReportData] = useState<OrderReport | null>(null);
 
-    // Состояние для переключателя «Забрал(а) товар»
     const [pickedUp, setPickedUp] = useState(false);
-    // Файлы для загрузки: скрин доставки и скрин штрихкодов
     const [deliveryScreenshot, setDeliveryScreenshot] = useState<File | null>(null);
     const [barcodeScreenshot, setBarcodeScreenshot] = useState<File | null>(null);
     const [showReport, setShowReport] = useState(false);
 
-    // Переход на предыдущий шаг через back-button (например, для Telegram Mini App)
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            // Здесь подставляем orderId в шаблонную строку
             navigate(`/order/${orderId}/step-5`);
         });
         return () => {
@@ -67,7 +60,6 @@ function ProductPickupPage() {
         };
     }, [navigate, orderId]);
 
-    // Получаем данные отчёта один раз
     useEffect(() => {
         if (!orderId) return;
         getOrderReport(orderId)
@@ -79,7 +71,6 @@ function ProductPickupPage() {
             });
     }, [orderId]);
 
-    // Получаем данные заказа
     useEffect(() => {
         if (!orderId) return;
         getOrderById(orderId)
@@ -100,12 +91,9 @@ function ProductPickupPage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-    // Расчёт кэшбэка: разница между ценой WB и ценой для покупателя
     const cashback = order.product.wb_price - order.product.price;
-    // Кнопка "Продолжить" активна, если товар забран и оба файла выбраны
     const canContinue = pickedUp && deliveryScreenshot && barcodeScreenshot;
 
-    // Обработчик загрузки файла доставки
     const handleDeliveryScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setDeliveryScreenshot(e.target.files[0]);
@@ -114,7 +102,6 @@ function ProductPickupPage() {
         }
     };
 
-    // Обработчик загрузки файла штрихкодов
     const handleBarcodeScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setBarcodeScreenshot(e.target.files[0]);
@@ -123,7 +110,6 @@ function ProductPickupPage() {
         }
     };
 
-    // Обработчик переключателя "Забрал(а) товар"
     const handlePickedUpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPickedUp(e.target.checked);
         if (!e.target.checked) {
@@ -133,11 +119,9 @@ function ProductPickupPage() {
     };
 
 
-    // Обработчик кнопки "Продолжить"
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
         try {
-            // Обновляем заказ: сохраняем скрин доставки и штрихкодов, переводим step в 6
             await updateOrder(orderId, {
                 step: 6,
                 delivery_screenshot: deliveryScreenshot,
@@ -150,7 +134,7 @@ function ProductPickupPage() {
     };
 
     const handleChannelClick = () => {
-        window.open('https://t.me/grcashback', '_blank'); //todo
+        window.open('https://t.me/grcashback', '_blank');
     };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -164,7 +148,6 @@ function ProductPickupPage() {
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
 
-            {/* Инструкция */}
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
                 <h1 className="text-lg font-bold">Шаг 6. Получение товара</h1>
                 <p>
@@ -177,7 +160,6 @@ function ProductPickupPage() {
                 </p>
             </div>
 
-            {/* Переключатель "Забрал(а) товар" */}
             <div className="flex items-center mb-4">
                 <input
                     type="checkbox"
@@ -191,15 +173,15 @@ function ProductPickupPage() {
                 </label>
             </div>
 
-            {/* Если товар забран, показываем поля для загрузки файлов */}
             {pickedUp && (
                 <div className="space-y-3 mb-4">
-                    {/* Скрин доставки */}
 
                     <div className="flex flex-col gap-2 items-start px-4">
-                        <p className="uppercase text-xs text-gray-500">Скрин статуса «Доставка» (из личного кабинета)</p>
-                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                        <p className="uppercase text-xs text-gray-500">Скрин статуса «Доставка» (из личного
+                            кабинета)</p>
+                        <label
+                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                             Выбрать файл
                             <input
                                 accept="image/*"
@@ -212,8 +194,9 @@ function ProductPickupPage() {
 
                     <div className="flex flex-col gap-2 items-start px-4">
                         <p className="uppercase text-xs text-gray-500">Фото разрезанных штрихкодов на фоне товара</p>
-                        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                        <label
+                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                             Выбрать файл
                             <input
                                 accept="image/*"
@@ -228,7 +211,6 @@ function ProductPickupPage() {
 
             )}
 
-            {/* Кнопки "Проверить продавца" и "Продолжить" */}
             <div className="flex flex-col gap-2 mb-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
@@ -245,7 +227,6 @@ function ProductPickupPage() {
                 </button>
             </div>
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -259,7 +240,6 @@ function ProductPickupPage() {
             </div>
 
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4 mt-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -272,9 +252,7 @@ function ProductPickupPage() {
                 </div>
             </div>
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3 mt-4">
-                {/* Кнопка "Открыть отчет" */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
@@ -282,13 +260,11 @@ function ProductPickupPage() {
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
-                {/* Блок с отчетом (выводим все шаги до текущего момента) */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Шаг 1: Скрины корзины */}
                                 {(reportData.search_screenshot_path || reportData.cart_screenshot_path) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
@@ -308,19 +284,16 @@ function ProductPickupPage() {
                                         )}
                                     </div>
                                 )}
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
                                         <p className="text-sm">{reportData.article}</p>
                                     </div>
                                 )}
-                                {/* Шаг 3: Товар и бренд добавлены в избранное (статичный текст) */}
                                 <div className="mb-3">
                                     <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
                                     <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
                                 </div>
-                                {/* Шаг 4: Реквизиты */}
                                 {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
@@ -330,7 +303,6 @@ function ProductPickupPage() {
                                         <p className="text-sm">Банк: {reportData.bank}</p>
                                     </div>
                                 )}
-                                {/* Шаг 5: Финальный скрин корзины */}
                                 {reportData.final_cart_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 5. Финальный скрин корзины</p>

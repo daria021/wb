@@ -13,14 +13,12 @@ interface Product {
     price: number;
     wb_price: number;
     tg: string;
-    // ... другие поля, если нужно
 }
 
 interface Order {
     id: string;
     product: Product;
     seller: User
-    // ... другие поля заказа, если нужно
 }
 
 interface User {
@@ -53,21 +51,18 @@ function StepReviewReportPage() {
     const [error, setError] = useState('');
     const [reportData, setReportData] = useState<OrderReport | null>(null);
 
-    // Состояния для отзыва и загрузки файлов
     const [leftReview, setLeftReview] = useState(false);
     const [reviewScreenshot, setReviewScreenshot] = useState<File | null>(null);
     const [checkScreenshot, setCheckScreenshot] = useState<File | null>(null);
     const [checkNumber, setCheckNumber] = useState('');
     const [showReport, setShowReport] = useState(false);
 
-    // Кнопка «Продолжить» активна, если отзыв оставлен, оба файла загружены и номер чека введён
     const canContinue =
         leftReview &&
         reviewScreenshot !== null &&
         checkScreenshot !== null &&
         checkNumber.trim() !== '';
 
-    // Слушатель для кнопки "Назад" через Telegram SDK:
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             if (!orderId) return;
@@ -89,7 +84,6 @@ function StepReviewReportPage() {
             });
     }, [orderId]);
 
-    // Получаем данные заказа
     useEffect(() => {
         if (!orderId) {
             setError('Не указан orderId');
@@ -107,7 +101,6 @@ function StepReviewReportPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // Обработчики загрузки файлов
     const handleReviewScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setReviewScreenshot(e.target.files[0]);
@@ -124,7 +117,6 @@ function StepReviewReportPage() {
         }
     };
 
-    // Обработчик переключателя "Оставил(а) отзыв"
     const handleLeftReviewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const checked = e.target.checked;
         setLeftReview(checked);
@@ -135,7 +127,6 @@ function StepReviewReportPage() {
         }
     };
 
-    // Обработчик кнопки "Проверить продавца"
     const handleCheckSeller = () => {
         if (order && order.seller && order.seller.nickname) {
             window.open(`https://t.me/${order.seller.nickname}`, '_blank');
@@ -145,7 +136,6 @@ function StepReviewReportPage() {
     };
 
 
-    // Обработчик кнопки "Продолжить"
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
         try {
@@ -155,11 +145,9 @@ function StepReviewReportPage() {
                 receipt_screenshot: checkScreenshot,
                 receipt_number: checkNumber,
             });
-            // Переход на финальный шаг
             navigate(`/order/${orderId}/order-info`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
-            // Здесь можно добавить уведомление об ошибке
         }
     };
 
@@ -179,7 +167,6 @@ function StepReviewReportPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-            {/* Шапка: Заголовок и кнопка "Назад"/"Написать продавцу" */}
             <div className="flex items-center justify-between mb-4">
 
                 <button
@@ -201,14 +188,12 @@ function StepReviewReportPage() {
 
             </div>
 
-            {/* Серый блок с инструкцией */}
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
                 <h1 className="text-lg font-bold">Шаг 7. Отзыв</h1>
                 <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
                 <p className="mb-2">2. Фото, видео, текст, оценка 5.</p>
             </div>
 
-            {/* Переключатель "Оставил(а) отзыв" */}
             <div className="flex items-center mb-4">
                 <input
                     type="checkbox"
@@ -222,7 +207,6 @@ function StepReviewReportPage() {
                 </label>
             </div>
 
-            {/* Если отзыв оставлен – поля для загрузки файлов и ввода номера чека */}
             {leftReview && (
                 <div className="space-y-3 mb-4 mt-4">
                     <div className="flex flex-col gap-2 items-start px-4">
@@ -271,7 +255,6 @@ function StepReviewReportPage() {
                 </div>
             )}
 
-            {/* Кнопки "Проверить продавца" и "Продолжить" */}
             <div className="flex gap-2 mb-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
@@ -326,9 +309,7 @@ function StepReviewReportPage() {
             </div>
 
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3 mt-4">
-                {/* Блок с отчетом */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
@@ -340,7 +321,6 @@ function StepReviewReportPage() {
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Шаг 1: Скрины корзины */}
                                 {(reportData.search_screenshot_path || reportData.cart_screenshot_path) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
@@ -360,19 +340,16 @@ function StepReviewReportPage() {
                                         )}
                                     </div>
                                 )}
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
                                         <p className="text-sm">{reportData.article}</p>
                                     </div>
                                 )}
-                                {/* Шаг 3: Статичный текст */}
                                 <div className="mb-3">
                                     <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
                                     <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
                                 </div>
-                                {/* Шаг 4: Реквизиты */}
                                 {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
@@ -382,7 +359,6 @@ function StepReviewReportPage() {
                                         <p className="text-sm">Банк: {reportData.bank}</p>
                                     </div>
                                 )}
-                                {/* Шаг 5: Финальный скрин корзины */}
                                 {reportData.final_cart_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 5. Финальный скрин корзины</p>
@@ -393,7 +369,6 @@ function StepReviewReportPage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 6: Скрины доставки и штрихкодов */}
                                 {(reportData.delivery_screenshot_path || reportData.barcodes_screenshot_path) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 6. Скрины доставки и штрихкодов</p>
@@ -413,7 +388,6 @@ function StepReviewReportPage() {
                                         )}
                                     </div>
                                 )}
-                                {/* Шаг 7: Скрины отзыва и чека */}
                                 {(reportData.review_screenshot_path || reportData.receipt_screenshot_path || reportData.receipt_number) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 7. Скрины отзыва и чека</p>

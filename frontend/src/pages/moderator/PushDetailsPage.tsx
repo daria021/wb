@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { on } from '@telegram-apps/sdk';
+import React, {useEffect, useRef, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {on} from '@telegram-apps/sdk';
 import {
-    getPush,
     activatePush,
-    getUsers,
-    getModerators,
-    getSellers,
+    deletePush,
     getBannedUsers,
     getClients,
-    deletePush,
+    getModerators,
+    getPush,
+    getSellers,
+    getUsers,
 } from '../../services/api';
 import GetUploadLink from '../../components/GetUploadLink';
 
@@ -30,7 +30,7 @@ interface User {
 }
 
 const PushDetailsPage: React.FC = () => {
-    const { pushId } = useParams<{ pushId: string }>();
+    const {pushId} = useParams<{ pushId: string }>();
     const navigate = useNavigate();
 
     const [push, setPush] = useState<Push | null>(null);
@@ -41,11 +41,9 @@ const PushDetailsPage: React.FC = () => {
     const [loadingPush, setLoadingPush] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
-    // State for the actions menu dropdown
     const [actionsOpen, setActionsOpen] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Close the dropdown if clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -67,7 +65,6 @@ const PushDetailsPage: React.FC = () => {
         };
     }, [navigate]);
 
-    // Load push details
     useEffect(() => {
         const fetchPushDetails = async () => {
             if (!pushId) return;
@@ -85,7 +82,6 @@ const PushDetailsPage: React.FC = () => {
         fetchPushDetails();
     }, [pushId]);
 
-    // Load users based on filter
     const fetchUsers = async () => {
         setLoadingUsers(true);
         try {
@@ -130,7 +126,7 @@ const PushDetailsPage: React.FC = () => {
     const handleActivatePush = async () => {
         if (!pushId) return;
         try {
-            const data = { userIds: selectedUserIds };
+            const data = {userIds: selectedUserIds};
             await activatePush(pushId, data);
             alert('Push успешно активирован!');
         } catch (err) {
@@ -194,7 +190,6 @@ const PushDetailsPage: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        {/* Actions menu */}
                         <div ref={menuRef} className="relative">
                             <img
                                 src="/icons/menu.png"
@@ -203,7 +198,8 @@ const PushDetailsPage: React.FC = () => {
                                 onClick={() => setActionsOpen((prev) => !prev)}
                             />
                             {actionsOpen && (
-                                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded shadow z-10">
+                                <div
+                                    className="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded shadow z-10">
                                     <button
                                         onClick={() => {
                                             setActionsOpen(false);
@@ -231,7 +227,6 @@ const PushDetailsPage: React.FC = () => {
                 <div>Рассылка не найдена.</div>
             )}
 
-            {/* Filter for users */}
             <div className="mb-4 flex items-center gap-4">
                 <label className="font-semibold">Фильтр пользователей:</label>
                 <select
@@ -247,7 +242,6 @@ const PushDetailsPage: React.FC = () => {
                 </select>
             </div>
 
-            {/* Users table */}
             <div className="bg-white border border-gray-300 rounded shadow overflow-auto">
                 <table className="min-w-full">
                     <thead className="bg-gray-100">

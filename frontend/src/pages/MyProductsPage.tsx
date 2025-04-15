@@ -20,7 +20,7 @@ interface Product {
     id: string;
     name: string;
     price: number;
-    status: ProductStatus; // "created", "active", "disabled", "rejected", "archived"
+    status: ProductStatus;
     moderator_reviews?: ModeratorReview[];
 }
 
@@ -33,7 +33,6 @@ function MyProductsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
 
-    // Затем применяем фильтрацию по статусу и поисковому запросу:
     const filteredProducts = products.filter((product) => {
         if (filter !== 'all') {
             if (filter === 'created') {
@@ -89,7 +88,6 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/* Верхняя панель (поиск + фильтр) */}
             <div className="sticky top-0 z-10 bg-gray-200">
                 <div className="flex justify-end mb-4">
                     <button
@@ -140,17 +138,14 @@ function MyProductsPage() {
                 </div>
             </div>
 
-            {/* Loading state */}
             {loading && <p className="text-sm text-gray-500">Загрузка...</p>}
 
-            {/* Если нет товаров или ошибка */}
             {!loading && (error || filteredProducts.length === 0) && (
                 <div className="p-4 bg-brandlight border border-gray-300 rounded text-center">
                     <p className="text-sm text-gray-700">Товары не найдены</p>
                 </div>
             )}
 
-            {/* Список товаров */}
             {!loading && !error && filteredProducts.length > 0 && (
                 <div className="flex flex-col gap-2">
                     {filteredProducts.map((product) => (
@@ -166,7 +161,6 @@ function MyProductsPage() {
                             }`}
 
                         >
-                            {/* Если у продукта есть комментарий (например, product.comment) — отображаем флажок */}
                             {product.moderator_reviews?.at(-1)?.comment_to_seller && (
                                 <img
                                     src="/icons/flag.png"

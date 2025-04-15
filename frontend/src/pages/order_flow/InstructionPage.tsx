@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById } from '../../services/api';
-import { AxiosResponse } from 'axios';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getProductById} from '../../services/api';
+import {AxiosResponse} from 'axios';
+import {on} from "@telegram-apps/sdk";
 
 function translatePaymentTime(value: string): string {
     switch (value) {
@@ -30,14 +30,13 @@ interface Product {
 }
 
 function InstructionPage() {
-    const { productId } = useParams<{ productId: string }>();
+    const {productId} = useParams<{ productId: string }>();
     const navigate = useNavigate();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Состояния для чекбоксов согласия
     const [agreeRules, setAgreeRules] = useState(false);
     const [agreePersonalData, setAgreePersonalData] = useState(false);
 
@@ -56,16 +55,13 @@ function InstructionPage() {
 
     const canContinue = agreeRules && agreePersonalData;
 
-    // Для генерации кликабельной ссылки по Telegram нику:
     const getTelegramLink = (tg: string) => {
         const username = tg.startsWith('@') ? tg.slice(1) : tg;
         return `https://t.me/${username}`;
     };
 
-    // Переход на следующий шаг
     const handleContinue = () => {
         if (!canContinue) return;
-        // Переход на следующий шаг, используя productId
         navigate(`/product/${productId}/step-1`);
     };
 
@@ -116,7 +112,8 @@ function InstructionPage() {
                                 При задержках оплаты и любые другие вопросы по кэшбэку решайте напрямую с продавцом.
                             </li>
                             <li>
-                                Если продавец окажется мошенником, будет создана отдельная группа для обманутых покупателей.
+                                Если продавец окажется мошенником, будет создана отдельная группа для обманутых
+                                покупателей.
                             </li>
                             <li>
                                 Бот — это пошаговая инструкция, и мы не несем ответственность за выплату.
@@ -128,7 +125,6 @@ function InstructionPage() {
                     </div>
                 </div>
 
-                {/* Блок с условиями сделки */}
                 <div className="mb-6">
                     <h2 className="text-xl font-bold mb-3 text-blue-600">Условия сделки:</h2>
                     <div className="bg-white rounded-lg p-4 border border-gray-300">
@@ -137,7 +133,8 @@ function InstructionPage() {
                                 Цена на сайте: <strong>{product.wb_price} руб.</strong>
                             </li>
                             <li>
-                                <span className="font-semibold text-brand">Цена для вас:</span> <strong>{product.price} руб.</strong>
+                                <span className="font-semibold text-brand">Цена для вас:</span>
+                                <strong>{product.price} руб.</strong>
                             </li>
                             <li>
                                 Кэшбэк: <strong>{translatePaymentTime(product.payment_time)}</strong>
@@ -159,7 +156,6 @@ function InstructionPage() {
                     </div>
                 </div>
 
-                {/* Чекбоксы согласия */}
                 <div className="mb-6">
                     <div className="flex items-center mb-3">
                         <input
@@ -187,7 +183,6 @@ function InstructionPage() {
                     </div>
                 </div>
 
-                {/* Кнопка "Продолжить" */}
                 <button
                     onClick={handleContinue}
                     disabled={!canContinue}

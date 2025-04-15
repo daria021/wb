@@ -16,18 +16,16 @@ function AboutPage() {
     }, [navigate]);
 
     const handleQuestion = () => navigate('/question');
-    const handleInstruction = () => navigate('/instruction', { state: { backRoute: '/about' } });
+    const handleInstruction = () => navigate('/instruction', {state: {backRoute: '/about'}});
     const handleRequirements = () => navigate('/requirements');
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <div className="gap-6">
-                    {/* Основной заголовок */}
                     <h1 className="text-2xl font-bold mb-6 text-left">О сервисе:</h1>
 
                     <div className="bg-brandlight rounded-lg p-4">
-                        {/* Обзор сервиса */}
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
                                 ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям
@@ -57,10 +55,9 @@ function AboutPage() {
                                     Обзор на кабинет продавца
                                 </a>
                             </div>
-                            {/* External link to a Telegram channel */}
                             <div>
                                 <a
-                                    href="https://t.me/wbcashback_go"  // Replace with your actual channel link
+                                    href="https://t.me/wbcashback_go"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:underline"
@@ -71,7 +68,6 @@ function AboutPage() {
                         </div>
 
 
-                        {/* Информация для менеджеров */}
                         <section className="mb-6 mt-6 text-left">
                             <h2 className="text-xl font-bold mb-3">Для менеджеров</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
@@ -84,7 +80,6 @@ function AboutPage() {
                             </ul>
                         </section>
 
-                        {/* Информация для покупателей */}
                         <section className="mb-6 text-left">
                             <h2 className="text-xl font-bold mb-3">Для покупателей</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
@@ -92,10 +87,9 @@ function AboutPage() {
                                 <li>Простая инструкция</li>
                                 <li>Проверенные продавцы</li>
                             </ul>
-                            <hr className="my-6 border-gray-300" />
+                            <hr className="my-6 border-gray-300"/>
                         </section>
 
-                        {/* Кнопки для других статей */}
                         <section className="mb-6 text-left">
                             <div className="flex flex-col gap-2">
                                 <button

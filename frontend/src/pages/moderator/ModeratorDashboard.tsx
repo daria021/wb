@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {on} from "@telegram-apps/sdk";
 
 function ModeratorDashboard() {
     const navigate = useNavigate();
