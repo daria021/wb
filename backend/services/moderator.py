@@ -99,3 +99,9 @@ class ModeratorService(ModeratorServiceInterface):
 
     async def delete_push(self, push_id: UUID) -> None:
         return await self.notification_service.delete_push(push_id)
+
+    async def use_discount(self, user_id: UUID) -> None:
+        await self.user_service.use_discount(user_id)
+
+    async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
+        await self.user_service.increase_referrer_bonus(user_id, bonus)

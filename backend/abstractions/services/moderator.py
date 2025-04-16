@@ -91,3 +91,11 @@ class ModeratorServiceInterface(ABC):
     @abstractmethod
     async def delete_push(self, push_id: UUID) -> None:
         ...
+
+    async def use_discount(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
+        ...
+

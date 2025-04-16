@@ -76,8 +76,9 @@ export async function getOrderBySellerId(sellerId: string) {
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
-export async function increaseSellerBalance(sellerId: string, formData: FormData) {
-    return apiClient.patch(`/users/balance/${sellerId}`, formData, {
+
+export async function increaseSellerBalance(sellerId: string, balance: FormData){
+    return apiClient.patch(`/users/balance/${sellerId}`, balance, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -229,6 +230,7 @@ export async function reviewProduct(productId: string, data: { status: string; c
             'Content-Type': 'application/json',
         },
     });
+
 }
 
 export const fetchPushes = async () => {
@@ -274,9 +276,20 @@ export const updatePush = async (pushId: string, formData: FormData) => {
     return apiClient.patch(`/moderator/pushes/${pushId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
+        }
+    });
+}
+
+export async function increaseReferralBonus(userId: string, data: { bonus: number }) {
+    return apiClient.patch(`/moderator/users/${userId}/use-discount`, data, {
+        headers: {
+            'Content-Type': 'application/json',
         },
     });
 }
 
+export async function markDiscountUsed(userId: string) {
+    return apiClient.get(`/moderator/users/${userId}/referral-purchase`);
+}
 
 

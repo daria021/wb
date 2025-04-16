@@ -1,3 +1,4 @@
+from idlelib.window import add_windows_to_menu
 from uuid import UUID
 
 from fastapi import APIRouter, Request
@@ -114,3 +115,27 @@ async def demote_user(
     await permission_service.is_admin(moderator_id)
 
     return await moderator_service.demote_user(user_id)
+
+@router.post('/{user_id}/use-discount')
+async def use_discount_user(
+        request: Request,
+        user_id: UUID,
+) -> None:
+    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+
+    await permission_service.is_moderator(moderator_id)
+
+    return await moderator_service.use_discount(user_id)
+
+
+@router.post('/{user_id}/referral-purchase')
+async def referral_purchase(
+        request: Request,
+        user_id: UUID,
+        amount: int,
+) -> None:
+    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+
+    await permission_service.is_moderator(moderator_id)
+
+    return await moderator_service.increase_referrer_bonus(user_id, amount)

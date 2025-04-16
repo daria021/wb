@@ -59,9 +59,15 @@ class User(AbstractBase):
     is_banned: Mapped[bool]
     is_seller: Mapped[bool]
     balance: Mapped[Optional[int]]
+    invited_by: Mapped[Optional[pyUUID]] = mapped_column(ForeignKey('users.id'))
+    has_discount: Mapped[Optional[bool]]
+    referrer_bonus: Mapped[Optional[int]]
+
+    inviter: Mapped[Optional['User']] = relationship('User', foreign_keys="User.id")
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")
+
 
 
 class Order(AbstractBase):

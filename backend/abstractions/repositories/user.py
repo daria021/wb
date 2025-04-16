@@ -16,7 +16,7 @@ class UserRepositoryInterface(
         ...
 
     @abstractmethod
-    async def ensure_user(self, dto: CreateUserDTO) -> User:
+    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
         ...
 
     @abstractmethod
@@ -37,4 +37,8 @@ class UserRepositoryInterface(
 
     @abstractmethod
     async def become_seller(self, user_id: UUID):
+        ...
+
+    @abstractmethod
+    async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
         ...

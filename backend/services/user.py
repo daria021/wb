@@ -33,8 +33,8 @@ class UserService(UserServiceInterface):
     async def get_users(self, limit: int = 100, offset: int = 0) -> List[User]:
         return await self.user_repository.get_all(limit=limit, offset=offset)
 
-    async def ensure_user(self, user: CreateUserDTO):
-        return await self.user_repository.ensure_user(user)
+    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
+        return await self.user_repository.ensure_user(dto)
 
     async def get_user_products(self, user_id: UUID):
         return await self.user_repository.get_user_products(user_id)
@@ -101,3 +101,13 @@ class UserService(UserServiceInterface):
             logger.error("Error while sending push notification", exc_info=True)
 
         return res
+
+    async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
+        await self.user_repository.increase_referrer_bonus(user_id, bonus)
+
+    async def use_discount(self, user_id: UUID) -> None:
+        update_dto = UpdateUserDTO(
+            has_discount=False,
+        )
+
+        await self.user_repository.update(user_id, update_dto)

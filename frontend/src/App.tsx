@@ -33,7 +33,8 @@ import ModeratorProductReviewPage from "./pages/moderator/ModeratorProductReview
 import ModeratorUsersPage from "./pages/moderator/ModeratorUserPage";
 import PushAdminPage from "./pages/moderator/PushAdminPage";
 import PushDetailsPage from "./pages/moderator/PushDetailsPage";
-import PushFormPage from "./pages/moderator/PushFormPage"; // New form page for create/update pushes
+import PushFormPage from "./pages/moderator/PushFormPage";
+import ModeratorUserDetailPage from "./pages/moderator/ModeratorUserDetailPage"; // New form page for create/update pushes
 
 function App() {
     window.Telegram.WebApp.expand();
@@ -82,6 +83,12 @@ function App() {
                     <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
                     <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
                     <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage/>}/>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/moderator" element={<ModeratorDashboard />} />
+                    <Route path="/moderator/users" element={<ModeratorUsersPage />} />
+                    <Route path="/moderator/users/:userId" element={<ModeratorUserDetailPage />} />
+                    <Route path="/moderator/products" element={<ModeratorProductsPage />} />
+                    <Route path="/moderator/products/:productId" element={<ModeratorProductReviewPage />} />
 
                     <Route path="/moderator/pushes" element={<PushAdminPage/>}/>
                     <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
