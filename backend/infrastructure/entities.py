@@ -63,7 +63,7 @@ class User(AbstractBase):
     has_discount: Mapped[Optional[bool]]
     referrer_bonus: Mapped[Optional[int]]
 
-    inviter: Mapped[Optional['User']] = relationship('User', foreign_keys="User.id")
+    inviter: Mapped[Optional['User']] = relationship('User', foreign_keys=[invited_by], remote_side='User.id')
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")

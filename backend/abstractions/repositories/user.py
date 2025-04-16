@@ -16,7 +16,7 @@ class UserRepositoryInterface(
         ...
 
     @abstractmethod
-    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
+    async def ensure_user(self, dto: CreateUserDTO) -> User:
         ...
 
     @abstractmethod

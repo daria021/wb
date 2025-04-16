@@ -33,7 +33,7 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
+    async def ensure_user(self, dto: CreateUserDTO) -> User:
         ...
 
     @abstractmethod
@@ -82,4 +82,8 @@ class UserServiceInterface(ABC):
 
     @abstractmethod
     async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
+        ...
+
+    @abstractmethod
+    async def get_invite_link(self, user_id: UUID) -> str:
         ...

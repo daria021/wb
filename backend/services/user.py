@@ -18,6 +18,8 @@ class UserService(UserServiceInterface):
     user_repository: UserRepositoryInterface
     notification_service: NotificationServiceInterface
 
+    bot_username: str
+
     async def create_user(self, dto: CreateUserDTO) -> None:
         return await self.user_repository.create(dto)
 
@@ -33,7 +35,7 @@ class UserService(UserServiceInterface):
     async def get_users(self, limit: int = 100, offset: int = 0) -> List[User]:
         return await self.user_repository.get_all(limit=limit, offset=offset)
 
-    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
+    async def ensure_user(self, dto: CreateUserDTO) -> User:
         return await self.user_repository.ensure_user(dto)
 
     async def get_user_products(self, user_id: UUID):
@@ -111,3 +113,6 @@ class UserService(UserServiceInterface):
         )
 
         await self.user_repository.update(user_id, update_dto)
+
+    async def get_invite_link(self, user_id: UUID) -> str:
+        return f'https://t.me/{self.bot_username}?start={user_id}'

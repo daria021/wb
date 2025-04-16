@@ -3,6 +3,7 @@ import hmac
 import logging
 import time
 import json
+from typing import Optional
 from urllib.parse import parse_qs
 from dataclasses import dataclass
 from uuid import UUID
@@ -44,7 +45,7 @@ class AuthService(AuthServiceInterface):
         except (InvalidTokenException, NotFoundException):
             raise
 
-    async def create_token(self, init_data: str) -> AuthTokens:
+    async def create_token(self, init_data: str, ref_user_id: Optional[UUID] = None) -> AuthTokens:
         """Verifies Telegram Mini App auth data properly."""
         # Parse initData properly (decode URL params)
         data_dict = {k: v[0] for k, v in parse_qs(init_data).items()}
@@ -80,7 +81,7 @@ class AuthService(AuthServiceInterface):
         username = user_data.get("username", None)
 
         # Ensure user exists
-        user_dto = CreateUserDTO(telegram_id=telegram_user_id, nickname=username)
+        user_dto = CreateUserDTO(telegram_id=telegram_user_id, nickname=username, invited_by=ref_user_id)
         user = await self.user_service.ensure_user(user_dto)
 
         # Generate access & refresh tokens

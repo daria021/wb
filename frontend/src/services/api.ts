@@ -281,7 +281,7 @@ export const updatePush = async (pushId: string, formData: FormData) => {
 }
 
 export async function increaseReferralBonus(userId: string, data: { bonus: number }) {
-    return apiClient.patch(`/moderator/users/${userId}/use-discount`, data, {
+    return apiClient.post(`/moderator/users/${userId}/use-discount`, data, {
         headers: {
             'Content-Type': 'application/json',
         },
@@ -292,4 +292,7 @@ export async function markDiscountUsed(userId: string) {
     return apiClient.get(`/moderator/users/${userId}/referral-purchase`);
 }
 
+export async function getInviteLink() {
+    return apiClient.get(`/users/invite`);
+}
 

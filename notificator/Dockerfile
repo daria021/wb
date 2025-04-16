@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install build dependencies
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y gcc libpq-env wget && \
+    apt-get install --no-install-recommends -y gcc libpq-dev wget && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -27,7 +27,7 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-#ENV ENVIRONMENT=local
+ENV ENVIRONMENT=local
 
 WORKDIR /app
 

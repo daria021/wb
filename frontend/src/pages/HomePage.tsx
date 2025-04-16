@@ -33,7 +33,7 @@ function HomePage() {
         navigate(`/seller-cabinet`);
     };
     const handleCatalogClick = () => navigate(`/catalog`);
-    const handleReferralClick = () => alert('Реферальная программа');
+    const handleReferralClick = () => navigate('/invite');
     const handleChannelClick = () => {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };

@@ -99,6 +99,3 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
-
-
-print(settings.bot.token)

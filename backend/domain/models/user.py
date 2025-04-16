@@ -16,8 +16,8 @@ class User(BaseModel):
     is_seller: bool
     balance: Optional[int] = None
     invited_by: Optional[UUID] = None
-    has_discount: bool
-    referrer_bonus: int
+    has_discount: Optional[bool] = None
+    referrer_bonus: Optional[int] = None
 
     inviter: Optional['User'] = None
     created_at: datetime

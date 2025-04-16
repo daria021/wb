@@ -5,7 +5,6 @@ from uuid import UUID
 
 from sqlalchemy import select, case, String, cast, func
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.exc import DetachedInstanceError
 
 from abstractions.repositories import ProductRepositoryInterface
 from domain.dto import CreateProductDTO, UpdateProductDTO
@@ -130,14 +129,6 @@ class ProductRepository(
                 for x in self._get_relation(entity, 'moderator_reviews', use_list=True)
             ]
         )
-
-    @staticmethod
-    def _get_relation(entity: Product, relation: str, use_list: bool = False) -> Optional[Any]:
-        try:
-            logger.info(f"Getting {relation} from {entity.id}")
-            return getattr(entity, relation)
-        except DetachedInstanceError:
-            return [] if use_list else None
 
     async def get_by_article(self, article: str) -> Optional[Product]:
         async with self.session_maker() as session:

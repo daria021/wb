@@ -1,9 +1,9 @@
 {
   "db": {
-    "host": "localhost",
+    "host": "db",
     "port": 5432,
-    "user": "wbuser",
-    "password": "wbpassword",
+    "user": "postgres",
+    "password": "postgres",
     "name": "postgres"
   },
     "jwt": {
@@ -14,7 +14,13 @@
     "refresh_expire": 6000
   },
   "bot": {
-    "local": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
-    "dev": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg"
+    "local": {
+      "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
+      "username": "WBJarvisBot"
+    },
+    "dev": {
+      "token": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg",
+      "username": "cashbackwb_ru_bot"
+    }
   }
 }

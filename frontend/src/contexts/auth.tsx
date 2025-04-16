@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { apiClient } from "../services/apiClient";
+import {createContext, useContext, useEffect, useState} from "react";
+import {apiClient} from "../services/apiClient";
 import {getMe} from "../services/api";
+import {initData} from "@telegram-apps/sdk";
+
 
 interface AuthContextType {
     userId: string | null;
@@ -11,7 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [isModerator, setIsModerator] = useState<boolean | null>(null);
@@ -19,29 +21,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const authenticateUser = async () => {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                const initData = tg.initData;
+            initData.restore();
+            const data = initData.raw();
 
-                if (!initData) {
-                    console.error("No initData found");
-                    setLoading(false);
-                    return;
+            if (!data) {
+                console.error("No initData found");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // Extract the "ref" query parameter from the URL, if it exists.
+                const searchParams = new URLSearchParams(window.location.search);
+                const ref = searchParams.get("ref");
+
+                // Create the payload, including initData and, if present, the ref parameter.
+                const payload: { initData: string; ref?: string } = { initData: data };
+                if (ref) {
+                    payload.ref = ref;
                 }
 
-                try {
-                    const response = await apiClient.post("/auth/telegram", { initData });
-                    localStorage.setItem("authToken", response.data.access_token);
-                    localStorage.setItem("refreshToken", response.data.refresh_token);
-                    const me = await getMe();
-                    setUserId(me.id);
-                    setIsModerator(me.role === "moderator" || me.role === "admin");
-                    setIsAdmin(me.role === "admin");
-                } catch (error) {
-                    console.error("Authentication failed", error);
-                } finally {
-                    setLoading(false);
-                }
+                const response = await apiClient.post("/auth/telegram", payload);
+                localStorage.setItem("authToken", response.data.access_token);
+                localStorage.setItem("refreshToken", response.data.refresh_token);
+
+                const me = await getMe();
+                setUserId(me.id);
+                setIsModerator(me.role === "moderator" || me.role === "admin");
+                setIsAdmin(me.role === "admin");
+            } catch (error) {
+                console.error("Authentication failed", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -49,10 +60,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userId, loading, isModerator, isAdmin }}>
-    {children}
-    </AuthContext.Provider>
-);
+        <AuthContext.Provider value={{userId, loading, isModerator, isAdmin}}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 // Hook for consuming authentication context

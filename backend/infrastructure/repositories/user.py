@@ -1,3 +1,5 @@
+import logging
+from dataclasses import dataclass, field
 from typing import Optional
 from uuid import UUID
 
@@ -10,11 +12,18 @@ from infrastructure.entities import User
 from infrastructure.enums.user_role import UserRole
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
+logger = logging.getLogger(__name__)
 
+
+@dataclass
 class UserRepository(
-    AbstractSQLAlchemyRepository[User, User, CreateUserDTO, UpdateUserDTO],
+    AbstractSQLAlchemyRepository[User, UserModel, CreateUserDTO, UpdateUserDTO],
     UserRepositoryInterface
 ):
+    joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
+        'inviter': None,
+    })
+
     async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
         async with self.session_maker() as session:
             async with session.begin():
@@ -31,7 +40,6 @@ class UserRepository(
             result = result.scalars().all()
 
         return [self.entity_to_model(x) for x in result]
-
 
     async def get_sellers(self) -> list[UserModel]:
         async with self.session_maker() as session:
@@ -66,15 +74,17 @@ class UserRepository(
 
         return [self.entity_to_model(x) for x in result]
 
-    async def get_by_telegram_id(self, telegram_id: int) -> Optional[User]:
+    async def get_by_telegram_id(self, telegram_id: int) -> Optional[UserModel]:
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
                 .where(self.entity.telegram_id == telegram_id)
+                .options(*self.options)
             )
-            user = result.scalars().first()
+            user = result.unique().scalars().first()
         if user:
             return self.entity_to_model(user)
+
         return None
 
     async def become_seller(self, user_id: UUID):
@@ -83,7 +93,7 @@ class UserRepository(
             async with session.begin():
                 user.is_seller = True
 
-    async def ensure_user(self, dto: CreateUserDTO) -> tuple[bool, User]:
+    async def ensure_user(self, dto: CreateUserDTO) -> UserModel:
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
@@ -91,11 +101,11 @@ class UserRepository(
             )
 
             user = result.scalars().one_or_none()
-        user_is_new = user is None
+
         if not user:
             await self.create(dto)
 
-        return user_is_new, await self.get_by_telegram_id(dto.telegram_id)
+        return await self.get_by_telegram_id(dto.telegram_id)
 
     def create_dto_to_entity(self, dto: CreateUserDTO) -> User:
         return User(
@@ -115,7 +125,12 @@ class UserRepository(
 
     def entity_to_model(self, entity: User) -> UserModel:
         def map_inviter(inviter: User) -> UserModel:
+            inviter.inviter = None
             return UserModel.model_validate(inviter)
+
+        inviter = self._get_relation(entity, 'inviter')
+
+        logger.info(f'inviter1 {inviter}')
 
         return UserModel(
             id=entity.id,
@@ -130,5 +145,5 @@ class UserRepository(
             invited_by=entity.invited_by,
             has_discount=entity.has_discount,
             referrer_bonus=entity.referrer_bonus,
-            inviter=map_inviter(entity.inviter),
+            inviter=map_inviter(inviter) if inviter else None,
         )

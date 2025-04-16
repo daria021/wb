@@ -1,19 +1,16 @@
-from idlelib.window import add_windows_to_menu
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Request
 
-from abstractions.services.moderator import ModeratorServiceInterface
-from abstractions.services.permissions import PermissionServiceInterface
-from dependencies.services.moderator import get_moderator_service
-from dependencies.services.permissions import get_permission_service
 from domain.models import User
 from routes.moderator.utils import moderator_pre_request
-from routes.utils import get_user_id_from_request
 
 router = APIRouter(
     prefix='/users',
 )
+
+logger = logging.getLogger(__name__)
 
 @router.get('')
 async def get_users(
@@ -66,8 +63,9 @@ async def get_user(
 ) -> User:
     _, moderator_service, _ = await moderator_pre_request(request)
 
-    return await moderator_service.get_user(user_id)
-
+    res = await moderator_service.get_user(user_id)
+    logger.info(f'inviter {res.inviter}')
+    return res
 
 @router.post('/{user_id}/ban')
 async def ban_user(
@@ -121,7 +119,7 @@ async def use_discount_user(
         request: Request,
         user_id: UUID,
 ) -> None:
-    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+    moderator_id, moderator_service, permission_service = await moderator_pre_request(request)
 
     await permission_service.is_moderator(moderator_id)
 
@@ -134,7 +132,7 @@ async def referral_purchase(
         user_id: UUID,
         amount: int,
 ) -> None:
-    moderator_id, moderator_service, permission_service = await products_pre_request(request)
+    moderator_id, moderator_service, permission_service = await moderator_pre_request(request)
 
     await permission_service.is_moderator(moderator_id)
 

@@ -24,6 +24,7 @@ interface User {
     invited_by: string | null;
     has_discount: boolean;
     referrer_bonus: number;
+    inviter: User;
 }
 
 function ModeratorUserDetailPage() {
@@ -191,9 +192,23 @@ function ModeratorUserDetailPage() {
                 <p><strong>Роль:</strong> {user.role}</p>
                 <p><strong>Забанен:</strong> {user.is_banned ? 'Да' : 'Нет'}</p>
                 <p><strong>Продавец:</strong> {user.is_seller ? 'Да' : 'Нет'}</p>
-                <p><strong>Баланс:</strong> {user.balance} руб</p>
-                <p><strong>Пригласивший:</strong> {user.invited_by || '—'}</p>
-                <p><strong>Реферальный бонус:</strong> {user.referrer_bonus} руб</p>
+                <strong>Баланс:</strong> {user.balance != null ? user.balance + ' руб' : '0 руб'}
+                <p>
+                    <strong>Пригласивший:</strong>{' '}
+                    {user.inviter && user.inviter.nickname ? (
+                        <a
+                            href={`https://t.me/${user.inviter.nickname}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                        >
+                            {user.inviter.nickname}
+                        </a>
+                    ) : (
+                        '—'
+                    )}
+                </p>
+                <strong>Реферальный бонус:</strong> {user.referrer_bonus != null ? user.referrer_bonus + ' руб' : '0 руб'}
                 <p><strong>Скидка использована:</strong> {user.has_discount ? 'Нет' : 'Да'}</p>
             </div>
 
@@ -223,7 +238,7 @@ function ModeratorUserDetailPage() {
                             placeholder="Сумма"
                             value={balanceInput}
                             onChange={(e) => setBalanceInput(e.target.value)}
-                            className="border p-2 rounded flex-1 text-sm"
+                            className="border p-2 rounded flex-1 text-sm min-w-0"
                         />
                         <button
                             onClick={handleBalanceIncrease}
@@ -257,7 +272,7 @@ function ModeratorUserDetailPage() {
                             placeholder="Сумма бонуса"
                             value={bonusInput}
                             onChange={(e) => setBonusInput(e.target.value)}
-                            className="border p-2 rounded flex-1 text-sm"
+                            className="border p-2 rounded flex-1 text-sm min-w-0"
                         />
                         <button
                             onClick={handleReferralBonusIncrease}
@@ -289,15 +304,6 @@ function ModeratorUserDetailPage() {
                 </div>
             )}
 
-            {/* Дополнительные действия */}
-            <div className="flex flex-col gap-2">
-                <button
-                    onClick={() => navigate('/seller-cabinet/balance')}
-                    className="flex-1 bg-brand text-white p-2 rounded"
-                >
-                    Пополнить кабинет
-                </button>
-            </div>
         </div>
     );
 }

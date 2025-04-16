@@ -34,20 +34,17 @@ import ModeratorUsersPage from "./pages/moderator/ModeratorUserPage";
 import PushAdminPage from "./pages/moderator/PushAdminPage";
 import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 import PushFormPage from "./pages/moderator/PushFormPage";
-import ModeratorUserDetailPage from "./pages/moderator/ModeratorUserDetailPage"; // New form page for create/update pushes
+import ModeratorUserDetailPage from "./pages/moderator/ModeratorUserDetailPage";
+import InviteFriendsPage from "./pages/InviteFriendsPage"; // New form page for create/update pushes
+
+import { init } from '@telegram-apps/sdk';
+
 
 function App() {
-    window.Telegram.WebApp.expand();
+    // window.Telegram.WebApp.expand();
     eruda.init();
 
-    window.onerror = (message, source, lineno, colno, error) => {
-        if (typeof message === "string" && message.includes("window.TelegramGameProxy.receiveEvent")) {
-            // Return true to indicate that the error has been handled
-            return true;
-        }
-        console.log(typeof message, typeof message === "string");
-        return false;
-    };
+    init();
 
     return (
         <AuthProvider>
@@ -55,6 +52,7 @@ function App() {
                 <BackButtonManager/>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
+                    <Route path="/invite" element={<InviteFriendsPage/>}/>
                     <Route path="/about" element={<AboutPage/>}/>
                     <Route path="/instruction" element={<CompleteInstructionPage/>}/>
                     <Route path="/requirements" element={<RequirementsPage/>}/>

@@ -1,13 +1,14 @@
 import logging
 from abc import abstractmethod
 from dataclasses import dataclass, field
-from typing import Type, Optional
+from typing import Type, Optional, Any
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, MissingGreenlet
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import joinedload, InstrumentedAttribute
+from sqlalchemy.orm.exc import DetachedInstanceError
 
 from abstractions.repositories import CRUDRepositoryInterface
 from infrastructure.repositories.exceptions import NotFoundException
@@ -148,3 +149,12 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
     @abstractmethod
     def create_dto_to_entity(self, dto: CreateDTO) -> Entity:
         ...
+
+    @staticmethod
+    def _get_relation(entity: Entity, relation: str, use_list: bool = False) -> Optional[Any]:
+        try:
+            logger.info(f"Getting {relation} from {entity.id}")
+            return getattr(entity, relation)
+        except DetachedInstanceError | MissingGreenlet:
+            logger.error(f"Could not get {relation} from {entity.id}")
+            return [] if use_list else None

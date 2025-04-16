@@ -39,6 +39,16 @@ async def get_me(request: Request) -> User:
     return user
 
 
+@router.get("/invite")
+async def get_invite_link(request: Request):
+    user_service = get_user_service()
+    user_id = get_user_id_from_request(request)
+
+    link = await user_service.get_invite_link(user_id)
+
+    return link
+
+
 @router.get("/{user_id}")
 async def get_user(user_id: UUID, request: Request):
     user_service = get_user_service()
