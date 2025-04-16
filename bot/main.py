@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.utils.deep_linking import decode_payload
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "")}.env')
+load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "local")}.env')
 
 TOKEN = os.getenv('TOKEN')
 WEB_APP_URL = os.getenv('WEB_APP_URL')
