@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import {on} from "@telegram-apps/sdk";
 import {getMe, getSellerBalance} from "../services/api";
 
@@ -45,26 +45,21 @@ function SellerCabinet() {
     return (
         <div className="min-h-screen bg-gray-200">  {/* Обертка на весь экран */}
 
-            {/* Основной контейнер с контентом */}
             <div className="p-4 max-w-screen-sm mx-auto relative">
-                {/* Заголовок страницы */}
                 <h1 className="text-xl font-bold mb-4 text-center">Кабинет продавца</h1>
 
-                {/* Описание под заголовком */}
                 <p className="text-sm text-gray-700 mb-6 text-center">
                     ВБКэшбэк — сервис для управления раздачами товара за кэшбэк
                 </p>
 
-                {/* Карточка с балансом */}
                 <div className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4"
-                    onClick={handleMyBalanceClick}
+                     onClick={handleMyBalanceClick}
                 >
                     <p className="text-md font-semibold mb-1">Баланс</p>
                     <p className="text-2xl font-bold">{balance}</p>
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>
                 </div>
 
-                {/* Карточка «Мои товары» */}
                 <div
                     onClick={handleMyProductsClick}
                     className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4 cursor-pointer"
@@ -73,7 +68,6 @@ function SellerCabinet() {
                     <p className="text-sm text-gray-500">Товары по раздачам</p>
                 </div>
 
-                {/* Новая карточка "Отчеты по выкупам" */}
                 <div
                     onClick={handleReportsClick}
                     className="bg-white border border-gray-300 rounded-md p-4 mb-4 cursor-pointer"
@@ -85,9 +79,9 @@ function SellerCabinet() {
                 </div>
 
 
-                {/* Карточка «Техподдержка» с иконкой */}
-                <div className="bg-gray-300 border border-gray-300 rounded-md p-4 flex items-center gap-2 cursor-pointer">
-                    <img src="/icons/support.png" alt="Support" className="w-8 h-8" />
+                <div
+                    className="bg-gray-300 border border-gray-300 rounded-md p-4 flex items-center gap-2 cursor-pointer">
+                    <img src="/icons/support.png" alt="Support" className="w-8 h-8"/>
                     <div>
                         <p className="text-sm font-semibold">Техподдержка</p>
                         <p className="text-xs text-gray-500">Оперативно ответим на все вопросы</p>

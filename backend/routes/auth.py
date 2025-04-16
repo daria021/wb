@@ -13,6 +13,6 @@ router = APIRouter(
 async def telegram_auth(payload: TelegramAuthRequest):
     auth_service = get_auth_service()
 
-    tokens = await auth_service.create_token(payload.initData)
+    tokens = await auth_service.create_token(init_data=payload.initData, ref_user_id=payload.ref)
 
     return tokens

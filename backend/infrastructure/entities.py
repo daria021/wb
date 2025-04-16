@@ -2,14 +2,14 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
 
-from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
-
 from infrastructure.enums.category import Category
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
+from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
+from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 Base = declarative_base()
 
@@ -43,7 +43,11 @@ class Product(AbstractBase):
 
     reviews: Mapped[List['Review']] = relationship('Review', back_populates='product')
     orders: Mapped[List['Order']] = relationship('Order', back_populates='product')
-    moderator_reviews: Mapped[list['ModeratorReview']] = relationship('ModeratorReview', back_populates='product')
+    moderator_reviews: Mapped[list['ModeratorReview']] = relationship(
+        'ModeratorReview',
+        order_by="ModeratorReview.created_at",
+        back_populates='product',
+    )
 
 
 class User(AbstractBase):
@@ -55,9 +59,15 @@ class User(AbstractBase):
     is_banned: Mapped[bool]
     is_seller: Mapped[bool]
     balance: Mapped[Optional[int]]
+    invited_by: Mapped[Optional[pyUUID]] = mapped_column(ForeignKey('users.id'))
+    has_discount: Mapped[Optional[bool]]
+    referrer_bonus: Mapped[Optional[int]]
+
+    inviter: Mapped[Optional['User']] = relationship('User', foreign_keys=[invited_by], remote_side='User.id')
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")
+
 
 
 class Order(AbstractBase):
@@ -113,12 +123,41 @@ class Review(AbstractBase):
 
 class ModeratorReview(AbstractBase):
     __tablename__ = 'moderator_reviews'
-    
+
     moderator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
     product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
-    comment: Mapped[str]
+    comment_to_seller: Mapped[Optional[str]]
+    comment_to_moderator: Mapped[Optional[str]]
     status_before: Mapped[ProductStatus]
     status_after: Mapped[ProductStatus]
 
     moderator: Mapped['User'] = relationship('User')
     product: Mapped['Product'] = relationship('Product', back_populates='moderator_reviews')
+
+
+class Push(AbstractBase):
+    __tablename__ = 'pushes'
+
+    title: Mapped[str] = mapped_column(unique=True)
+    text: Mapped[str]
+    creator_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    image_path: Mapped[Optional[str]]
+
+    button_text: Mapped[Optional[str]]
+    button_link: Mapped[Optional[str]]
+
+    deleted_at: Mapped[Optional[datetime]]
+
+    creator: Mapped["User"] = relationship("User", foreign_keys=[creator_id])
+
+
+class UserPush(AbstractBase):
+    __tablename__ = 'user_pushes'
+
+    push_id: Mapped[pyUUID] = mapped_column(ForeignKey('pushes.id'))
+    user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    sent_at: Mapped[Optional[datetime]]
+    status: Mapped[PushStatus]
+
+    push: Mapped["Push"] = relationship("Push")
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id])

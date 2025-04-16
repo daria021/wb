@@ -44,13 +44,13 @@
       "not dead",
       "not op_mini all"
     ],
-    "envelopment": [
+    "development": [
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
     ]
   },
-  "envDependencies": {
+  "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2"
   }
 }

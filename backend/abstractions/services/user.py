@@ -33,7 +33,7 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def ensure_user(self, user: CreateUserDTO) -> None:
+    async def ensure_user(self, dto: CreateUserDTO) -> User:
         ...
 
     @abstractmethod
@@ -65,6 +65,10 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
+    async def get_clients(self) -> list[User]:
+        ...
+
+    @abstractmethod
     async def get_moderators(self) -> list[User]:
         ...
 
@@ -72,3 +76,14 @@ class UserServiceInterface(ABC):
     async def increase_balance(self, user_id: UUID, balance_sum: int):
         ...
 
+    @abstractmethod
+    async def use_discount(self, user_id: UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
+        ...
+
+    @abstractmethod
+    async def get_invite_link(self, user_id: UUID) -> str:
+        ...

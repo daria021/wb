@@ -10,8 +10,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ~/upload/:/app/upload/
-#    ports:
-#      - "9090:8080"
+
   bot:
     build:
       context: ./bot
@@ -22,6 +21,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+
   db:
     image: postgres:17
     container_name: wb-db
@@ -34,17 +34,23 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: wb-frontend
     restart: unless-stopped
-#    ports:
-#      - "3000:80"
     volumes:
       - "./frontend/public:/app/public"
+
+  notificator:
+    build:
+      context: ./notificator
+      dockerfile: Dockerfile
+    command: [ "python3", "main.py" ]
+    restart: unless-stopped
+    volumes:
+      - ~/upload/:/app/upload/
 
 
 volumes:

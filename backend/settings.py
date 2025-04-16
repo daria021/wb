@@ -10,6 +10,8 @@ from pydantic_settings import (
     JsonConfigSettingsSource,
 )
 
+ENV = os.getenv("ENVIRONMENT", "local")
+
 
 class DBSettings(BaseSettings):
     host: str
@@ -33,24 +35,38 @@ class JwtSettings(BaseSettings):
     access_expire: int
     refresh_expire: int
 
+
 class BotTokenSettings(BaseSettings):
-      local: str
-      dev: str
-  
-      @property
-      def token(self) -> str:
-          match os.getenv("ENVIRONMENT", "local"):
-              case "dev":
-                  return self.dev
-              case "local":
-                  return self.local
-  
+    token: str
+    username: str
+
+
+class BotSettings(BaseSettings):
+    local: BotTokenSettings
+    dev: BotTokenSettings
+
+    @property
+    def token(self) -> str:
+        match ENV:
+            case "dev":
+                return self.dev.token
+            case "local":
+                return self.local.token
+
+    @property
+    def username(self) -> str:
+        match ENV:
+            case "dev":
+                return self.dev.username
+            case "local":
+                return self.local.username
+
 
 class Settings(BaseSettings):
     db: DBSettings
     jwt: JwtSettings
 
-    bot: BotTokenSettings
+    bot: BotSettings
 
     debug: bool = True
 

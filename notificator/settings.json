@@ -1,0 +1,13 @@
+{
+  "db": {
+    "host": "db",
+    "port": 5432,
+    "user": "wbuser",
+    "password": "wbpassword",
+    "name": "postgres"
+  },
+  "bot": {
+    "local": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
+    "dev": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg"
+  }
+}

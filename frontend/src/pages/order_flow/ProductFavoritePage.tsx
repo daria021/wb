@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {updateOrder, getOrderReport, getOrderById} from "../../services/api";
-import { on } from "@telegram-apps/sdk";
-import { AxiosResponse } from 'axios';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
+import {on} from "@telegram-apps/sdk";
+import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
@@ -40,13 +40,10 @@ interface OrderReport {
 
 function ProductFavoritePage() {
     const navigate = useNavigate();
-    const { orderId } = useParams<{ orderId: string }>();
+    const {orderId} = useParams<{ orderId: string }>();
 
-    // Переключатель: добавил ли пользователь товар в избранное
     const [addedToFavorite, setAddedToFavorite] = useState(false);
-    // Данные отчёта, полученные через API
     const [reportData, setReportData] = useState<OrderReport | null>(null);
-    // Флаг для отображения отчёта
     const [showReport, setShowReport] = useState(false);
     const canContinue = addedToFavorite;
     const [order, setOrder] = useState<Order | null>(null);
@@ -55,7 +52,6 @@ function ProductFavoritePage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            // Переход на предыдущий шаг (например, step-2)
             navigate(`/order/${orderId}/step-2`);
         });
         return () => {
@@ -87,12 +83,10 @@ function ProductFavoritePage() {
             });
     }, [orderId]);
 
-    // Переход на следующий шаг
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
         try {
-            // Обновляем заказ: устанавливаем step = 3
-            await updateOrder(orderId, { step: 3 });
+            await updateOrder(orderId, {step: 3});
             navigate(`/order/${orderId}/step-4`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
@@ -110,20 +104,22 @@ function ProductFavoritePage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            {/* Серый блок с инструкцией */}
             <div className="bg-brandlight p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
                 <h1 className="text-lg font-bold mb-4">Шаг 3. Добавить товар в избранное</h1>
                 <p className="mb-2">• Добавьте товар в избранное</p>
                 <p className="mb-2">• Добавьте бренд в избранное</p>
             </div>
 
-            {/* Чекбокс */}
             <div className="flex items-center mb-4">
                 <input
                     type="checkbox"
@@ -137,7 +133,6 @@ function ProductFavoritePage() {
                 </label>
             </div>
 
-            {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -149,7 +144,6 @@ function ProductFavoritePage() {
             </button>
 
 
-            {/* Фото карточки товара */}
             <div className="mb-4">
                 <div className="w-full aspect-[3/4] bg-gray-100 rounded overflow-hidden relative">
                     {order!.product.image_path ? (
@@ -170,7 +164,6 @@ function ProductFavoritePage() {
                 </div>
             </div>
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -183,7 +176,6 @@ function ProductFavoritePage() {
                 </div>
             </div>
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
@@ -192,13 +184,11 @@ function ProductFavoritePage() {
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
-                {/* Блок с отчетом */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Выводим каждый шаг отчёта, если данные заполнены */}
                                 {reportData.search_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
@@ -219,7 +209,6 @@ function ProductFavoritePage() {
                                         />
                                     </div>
                                 )}
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
 
                                     <div className="mb-3">
@@ -237,7 +226,7 @@ function ProductFavoritePage() {
                 <button
                     onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button

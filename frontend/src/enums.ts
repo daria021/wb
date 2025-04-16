@@ -30,16 +30,18 @@ export enum Category {
 
 export enum UserRole {
     USER = "user",
+    CLIENT = "client",
+    SELLER = "seller",
     MODERATOR = "moderator",
     ADMIN = "admin"
 }
 
 export enum ProductStatus {
-    CREATED = "created",
-    ACTIVE = "active",
-    DISABLED = "disabled",
-    REJECTED = "rejected",
-    ARCHIVED = "archived"
+    CREATED = "CREATED",
+    ACTIVE = "ACTIVE",
+    DISABLED = "DISABLED",
+    REJECTED = "REJECTED",
+    ARCHIVED = "ARCHIVED"
 }
 
 export enum OrderStatus {

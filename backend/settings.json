@@ -14,8 +14,13 @@
     "refresh_expire": 6000
   },
   "bot": {
-    "local": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
-    "stage": "7210550878:AAHBb2wxLpJbbvcStpm4WZZpfWJU6l4fKqg",
-    "env": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg"
+    "local": {
+      "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
+      "username": "WBJarvisBot"
+    },
+    "dev": {
+      "token": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg",
+      "username": "cashbackwb_ru_bot"
+    }
   }
 }

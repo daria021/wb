@@ -1,18 +1,16 @@
 import logging
-import os
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
-import aiofiles
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi import HTTPException, UploadFile, Form, File
 
-from dependencies.services.notification import get_notification_service
+from abstractions.services.upload import UploadServiceInterface
 from dependencies.services.order import get_order_service
+from dependencies.services.upload import get_upload_service
 from domain.dto import UpdateOrderDTO
 from domain.dto.order import CreateOrderDTO
 from infrastructure.enums.order_status import OrderStatus
-from routes.utils import IMAGES_DIR
 
 router = APIRouter(
     prefix="/orders",
@@ -43,24 +41,16 @@ async def create_order(
         seller_id: UUID = Form(...),
         search_query_screenshot: UploadFile = File(...),
         cart_screenshot: UploadFile = File(...),
+        upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
     """
     Создаём заказ после шага 1:
     - Сохраняем два скриншота (поискового запроса, корзины).
     - Присваиваем step=1.
     """
-
-    # Подготовим директорию для загрузок
-    upload_dir = IMAGES_DIR
-    os.makedirs(upload_dir, exist_ok=True)
-
     # Сохраняем search_query_screenshot
-    search_filename = f"{uuid4()}.{search_query_screenshot.filename.split('.')[-1]}"
-    search_file_location = os.path.join(upload_dir, search_filename)
     try:
-        async with aiofiles.open(search_file_location, "wb") as f:
-            content = await search_query_screenshot.read()
-            await f.write(content)
+        search_filename = await upload_service.upload(search_query_screenshot)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -68,12 +58,8 @@ async def create_order(
         ) from e
 
     # Сохраняем cart_screenshot
-    cart_filename = f"{uuid4()}.{cart_screenshot.filename.split('.')[-1]}"
-    cart_file_location = os.path.join(upload_dir, cart_filename)
     try:
-        async with aiofiles.open(cart_file_location, "wb") as f:
-            content = await cart_screenshot.read()
-            await f.write(content)
+        cart_filename = await upload_service.upload(cart_screenshot)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -95,7 +81,6 @@ async def create_order(
     order_service = get_order_service()
     new_order_id = await order_service.create_order(order_data)
     return new_order_id
-    # return JSONResponse(status_code=201, content=new_order_id)
 
 
 @router.patch("/status/{order_id}")
@@ -114,14 +99,11 @@ async def update_order_status(
     order_service = get_order_service()
     await order_service.update_order(order_id, dto)
 
-    if status == OrderStatus.CASHBACK_PAID:
-        notification_service = get_notification_service()
-        await notification_service.send_cashback_paid(order_id)
-
     # if not updated_order:
     #     raise HTTPException(status_code=404, detail="Order not found")
 
     # return {"message": "Order updated successfully"}
+
 
 @router.patch("/{order_id}")
 async def update_order(
@@ -145,6 +127,8 @@ async def update_order(
         review_screenshot: Optional[UploadFile] = File(None),
         receipt_screenshot: Optional[UploadFile] = File(None),
         receipt_number: Optional[str] = Form(None),
+
+        upload_service: UploadServiceInterface = Depends(get_upload_service),
 ):
     """
     Универсальное обновление заказа:
@@ -168,41 +152,27 @@ async def update_order(
     if bank is not None:
         update_data["bank"] = bank
 
-    upload_dir = IMAGES_DIR
-    os.makedirs(upload_dir, exist_ok=True)
-
-    # Функция-хелпер для сохранения файла (можно вынести отдельно)
-    async def save_file_to_disk(file: UploadFile) -> str:
-        filename = f"{uuid4()}.{file.filename.split('.')[-1]}"
-
-        file_location = os.path.join(upload_dir, filename)
-        async with aiofiles.open(file_location, "wb") as f:
-            content = await file.read()
-            await f.write(content)
-
-        return filename
-
     # Шаг 5
     if final_cart_screenshot is not None:
-        path = await save_file_to_disk(final_cart_screenshot)
+        path = await upload_service.upload(final_cart_screenshot)
         update_data["final_cart_screenshot_path"] = path
 
     # Шаг 6
     if delivery_screenshot is not None:
-        path = await save_file_to_disk(delivery_screenshot)
+        path = await upload_service.upload(delivery_screenshot)
         update_data["delivery_screenshot_path"] = path
 
     if barcodes_screenshot is not None:
-        path = await save_file_to_disk(barcodes_screenshot)
+        path = await upload_service.upload(barcodes_screenshot)
         update_data["barcodes_screenshot_path"] = path
 
     # Шаг 7
     if review_screenshot is not None:
-        path = await save_file_to_disk(review_screenshot)
+        path = await upload_service.upload(review_screenshot)
         update_data["review_screenshot_path"] = path
 
     if receipt_screenshot is not None:
-        path = await save_file_to_disk(receipt_screenshot)
+        path = await upload_service.upload(receipt_screenshot)
         update_data["receipt_screenshot_path"] = path
 
     if receipt_number is not None:

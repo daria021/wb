@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Request, HTTPException, status, Form
+from fastapi import APIRouter, Request, HTTPException, Form
 
 from dependencies.services.user import get_user_service
 from domain.dto import CreateUserDTO, UpdateUserDTO
@@ -21,6 +21,7 @@ router.include_router(order_router)
 logger = logging.getLogger(__name__)
 
 
+# todo: все ручки кроме get /me - в модераторский роутер и в модераторский сервис
 @router.get("")
 async def list_users(request: Request):
     user_service = get_user_service()
@@ -38,12 +39,23 @@ async def get_me(request: Request) -> User:
     return user
 
 
+@router.get("/invite")
+async def get_invite_link(request: Request):
+    user_service = get_user_service()
+    user_id = get_user_id_from_request(request)
+
+    link = await user_service.get_invite_link(user_id)
+
+    return link
+
+
 @router.get("/{user_id}")
 async def get_user(user_id: UUID, request: Request):
     user_service = get_user_service()
     user = await user_service.get_user(user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
+
     return user
 
 
@@ -78,6 +90,7 @@ async def increase_balance(
 ):
     user_service = get_user_service()
     await user_service.increase_balance(user_id, balance)
+
 
 @router.get("/balance/{user_id}")
 async def get_balance(request: Request):

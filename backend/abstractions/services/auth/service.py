@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 from uuid import UUID
 
 from domain.responses.auth import AuthTokens
@@ -10,7 +11,7 @@ class AuthServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def create_token(self, init_data: str) -> AuthTokens:
+    async def create_token(self, init_data: str, ref_user_id: Optional[UUID] = None) -> AuthTokens:
         ...
 
     @abstractmethod

@@ -10,7 +10,7 @@ jobs:
     name: Reboot nginx docker service
     runs-on: [
       "self-hosted",
-      "env"
+      "dev"
     ]
     steps:
       - name: Checkout

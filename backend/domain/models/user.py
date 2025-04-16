@@ -9,12 +9,17 @@ from infrastructure.enums.user_role import UserRole
 
 class User(BaseModel):
     id: UUID
-    telegram_id: Optional[int]
-    nickname: Optional[str]
+    telegram_id: Optional[int] = None
+    nickname: Optional[str] = None
     role: UserRole
     is_banned: bool
     is_seller: bool
-    balance: Optional[int]
+    balance: Optional[int] = None
+    invited_by: Optional[UUID] = None
+    has_discount: Optional[bool] = None
+    referrer_bonus: Optional[int] = None
+
+    inviter: Optional['User'] = None
     created_at: datetime
     updated_at: datetime
 

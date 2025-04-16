@@ -1,10 +1,10 @@
+import logging
 from dataclasses import field, dataclass
 from typing import Optional, Any
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, case, String, cast, func
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.exc import DetachedInstanceError
 
 from abstractions.repositories import ProductRepositoryInterface
 from domain.dto import CreateProductDTO, UpdateProductDTO
@@ -14,10 +14,12 @@ from infrastructure.entities import Product, ModeratorReview
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ProductRepository(
-    AbstractSQLAlchemyRepository[Product, Product, CreateProductDTO, UpdateProductDTO],
+    AbstractSQLAlchemyRepository[Product, ProductModel, CreateProductDTO, UpdateProductDTO],
     ProductRepositoryInterface,
 ):
     joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
@@ -41,21 +43,40 @@ class ProductRepository(
             products = result.scalars().all()
         return [self.entity_to_model(product) for product in products]
 
-    async def get_by_seller(self, user_id: UUID) -> Optional[list[Product]]:
+    async def get_by_seller(self, user_id: UUID) -> Optional[list[ProductModel]]:
+        priority_case = case(
+            {
+                ProductStatus.CREATED.value.upper(): 1,
+                ProductStatus.ACTIVE.value.upper(): 2,
+                ProductStatus.DISABLED.value.upper(): 3,
+                ProductStatus.REJECTED.value.upper(): 4,
+                ProductStatus.ARCHIVED.value.upper(): 5,
+            },
+            value=func.upper(cast(Product.status, String)),
+            else_=99
+        )
         async with self.session_maker() as session:
             result = await session.execute(
-                select(Product).filter(Product.seller_id == user_id)
+                select(Product)
+                .where(Product.seller_id == user_id)
+                .order_by(
+                    priority_case.asc(),
+                    Product.created_at.asc(),
+                )
+                .options(*self.options)
             )
-            products = result.scalars().all()
+            products = result.unique().scalars().all()
+
         return [self.entity_to_model(product) for product in products]
 
-    async def get_products_to_review(self) -> list[Product]:
+    async def get_products_to_review(self) -> list[ProductModel]:
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.status == ProductStatus.CREATED)
+                # .where(self.entity.status == ProductStatus.CREATED)
+                .options(*self.options)
             )
-            result = result.scalars().all()
+            result = result.unique().scalars().all()
         return [self.entity_to_model(x) for x in result]
 
     def create_dto_to_entity(self, dto: CreateProductDTO) -> Product:
@@ -77,7 +98,7 @@ class ProductRepository(
             status=ProductStatus.CREATED,
             image_path=dto.image_path,
             created_at=dto.created_at,
-            updated_at=dto.updated_at
+            updated_at=dto.updated_at,
         )
 
     def entity_to_model(self, entity: Product) -> ProductModel:
@@ -103,15 +124,11 @@ class ProductRepository(
             image_path=entity.image_path,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
-            moderator_reviews=[_map_moderator_review(x) for x in self._get_relation(entity, 'moderator_reviews', use_list=True)]
+            moderator_reviews=[
+                _map_moderator_review(x)
+                for x in self._get_relation(entity, 'moderator_reviews', use_list=True)
+            ]
         )
-
-    @staticmethod
-    def _get_relation(entity: Product, relation: str, use_list = False) -> Optional[Any]:
-        try:
-            return getattr(entity, relation)
-        except DetachedInstanceError:
-            return [] if use_list else None
 
     async def get_by_article(self, article: str) -> Optional[Product]:
         async with self.session_maker() as session:

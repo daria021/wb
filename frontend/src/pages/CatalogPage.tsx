@@ -20,8 +20,7 @@ function CatalogPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState(''); // Состояние для поискового запроса
-
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -67,25 +66,32 @@ function CatalogPage() {
     }
 
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return (
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+                <p className="text-sm text-brand">{error}</p>
+            </div>
+        );
     }
 
     return (
         <div className="min-h-screen bg-gray-200">
             <div className="p-4 mx-auto">
                 {/* Поле ввода для поиска */}
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md p-2"
-                    />
+                <div className="sticky top-0 z-10 bg-gray-200">
+
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Поиск"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full border border-gray-300 rounded-md p-2"
+                        />
+                    </div>
                 </div>
 
-                {/* Сетка карточек товаров */}
                 <div className="grid grid-cols-2 gap-4">
+
                     {filteredProducts.map((product) => (
                         <div
                             key={product.id}

@@ -1,23 +1,24 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById, updateProductStatus } from '../services/api';
-import { Category, PayoutTime, ProductStatus } from '../enums';
-import { on } from "@telegram-apps/sdk";
+import React, {FormEvent, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getMe, getProductById, updateProductStatus} from '../services/api';
+import {Category, PayoutTime, ProductStatus} from '../enums';
+import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
 
-// Define the ModeratorReview interface
+// import {useAuth} from "../contexts/auth";
+
 interface ModeratorReview {
     id: string;
     moderator_id: string;
     product_id: string;
-    comment: string;
+    comment_to_seller?: string;
+    comment_to_moderator?: string;
     status_before: ProductStatus;
     status_after: ProductStatus;
     created_at: string;
     updated_at: string;
 }
 
-// Extend the Product interface to include the review info
 interface Product {
     id: string;
     name: string;
@@ -37,31 +38,43 @@ interface Product {
     last_moderator_review?: ModeratorReview;
 }
 
+interface MeResponse {
+    id: string;
+    telegram_id?: number;
+    nickname?: string;
+    role: "user" | "client" | "seller" | "moderator" | "admin";
+    is_banned: boolean;
+    balance?: number;
+    created_at: string;
+    updated_at: string;
+}
+
 function CreateProductInfo() {
     const navigate = useNavigate();
-    const { productId } = useParams();
+    const {productId} = useParams<{ productId: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
 
     useEffect(() => {
         if (!productId) return;
         getProductById(productId)
-            .then((res) => {
-                setProduct(res.data);
-            })
+            .then((res) => setProduct(res.data))
             .catch((err) => {
                 console.error('Ошибка при загрузке товара:', err);
                 setError('Не удалось загрузить товар');
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => setLoading(false));
     }, [productId]);
 
-    const handleMyBalanceClick = () => {
-        navigate(`/seller-cabinet/balance`);
-    };
+    useEffect(() => {
+        getMe()
+            .then((user) => setCurrentUser(user))
+            .catch((err) => {
+                console.error('Ошибка получения данных пользователя:', err);
+            });
+    }, []);
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -72,20 +85,25 @@ function CreateProductInfo() {
         };
     }, [navigate]);
 
+    const handleMyBalanceClick = () => {
+        navigate(`/seller-cabinet/balance`);
+    };
+
     const handleEditClick = () => {
         if (product) {
             navigate(`/create-product/${product.id}`);
         }
     };
 
-    // Function for publishing the product (setting status to ACTIVE)
     const handlePublish = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ACTIVE);
             await updateProductStatus(productId!, fd);
-            setProduct({ ...product!, status: ProductStatus.ACTIVE });
+            if (product) {
+                setProduct({...product, status: ProductStatus.ACTIVE});
+            }
             alert('Товар опубликован');
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -93,14 +111,15 @@ function CreateProductInfo() {
         }
     };
 
-    // Function for stopping the product (setting status to ARCHIVED)
     const handleStop = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const fd = new FormData();
             fd.append('status', ProductStatus.ARCHIVED);
             await updateProductStatus(productId!, fd);
-            setProduct({ ...product!, status: ProductStatus.ARCHIVED });
+            if (product) {
+                setProduct({...product, status: ProductStatus.ARCHIVED});
+            }
             alert('Товар заархивирован');
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -116,12 +135,21 @@ function CreateProductInfo() {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-    // Base URL for images
-    const mediaBase = process.env.REACT_APP_API_BASE;
+    const getReviewComment = (review: ModeratorReview): string | null => {
+        return review.comment_to_seller || null;
+        // if (currentUser?.role === 'seller') {
+        //     return review.comment_to_seller || null;
+        // } else if (currentUser?.role === 'moderator' || currentUser?.role === 'admin') {
+        //     return review.comment_to_moderator || null;
+        // }
+        // return review.comment_to_seller || review.comment_to_moderator || null;
+    };
+
+    const lastReview = product.last_moderator_review;
+    const reviewComment = lastReview ? getReviewComment(lastReview) : null;
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/* Header with title and Edit button */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
                 <button
@@ -132,9 +160,7 @@ function CreateProductInfo() {
                 </button>
             </div>
 
-            {/* Product image and information block */}
             <div className="flex gap-4 mb-4">
-                {/* Product photo */}
                 <div className="relative w-3/5 aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
                     {product.image_path ? (
                         <img
@@ -153,7 +179,6 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                {/* Product details */}
                 <div className="bg-white border border-gray-200 rounded-md p-4">
                     <div className="flex flex-col justify-start mb-4">
                         <p className="text-lg font-bold">{product.article}</p>
@@ -172,31 +197,28 @@ function CreateProductInfo() {
                         <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
                     </div>
                     <div className="flex flex-col justify-start">
-                        <span className="text-sm text-gray-600">Выкупы на сутки:</span>
+                        <span className="text-sm text-gray-600">План выкупов на сутки:</span>
                         <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>
                     </div>
                 </div>
             </div>
 
-            {/* Conditionally render review info block */}
-            {(product.status === ProductStatus.REJECTED ||
-                    product.status === ProductStatus.CREATED ||
-                    product.status === ProductStatus.DISABLED) &&
-                product.last_moderator_review && (
-                    <div className="mb-4 p-4 border-l-4 border-red-400 bg-red-50 rounded">
-                        <h2 className="text-lg font-semibold text-red-700 mb-2">
-                            Комментарий модератора
-                        </h2>
-                        <p className="text-sm text-gray-700">
-                            {product.last_moderator_review.comment}
+            <div className="mb-4">
+                {lastReview && reviewComment && (
+                    <div key={lastReview.id} className="mb-3 p-4 bg-gray-50 border border-gray-200 rounded">
+                        <h3 className="text-lg font-semibold">
+                            Комментарий модератора:
+                        </h3>
+                        <p className="text-sm text-gray-800">
+                            {reviewComment}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                            Дата: {new Date(product.last_moderator_review.created_at).toLocaleDateString()}
+                            Дата: {new Date(lastReview.created_at).toLocaleDateString()}
                         </p>
                     </div>
                 )}
+            </div>
 
-            {/* Bottom action buttons */}
             <div className="flex flex-col gap-2">
                 <button
                     onClick={handleMyBalanceClick}

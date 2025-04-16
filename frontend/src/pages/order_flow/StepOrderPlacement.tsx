@@ -1,9 +1,8 @@
-// src/pages/StepOrderPlacement.tsx
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getOrderReport, updateOrder } from '../../services/api';
-import { on } from "@telegram-apps/sdk";
-import { AxiosResponse } from 'axios';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getOrderReport, updateOrder} from '../../services/api';
+import {on} from "@telegram-apps/sdk";
+import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 
 interface OrderReport {
@@ -25,21 +24,15 @@ interface OrderReport {
 
 function StepOrderPlacement() {
     const navigate = useNavigate();
-    const { orderId } = useParams<{ orderId: string }>();
+    const {orderId} = useParams<{ orderId: string }>();
 
-    // Состояние переключателя «Оформил(а) заказ»
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-    // Состояние для файла (скрин, который будет сохранён как final_cart_screenshot_path)
     const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-    // Данные отчёта, полученные через API
     const [reportData, setReportData] = useState<OrderReport | null>(null);
-    // Флаг для отображения отчёта
     const [showReport, setShowReport] = useState(false);
 
-    // Кнопка "Продолжить" активна, если заказ оформлен и загружен файл
     const canContinue = isOrderPlaced && screenshotFile;
 
-    // Слушатель для кнопки "Назад" (например, для Telegram Mini App)
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             navigate(`/order/${orderId}/step-4`);
@@ -49,7 +42,6 @@ function StepOrderPlacement() {
         };
     }, [orderId, navigate]);
 
-    // Загружаем отчет с сервера
     useEffect(() => {
         if (!orderId) return;
         getOrderReport(orderId)
@@ -61,7 +53,6 @@ function StepOrderPlacement() {
             });
     }, [orderId]);
 
-    // Обработчик выбора файла
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setScreenshotFile(e.target.files[0]);
@@ -70,7 +61,6 @@ function StepOrderPlacement() {
         }
     };
 
-    // Обработчик переключателя "Оформил(а) заказ"
     const handleOrderPlacedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsOrderPlaced(e.target.checked);
         if (!e.target.checked) {
@@ -78,16 +68,13 @@ function StepOrderPlacement() {
         }
     };
 
-    // Обработчик кнопки "Продолжить"
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
         try {
-            // Обновляем заказ: сохраняем финальный скрин и переводим step в 5
             await updateOrder(orderId, {
                 step: 5,
                 final_cart_screenshot: screenshotFile,
             });
-            // Переходим на следующий шаг (например, step-6)
             navigate(`/order/${orderId}/step-6`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
@@ -98,13 +85,16 @@ function StepOrderPlacement() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            {/* Инструкция */}
             <div className="bg-brandlight rounded-md p-4 text-sm text-gray-700 mb-4 space-y-2">
                 <h1 className="text-lg font-bold mb-4">Шаг 5. Оформление заказа</h1>
                 <p>1. Оформите заказ на Wildberries</p>
@@ -113,7 +103,6 @@ function StepOrderPlacement() {
                 <p>4. Загрузите скрин заказа в отчет</p>
             </div>
 
-            {/* Переключатель "Оформил(а) заказ" */}
             <div className="flex items-center mb-4">
                 <input
                     type="checkbox"
@@ -127,12 +116,12 @@ function StepOrderPlacement() {
                 </label>
             </div>
 
-            {/* Поле загрузки файла */}
             {isOrderPlaced && (
                 <div className="flex flex-col gap-2 items-start px-4">
                     <p className="uppercase text-xs text-gray-500">Скрин заказа</p>
-                    <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                        <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                    <label
+                        className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                        <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                         Выбрать файл
                         <input
                             accept="image/*"
@@ -145,7 +134,6 @@ function StepOrderPlacement() {
             )}
 
 
-            {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -159,7 +147,6 @@ function StepOrderPlacement() {
             </button>
 
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -172,31 +159,7 @@ function StepOrderPlacement() {
                 </div>
             </div>
 
-            {/* Кнопка "Открыть отчет" */}
 
-
-            {/*/!* Фото карточки товара *!/*/}
-            {/*<div className="mb-4">*/}
-            {/*    <div className="w-full aspect-[3/4] bg-gray-100 rounded overflow-hidden relative">*/}
-            {/*        {order!.product.image_path ? (*/}
-            {/*            <img*/}
-            {/*                src={*/}
-            {/*                    order!.product.image_path.startsWith('http')*/}
-            {/*                        ? order!.product.image_path*/}
-            {/*                        : `${process.env.REACT_APP_MEDIA_BASE}/${order!.product.image_path}`*/}
-            {/*                }*/}
-            {/*                alt={order!.product.name}*/}
-            {/*                className="absolute inset-0 w-full h-full object-cover"*/}
-            {/*            />*/}
-            {/*        ) : (*/}
-            {/*            <div className="absolute inset-0 flex items-center justify-center text-gray-400">*/}
-            {/*                Нет фото*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
@@ -205,13 +168,11 @@ function StepOrderPlacement() {
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
-                {/* Блок с отчетом, включающий все шаги до текущего момента */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Шаг 1: Скрины поискового запроса и корзины */}
                                 {(reportData.search_screenshot_path || reportData.cart_screenshot_path) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
@@ -231,19 +192,16 @@ function StepOrderPlacement() {
                                         )}
                                     </div>
                                 )}
-                                {/* Шаг 2: Артикул товара */}
                                 {reportData.article && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
                                         <p className="text-sm">{reportData.article}</p>
                                     </div>
                                 )}
-                                {/* Шаг 3: Товар и бренд добавлены в избранное (статичный текст) */}
                                 <div className="mb-3">
                                     <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
                                     <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
                                 </div>
-                                {/* Шаг 4: Реквизиты */}
                                 {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
@@ -264,7 +222,7 @@ function StepOrderPlacement() {
                 <button
                     onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button

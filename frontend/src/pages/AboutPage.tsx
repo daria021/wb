@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {on} from "@telegram-apps/sdk";
 
 function AboutPage() {
     const navigate = useNavigate();
@@ -16,26 +16,59 @@ function AboutPage() {
     }, [navigate]);
 
     const handleQuestion = () => navigate('/question');
-    const handleInstruction = () => navigate('/instruction');
+    const handleInstruction = () => navigate('/instruction', {state: {backRoute: '/about'}});
     const handleRequirements = () => navigate('/requirements');
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <div className="gap-6">
-                    {/* Основной заголовок */}
                     <h1 className="text-2xl font-bold mb-6 text-left">О сервисе:</h1>
 
                     <div className="bg-brandlight rounded-lg p-4">
-                        {/* Обзор сервиса */}
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
-                                ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по раздачам.
+                                ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям
+                                безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по
+                                раздачам.
                             </p>
                         </section>
 
-                        {/* Информация для менеджеров */}
-                        <section className="mb-6 text-left">
+                        <div className="space-y-2">
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashmarket/45"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Инструкция для покупателей
+                                </a>
+                            </div>
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashmarket/44"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Обзор на кабинет продавца
+                                </a>
+                            </div>
+                            <div>
+                                <a
+                                    href="https://t.me/wbcashback_go"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Канал по раздачам
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <section className="mb-6 mt-6 text-left">
                             <h2 className="text-xl font-bold mb-3">Для менеджеров</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
                                 <li>Сократит количество чатов</li>
@@ -47,7 +80,6 @@ function AboutPage() {
                             </ul>
                         </section>
 
-                        {/* Информация для покупателей */}
                         <section className="mb-6 text-left">
                             <h2 className="text-xl font-bold mb-3">Для покупателей</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
@@ -55,11 +87,10 @@ function AboutPage() {
                                 <li>Простая инструкция</li>
                                 <li>Проверенные продавцы</li>
                             </ul>
+                            <hr className="my-6 border-gray-300"/>
                         </section>
 
-                        {/* Кнопки для других статей */}
                         <section className="mb-6 text-left">
-                            <h2 className="text-xl font-bold mb-3">Другие статьи</h2>
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={handleQuestion}

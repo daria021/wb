@@ -1,22 +1,11 @@
 import {apiClient} from "./apiClient";
 import {MeResponse} from "../types/MeResponse";
 
-// Базовый URL вашего бэкенда (напр. http://localhost:9090, http://localhost:8000, ...)
-// Можно вынести в .env => process.env.REACT_APP_API_URL
-// const API_URL = 'http://localhost:9090';
-//
-// // Создаём экземпляр axios
-// export const apiClient = axios.create({
-//     baseURL: API_URL,
-// });
 
-// Получить список продуктов
 export async function getProducts() {
-    // Предполагается, что на бэкенде есть GET /products
     return await apiClient.get('/products');
 }
 
-// Получить продукт по его ID (UUID)
 export async function getProductById(productId: string) {
     return apiClient.get(`/products/${productId}`);
 }
@@ -29,17 +18,16 @@ export async function getOrderById(orderId: string) {
     return apiClient.get(`/orders/${orderId}`);
 }
 
-// Пример: получить продукт по артикулу
-export async function getProductByArticle(article: string) {
-    return apiClient.get(`/products/article?acticle=${article}`);
-}
+// export async function getProductByArticle(article: string) {
+//     return apiClient.get(`/products/article?acticle=${article}`);
+// }
 
 export async function getProductsBySellerId() {
     return apiClient.get(`/products/seller`);
 }
 
 
-export async function createProduct(formData: FormData):Promise<string> {
+export async function createProduct(formData: FormData): Promise<string> {
     const response = await apiClient.post('/products', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -48,7 +36,7 @@ export async function createProduct(formData: FormData):Promise<string> {
     return response.data;
 }
 
-export async function updateProduct(productId: string, formData: FormData):Promise<string> {
+export async function updateProduct(productId: string, formData: FormData): Promise<string> {
     const response = await apiClient.patch(`/products/${productId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -57,7 +45,8 @@ export async function updateProduct(productId: string, formData: FormData):Promi
     console.log(response.request.formData);
     return response.data;
 }
-export async function updateProductStatus(productId: string, formData: FormData):Promise<string> {
+
+export async function updateProductStatus(productId: string, formData: FormData): Promise<string> {
     const response = await apiClient.patch(`/products/status/${productId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -67,7 +56,7 @@ export async function updateProductStatus(productId: string, formData: FormData)
     return response.data;
 }
 
-export async function getMe():Promise<MeResponse>{
+export async function getMe(): Promise<MeResponse> {
     return (await apiClient.get<MeResponse>(`users/me`)).data;
 }
 
@@ -79,26 +68,28 @@ export async function createOrder(formData: FormData) {
     });
 }
 
-export async function getOrderReport(orderId: string){
+export async function getOrderReport(orderId: string) {
     return apiClient.get(`/users/orders/report/${orderId}`);
 }
 
-export async function getOrderBySellerId(sellerId: string){
+export async function getOrderBySellerId(sellerId: string) {
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
-export async function increaseSellerBalance(sellerId: string, formData: FormData){
-    return apiClient.patch(`/users/balance/${sellerId}`, formData, {
+
+export async function increaseSellerBalance(sellerId: string, balance: FormData){
+    return apiClient.patch(`/users/balance/${sellerId}`, balance, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
     });
 }
-export async function getSellerBalance(sellerId: string){
+
+export async function getSellerBalance(sellerId: string) {
     return apiClient.get(`/users/balance/${sellerId}`);
 }
 
-export async function updateOrderStatus(orderId: string, formData: FormData){
+export async function updateOrderStatus(orderId: string, formData: FormData) {
     return apiClient.patch(`/orders/status/${orderId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -106,13 +97,12 @@ export async function updateOrderStatus(orderId: string, formData: FormData){
     });
 }
 
-// Обновление заказа (шаг 2..7)
 export async function updateOrder(
     orderId: string,
     data: {
         step?: number;
-        search_screenshot_path?: File; // если требуется обновление, например, для шага 1 (не всегда используется)
-        cart_screenshot_path?: File;     // если требуется обновление, например, для шага 1 (не всегда используется)
+        search_screenshot_path?: File;
+        cart_screenshot_path?: File;
         card_number?: string;
         phone_number?: string;
         name?: string;
@@ -128,7 +118,6 @@ export async function updateOrder(
 ) {
     const formData = new FormData();
 
-    // Добавляем числовые и текстовые поля
     if (data.step !== undefined) {
         formData.append('step', data.step.toString());
     }
@@ -151,7 +140,6 @@ export async function updateOrder(
         formData.append('status', data.status);
     }
 
-    // Добавляем файлы (если переданы)
     if (data.search_screenshot_path) {
         formData.append('search_screenshot_path', data.search_screenshot_path);
     }
@@ -174,7 +162,6 @@ export async function updateOrder(
         formData.append('receipt_screenshot', data.receipt_screenshot);
     }
 
-    // Отправляем PATCH-запрос
     const response = await apiClient.patch(`/orders/${orderId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -195,6 +182,10 @@ export async function getModerators() {
 
 export async function getSellers() {
     return apiClient.get('/moderator/users/sellers');
+}
+
+export async function getClients() {
+    return apiClient.get('/moderator/users/clients');
 }
 
 export async function getBannedUsers() {
@@ -233,10 +224,75 @@ export async function getModeratorProductById(productId: string) {
     return apiClient.get(`/moderator/products/${productId}`);
 }
 
-export async function reviewProduct(productId: string, data: { status: string; comment: string }) {
+export async function reviewProduct(productId: string, data: { status: string; commentModerator: string; commentSeller: string}) {
     return apiClient.patch(`/moderator/products/${productId}`, data, {
         headers: {
             'Content-Type': 'application/json',
         },
     });
+
 }
+
+export const fetchPushes = async () => {
+    try {
+        const response = await apiClient.get(`/moderator/pushes`);
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка получения push рассылок:', error);
+        throw error;
+    }
+};
+
+export const createPush = async (formData: FormData) => {
+    try {
+        await apiClient.post(`/moderator/pushes`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    } catch (error) {
+        console.error('Ошибка создания push рассылки:', error);
+        throw error;
+    }
+};
+
+export const getPush = async (pushId: string) => {
+    return apiClient.get(`/moderator/pushes/${pushId}`);
+}
+
+export const activatePush = async (pushId: string, data: { userIds: string[] }) => {
+    return apiClient.post(`/moderator/pushes/${pushId}/activate`, data.userIds, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+}
+
+export const deletePush = async (pushId: string) => {
+    return apiClient.delete(`/moderator/pushes/${pushId}`);
+}
+
+export const updatePush = async (pushId: string, formData: FormData) => {
+    return apiClient.patch(`/moderator/pushes/${pushId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    });
+}
+
+export async function increaseReferralBonus(userId: string, data: { bonus: number }) {
+    return apiClient.post(`/moderator/users/${userId}/use-discount`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export async function markDiscountUsed(userId: string) {
+    return apiClient.get(`/moderator/users/${userId}/referral-purchase`);
+}
+
+export async function getInviteLink() {
+    return apiClient.get(`/users/invite`);
+}
+

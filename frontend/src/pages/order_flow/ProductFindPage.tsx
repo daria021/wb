@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { AxiosResponse } from 'axios';
-import { getOrderById, updateOrder, getOrderReport } from "../../services/api";
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {AxiosResponse} from 'axios';
+import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
+import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
@@ -18,7 +18,6 @@ interface Product {
 interface Order {
     id: string;
     product: Product;
-    // другие поля заказа...
 }
 
 interface OrderReport {
@@ -38,7 +37,7 @@ interface OrderReport {
 }
 
 function ProductFindPage() {
-    const { orderId } = useParams<{ orderId: string }>();
+    const {orderId} = useParams<{ orderId: string }>();
     const navigate = useNavigate();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -49,7 +48,6 @@ function ProductFindPage() {
     const [articleStatus, setArticleStatus] = useState('');
     const [showReport, setShowReport] = useState(false);
 
-    // Загружаем заказ
     useEffect(() => {
         if (!orderId) return;
         getOrderById(orderId)
@@ -63,7 +61,6 @@ function ProductFindPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // Загружаем отчет с сервера
     useEffect(() => {
         if (!orderId) return;
         getOrderReport(orderId)
@@ -75,7 +72,6 @@ function ProductFindPage() {
             });
     }, [orderId]);
 
-    // Проверяем, совпадает ли введённый артикул с артикулом товара
     useEffect(() => {
         if (!order) return;
         if (enteredArticle.trim() === order.product.article) {
@@ -90,14 +86,13 @@ function ProductFindPage() {
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
         try {
-            await updateOrder(orderId, { step: 2 });
+            await updateOrder(orderId, {step: 2});
             navigate(`/order/${orderId}/step-3`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
         }
     };
 
-    // Слушатель для кнопки "Назад" (например, в Telegram Mini App)
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             if (!orderId) return;
@@ -121,17 +116,21 @@ function ProductFindPage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-    const { product } = order;
+    const {product} = order;
     const handleChannelClick = () => {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
+
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-            {/* Инструкция по поиску товара */}
             <div className="bg-brandlight p-4 rounded-lg shadow mb-4">
                 <h2 className="text-lg font-bold mb-2">Шаг 2. Найдите наш товар</h2>
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
@@ -147,7 +146,6 @@ function ProductFindPage() {
                 </ul>
             </div>
 
-            {/* Поле ввода артикула */}
             <div className="mb-4">
                 <label htmlFor="articleInput" className="block text-sm font-medium mb-1">
                     Артикул товара
@@ -167,7 +165,6 @@ function ProductFindPage() {
                 )}
             </div>
 
-            {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -179,7 +176,6 @@ function ProductFindPage() {
             </button>
 
 
-            {/* Фото карточки товара */}
             <div className="mb-4">
                 <div className="w-full aspect-[3/4] bg-gray-100 rounded overflow-hidden relative">
                     {product.image_path ? (
@@ -200,7 +196,6 @@ function ProductFindPage() {
                 </div>
             </div>
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -213,9 +208,7 @@ function ProductFindPage() {
                 </div>
             </div>
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3 mt-4">
-                {/* Кнопка "Открыть отчет" */}
                 <button
                     onClick={() => setShowReport(prev => !prev)}
                     className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
@@ -223,13 +216,11 @@ function ProductFindPage() {
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
-                {/* Блок с отчетом (используем данные, полученные из getOrderReport) */}
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div>
-                                {/* Выводим каждый шаг отчёта, если данные заполнены */}
                                 {reportData.search_screenshot_path && (
                                     <div className="mb-3">
                                         <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
@@ -259,7 +250,7 @@ function ProductFindPage() {
                 <button
                     onClick={handleChannelClick}
                     className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button

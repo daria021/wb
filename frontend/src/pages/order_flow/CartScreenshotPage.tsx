@@ -19,7 +19,6 @@ function CartScreenshotPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Файлы для скриншотов:
     const [file1, setFile1] = useState<File | null>(null);
     const [file2, setFile2] = useState<File | null>(null);
 
@@ -78,8 +77,12 @@ function CartScreenshotPage() {
     }
 
     const handleSupportClick = () => {
-        window.open('https://t.me/snow_irbis20', '_blank');
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
+
     const handleChannelClick = () => {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
@@ -87,7 +90,6 @@ function CartScreenshotPage() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
 
-            {/* Плашка с предупреждениями (серый фон) */}
             <div className="bg-brandlight rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
                 <h2 className="text-lg font-semibold top-10">Шаг 1. Загрузите скрины</h2>
 
@@ -108,8 +110,9 @@ function CartScreenshotPage() {
 
             <div className="flex flex-col gap-2 items-start px-4">
                 <p className="uppercase text-xs text-gray-500">Скрин поискового запроса</p>
-                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                <label
+                    className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                     Выбрать файл
                     <input
                         accept="image/*"
@@ -124,9 +127,10 @@ function CartScreenshotPage() {
 
             <div className="flex flex-col gap-2 items-start px-4">
                 <p className="uppercase text-xs text-gray-500">Скрин корзины</p>
-                <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
+                <label
+                    className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
 
-                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4" />
+                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
                     Выбрать файл
                     <input
                         accept="image/*"
@@ -140,7 +144,6 @@ function CartScreenshotPage() {
             </div>
 
 
-            {/* Кнопка "Продолжить" */}
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -151,7 +154,6 @@ function CartScreenshotPage() {
                 Продолжить
             </button>
 
-            {/* Видео-инструкция */}
             <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
@@ -164,7 +166,6 @@ function CartScreenshotPage() {
                 </div>
             </div>
 
-            {/* Кнопки снизу, расположенные вертикально */}
             <div className="flex flex-col gap-3">
                 <button
                     onClick={handleChannelClick}

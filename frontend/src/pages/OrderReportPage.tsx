@@ -79,7 +79,6 @@ function OrderReportPage() {
             <div className="max-w-screen-md mx-auto bg-white shadow-lg rounded-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Отчет по заказу</h1>
 
-                {/* Шаг 1: Скрины корзины */}
                 {(report.search_screenshot_path || report.cart_screenshot_path) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 1. Скрины корзины</h2>
@@ -100,7 +99,6 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {/* Шаг 2: Артикул товара */}
                 {report.article && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 2. Артикул товара</h2>
@@ -108,13 +106,11 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {/* Шаг 3: Товар и бренд добавлены в избранное */}
                 <section className="mb-6 p-4 bg-gray-200 rounded-md">
                     <h2 className="text-xl font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
                     <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
                 </section>
 
-                {/* Шаг 4: Реквизиты */}
                 {(report.card_number || report.phone_number || report.name || report.bank) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 4. Реквизиты</h2>
@@ -125,7 +121,6 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {/* Шаг 5: Финальный скрин корзины */}
                 {report.final_cart_screenshot_path && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 5. Финальный скрин корзины</h2>
@@ -137,7 +132,6 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {/* Шаг 6: Скрины доставки и штрихкодов */}
                 {(report.delivery_screenshot_path || report.barcodes_screenshot_path) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 6. Скрины доставки и штрихкодов</h2>
@@ -158,7 +152,6 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {/* Шаг 7: Скрины отзыва и электронного чека, номер чека */}
                 {(report.review_screenshot_path || report.receipt_screenshot_path || report.receipt_number) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 7. Скрины отзыва и чека</h2>

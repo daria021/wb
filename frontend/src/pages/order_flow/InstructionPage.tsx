@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById } from '../../services/api';
-import { AxiosResponse } from 'axios';
-import { on } from "@telegram-apps/sdk";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getProductById} from '../../services/api';
+import {AxiosResponse} from 'axios';
+import {on} from "@telegram-apps/sdk";
 
 function translatePaymentTime(value: string): string {
     switch (value) {
@@ -30,14 +30,13 @@ interface Product {
 }
 
 function InstructionPage() {
-    const { productId } = useParams<{ productId: string }>();
+    const {productId} = useParams<{ productId: string }>();
     const navigate = useNavigate();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Состояния для чекбоксов согласия
     const [agreeRules, setAgreeRules] = useState(false);
     const [agreePersonalData, setAgreePersonalData] = useState(false);
 
@@ -56,9 +55,13 @@ function InstructionPage() {
 
     const canContinue = agreeRules && agreePersonalData;
 
+    const getTelegramLink = (tg: string) => {
+        const username = tg.startsWith('@') ? tg.slice(1) : tg;
+        return `https://t.me/${username}`;
+    };
+
     const handleContinue = () => {
         if (!canContinue) return;
-        // Переход на следующий шаг, используя productId
         navigate(`/product/${productId}/step-1`);
     };
 
@@ -82,58 +85,77 @@ function InstructionPage() {
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
-
                 <h1 className="text-2xl font-bold mb-6 text-center">Правила и условия</h1>
                 <p className="text-base text-gray-800 mb-4">
                     Перед тем как начнем, пожалуйста, внимательно прочитайте все условия:
                 </p>
 
                 {/* Блок с правилами */}
-                <div className="mb-6 mt-6">
-                    <div className="bg-brandlight rounded-lg p-4">
-                        <h2 className="text-xl font-semibold mb-3">Правила:</h2>
-                        <ul className="list-disc list-inside text-lg text-gray-800 space-y-2">
+                <div className="mb-6">
+                    <div className="bg-white rounded-lg p-4 border border-gray-300">
+                        <h2 className="text-xl font-semibold text-blue-600 mb-3">Правила:</h2>
+                        <ol className="list-decimal list-inside text-lg text-gray-800 space-y-2">
                             <li>
-                                Вы заключаете сделку с продавцом <strong>{product.tg}</strong>. Бот не несет ответственности за выплату.
+                                Вы заключаете сделку с продавцом{' '}
+                                <strong>
+                                    <a
+                                        href={getTelegramLink(product.tg)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {product.tg}
+                                    </a>
+                                </strong>. Бот не несет ответственности за выплату.
                             </li>
                             <li>
                                 При задержках оплаты и любые другие вопросы по кэшбэку решайте напрямую с продавцом.
                             </li>
                             <li>
-                                Если продавец окажется мошенником, будет создана отдельная группа для обманутых покупателей и продавца.
+                                Если продавец окажется мошенником, будет создана отдельная группа для обманутых
+                                покупателей.
                             </li>
                             <li>
-                                Бот — это пошаговая инструкция. Мы не несем ответственность за выплату.
+                                Бот — это пошаговая инструкция, и мы не несем ответственность за выплату.
                             </li>
                             <li>
-                                Продолжая, вы заключаете сделку и соглашаетесь с этими условиями.
+                                Продолжая, вы соглашаетесь с указанными условиями сделки.
                             </li>
-                        </ul>
+                        </ol>
                     </div>
                 </div>
 
-                {/* Блок с условиями сделки */}
                 <div className="mb-6">
-                    <h2 className="text-xl font-bold mb-3">Условия сделки:</h2>
-                    <div className="bg-brandlight rounded-lg p-4">
-                        <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
+                    <h2 className="text-xl font-bold mb-3 text-blue-600">Условия сделки:</h2>
+                    <div className="bg-white rounded-lg p-4 border border-gray-300">
+                        <ol className="list-decimal list-inside text-base text-gray-800 space-y-2">
                             <li>
                                 Цена на сайте: <strong>{product.wb_price} руб.</strong>
                             </li>
                             <li>
-                                Цена для вас: <strong>{product.price} руб.</strong>
+                                <span className="font-semibold text-brand">Цена для вас:</span>
+                                <strong>{product.price} руб.</strong>
                             </li>
                             <li>
                                 Кэшбэк: <strong>{translatePaymentTime(product.payment_time)}</strong>
                             </li>
                             <li>
-                                Если возникнут вопросы — напишите продавцу в Telegram: <strong>{product.tg}</strong>
+                                Если возникнут вопросы — напишите продавцу в Telegram:{' '}
+                                <strong>
+                                    <a
+                                        href={getTelegramLink(product.tg)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {product.tg}
+                                    </a>
+                                </strong>
                             </li>
-                        </ul>
+                        </ol>
                     </div>
                 </div>
 
-                {/* Чекбоксы согласия */}
                 <div className="mb-6">
                     <div className="flex items-center mb-3">
                         <input
@@ -161,14 +183,12 @@ function InstructionPage() {
                     </div>
                 </div>
 
-                {/* Кнопка "Продолжить" */}
                 <button
                     onClick={handleContinue}
                     disabled={!canContinue}
-                    className={`w-full py-3 rounded-lg text-lg font-semibold ${
-                        canContinue
-                            ? 'bg-brand text-white'
-                            : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    className={`w-full py-3 rounded-lg text-lg font-semibold ${canContinue
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                     }`}
                 >
                     Продолжить
