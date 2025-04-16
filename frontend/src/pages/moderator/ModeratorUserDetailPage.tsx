@@ -8,7 +8,7 @@ import {
     demoteUser,
     increaseSellerBalance,
     increaseReferralBonus,
-    markDiscountUsed
+    markDiscountUsed, useDiscount
 } from '../../services/api';
 import {ProductStatus, UserRole} from '../../enums';
 import { on } from '@telegram-apps/sdk';
@@ -170,16 +170,19 @@ function ModeratorUserDetailPage() {
         }
     };
 
-    // Функция для отметки использования скидки
+
     const handleDiscountUsed = async () => {
         try {
-            await markDiscountUsed(user.id);
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            await useDiscount(user.id);
             setUser({ ...user, has_discount: false });
+            alert('Использование скидки отмечено!');  // <-- вот здесь
         } catch (error) {
             console.error("Ошибка при использовании скидки:", error);
             alert("Не удалось отметить использование скидки");
         }
     };
+
 
     return (
         <div className="p-4 bg-gray-100 min-h-screen">
@@ -209,7 +212,12 @@ function ModeratorUserDetailPage() {
                     )}
                 </p>
                 <strong>Реферальный бонус:</strong> {user.referrer_bonus != null ? user.referrer_bonus + ' руб' : '0 руб'}
-                <p><strong>Скидка использована:</strong> {user.has_discount ? 'Нет' : 'Да'}</p>
+                {user.invited_by && user.has_discount ? (
+                    <p><strong>Есть скидка</strong></p>
+                ) : null}
+
+
+
             </div>
 
             {/* Действия над пользователем */}
@@ -293,7 +301,7 @@ function ModeratorUserDetailPage() {
                     >
                         Списать весь бонус
                     </button>
-                    {user.has_discount && (
+                    {user.invited_by && user.has_discount && (
                         <button
                             onClick={handleDiscountUsed}
                             className="mt-2 bg-brandlight text-brand p-2 rounded text-sm w-full"
@@ -301,6 +309,7 @@ function ModeratorUserDetailPage() {
                             Использовал скидку
                         </button>
                     )}
+
                 </div>
             )}
 

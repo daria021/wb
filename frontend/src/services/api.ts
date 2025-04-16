@@ -292,6 +292,11 @@ export async function markDiscountUsed(userId: string) {
     return apiClient.get(`/moderator/users/${userId}/referral-purchase`);
 }
 
+export async function useDiscount(userId: string) {
+    return apiClient.post(`/moderator/users/${userId}/use-discount`);
+}
+
+
 export async function getInviteLink() {
     return apiClient.get(`/users/invite`);
 }
