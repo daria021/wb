@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {getProductsBySellerId} from '../services/api';
+import {getMe, getProductsBySellerId} from '../services/api';
 import {on} from "@telegram-apps/sdk";
 import {ProductStatus} from "../enums";
+import {MeResponse} from "../types/MeResponse";
 
 interface ModeratorReview {
     id: string;
@@ -22,16 +23,30 @@ interface Product {
     price: number;
     status: ProductStatus;
     moderator_reviews?: ModeratorReview[];
+    remaining_products: number;
 }
+
 
 function MyProductsPage() {
     const navigate = useNavigate();
 
     const [products, setProducts] = useState<Product[]>([]);
+    const [seller, setSeller] = useState<MeResponse | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
+
+    const totalCount = products.length;
+    const moderationCount = products.filter(p => p.status === ProductStatus.CREATED || p.status === ProductStatus.DISABLED).length; //todo
+    const publishedCount = products.filter(p => p.status === ProductStatus.ACTIVE).length;
+    const archivedCount = products.filter(p => p.status === ProductStatus.NOT_PAID).length;
+    const totalPlan = products
+        .filter(p =>
+            p.status === ProductStatus.ACTIVE ||
+            p.status === ProductStatus.NOT_PAID
+        )
+        .reduce((sum, p) => sum + p.remaining_products, 0);
 
     const filteredProducts = products.filter((product) => {
         if (filter !== 'all') {
@@ -78,6 +93,19 @@ function MyProductsPage() {
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+        async function fetchSeller() {
+            try {
+                const me = await getMe();
+                setSeller(me);
+            } catch (err) {
+                console.error("Ошибка при получении seller:", err);
+            }
+        }
+
+        fetchSeller();
+    }, []);
+
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
             window.Telegram.WebApp.close();
@@ -88,15 +116,55 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
+            <div className="mb-4 p-4 bg-brandlight rounded shadow">
+                <p className="text-sm">
+                    Всего карточек: <strong>{totalCount}</strong>
+                </p>
+                <p className="text-sm">
+                    На модерации: <strong>{moderationCount}</strong>
+                </p>
+                <p className="text-sm">
+                    Опубликовано: <strong>{publishedCount}</strong>
+                </p>
+                <p className="text-sm">
+                    В архиве: <strong>{archivedCount}</strong>
+                </p>
+                <p className="text-sm">
+                    Заявка оформлена и не оплачена: <strong>{archivedCount}</strong>
+                </p>
+                <p className="text-sm">
+                    Общий план по раздачам: <strong>{totalPlan}</strong>
+                </p>
+                {seller && (() => {
+                    const diff = seller.balance - totalPlan;
+                    return diff >= 0 ? (
+                        <p className="text-sm text-black">
+                            Баланс раздач: <strong>{seller.balance}</strong>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-red-800">
+                            Баланс раздач: <strong>{seller.balance}</strong><br/>
+                            Для публикации товара необходимо пополнить баланс
+                            на <strong>{diff}</strong> раздач
+                        </p>
+                    );
+                })()}
+
+
+
+            </div>
             <div className="sticky top-0 z-10 bg-gray-200">
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => navigate('/create-product')}
-                        className="border border-brand rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"
-                    >
-                        Разместить товар
-                    </button>
-                </div>
+                {/*<div className="flex justify-end mb-4">*/}
+                {/*    <button*/}
+                {/*        onClick={() => navigate('/create-product')}*/}
+                {/*        className="border border-brand rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"*/}
+                {/*    >*/}
+                {/*        Разместить товар*/}
+                {/*    </button>*/}
+                {/*</div>*/}
+
+                {/* Блок статистики */}
+
 
                 <div className="relative mb-4">
                     <input
@@ -146,8 +214,15 @@ function MyProductsPage() {
                 </div>
             )}
 
+            <button
+                onClick={() => navigate('/create-product')}
+                className="w-full border border-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
+            >
+                Разместить товар
+            </button>
+
             {!loading && !error && filteredProducts.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-4">
                     {filteredProducts.map((product) => (
                         <div
                             key={product.id}

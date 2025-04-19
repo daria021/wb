@@ -5,7 +5,7 @@ from uuid import UUID
 from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface, UserRepositoryInterface
 from abstractions.services import OrderServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
-from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO
+from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO, UpdateProductDTO
 from domain.models import Order
 from domain.responses.order_report import OrderReport
 from infrastructure.enums.order_status import OrderStatus
@@ -30,12 +30,32 @@ class OrderService(OrderServiceInterface):
     async def update_order(self, order_id: UUID, dto: UpdateOrderDTO) -> None:
         await self.order_repository.update(order_id, dto)
         if dto.status == OrderStatus.CASHBACK_PAID:
+            await self.notification_service.send_cashback_paid(order_id)
+
             order = await self.order_repository.get(order_id)
             user_dto=UpdateUserDTO(
                 role=UserRole.CLIENT,
             )
             await self.user_repository.update(order.user_id, user_dto)
-            await self.notification_service.send_cashback_paid(order_id)
+
+            if order.seller.role == UserRole.CLIENT or order.seller.role == UserRole.USER:
+                seller_dto=UpdateUserDTO(
+                    role=UserRole.SELLER,
+                    balance=order.seller.balance - 1
+                )
+            else:
+                seller_dto = UpdateUserDTO(
+                    balance=order.seller.balance - 1
+                )
+            await self.user_repository.update(order.seller_id, seller_dto)
+
+            product = await self.product_repository.get(order.product_id)
+            product_dto = UpdateProductDTO(
+                remaining_products=product.remaining_products - 1,
+            )
+            await self.product_repository.update(product.id, product_dto)
+
+
 
     async def delete_order(self, order_id: UUID) -> None:
         await self.order_repository.delete(order_id)

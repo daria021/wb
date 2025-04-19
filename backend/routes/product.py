@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request, Depends
@@ -13,6 +13,7 @@ from domain.responses.product import ProductResponse
 from infrastructure.enums.category import Category
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
+from routes.requests.update_product import UpdateProductForm
 from routes.utils import get_user_id_from_request
 
 router = APIRouter(
@@ -77,6 +78,7 @@ async def create_product(
         tg: str = Form(...),
         payment_time: PayoutTime = Form(...),
         review_requirements: str = Form(...),
+        requirements_agree: bool = Form(...),
         image: Optional[UploadFile] = File(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
@@ -89,18 +91,19 @@ async def create_product(
         category=category,
         key_word=key_word,
         general_repurchases=general_repurchases,
+        remaining_products=general_repurchases,
         daily_repurchases=daily_repurchases,
         price=price,
         wb_price=wb_price,
         tg=tg,
         payment_time=payment_time,
         review_requirements=review_requirements,
+        requirements_agree=requirements_agree,
         article=article,
         image_path=image_path,
         seller_id=seller_id
     )
 
-    # Если файл изображения передан, сохраняем его и задаем путь
     if image is not None:
         try:
             image_path = await upload_service.upload(image)
@@ -123,42 +126,30 @@ async def create_product(
 @router.patch("/{product_id}")
 async def update_product(
         product_id: UUID,
-        name: Optional[str] = Form(...),
-        article: Optional[str] = Form(...),
-        brand: Optional[str] = Form(...),
-        category: Optional[Category] = Form(...),
-        key_word: Optional[str] = Form(...),
-        general_repurchases: Optional[int] = Form(...),
-        daily_repurchases: Optional[int] = Form(...),
-        price: Optional[float] = Form(..., gt=0),
-        wb_price: Optional[float] = Form(...),
-        tg: Optional[str] = Form(...),
-        status: Optional[ProductStatus] = Form(...),
-        payment_time: Optional[PayoutTime] = Form(...),
-        review_requirements: Optional[str] = Form(...),
-        image: Optional[UploadFile] = File(None),
+        data: Annotated[UpdateProductForm, Form()],
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> dict:
-    dto = UpdateProductDTO(
-        name=name,
-        brand=brand,
-        category=category,
-        key_word=key_word,
-        general_repurchases=general_repurchases,
-        daily_repurchases=daily_repurchases,
-        price=price,
-        wb_price=wb_price,
-        tg=tg,
-        payment_time=payment_time,
-        status=status,
-        review_requirements=review_requirements,
-        article=article,
-    )
+    update_dto = UpdateProductDTO.model_validate(data.model_dump(exclude_unset=True))
+    # dto = UpdateProductDTO(
+    #     name=data.name,
+    #     brand=brand,
+    #     category=category,
+    #     key_word=key_word,
+    #     general_repurchases=general_repurchases,
+    #     daily_repurchases=daily_repurchases,
+    #     price=price,
+    #     wb_price=wb_price,
+    #     tg=tg,
+    #     payment_time=payment_time,
+    #     status=status,
+    #     review_requirements=review_requirements,
+    #     article=article,
+    # )
 
-    if image is not None:
+    if data.image is not None:
         try:
-            image_path = await upload_service.upload(image)
-            dto.image_path = image_path
+            image_path = await upload_service.upload(data.image)
+            update_dto.image_path = image_path
         except Exception as e:
             logger.error(e, exc_info=True)
             raise HTTPException(
@@ -167,7 +158,7 @@ async def update_product(
             ) from e
 
     product_service = get_product_service()
-    await product_service.update_product(product_id, dto)
+    await product_service.update_product(product_id, update_dto)
     return {"message": "Product updated successfully"}
 
 

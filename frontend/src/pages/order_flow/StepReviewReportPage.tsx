@@ -12,6 +12,7 @@ interface Product {
     article: string;
     price: number;
     wb_price: number;
+    requirements_agree: boolean;
     tg: string;
 }
 
@@ -191,7 +192,20 @@ function StepReviewReportPage() {
             <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
                 <h1 className="text-lg font-bold">Шаг 7. Отзыв</h1>
                 <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
-                <p className="mb-2">2. Фото, видео, текст, оценка 5.</p>
+                {order.product.requirements_agree ? (
+                    <>
+                        <p className="mb-2 text-brand">
+                            <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
+                            Обратите внимание, что это обязательное условие для получения кешбека!
+                            <p className="mb-2">2. Фото, видео, текст, оценка 5.</p>
+                        </p>
+                    </>
+                ) : (
+                    <p className="mb-2">
+                        1. Напишите отзыв. Фото, видео, текст, оценка 5.
+                    </p>
+                )}
+
             </div>
 
             <div className="flex items-center mb-4">

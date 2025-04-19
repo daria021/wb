@@ -1,17 +1,17 @@
-import React, { useEffect, useState, FormEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {
-    getUser,
     banUser,
-    unbanUser,
-    promoteUser,
     demoteUser,
-    increaseSellerBalance,
+    getUser,
     increaseReferralBonus,
-    markDiscountUsed, useDiscount
+    increaseSellerBalance,
+    promoteUser,
+    unbanUser,
+    useDiscount
 } from '../../services/api';
-import {ProductStatus, UserRole} from '../../enums';
-import { on } from '@telegram-apps/sdk';
+import {UserRole} from '../../enums';
+import {on} from '@telegram-apps/sdk';
 
 interface User {
     id: string;
@@ -28,7 +28,7 @@ interface User {
 }
 
 function ModeratorUserDetailPage() {
-    const { userId } = useParams<{ userId: string }>();
+    const {userId} = useParams<{ userId: string }>();
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ function ModeratorUserDetailPage() {
             } else {
                 await banUser(user.id);
             }
-            setUser({ ...user, is_banned: !user.is_banned });
+            setUser({...user, is_banned: !user.is_banned});
         } catch (error) {
             console.error('Ошибка при изменении статуса бана:', error);
         }
@@ -74,10 +74,10 @@ function ModeratorUserDetailPage() {
         try {
             if (user.role === UserRole.MODERATOR) {
                 await demoteUser(user.id);
-                setUser({ ...user, role: UserRole.USER });
+                setUser({...user, role: UserRole.USER});
             } else {
                 await promoteUser(user.id);
-                setUser({ ...user, role: UserRole.MODERATOR });
+                setUser({...user, role: UserRole.MODERATOR});
             }
         } catch (error) {
             console.error('Ошибка при изменении роли:', error);
@@ -93,8 +93,9 @@ function ModeratorUserDetailPage() {
         fd.append("balance", amount.toString());
         try {
             await increaseSellerBalance(user.id, fd);
-            setUser({ ...user, balance: user.balance + amount });
+            setUser({...user, balance: user.balance + amount});
             setBalanceInput('');
+            alert('Баланс пополнен!');
         } catch (error) {
             console.error("Ошибка при пополнении баланса:", error);
             alert("Не удалось пополнить баланс");
@@ -109,8 +110,9 @@ function ModeratorUserDetailPage() {
         fd.append("balance", (-amount).toString());
         try {
             await increaseSellerBalance(user.id, fd);
-            setUser({ ...user, balance: user.balance - amount });
+            setUser({...user, balance: user.balance - amount});
             setBalanceInput('');
+            alert('Баланс списан!');
         } catch (error) {
             console.error("Ошибка при списании баланса:", error);
             alert("Не удалось списать баланс");
@@ -123,7 +125,8 @@ function ModeratorUserDetailPage() {
         fd.append("balance", (-user.balance).toString());
         try {
             await increaseSellerBalance(user.id, fd);
-            setUser({ ...user, balance: 0 });
+            setUser({...user, balance: 0});
+            alert('Баланс списан!');
         } catch (error) {
             console.error("Ошибка при полном списании баланса:", error);
             alert("Не удалось списать весь баланс");
@@ -136,8 +139,9 @@ function ModeratorUserDetailPage() {
         if (!amount || amount <= 0) return;
         try {
             await increaseReferralBonus(user.id, {bonus: amount});
-            setUser({ ...user, referrer_bonus: user.referrer_bonus + amount });
+            setUser({...user, referrer_bonus: user.referrer_bonus + amount});
             setBonusInput('');
+            alert('Реферальный бонус начислен!');
         } catch (error) {
             console.error("Ошибка при начислении бонуса:", error);
             alert("Не удалось начислить бонус");
@@ -148,9 +152,10 @@ function ModeratorUserDetailPage() {
         const amount = parseInt(bonusInput, 10);
         if (!amount || amount <= 0) return;
         try {
-            await increaseReferralBonus(user.id, { bonus: -amount });
-            setUser({ ...user, referrer_bonus: user.referrer_bonus - amount });
+            await increaseReferralBonus(user.id, {bonus: -amount});
+            setUser({...user, referrer_bonus: user.referrer_bonus - amount});
             setBonusInput('');
+            alert('Реферальный бонус списан!');
         } catch (error) {
             console.error("Ошибка при списании бонуса:", error);
             alert("Не удалось списать бонус");
@@ -163,7 +168,8 @@ function ModeratorUserDetailPage() {
         fd.append("bonus", (-user.referrer_bonus).toString());
         try {
             await increaseReferralBonus(user.id, {bonus: -user.referrer_bonus});
-            setUser({ ...user, referrer_bonus: 0 });
+            setUser({...user, referrer_bonus: 0});
+            alert('Реферальный бонус списан!');
         } catch (error) {
             console.error("Ошибка при полном списании бонуса:", error);
             alert("Не удалось списать весь бонус");
@@ -175,7 +181,7 @@ function ModeratorUserDetailPage() {
         try {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             await useDiscount(user.id);
-            setUser({ ...user, has_discount: false });
+            setUser({...user, has_discount: false});
             alert('Использование скидки отмечено!');  // <-- вот здесь
         } catch (error) {
             console.error("Ошибка при использовании скидки:", error);
@@ -195,7 +201,7 @@ function ModeratorUserDetailPage() {
                 <p><strong>Роль:</strong> {user.role}</p>
                 <p><strong>Забанен:</strong> {user.is_banned ? 'Да' : 'Нет'}</p>
                 <p><strong>Продавец:</strong> {user.is_seller ? 'Да' : 'Нет'}</p>
-                <strong>Баланс:</strong> {user.balance != null ? user.balance + ' руб' : '0 руб'}
+                <strong>Баланс:</strong> {user.balance != null ? user.balance + ' раздач' : '0 раздач'}
                 <p>
                     <strong>Пригласивший:</strong>{' '}
                     {user.inviter && user.inviter.nickname ? (
@@ -211,11 +217,11 @@ function ModeratorUserDetailPage() {
                         '—'
                     )}
                 </p>
-                <strong>Реферальный бонус:</strong> {user.referrer_bonus != null ? user.referrer_bonus + ' руб' : '0 руб'}
+                <strong>Реферальный
+                    бонус:</strong> {user.referrer_bonus != null ? user.referrer_bonus + ' руб' : '0 руб'}
                 {user.invited_by && user.has_discount ? (
                     <p><strong>Есть скидка</strong></p>
                 ) : null}
-
 
 
             </div>

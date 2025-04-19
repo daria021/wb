@@ -94,9 +94,8 @@ async def update_order_status(
 
     # Создаём DTO на основе собранных полей
     dto = UpdateOrderDTO.model_validate(update_data)
-
-    # Вызываем метод сервиса для обновления
     order_service = get_order_service()
+
     await order_service.update_order(order_id, dto)
 
     # if not updated_order:

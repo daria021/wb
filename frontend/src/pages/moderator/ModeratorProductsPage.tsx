@@ -46,6 +46,7 @@ function ModeratorProductsPage() {
         try {
             const response = await getProductsToReview();
             setProducts(response.data);
+            console.log(response.data);
         } catch (error) {
             console.error('Ошибка при получении продуктов:', error);
             setError('Не удалось загрузить продукты.');

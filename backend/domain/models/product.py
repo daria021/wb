@@ -18,12 +18,14 @@ class Product(BaseModel):
     category: Category
     key_word: str
     general_repurchases: int
+    remaining_products: int
     daily_repurchases: int
     price: float
     wb_price: float
     tg: str
     payment_time: PayoutTime
     review_requirements: str
+    requirements_agree: bool
     image_path: str | None = None
     seller_id: UUID
     status: ProductStatus
