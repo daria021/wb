@@ -31,12 +31,14 @@ class Product(AbstractBase):
     category: Mapped[Category] = mapped_column(Enum(Category))
     key_word: Mapped[str]
     general_repurchases: Mapped[int]
+    remaining_products: Mapped[int]
     daily_repurchases: Mapped[int]
     price: Mapped[float]
     wb_price: Mapped[float]
     tg: Mapped[str]
     payment_time: Mapped[PayoutTime] = mapped_column(Enum(PayoutTime))
     review_requirements: Mapped[str]
+    requirements_agree: Mapped[bool]
     image_path: Mapped[Optional[str]]
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus), default=ProductStatus.CREATED)

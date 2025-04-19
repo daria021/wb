@@ -3,11 +3,13 @@ from dataclasses import dataclass
 from typing import List
 from uuid import UUID
 
+from abstractions.repositories import ProductRepositoryInterface
 from abstractions.repositories.user import UserRepositoryInterface
 from abstractions.services import UserServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
-from domain.dto import CreateUserDTO, UpdateUserDTO
+from domain.dto import CreateUserDTO, UpdateUserDTO, UpdateProductDTO
 from domain.models import User
+from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
 
 logger = logging.getLogger(__name__)
@@ -17,6 +19,7 @@ logger = logging.getLogger(__name__)
 class UserService(UserServiceInterface):
     user_repository: UserRepositoryInterface
     notification_service: NotificationServiceInterface
+    product_repository: ProductRepositoryInterface
 
     bot_username: str
 
@@ -90,8 +93,9 @@ class UserService(UserServiceInterface):
         return await self.user_repository.get_moderators()
 
     async def increase_balance(self, user_id: UUID, balance_sum: int):
+        user = await self.user_repository.get(user_id)
         update_dto = UpdateUserDTO(
-            balance=balance_sum
+            balance=user.balance + balance_sum,
         )
         res = await self.user_repository.update(user_id, update_dto)
         try:
@@ -101,6 +105,30 @@ class UserService(UserServiceInterface):
             )
         except Exception:
             logger.error("Error while sending push notification", exc_info=True)
+
+        products = await self.product_repository.get_by_seller(user_id)
+        necessary_balance = sum(product.remaining_products for product in products if product.status==ProductStatus.ACTIVE
+                                or product.status==ProductStatus.NOT_PAID)
+        if user.balance + balance_sum >= necessary_balance:
+            for product in products:
+                if product.status == ProductStatus.NOT_PAID:
+                    update_product_dto = UpdateProductDTO(
+                        status=ProductStatus.ACTIVE,
+                    )
+                    await self.product_repository.update(product.id, update_product_dto)
+        else:
+            active_products_sum = sum(product.remaining_products for product in products if product.status == ProductStatus.ACTIVE)
+            not_paid_products = [product for product in products if product.status == ProductStatus.NOT_PAID]
+            for product in not_paid_products:
+                if user.balance + balance_sum >= active_products_sum + product.remaining_products:
+                    update_product_dto = UpdateProductDTO(
+                        status=ProductStatus.ACTIVE,
+                    )
+                    await self.product_repository.update(product.id, update_product_dto)
+
+
+
+
 
         return res
 

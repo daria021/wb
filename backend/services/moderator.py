@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -9,9 +10,10 @@ from abstractions.services.notification import NotificationServiceInterface
 from domain.dto import UpdateProductDTO, CreatePushDTO, UpdatePushDTO
 from domain.dto.moderator_review import CreateModeratorReviewDTO
 from domain.models import Product, User, Push
+from infrastructure.enums.product_status import ProductStatus
 from routes.requests.moderator import UpdateProductStatusRequest
 
-
+logger = logging.getLogger(__name__)
 @dataclass
 class ModeratorService(ModeratorServiceInterface):
     products_repository: ProductRepositoryInterface
@@ -35,16 +37,32 @@ class ModeratorService(ModeratorServiceInterface):
             request: UpdateProductStatusRequest,
     ):
         product = await self.products_repository.get(product_id)
+
+        if request.status == ProductStatus.ACTIVE:
+            product = await self.products_repository.get(product_id)
+            logger.info(f"Reviewing product {product}")
+            seller = await self.user_service.get_user(product.seller_id)
+            seller_products = await self.products_repository.get_by_seller(product.seller_id)
+            required_balance = sum(product.general_repurchases for product in seller_products)
+            logger.info(f"required_balance {required_balance}")
+            logger.info(f"seller.balance {seller.balance}")
+            if required_balance > seller.balance:
+                status = ProductStatus.NOT_PAID
+            else:
+                status = request.status
+        else:
+            status = request.status
         product_dto = UpdateProductDTO(
-            status=request.status,
+            status=status,
         )
+        logger.info(request)
         review_dto = CreateModeratorReviewDTO(
             moderator_id=moderator_id,
             product_id=product_id,
             comment_to_seller=request.comment_to_seller,
             comment_to_moderator=request.comment_to_moderator,
             status_before=product.status,
-            status_after=request.status,
+            status_after=status,
         )
         await self.moderator_review_repository.create(review_dto)
         await self.products_repository.update(

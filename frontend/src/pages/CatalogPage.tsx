@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {getProducts} from '../services/api';
-
+import {getProducts, getUser} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
-
 
 interface Product {
     id: string;
@@ -12,38 +10,47 @@ interface Product {
     description?: string;
     price: number;
     article: string;
+    category: string;
+    seller_id: string;
     image_path?: string;
+}
+
+interface Seller {
+    id: string;
+    nickname: string;
 }
 
 function CatalogPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+
     const [searchQuery, setSearchQuery] = useState('');
+    const [filterPrice, setFilterPrice] = useState<number | ''>('');
+    const [filterCategory, setFilterCategory] = useState('');
+    const [filterSeller, setFilterSeller] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+
+    const [sellerOptions, setSellerOptions] = useState<Seller[]>([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/');
-        });
-
-        return () => {
-            removeBackListener();
-        };
+        const removeBackListener = on('back_button_pressed', () => navigate('/'));
+        return () => removeBackListener();
     }, [navigate]);
 
     useEffect(() => {
         async function fetchProducts() {
             try {
                 const response = await getProducts();
-                // Убираем дубликаты по id
                 const uniqueProducts = Object.values(
-                    (response.data as Product[]).reduce((acc: Record<string, Product>, product) => {
-                        if (!acc[product.id] || (!acc[product.id].image_path && product.image_path)) {
-                            acc[product.id] = product;
+                    (response.data as Product[]).reduce((acc, p) => {
+                        if (!acc[p.id] || (!acc[p.id].image_path && p.image_path)) {
+                            acc[p.id] = p;
                         }
                         return acc;
-                    }, {})
+                    }, {} as Record<string, Product>)
                 );
                 setProducts(uniqueProducts);
             } catch (err) {
@@ -57,74 +64,142 @@ function CatalogPage() {
         fetchProducts();
     }, []);
 
-    const filteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    useEffect(() => {
+        if (!products.length) return;
+        const uniqueIds = Array.from(new Set(products.map(p => p.seller_id)));
+        (async () => {
+            try {
+                const sellers = await Promise.all(
+                    uniqueIds.map(async id => {
+                        const res = await getUser(id);
+                        return {id, nickname: res.data.nickname!};
+                    })
+                );
+                setSellerOptions(sellers);
+            } catch (err) {
+                console.error('Ошибка при загрузке продавцов:', err);
+            }
+        })();
+    }, [products]);
+
+    if (loading) return <div className="p-4">Загрузка каталога...</div>;
+    if (error) return (
+        <div className="p-4 mx-auto max-w-sm bg-brandlight border border-brand rounded text-center">
+            <p className="text-sm text-brand">{error}</p>
+        </div>
     );
 
-    if (loading) {
-        return <div className="p-4">Загрузка каталога...</div>;
-    }
+    const filtered = products
+        .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.article.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter(p => (filterPrice === '' || p.price <= filterPrice))
+        .filter(p => (filterCategory === '' || p.category === filterCategory))
+        .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
 
-    if (error) {
-        return (
-            <div className="p-4 bg-brandlight border border-brand rounded text-center">
-                <p className="text-sm text-brand">{error}</p>
-            </div>
-        );
-    }
+    const categories = Array.from(new Set(products.map(p => p.category)));
 
     return (
         <div className="min-h-screen bg-gray-200">
-            <div className="p-4 mx-auto">
-                {/* Поле ввода для поиска */}
-                <div className="sticky top-0 z-10 bg-gray-200">
-
-                    <div className="mb-4">
-                        <input
-                            type="text"
-                            placeholder="Поиск"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full border border-gray-300 rounded-md p-2"
-                        />
-                    </div>
+            <div className="p-4 mx-auto max-w-screen-sm relative">
+                {/* Search + filter toggle */}
+                <div className="sticky top-0 z-10 bg-gray-200 mb-4 flex items-center gap-2">
+                    <input
+                        type="text"
+                        placeholder="Поиск по названию или артикулу"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="flex-1 border border-gray-300 rounded-md p-2"
+                    />
+                    <button onClick={() => setShowFilters(prev => !prev)}>
+                        <img src="/icons/filter.png" alt="Фильтр" className="w-6 h-6"/>
+                    </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                {/* Inline filters panel */}
+                {showFilters && (
+                    <div className="bg-white rounded-lg shadow p-4 mb-4 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Максимальная цена</label>
+                            <input
+                                type="number"
+                                min={0}
+                                value={filterPrice}
+                                onChange={e => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Категория</label>
+                            <select
+                                value={filterCategory}
+                                onChange={e => setFilterCategory(e.target.value)}
+                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                            >
+                                <option value="">Все категории</option>
+                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Продавец</label>
+                            <select
+                                value={filterSeller}
+                                onChange={e => setFilterSeller(e.target.value)}
+                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                            >
+                                <option value="">Все продавцы</option>
+                                {sellerOptions.map(sel => <option key={sel.id} value={sel.id}>{sel.nickname}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={() => {
+                                    setFilterPrice('');
+                                    setFilterCategory('');
+                                    setFilterSeller('');
+                                    setShowFilters(false);
+                                }}
+                                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100"
+                            >
+                                Сбросить
+                            </button>
+                            <button
+                                onClick={() => setShowFilters(false)}
+                                className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-dark"
+                            >
+                                Применить
+                            </button>
+                        </div>
+                    </div>
+                )}
 
-                    {filteredProducts.map((product) => (
+                {/* Products grid */}
+                <div className="grid grid-cols-2 gap-4">
+                    {filtered.map(product => (
                         <div
                             key={product.id}
                             onClick={() => navigate(`/product/${product.id}`)}
                             className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
                         >
-                            <div className="relative w-full aspect-[3/4] bg-gray-100">
-                                {product.image_path ? (
-                                    <img
-                                        src={
-                                            product.image_path.startsWith('http')
-                                                ? product.image_path
-                                                : GetUploadLink(product.image_path)
-                                        }
-                                        alt={product.name}
-                                        className="absolute top-0 left-0 w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                                        Нет фото
-                                    </div>
-                                )}
+                            <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
+                                {product.image_path
+                                    ? <img
+                                        src={product.image_path.startsWith('http') ? product.image_path : GetUploadLink(product.image_path)}
+                                        alt={product.name} className="w-full h-full object-cover"/>
+                                    : <div className="flex items-center justify-center h-full text-gray-400">Нет
+                                        фото</div>
+                                }
                             </div>
-                            <div className="p-3 flex flex-col bg-white">
-                                <h3 className="text-sm font-semibold mb-1">{product.name}</h3>
-                                <p className="text-md font-bold mb-1 text-brand">
-                                    {product.price} ₽
-                                </p>
-                                {product.description && (
-                                    <p className="text-xs text-gray-700 mb-1 line-clamp-2">
-                                        {product.description}
-                                    </p>
-                                )}
+                            <div className="p-3 bg-white flex flex-col">
+                                <h3
+                                    className="
+                                        text-sm font-semibold mb-1
+                                        h-10            /* высота = 2 строки (2 × 1.25rem line-height) */
+                                        overflow-hidden /* обрезаем выступающий текст */
+                                        line-clamp-2    /* ограничиваем двумя строками и добавляем ... */
+  "
+                                >
+                                    {product.name}
+                                </h3>
+                                <p className="text-md font-bold mb-1 text-brand">{product.price} ₽</p>
                                 <p className="text-xs text-gray-500 mt-auto">Арт. {product.article}</p>
                             </div>
                         </div>

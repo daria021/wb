@@ -60,9 +60,18 @@ function SellerCabinet() {
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>
                 </div>
 
+                {/*<div className="flex justify-end mb-4">*/}
+                    <button
+                        onClick={() => navigate('/create-product')}
+                        className="w-full border border-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                    >
+                        Разместить товар
+                    </button>
+                {/*</div>*/}
+
                 <div
                     onClick={handleMyProductsClick}
-                    className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4 cursor-pointer"
+                    className="bg-gray-300 border border-gray-300 rounded-md p-4 mb-4 mt-4 cursor-pointer"
                 >
                     <p className="text-md font-semibold mb-1">Мои товары</p>
                     <p className="text-sm text-gray-500">Товары по раздачам</p>

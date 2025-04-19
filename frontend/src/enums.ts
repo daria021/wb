@@ -37,11 +37,12 @@ export enum UserRole {
 }
 
 export enum ProductStatus {
-    CREATED = "CREATED",
-    ACTIVE = "ACTIVE",
-    DISABLED = "DISABLED",
-    REJECTED = "REJECTED",
-    ARCHIVED = "ARCHIVED"
+    CREATED = "created",
+    ACTIVE = "active",
+    NOT_PAID = "not_paid",
+    DISABLED = "disabled",
+    REJECTED = "rejected",
+    ARCHIVED = "archived"
 }
 
 export enum OrderStatus {

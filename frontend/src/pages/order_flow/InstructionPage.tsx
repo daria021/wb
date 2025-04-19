@@ -64,6 +64,9 @@ function InstructionPage() {
         if (!canContinue) return;
         navigate(`/product/${productId}/step-1`);
     };
+    const handleHomeClick = () => {
+        navigate(`/`);
+    };
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -84,6 +87,11 @@ function InstructionPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+            <div className="fixed top-6 left-6 z-50 bg-brandlight rounded-lg p-2 flex items-center justify-center">
+                <button onClick={handleHomeClick} aria-label="На главную">
+                    <img src="/icons/home.png" alt="Домой" className="w-6 h-6" />
+                </button>
+            </div>
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Правила и условия</h1>
                 <p className="text-base text-gray-800 mb-4">
@@ -92,9 +100,9 @@ function InstructionPage() {
 
                 {/* Блок с правилами */}
                 <div className="mb-6">
+                    <h2 className="text-xl font-semibold text-blue-600 mb-3">Правила:</h2>
                     <div className="bg-white rounded-lg p-4 border border-gray-300">
-                        <h2 className="text-xl font-semibold text-blue-600 mb-3">Правила:</h2>
-                        <ol className="list-decimal list-inside text-lg text-gray-800 space-y-2">
+                        <ol className="list-decimal list-inside text-base text-gray-800 space-y-2">
                             <li>
                                 Вы заключаете сделку с продавцом{' '}
                                 <strong>
@@ -165,7 +173,7 @@ function InstructionPage() {
                             checked={agreeRules}
                             onChange={(e) => setAgreeRules(e.target.checked)}
                         />
-                        <label htmlFor="agreeRules" className="text-lg text-gray-800">
+                        <label htmlFor="agreeRules" className="text-base text-gray-800">
                             Я соглашаюсь с условиями сделки
                         </label>
                     </div>
@@ -177,22 +185,23 @@ function InstructionPage() {
                             checked={agreePersonalData}
                             onChange={(e) => setAgreePersonalData(e.target.checked)}
                         />
-                        <label htmlFor="agreeData" className="text-lg text-gray-800">
+                        <label htmlFor="agreeData" className="text-base text-gray-800">
                             Даю согласие на обработку персональных данных
                         </label>
                     </div>
                 </div>
-
                 <button
                     onClick={handleContinue}
                     disabled={!canContinue}
-                    className={`w-full py-3 rounded-lg text-lg font-semibold ${canContinue
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    }`}
+                    className={`w-full py-2 rounded-lg text-base font-semibold ${
+                        canContinue
+                            ? 'bg-brand text-white hover:bg-blue-700'
+                            : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    } mb-2`}
                 >
                     Продолжить
                 </button>
+
             </div>
         </div>
     );

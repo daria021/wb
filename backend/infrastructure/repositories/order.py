@@ -61,6 +61,7 @@ class OrderRepository(
                 category=product.category,
                 key_word=product.key_word,
                 general_repurchases=product.general_repurchases,
+                remaining_products=product.remaining_products,
                 daily_repurchases=product.daily_repurchases,
                 price=product.price,
                 wb_price=product.wb_price,
@@ -68,6 +69,7 @@ class OrderRepository(
                 status=product.status,
                 payment_time=product.payment_time,
                 review_requirements=product.review_requirements,
+                requirements_agree=product.requirements_agree,
                 image_path=product.image_path,
                 created_at=product.created_at,
                 updated_at=product.updated_at

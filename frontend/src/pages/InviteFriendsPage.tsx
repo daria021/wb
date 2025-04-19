@@ -9,15 +9,11 @@ const InviteFriendsPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
 
-    // Listen for Telegram back button event.
     useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/');
-        });
+        const removeBackListener = on('back_button_pressed', () => navigate('/'));
         return () => removeBackListener();
     }, [navigate]);
 
-    // Fetch the invite link from your backend.
     useEffect(() => {
         async function fetchInviteLink() {
             try {
@@ -25,59 +21,86 @@ const InviteFriendsPage: React.FC = () => {
                 setInviteLink(response.data);
             } catch (err) {
                 console.error('Ошибка при получении ссылки для приглашения:', err);
-                setError('Не удалось получить ссылку для приглашения.');
+                setError('Не удалось получить реферальную ссылку. Попробуйте позже.');
             } finally {
                 setLoading(false);
             }
         }
-
         fetchInviteLink();
     }, []);
 
-    // Handle sharing using Telegram's shareURL
+    const displayLink = inviteLink
+        ? inviteLink.length > 50
+            ? `${inviteLink.slice(0, 25)}...${inviteLink.slice(-25)}`
+            : inviteLink
+        : '';
+
+    const copyInviteLink = () => {
+        navigator.clipboard.writeText(inviteLink);
+        alert('Ссылка скопирована');
+    };
+
     const handleShareInvite = () => {
-        // const shareLink = `t.me/share?url=${encodeURIComponent(inviteLink)}&text=hello`
-        // navigate(shareLink);
         if (shareURL.isAvailable()) {
-            shareURL(inviteLink, 'Заходи!');
+            shareURL(inviteLink, 'Заходи по моей ссылке!');
             redirect(inviteLink);
         } else {
-            // Fallback: copy the link to clipboard and notify user
-            navigator.clipboard.writeText(inviteLink);
-            alert('Ссылка скопирована в буфер обмена!');
+            copyInviteLink();
         }
     };
 
     if (loading) {
-        return <div className="p-4 text-center">Загрузка...</div>;
+        return <div className="p-4 text-center">Загрузка…</div>;
     }
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
-                <h1 className="text-2xl font-bold mb-6 text-center text-brand">
-                    Пригласите друзей
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-6">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+                <h1 className="text-2xl font-bold text-center text-brand mb-6">
+                    Пригласи продавца и заработай
                 </h1>
-                <p className="text-base text-gray-800 mb-4 text-center">
-                    Поделитесь своей уникальной ссылкой, чтобы приглашать друзей и получать бонусы!
+
+                <p className="leading-relaxed mb-4 text-gray-800">
+                    Получи за каждое приглашение по твоей реферальной ссылке <strong>20%</strong>.
+
                 </p>
-                {error ? (
-                    <div className="p-4 bg-brandlight border border-gray-300 rounded text-center">
-                        <p className="text-sm text-gray-700">{error}</p>
-                    </div>
-                ) : (
-                    <div className="p-4 bg-brandlight border border-gray-300 rounded break-all text-center mb-6">
-                        {inviteLink}
-                    </div>
-                )}
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleShareInvite}
-                        className="bg-brand text-white px-4 py-2 rounded hover:bg-brand/90 transition-colors"
-                    >
-                        Поделиться ссылкой
+                <p className="leading-relaxed mb-4 text-gray-800">
+                    Также <strong>20%</strong> скидки получит продавец.
+                </p>
+
+                <p className="leading-relaxed mb-4 text-gray-800">
+                    Минимальная выплата 1000р.
+                </p>
+
+                <div className="bg-brandlight border-l-4 border-brand p-4 mb-6 rounded">
+                    <p className="text-center text-gray-900">
+                        Деньги начисляются после того, как продавец совершит покупку.
+                    </p>
+                </div>
+
+                {/* Invite link display */}
+                <div className="flex items-center bg-gray-100 border border-gray-300 rounded p-2 mb-6 break-all">
+                    <span className="flex-1 text-sm text-gray-700">{displayLink}</span>
+                    <button onClick={copyInviteLink} className="ml-2">
+                        <img src="/icons/copy.png" alt="Копировать" className="w-4 h-4" />
                     </button>
                 </div>
+
+                {/* Error message */}
+                {error && (
+                    <div className="p-4 mb-4 bg-red-100 text-red-800 rounded text-center">
+                        {error}
+                    </div>
+                )}
+
+                {/* Share button */}
+                <button
+                    onClick={handleShareInvite}
+                    className="w-full flex items-center justify-center bg-brand text-white py-3 rounded-lg hover:bg-brand-dark transition"
+                >
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-5 h-5 mr-2" />
+                    Поделиться в Telegram
+                </button>
             </div>
         </div>
     );

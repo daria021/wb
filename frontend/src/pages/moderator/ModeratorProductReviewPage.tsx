@@ -43,9 +43,9 @@ function ModeratorProductReviewPage() {
     const handleSubmit = async () => {
         try {
             const payload = {
-                status,
-                commentModerator,
-                commentSeller
+                    status,
+                    commentModerator,
+                    commentSeller
             };
             await reviewProduct(productId!, payload);
             alert('Проверка продукта обновлена!');

@@ -77,7 +77,7 @@ export async function getOrderBySellerId(sellerId: string) {
 }
 
 
-export async function increaseSellerBalance(sellerId: string, balance: FormData){
+export async function increaseSellerBalance(sellerId: string, balance: FormData) {
     return apiClient.patch(`/users/balance/${sellerId}`, balance, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -224,7 +224,9 @@ export async function getModeratorProductById(productId: string) {
     return apiClient.get(`/moderator/products/${productId}`);
 }
 
-export async function reviewProduct(productId: string, data: { status: string; commentModerator: string; commentSeller: string}) {
+export async function reviewProduct(
+    productId: string,
+    data: { status: string; commentModerator: string; commentSeller: string }) {
     return apiClient.patch(`/moderator/products/${productId}`, data, {
         headers: {
             'Content-Type': 'application/json',

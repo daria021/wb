@@ -5,7 +5,6 @@ import {Category, PayoutTime, ProductStatus} from '../enums';
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
 
-// import {useAuth} from "../contexts/auth";
 
 interface ModeratorReview {
     id: string;
@@ -149,19 +148,22 @@ function CreateProductInfo() {
     const reviewComment = lastReview ? getReviewComment(lastReview) : null;
 
     return (
-        <div className="p-4 min-h-screen bg-gray-200 mx-auto">
+        <div className="p-4 min-h-screen bg-gray-200 mx-auto max-w-lg">
+            {(product.status === ProductStatus.CREATED || product.status === ProductStatus.DISABLED) && (
+                <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
+                    Новая карточка подготовлена к отправке модератору. Проверьте всю информацию.
+                </div>
+            )}
+
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
-                <button
-                    onClick={handleEditClick}
-                    className="border border-brand text-brand px-2 py-1 text-sm rounded"
-                >
+                <button onClick={handleEditClick} className="border border-brand text-brand px-2 py-1 text-sm rounded">
                     Редактировать
                 </button>
             </div>
 
-            <div className="flex gap-4 mb-4">
-                <div className="relative w-3/5 aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
+            <div className="flex flex-col gap-4 mb-4">
+                <div className="w-full max-h-80 bg-gray-100 rounded-md overflow-hidden">
                     {product.image_path ? (
                         <img
                             src={
@@ -170,38 +172,40 @@ function CreateProductInfo() {
                                     : GetUploadLink(product.image_path)
                             }
                             alt={product.name}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                         />
                     ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                        <div className="flex items-center justify-center h-48 text-gray-400">
                             Нет фото
                         </div>
                     )}
                 </div>
 
                 <div className="bg-white border border-gray-200 rounded-md p-4">
-                    <div className="flex flex-col justify-start mb-4">
-                        <p className="text-lg font-bold">{product.article}</p>
-                        <h3 className="text-xl font-semibold">{product.name}</h3>
-                    </div>
-                    <div className="flex flex-col justify-start mb-2">
-                        <span className="text-sm text-gray-600">Цена на сайте:</span>
-                        <span className="text-sm font-semibold">{product.wb_price} руб</span>
-                    </div>
-                    <div className="flex flex-col justify-start mb-2">
-                        <span className="text-sm text-gray-600">Цена для покупателя:</span>
-                        <span className="text-sm font-semibold">{product.price} руб</span>
-                    </div>
-                    <div className="flex flex-col justify-start mb-2">
-                        <span className="text-sm text-gray-600">Кол-во выкупов:</span>
-                        <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
-                    </div>
-                    <div className="flex flex-col justify-start">
-                        <span className="text-sm text-gray-600">План выкупов на сутки:</span>
-                        <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>
+                    <p className="text-lg font-bold mb-1">{product.article}</p>
+                    <h3 className="text-xl font-semibold mb-3">{product.name}</h3>
+
+                    <div className="space-y-2">
+                        <div>
+                            <span className="text-sm text-gray-600">Цена на сайте:</span>{' '}
+                            <span className="text-sm font-semibold">{product.wb_price} руб</span>
+                        </div>
+                        <div>
+                            <span className="text-sm text-gray-600">Цена для покупателя:</span>{' '}
+                            <span className="text-sm font-semibold">{product.price} руб</span>
+                        </div>
+                        <div>
+                            <span className="text-sm text-gray-600">Кол-во выкупов:</span>{' '}
+                            <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
+                        </div>
+                        <div>
+                            <span className="text-sm text-gray-600">План выкупов на сутки:</span>{' '}
+                            <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
             <div className="mb-4">
                 {lastReview && reviewComment && (
@@ -238,7 +242,7 @@ function CreateProductInfo() {
                         onClick={handleStop}
                         className="flex-1 border border-brand text-brand p-2 rounded"
                     >
-                        Приостановить
+                        Снять с публикации
                     </button>
                 )}
             </div>

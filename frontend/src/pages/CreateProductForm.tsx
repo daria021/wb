@@ -19,6 +19,7 @@ interface ProductFormData {
     tg: string;
     payment_time: PayoutTime;
     review_requirements: string;
+    requirements_agree: boolean;
     image_path?: string;
 }
 
@@ -46,6 +47,7 @@ function ProductForm() {
     ];
 
     const reviewRequirementsRef = useRef<HTMLTextAreaElement>(null);
+    const agreeRef = useRef<HTMLInputElement>(null);
 
     const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter') {
@@ -66,6 +68,7 @@ function ProductForm() {
         tg: '',
         payment_time: PayoutTime.AFTER_REVIEW,
         review_requirements: '',
+        requirements_agree: false,
         image_path: '',
     });
 
@@ -114,6 +117,7 @@ function ProductForm() {
                     tg: data.tg,
                     payment_time: data.payment_time,
                     review_requirements: data.review_requirements,
+                    requirements_agree: data.requirements_agree ?? false,
                     image_path: data.image_path || '', // если есть
                 };
                 setFormData(loadedData);
@@ -159,17 +163,20 @@ function ProductForm() {
 
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
-        let newValue: any = value;
-        if (['general_repurchases', 'daily_repurchases', 'price', 'wb_price'].includes(name)) {
-            newValue = Number(value);
-        }
-        setFormData((prev) => {
-            const updated = {...prev, [name]: newValue};
+        const { name, value, type, checked } = e.target as HTMLInputElement;
+        const newValue = type === 'checkbox'
+            ? checked
+            : ['general_repurchases','daily_repurchases','price','wb_price'].includes(name)
+                ? Number(value)
+                : value;
+
+        setFormData(prev => {
+            const updated = { ...prev, [name]: newValue };
             validateField(name, newValue, updated);
             return updated;
         });
-    };
+    }
+
 
     const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -183,7 +190,7 @@ function ProductForm() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate('/my-products');
+            navigate(-1);
         });
 
         return () => {
@@ -229,6 +236,7 @@ function ProductForm() {
             fd.append('tg', formData.tg);
             fd.append('payment_time', formData.payment_time);
             fd.append('review_requirements', formData.review_requirements);
+            fd.append('requirements_agree', String(formData.requirements_agree));
 
             if (imageFile) {
                 fd.append('image', imageFile);
@@ -267,13 +275,6 @@ function ProductForm() {
                         className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
                     >
                         Отменить
-                    </button>
-                    <button
-                        type="submit"
-                        form="product-form"
-                        className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
-                    >
-                        Отправить заявку
                     </button>
                 </div>
                 <div className="px-2">
@@ -499,6 +500,26 @@ function ProductForm() {
                         placeholder="Опишите требования к отзыву..."
                     />
                 </div>
+                <div className="flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        name="requirements_agree"
+                        id="requirements_agree"
+                        checked={formData.requirements_agree}
+                        onChange={handleInputChange}
+                        ref={agreeRef}
+                        className="h-4 w-4 text-brand border-gray-300 rounded"
+                    />
+                    <label htmlFor="requirements_agree" className="text-sm">
+                        Согласовать отзыв
+                    </label>
+                </div>
+                <button
+                    type="submit"
+                    className="w-full py-3 bg-brand text-white rounded-md text-sm font-semibold hover:bg-brand-dark transition-colors"
+                >
+                    Отправить заявку
+                </button>
             </form>
             {showConfirmation && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

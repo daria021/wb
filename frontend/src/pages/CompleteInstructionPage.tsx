@@ -22,122 +22,123 @@ function CompleteInstructionPage() {
         };
     }, [navigate, backRoute]);
 
-
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-8 relative">
+            <div className="max-w-screen-lg w-full bg-white rounded-lg shadow-lg p-8 relative">
                 <div className="bg-brandlight rounded-lg p-6 mb-8">
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Инструкция выкупа для покупателя
                     </h2>
                     <p className="text-base mb-8 text-left">
-                        ВБ КЭШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.{' '}
+                        ВБ КЭШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
                         <span onClick={openModal} className="underline text-blue-600 cursor-pointer">
-              Посмотреть видео инструкцию
-            </span>
+                            Посмотреть видео инструкцию
+                        </span>
                     </p>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 1. Поиск по ключевому слову</h3>
-                        <div className="ml-4 space-y-2">
-                            <p className="text-base">Напишите ключевое слово в поисковик, сделайте скрин поискового
-                                запроса.</p>
-                            <p className="text-base">Смотрите товары по ключевому слову. Некоторые из товаров добавьте в
-                                корзину, сделайте скрин корзины.</p>
-                            <p className="text-base">Загрузите скрин поискового запроса и скрин корзины на первом
-                                шаге.</p>
-                        </div>
-                        <p className="text-base font-semibold mt-4 text-left">Важно! Вводите ключевое слово вручную.</p>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 1. Ключевое слово</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Напишите ключевое слово и добавьте в корзину несколько товаров конкурентов. Все товары должны быть разных брендов. На этом этапе не ищите товар продавца. Поиск товара на втором шаге</li>
+                            <li><span className="font-semibold">Важно! Вводите ключевое слово вручную</span></li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 2. Найти товар продавца</h3>
-                        <p className="text-base text-gray-800 text-left ml-4">
-                            Найдите товар по фото на втором шаге, скопируйте артикул и вставьте его для проверки. Если
-                            артикул неверный,
-                            вы не сможете перейти на следующий шаг.
-                        </p>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Поиск товара</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Найдите товар используя фото на втором шаге, скопируйте арткиул и вставьте в поле для проверки</li>
+                            <p className="text-sm">Если указан не правильный артикул, система не откроет доступ к следующему шагу. Артикул мы не даем.</p>
+                            <p><strong>Товара нет в наличии на ВБ</strong></p>
+                            <li>Добавьте товар в лист ожидания, как товар поступит, откройте инструкцию, дойдите до 5 го шага, если товар доступен к выкупу то можете выкупать</li>
+                            <p className="text-sm">Лимит на выкуп может закончится, поэтому обязательно проверьте доступность на 5м шаге</p>
+                            <p className="font-bold">Не могу найти товар</p>
+                            <li>Чтобы быстрее найти товар, используйте фильтры по цене, цвету, размеру и другие</li>
+                            <p className="font-bold">Артикул не правильный</p>
+                            <li>Если система показывает что артикул неправильный, значит это не тот товар</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 3. Добавить товар и бренд в избранное</h3>
-                        <p className="text-base text-gray-800 text-left ml-4">
-                            Добавьте товар и бренд в избранное.
-                        </p>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Товар в избранное</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Добавьте товар и бренд в избранное. Скрин прикладывать не требуется</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 4. Добавьте реквизиты</h3>
-                        <p className="text-base text-gray-800 text-left ml-4">
-                            Принимаются только банки РФ, которые есть в списке.
-                        </p>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Реквизиты</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Заполняйте реквизиты одного банка. Перевод будет проводится на усмотрение продавца по номеру карты или СБП выбранного банка. Убедитесь, что вы верно указали реквизиты</li>
+                            <p className="font-bold">Моего банка нет в списке</p>
+                            <li>Вы можете выбрать только те банки, которые есть в списке</li>
+                            <p className="font-bold">Я указал не те реквизиты</p>
+                            <li>Если оплата уже проведена, реквизиты поменять нельзя. В других случаях обратитесь в техподдержку</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 5. Оформление заказа</h3>
-                        <p className="text-base text-gray-800 text-left ml-4">
-                            Оформите заказ и прикрепите скрин заказа. На скрине должна быть указана цена покупки и адрес
-                            ПВЗ.{' '}
-                            <span onClick={openModal} className="underline text-blue-600 cursor-pointer">
-                Пример скрина заказа
-              </span>
-                        </p>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Оформление заказа</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Оформите заказ, сделайте скрин и прикрепите его в отчет. Требования к скрину заказа смотрите здесь&nbsp;
+                                <span onClick={openModal} className="underline text-blue-600 cursor-pointer">Пример скрина заказа</span>
+                            </li>
+                            <p className="font-bold">Оформила заказ, а лимит закончился</p>
+                            <li>Свяжитесь с техподдержкой. Мы пожем решить данный вопрос</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 6. Получение товара</h3>
-                        <div className="ml-4 space-y-2">
-                            <p className="text-base">Загрузите скрин полученного товара.</p>
-                            <p className="text-base">Сделайте фото разрезанного штрих кода на фоне товара.</p>
-                            <p className="text-base">
-                                Загрузите скрины на 6-м шаге. На скрине должна быть указана дата получения и статус
-                                "Доставлено".{' '}
-                                <span onClick={openModal} className="underline text-blue-600 cursor-pointer">
-                  Пример скрина получения товара
-                </span>
-                            </p>
-                        </div>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Получение товара</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>Забирайте товар как обычно это делаете или через несколько дней после получения товара</li>
+                            <li>Сделайте скрин полученного товара в личном кабинете ВБ. На скрине дожна быть указана стоимость товара, дата получения и статус доставки</li>
+                            <li>Сделайте фото разрезанных штрих кодов на фоне товара без упаковки</li>
+                            <li>Сдавайте отчет в день получения товара. Дата сдачи отчета и дата получения товара должны быть в один день</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">Шаг 7. Отчет об отзыве</h3>
-                        <div className="ml-4 space-y-2">
-                            <p className="text-base">Оставьте отзыв согласно требованиям на 7-м шаге.</p>
-                            <p className="text-base">Сделайте скрин электронного чека.</p>
-                            <p className="text-base">Скопируйте номер чека.</p>
-                            <p className="text-base">Загрузите скрины и номер чека на этом этапе.</p>
-                            <p className="text-base">
-                <span onClick={openModal} className="underline text-blue-600 cursor-pointer">
-                  Как сделать скрин электронного чека — посмотреть на ВК
-                </span>
-                            </p>
-                        </div>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 7. Публикация отзыва</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <li>С согласованием. Перед публикацией вам обязательно надо согласовать отзыв с продавцом. Не публикуйте без согласования, даже если продавец не отвечает больше 5 дней</li>
+                            <li>Без согласования. Публикуйте отзыв через несколько дней после получения товара</li>
+                            <li>Требования к фото. Делайте фото высокого качества, без упаковки, покажите как используете товар в своей жизни</li>
+                            <li>Требования к тексту. Пишите больше про свои чувства и ощущения</li>
+                            <p className="font-bold">Продавец мне не отвечает несколько дней</p>
+                            <li>Если продавец прочитал сообщение и не ответил в течение 3х дней напишите ему повторно</li>
+                            <li>Если продавец не отвечает больше недели, свяжитесь с нами</li>
+                            <li>Возможно вам не требуется согласование. Проверьте в вашей инструкции</li>
+                        </ul>
                     </section>
 
                     <hr className="my-6 border-gray-300"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-2 text-left">На этом все</h3>
-                        <div className="ml-4 space-y-2">
-                            <p className="text-base">Отчет будет направлен на проверку селлеру.</p>
-                            <p className="text-base">После проверки вам выплатят кэшбэк на указанные реквизиты.</p>
-                        </div>
+                        <h3 className="text-xl font-bold mb-4 text-left">Кэшбэк</h3>
+                        <ul className="list-disc list-inside space-y-2 ml-6">
+                            <p>3 варианта выплаты кэшбэка:</p>
+                            <li>После получения товара</li>
+                            <li>После публикации отзыва</li>
+                            <li>на 15й день после получения товара</li>
+                            <p>Выплаты могут задерживаться до 7 дней. Это может быть связано с очередью на оплату. Выплаты проводятся вручную. Наберитесь терпения</p>
+                            <p>Не надо писать продавцу или в техподдержку раньше чем через 7 дней</p>
+                        </ul>
                     </section>
 
                     <div className="flex flex-col gap-2">
-
                         <button
                             onClick={handleHomeClick}
                             className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"

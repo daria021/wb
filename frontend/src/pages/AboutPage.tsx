@@ -28,7 +28,7 @@ function AboutPage() {
                     <div className="bg-brandlight rounded-lg p-4">
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
-                                ВБ КЭШБЭК - бот поможет менеджерам эффективнее проводить раздачи, а покупателям
+                                ВБ КЭШБЭК - бот поможет селлерам эффективнее проводить раздачи, а покупателям
                                 безопасно выкупать. Инструкция для покупателей, Обзор на кабинет продавца, Канал по
                                 раздачам.
                             </p>
@@ -69,7 +69,7 @@ function AboutPage() {
 
 
                         <section className="mb-6 mt-6 text-left">
-                            <h2 className="text-xl font-bold mb-3">Для менеджеров</h2>
+                            <h2 className="text-xl font-bold mb-3">Для селлеров</h2>
                             <ul className="list-disc list-inside text-base text-gray-800 space-y-2">
                                 <li>Сократит количество чатов</li>
                                 <li>Удобные отчеты</li>
