@@ -216,7 +216,7 @@ function MyProductsPage() {
 
             <button
                 onClick={() => navigate('/create-product')}
-                className="w-full border border-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                className="w-full border border-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
             >
                 Разместить товар
             </button>
