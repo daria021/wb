@@ -84,7 +84,7 @@ function CatalogPage() {
 
     if (loading) return <div className="p-4">Загрузка каталога...</div>;
     if (error) return (
-        <div className="p-4 mx-auto max-w-sm bg-brandlight border border-brand rounded text-center">
+        <div className="w-full max-w-sm mx-auto p-4 bg-brandlight border border-brand rounded text-center mt-4">
             <p className="text-sm text-brand">{error}</p>
         </div>
     );

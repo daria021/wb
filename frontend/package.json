@@ -16,6 +16,7 @@
     "axios": "^1.8.3",
     "axios-auth-refresh": "^3.3.6",
     "eruda": "^3.4.1",
+    "lucide-react": "^0.503.0",
     "postcss": "^8.4.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

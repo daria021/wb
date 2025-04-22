@@ -22,7 +22,7 @@ function RequirementsPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-brandlight rounded-lg shadow-lg p-8 relative">
+            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
                 <div className="space-y-8">
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>

@@ -22,6 +22,7 @@ interface OrderReport {
     receipt_number?: string;
     article?: string;
     status?: OrderStatus;
+    cashback: number;
 }
 
 function OrderReportPage() {
@@ -118,6 +119,7 @@ function OrderReportPage() {
                         {report.phone_number && <p className="text-base">Телефон: {report.phone_number}</p>}
                         {report.name && <p className="text-base">Имя: {report.name}</p>}
                         {report.bank && <p className="text-base">Банк: {report.bank}</p>}
+                        {report.cashback && <p className="text-base">Кешбек: {report.cashback}</p>}
                     </section>
                 )}
 

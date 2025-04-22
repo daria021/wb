@@ -145,7 +145,7 @@ function MyOrdersPage() {
             <div className="w-full flex flex-col gap-3 mb-4">
                 {filteredOrders.length > 0 ? (
                     filteredOrders.map((order) => {
-                        const stepName = STEP_NAMES[order.step] || `Шаг ${order.step}`;
+                        const stepName = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
                         const linkTo = getOrderStepLink(order);
                         return (
                             <Link to={linkTo} key={order.id}>

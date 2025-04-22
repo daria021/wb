@@ -20,5 +20,6 @@ class OrderReport(BaseModel):
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
     status: Optional[OrderStatus] = None
+    cashback: Optional[int] = None
     model_config = ConfigDict(from_attributes=True)
 

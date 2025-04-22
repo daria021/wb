@@ -30,6 +30,9 @@ class CreateOrderDTO(CreateDTO):
 
 
 class UpdateOrderDTO(UpdateDTO):
+    # user_id: Optional[UUID] = None
+    # product_id: Optional[UUID] = None
+    # seller_id: Optional[UUID] = None
     step: Optional[int] = None
     search_screenshot_path: Optional[str] = None
     cart_screenshot_path: Optional[str] = None
