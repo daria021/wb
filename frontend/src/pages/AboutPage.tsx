@@ -21,11 +21,11 @@ function AboutPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
+            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-6">
                 <div className="gap-6">
                     <h1 className="text-2xl font-bold mb-6 text-left">О сервисе:</h1>
 
-                    <div className="bg-brandlight rounded-lg p-4">
+                    {/*<div className="bg-white rounded-lg p-4">*/}
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
                                 ВБ КЭШБЭК - бот поможет селлерам эффективнее проводить раздачи, а покупателям
@@ -112,7 +112,7 @@ function AboutPage() {
                                 </button>
                             </div>
                         </section>
-                    </div>
+                    {/*</div>*/}
                 </div>
             </div>
         </div>

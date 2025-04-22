@@ -149,7 +149,17 @@ function ModeratorUsersPage() {
                                 <td className="px-1 py-1 text-[7px]">
                                     {user.telegram_id.toString()}
                                 </td>
-                                <td className="px-1 py-1">{user.nickname}</td>
+                                <td className="px-1 py-1">
+                                    <a
+                                        href={`https://t.me/${user.nickname}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:underline"
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        {user.nickname}
+                                    </a>
+                                </td>
                                 <td className="px-1 py-1">{user.role}</td>
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
                                 <td className="px-1 py-1">{user.is_seller ? "Да" : "Нет"}</td>
@@ -161,8 +171,6 @@ function ModeratorUsersPage() {
                 </div>
             )}
 
-            {/* Modal для пополнения баланса */}
-            {/* (Оставляем модальное окно без изменений) */}
         </div>
     );
 }

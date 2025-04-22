@@ -4,6 +4,7 @@ import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
+import FileUploader from "../../components/FileUploader";
 
 interface Product {
     id: string;
@@ -37,6 +38,7 @@ interface OrderReport {
     article?: string;
 }
 
+
 function ProductPickupPage() {
     const {orderId} = useParams<{ orderId: string }>();
     const navigate = useNavigate();
@@ -47,9 +49,33 @@ function ProductPickupPage() {
     const [reportData, setReportData] = useState<OrderReport | null>(null);
 
     const [pickedUp, setPickedUp] = useState(false);
-    const [deliveryScreenshot, setDeliveryScreenshot] = useState<File | null>(null);
-    const [barcodeScreenshot, setBarcodeScreenshot] = useState<File | null>(null);
+    // const [deliveryScreenshot, setDeliveryScreenshot] = useState<File | null>(null);
+    // const [barcodeScreenshot, setBarcodeScreenshot] = useState<File | null>(null);
     const [showReport, setShowReport] = useState(false);
+    const [file1, setFile1] = useState<File | null>(null);
+    const [preview1, setPreview1] = useState<string | null>(null);
+
+    const [file2, setFile2] = useState<File | null>(null);
+    const [preview2, setPreview2] = useState<string | null>(null);
+    const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+
+    const toggleStep = (step: number) => {
+        setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
+    };
+
+    useEffect(() => {
+        if (!file1) return setPreview1(null);
+        const url = URL.createObjectURL(file1);
+        setPreview1(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file1]);
+
+    useEffect(() => {
+        if (!file2) return setPreview2(null);
+        const url = URL.createObjectURL(file2);
+        setPreview2(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file2]);
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -92,29 +118,29 @@ function ProductPickupPage() {
     }
 
     const cashback = order.product.wb_price - order.product.price;
-    const canContinue = pickedUp && deliveryScreenshot && barcodeScreenshot;
+    const canContinue = pickedUp && file1 && file2;
 
-    const handleDeliveryScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setDeliveryScreenshot(e.target.files[0]);
-        } else {
-            setDeliveryScreenshot(null);
-        }
-    };
-
-    const handleBarcodeScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setBarcodeScreenshot(e.target.files[0]);
-        } else {
-            setBarcodeScreenshot(null);
-        }
-    };
+    // const handleDeliveryScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (e.target.files && e.target.files.length > 0) {
+    //         setDeliveryScreenshot(e.target.files[0]);
+    //     } else {
+    //         setDeliveryScreenshot(null);
+    //     }
+    // };
+    //
+    // const handleBarcodeScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (e.target.files && e.target.files.length > 0) {
+    //         setBarcodeScreenshot(e.target.files[0]);
+    //     } else {
+    //         setBarcodeScreenshot(null);
+    //     }
+    // };
 
     const handlePickedUpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPickedUp(e.target.checked);
         if (!e.target.checked) {
-            setDeliveryScreenshot(null);
-            setBarcodeScreenshot(null);
+            setFile1(null);
+            setFile2(null);
         }
     };
 
@@ -124,8 +150,8 @@ function ProductPickupPage() {
         try {
             await updateOrder(orderId, {
                 step: 6,
-                delivery_screenshot: deliveryScreenshot,
-                barcodes_screenshot: barcodeScreenshot,
+                delivery_screenshot: file1,
+                barcodes_screenshot: file2,
             });
             navigate(`/order/${orderId}/step-7`);
         } catch (err) {
@@ -148,8 +174,8 @@ function ProductPickupPage() {
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
 
-            <div className="bg-brandlight p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
-                <h1 className="text-lg font-bold">Шаг 6. Получение товара</h1>
+            <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
+                <h1 className="text-lg font-bold text-brand">Шаг 6. Получение товара</h1>
                 <p>
                     Заберите товар как обычно, сделайте скрин раздела «доставки» из личного кабинета, где указана дата
                     получения и статус "Доставлено". После этого разрежьте штрихкод и сделайте фото разрезанного
@@ -174,44 +200,24 @@ function ProductPickupPage() {
             </div>
 
             {pickedUp && (
-                <div className="space-y-3 mb-4">
-
-                    <div className="flex flex-col gap-2 items-start px-4">
-                        <p className="uppercase text-xs text-gray-500">Скрин статуса «Доставка» (из личного
-                            кабинета)</p>
-                        <label
-                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
-                            Выбрать файл
-                            <input
-                                accept="image/*"
-                                className="hidden"
-                                type="file"
-                                onChange={handleDeliveryScreenshotChange}
-                            />
-                        </label>
-                    </div>
-
-                    <div className="flex flex-col gap-2 items-start px-4">
-                        <p className="uppercase text-xs text-gray-500">Фото разрезанных штрихкодов на фоне товара</p>
-                        <label
-                            className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                            <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
-                            Выбрать файл
-                            <input
-                                accept="image/*"
-                                className="hidden"
-                                type="file"
-                                onChange={handleBarcodeScreenshotChange}
-                            />
-                        </label>
-                    </div>
-                </div>
-
-
+                <>
+                    <FileUploader
+                        label="Скрин статуса «Доставка» (из личного кабинета)"
+                        file={file1}
+                        preview={preview1}
+                        onFileChange={setFile1}
+                    />
+                    <FileUploader
+                        label="Фото разрезанных штрихкодов на фоне товара"
+                        file={file2}
+                        preview={preview2}
+                        onFileChange={setFile2}
+                    />
+                </>
             )}
 
-            <div className="flex flex-col gap-2 mb-4">
+
+            <div className="flex flex-col gap-2 mb-4 mt-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
                     className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
@@ -264,77 +270,201 @@ function ProductPickupPage() {
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
-                            <div>
-                                {(reportData.search_screenshot_path || reportData.cart_screenshot_path) && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
-                                        {reportData.search_screenshot_path && (
-                                            <img
-                                                src={GetUploadLink(reportData.search_screenshot_path)}
-                                                alt="Скрин поискового запроса"
-                                                className="mt-1 w-full rounded"
-                                            />
+                                <div className="space-y-2">
+                                    {/* Шаг 1 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(1)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[1] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[1] && (
+                                            <div className="border-t p-4 space-y-3">
+                                                {reportData.search_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин поискового запроса</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.search_screenshot_path)}
+                                                            alt="Скрин поискового запроса"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                                {reportData.cart_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.cart_screenshot_path)}
+                                                            alt="Скрин корзины"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
-                                        {reportData.cart_screenshot_path && (
-                                            <img
-                                                src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                alt="Скрин корзины"
-                                                className="mt-1 w-full rounded"
-                                            />
-                                        )}
-                                    </div>
-                                )}
-                                {reportData.article && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
-                                        <p className="text-sm">{reportData.article}</p>
-                                    </div>
-                                )}
-                                <div className="mb-3">
-                                    <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
-                                    <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
-                                </div>
-                                {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
-                                        <p className="text-sm">Номер карты: {reportData.card_number}</p>
-                                        <p className="text-sm">Телефон: {reportData.phone_number}</p>
-                                        <p className="text-sm">Имя: {reportData.name}</p>
-                                        <p className="text-sm">Банк: {reportData.bank}</p>
-                                    </div>
-                                )}
-                                {reportData.final_cart_screenshot_path && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 5. Финальный скрин корзины</p>
-                                        <img
-                                            src={GetUploadLink(reportData.final_cart_screenshot_path)}
-                                            alt="Финальный скрин корзины"
-                                            className="mt-1 w-full rounded"
-                                        />
                                     </div>
 
-                                )}
-                            </div>
-                        ) : (
+                                    {/* Шаг 2 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(2)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[2] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[2] && (
+                                            <div className="border-t p-4">
+                                                <p className="text-sm">{reportData.article}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Шаг 3 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(3)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[3] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[3] && (
+                                            <div className="border-t p-4">
+                                                <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Шаг 4 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(4)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 4. Реквизиты</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[4] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[4] && (
+                                            <div className="border-t p-4 space-y-1">
+                                                {reportData.card_number &&
+                                                    <p className="text-sm">Номер карты: {reportData.card_number}</p>}
+                                                {reportData.phone_number &&
+                                                    <p className="text-sm">Телефон: {reportData.phone_number}</p>}
+                                                {reportData.name && <p className="text-sm">Имя: {reportData.name}</p>}
+                                                {reportData.bank && <p className="text-sm">Банк: {reportData.bank}</p>}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Шаг 5 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(5)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 5. Финальный скрин корзины</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[5] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[5] && reportData.final_cart_screenshot_path && (
+                                            <div className="border-t p-4">
+                                                <p className="text-sm font-semibold">Скрин корзины</p>
+                                                <img
+                                                    src={GetUploadLink(reportData.final_cart_screenshot_path)}
+                                                    alt="Финальный скрин корзины"
+                                                    className="w-full rounded"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                        <div className="font-semibold text-black">Шаг 6. Получение товара</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                    </div>
+                                </div>
+
+                            ) :
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
-                        )}
+                        }
                     </div>
                 )}
+                <div className="flex flex-col gap-3 text-center">
 
-                <button
-                    onClick={handleChannelClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                    <span>Подписаться на канал</span>
-                </button>
-                <button
-                    onClick={handleSupportClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
-                    Нужна помощь
-                </button>
+                    <button
+                        onClick={handleChannelClick}
+                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                         justify-center gap-2">
+                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                        <span>Подписаться на канал</span>
+                    </button>
+                    <button
+                        onClick={handleSupportClick}
+                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold">
+                        Нужна помощь
+                    </button>
+                </div>
             </div>
         </div>
-    );
+    )
+        ;
 }
 
 export default ProductPickupPage;

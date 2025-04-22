@@ -1,8 +1,9 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {createOrder, getMe, getProductById} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
+import FileUploader from "../../components/FileUploader";
 
 interface Product {
     id: string;
@@ -10,6 +11,7 @@ interface Product {
     key_word: string;
     seller_id: string;
 }
+
 
 function CartScreenshotPage() {
     const {productId} = useParams<{ productId: string }>();
@@ -20,9 +22,45 @@ function CartScreenshotPage() {
     const [error, setError] = useState('');
 
     const [file1, setFile1] = useState<File | null>(null);
+    const [preview1, setPreview1] = useState<string | null>(null);
+
+    // для второго скрина
     const [file2, setFile2] = useState<File | null>(null);
+    const [preview2, setPreview2] = useState<string | null>(null);
+
+    // создаём preview URL для file1
+    useEffect(() => {
+        if (!file1) {
+            setPreview1(null);
+            return;
+        }
+        const url = URL.createObjectURL(file1);
+        setPreview1(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file1]);
+
+    // создаём preview URL для file2
+    useEffect(() => {
+        if (!file2) {
+            setPreview2(null);
+            return;
+        }
+        const url = URL.createObjectURL(file2);
+        setPreview2(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file2]);
 
     const canContinue = Boolean(file1 && file2);
+
+    useEffect(() => {
+        if (file2) {
+            const url = URL.createObjectURL(file2);
+            setPreview2(url);
+            return () => URL.revokeObjectURL(url);
+        }
+        setPreview2(null);
+    }, [file2]);
+
 
     useEffect(() => {
         if (!productId) return;
@@ -87,11 +125,12 @@ function CartScreenshotPage() {
         window.open('https://t.me/grcashback', '_blank'); //todo
     };
 
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
 
-            <div className="bg-brandlight rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
-                <h2 className="text-lg font-semibold top-10">Шаг 1. Загрузите скрины</h2>
+            <div className="bg-white border border-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
+                <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Загрузите скриншоты по поиску товара</h2>
 
                 <p>
                     <strong>ВАЖНО!</strong> Оформление заказа происходит только на 5-м шаге.
@@ -101,47 +140,26 @@ function CartScreenshotPage() {
                     корзину.
                 </p>
                 <p>
-                    Сделайте два скрина: первый – скрин поискового запроса, второй – скрин корзины.
+                    <strong>Сделайте два скриншота</strong>: первый – скриншот поискового запроса, второй – скриншот корзины.
                 </p>
                 <p>
                     Ключевое слово: <strong>{product.key_word}</strong>
                 </p>
             </div>
 
-            <div className="flex flex-col gap-2 items-start px-4">
-                <p className="uppercase text-xs text-gray-500">Скрин поискового запроса</p>
-                <label
-                    className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
-                    Выбрать файл
-                    <input
-                        accept="image/*"
-                        className="hidden"
-                        type="file"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setFile1(e.target.files?.[0] || null)
-                        }
-                    />
-                </label>
-            </div>
 
-            <div className="flex flex-col gap-2 items-start px-4">
-                <p className="uppercase text-xs text-gray-500">Скрин корзины</p>
-                <label
-                    className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-
-                    <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
-                    Выбрать файл
-                    <input
-                        accept="image/*"
-                        className="hidden"
-                        type="file"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setFile2(e.target.files?.[0] || null)
-                        }
-                    />
-                </label>
-            </div>
+            <FileUploader
+                label="1.Скриншот поискового запроса"
+                file={file1}
+                preview={preview1}
+                onFileChange={setFile1}
+            />
+            <FileUploader
+                label="2.Скриншот корзины"
+                file={file2}
+                preview={preview2}
+                onFileChange={setFile2}
+            />
 
 
             <button
@@ -166,16 +184,17 @@ function CartScreenshotPage() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mt-4 text-center">
                 <button
                     onClick={handleChannelClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                    justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left"
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold"
                 >
                     Нужна помощь
                 </button>

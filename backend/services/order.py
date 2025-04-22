@@ -29,33 +29,34 @@ class OrderService(OrderServiceInterface):
 
     async def update_order(self, order_id: UUID, dto: UpdateOrderDTO) -> None:
         await self.order_repository.update(order_id, dto)
-        if dto.status == OrderStatus.CASHBACK_PAID:
-            await self.notification_service.send_cashback_paid(order_id)
-
-            order = await self.order_repository.get(order_id)
-            user_dto=UpdateUserDTO(
-                role=UserRole.CLIENT,
-            )
-            await self.user_repository.update(order.user_id, user_dto)
-
-            if order.seller.role == UserRole.CLIENT or order.seller.role == UserRole.USER:
-                seller_dto=UpdateUserDTO(
+        order = await self.order_repository.get(order_id)
+        product = await self.product_repository.get(order.product_id)
+        seller = await self.user_repository.get(product.seller_id)
+        if dto.step == 5:
+            if seller.role == UserRole.CLIENT or seller.role == UserRole.USER:
+                seller_dto = UpdateUserDTO(
                     role=UserRole.SELLER,
-                    balance=order.seller.balance - 1
+                    balance=seller.balance - 1
                 )
             else:
                 seller_dto = UpdateUserDTO(
-                    balance=order.seller.balance - 1
+                    balance=seller.balance - 1
                 )
-            await self.user_repository.update(order.seller_id, seller_dto)
+            await self.user_repository.update(seller.id, seller_dto)
 
-            product = await self.product_repository.get(order.product_id)
+            product = await self.product_repository.get(product.id)
             product_dto = UpdateProductDTO(
                 remaining_products=product.remaining_products - 1,
             )
             await self.product_repository.update(product.id, product_dto)
+        if dto.status == OrderStatus.CASHBACK_PAID:
+            await self.notification_service.send_cashback_paid(order_id)
 
-
+            order = await self.order_repository.get(order_id)
+            user_dto = UpdateUserDTO(
+                role=UserRole.CLIENT,
+            )
+            await self.user_repository.update(order.user_id, user_dto)
 
     async def delete_order(self, order_id: UUID) -> None:
         await self.order_repository.delete(order_id)
@@ -71,6 +72,7 @@ class OrderService(OrderServiceInterface):
         product = await self.product_repository.get(order.product_id)
         order_dict = order.model_dump()
         order_dict['article'] = product.article
+        order_dict['cashback'] = product.wb_price - product.price
         order_report = OrderReport.model_validate(order_dict)
         return order_report
 

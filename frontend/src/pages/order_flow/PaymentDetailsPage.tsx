@@ -35,7 +35,11 @@ function PaymentDetailsPage() {
     const [showReport, setShowReport] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [otherBank, setOtherBank] = useState('');
+    const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
 
+    const toggleStep = (step: number) => {
+        setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
+    };
     const handleChange = (e: any) => {
         setSelectedBank(e.target.value);
         if (e.target.value !== 'Другое') {
@@ -100,9 +104,9 @@ function PaymentDetailsPage() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            <div className="bg-brandlight rounded-lg shadow p-4 space-y-4 mb-4">
+            <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
 
-                <h1 className="text-lg font-bold">Шаг 4. Реквизиты для перевода кэшбэка</h1>
+                <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кэшбэка</h1>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -226,50 +230,125 @@ function PaymentDetailsPage() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col space-y-2 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 mt-4 mt-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
+
 
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
-                            <div>
-                                <div>
-                                    {reportData.search_screenshot_path && (
-                                        <div className="mb-3">
-                                            <p className="text-sm font-semibold">Шаг 1. Скрин поискового запроса</p>
-                                            <img
-                                                src={GetUploadLink(reportData.search_screenshot_path)}
-                                                alt="Скрин поискового запроса"
-                                                className="mt-1 w-full rounded"
-                                            />
-                                        </div>
-                                    )}
-                                    {reportData.cart_screenshot_path && (
-                                        <div className="mb-3">
-                                            <p className="text-sm font-semibold">Скрин корзины</p>
-                                            <img
-                                                src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                alt="Скрин корзины"
-                                                className="mt-1 w-full rounded"
-                                            />
+                            <div className="space-y-2">
+                                {/* Шаг 1 */}
+                                <div className="bg-white rounded-lg shadow">
+                                    <button
+                                        onClick={() => toggleStep(1)}
+                                        className="w-full flex justify-between items-center p-4 text-left"
+                                    >
+                                        <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={`w-5 h-5 transform transition-transform ${
+                                                expandedSteps[1] ? 'rotate-180' : ''
+                                            }`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                    {expandedSteps[1] && (
+                                        <div className="border-t p-4 space-y-3">
+                                            {reportData.search_screenshot_path && (
+                                                <div>
+                                                    <p className="text-sm font-semibold">Скрин поискового запроса</p>
+                                                    <img
+                                                        src={GetUploadLink(reportData.search_screenshot_path)}
+                                                        alt="Скрин поискового запроса"
+                                                        className="mt-1 w-full rounded"
+                                                    />
+                                                </div>
+                                            )}
+                                            {reportData.cart_screenshot_path && (
+                                                <div>
+                                                    <p className="text-sm font-semibold">Скрин корзины</p>
+                                                    <img
+                                                        src={GetUploadLink(reportData.cart_screenshot_path)}
+                                                        alt="Скрин корзины"
+                                                        className="mt-1 w-full rounded"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
-                                {reportData.article && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
-                                        <p className="text-sm">{reportData.article}</p>
+
+                                {/* Шаг 2 */}
+                                <div className="bg-white rounded-lg shadow">
+                                    <button
+                                        onClick={() => toggleStep(2)}
+                                        className="w-full flex justify-between items-center p-4 text-left"
+                                    >
+                                        <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={`w-5 h-5 transform transition-transform ${
+                                                expandedSteps[2] ? 'rotate-180' : ''
+                                            }`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                    {expandedSteps[2] && (
+                                        <div className="border-t p-4">
+                                            <p className="text-sm">{reportData.article}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Шаг 3 */}
+                                <div className="bg-white rounded-lg shadow">
+                                    <button
+                                        onClick={() => toggleStep(3)}
+                                        className="w-full flex justify-between items-center p-4 text-left"
+                                    >
+                                        <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={`w-5 h-5 transform transition-transform ${
+                                                expandedSteps[3] ? 'rotate-180' : ''
+                                            }`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                    {expandedSteps[3] && (
+                                        <div className="border-t p-4">
+                                            <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                    <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода кэшбэка
                                     </div>
-                                )}
-                                <div className="mb-3">
-                                    <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
-                                    <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
+                                    <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
+                                    <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
+                                    <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
                                 </div>
 
 
@@ -279,21 +358,24 @@ function PaymentDetailsPage() {
                         )}
                     </div>
                 )}
+            </div>
+
+            <div className="flex flex-col gap-3 mt-2 text-center">
 
                 <button
                     onClick={handleChannelClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                         justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
+                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold">
                     Нужна помощь
                 </button>
             </div>
         </div>
-    );
-}
+)}
 
 export default PaymentDetailsPage;

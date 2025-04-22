@@ -24,8 +24,8 @@ function CompleteInstructionPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-lg w-full bg-white rounded-lg shadow-lg p-8 relative">
-                <div className="bg-brandlight rounded-lg p-6 mb-8">
+            <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
+                {/*<div className="bg-white rounded-lg p-4 mb-8">*/}
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Инструкция выкупа для покупателя
                     </h2>
@@ -165,7 +165,7 @@ function CompleteInstructionPage() {
                     </div>
                 )}
 
-            </div>
+            {/*</div>*/}
         </div>
     );
 }

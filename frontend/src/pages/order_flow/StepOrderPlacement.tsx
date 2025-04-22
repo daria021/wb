@@ -4,6 +4,7 @@ import {getOrderReport, updateOrder} from '../../services/api';
 import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
+import FileUploader from "../../components/FileUploader";
 
 interface OrderReport {
     step: number;
@@ -27,11 +28,27 @@ function StepOrderPlacement() {
     const {orderId} = useParams<{ orderId: string }>();
 
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-    const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+    // const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
     const [reportData, setReportData] = useState<OrderReport | null>(null);
     const [showReport, setShowReport] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
 
-    const canContinue = isOrderPlaced && screenshotFile;
+    const toggleStep = (step: number) => {
+        setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
+    };
+    useEffect(() => {
+        if (!file) {
+            setPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(file);
+        setPreview(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
+
+    const canContinue = isOrderPlaced && file;
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -53,18 +70,18 @@ function StepOrderPlacement() {
             });
     }, [orderId]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setScreenshotFile(e.target.files[0]);
-        } else {
-            setScreenshotFile(null);
-        }
-    };
+    // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (e.target.files && e.target.files.length > 0) {
+    //         setScreenshotFile(e.target.files[0]);
+    //     } else {
+    //         setScreenshotFile(null);
+    //     }
+    // };
 
     const handleOrderPlacedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsOrderPlaced(e.target.checked);
         if (!e.target.checked) {
-            setScreenshotFile(null);
+            setFile(null);
         }
     };
 
@@ -73,7 +90,7 @@ function StepOrderPlacement() {
         try {
             await updateOrder(orderId, {
                 step: 5,
-                final_cart_screenshot: screenshotFile,
+                final_cart_screenshot: file,
             });
             navigate(`/order/${orderId}/step-6`);
         } catch (err) {
@@ -95,8 +112,8 @@ function StepOrderPlacement() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            <div className="bg-brandlight rounded-md p-4 text-sm text-gray-700 mb-4 space-y-2">
-                <h1 className="text-lg font-bold mb-4">Шаг 5. Оформление заказа</h1>
+            <div className="bg-white border border-brand rounded-md p-4 text-sm text-gray-700 mb-4 space-y-2">
+                <h1 className="text-lg font-bold mb-4 text-brand">Шаг 5. Оформление заказа</h1>
                 <p>1. Оформите заказ на Wildberries</p>
                 <p>2. Сделайте скрин из раздела «Доставки» в личном кабинете</p>
                 <p>3. На скрине обязательно должна быть указана цена</p>
@@ -117,20 +134,12 @@ function StepOrderPlacement() {
             </div>
 
             {isOrderPlaced && (
-                <div className="flex flex-col gap-2 items-start px-4">
-                    <p className="uppercase text-xs text-gray-500">Скрин заказа</p>
-                    <label
-                        className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm flex items-center gap-2">
-                        <img src="/icons/paperclip.png" alt="paperclip" className="h-4 w-4"/>
-                        Выбрать файл
-                        <input
-                            accept="image/*"
-                            className="hidden"
-                            type="file"
-                            onChange={handleFileChange}
-                        />
-                    </label>
-                </div>
+                <FileUploader
+                    label="Фото товара"
+                    file={file}
+                    preview={preview}
+                    onFileChange={setFile}
+                />
             )}
 
 
@@ -172,64 +181,170 @@ function StepOrderPlacement() {
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
-                            <div>
-                                {(reportData.search_screenshot_path || reportData.cart_screenshot_path) && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 1. Скрины корзины</p>
-                                        {reportData.search_screenshot_path && (
-                                            <img
-                                                src={GetUploadLink(reportData.search_screenshot_path)}
-                                                alt="Скрин поискового запроса"
-                                                className="mt-1 w-full rounded"
-                                            />
+                                <div className="space-y-2">
+                                    {/* Шаг 1 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(1)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[1] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[1] && (
+                                            <div className="border-t p-4 space-y-3">
+                                                {reportData.search_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин поискового запроса</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.search_screenshot_path)}
+                                                            alt="Скрин поискового запроса"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                                {reportData.cart_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.cart_screenshot_path)}
+                                                            alt="Скрин корзины"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
-                                        {reportData.cart_screenshot_path && (
-                                            <img
-                                                src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                alt="Скрин корзины"
-                                                className="mt-1 w-full rounded"
-                                            />
-                                        )}
                                     </div>
-                                )}
-                                {reportData.article && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 2. Артикул товара</p>
-                                        <p className="text-sm">{reportData.article}</p>
-                                    </div>
-                                )}
-                                <div className="mb-3">
-                                    <p className="text-sm font-semibold">Шаг 3. Товар и бренд добавлены в избранное</p>
-                                    <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
-                                </div>
-                                {(reportData.card_number || reportData.phone_number || reportData.name || reportData.bank) && (
-                                    <div className="mb-3">
-                                        <p className="text-sm font-semibold">Шаг 4. Реквизиты</p>
-                                        <p className="text-sm">Номер карты: {reportData.card_number}</p>
-                                        <p className="text-sm">Телефон: {reportData.phone_number}</p>
-                                        <p className="text-sm">Имя: {reportData.name}</p>
-                                        <p className="text-sm">Банк: {reportData.bank}</p>
-                                    </div>
-                                )}
 
-                            </div>
-                        ) : (
+                                    {/* Шаг 2 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(2)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[2] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[2] && (
+                                            <div className="border-t p-4">
+                                                <p className="text-sm">{reportData.article}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Шаг 3 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(3)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[3] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[3] && (
+                                            <div className="border-t p-4">
+                                                <p className="text-sm">Ваш товар и бренд успешно добавлены в избранное.</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Шаг 4 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(4)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 4. Реквизиты</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[4] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[4] && (
+                                            <div className="border-t p-4 space-y-1">
+                                                {reportData.card_number &&
+                                                    <p className="text-sm">Номер карты: {reportData.card_number}</p>}
+                                                {reportData.phone_number &&
+                                                    <p className="text-sm">Телефон: {reportData.phone_number}</p>}
+                                                {reportData.name && <p className="text-sm">Имя: {reportData.name}</p>}
+                                                {reportData.bank && <p className="text-sm">Банк: {reportData.bank}</p>}
+                                            </div>
+                                        )}
+                                    </div>
+
+
+
+
+                                    <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                        <div className="font-semibold text-black">Шаг 5. Оформление заказа</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+
+                                    </div>
+                                </div>
+
+                            ) :
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
-                        )}
+                        }
                     </div>
                 )}
+                <div className="flex flex-col gap-3 mt-2 text-center">
 
-                <button
-                    onClick={handleChannelClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center gap-2 text-left">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                    <span>Подписаться на канал</span>
-                </button>
-                <button
-                    onClick={handleSupportClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold text-left">
-                    Нужна помощь
-                </button>
+                    <button
+                        onClick={handleChannelClick}
+                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                         justify-center gap-2">
+                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                        <span>Подписаться на канал</span>
+                    </button>
+                    <button
+                        onClick={handleSupportClick}
+                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold">
+                        Нужна помощь
+                    </button>
+                </div>
             </div>
         </div>
     );

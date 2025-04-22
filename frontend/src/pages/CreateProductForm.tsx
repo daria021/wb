@@ -3,7 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {createProduct, getProductById, updateProduct} from '../services/api';
 import {Category, PayoutTime} from '../enums';
 import {on} from "@telegram-apps/sdk";
-import GetUploadLink from "../components/GetUploadLink"; // Ваши enum'ы
+import FileUploader from "../components/FileUploader";
 
 interface ProductFormData {
     id?: string;
@@ -28,10 +28,13 @@ function ProductForm() {
     const {productId} = useParams();
     const isEditMode = Boolean(productId);
     const [originalFormData, setOriginalFormData] = useState<ProductFormData | null>(null);
-    const [changedFields, setChangedFields] = useState<Record<string, { old: any, new: any }>>({});
+    // const [changedFields, setChangedFields] = useState<Record<string, { old: any, new: any }>>({});
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [priceError, setPriceError] = useState('');
     const [repurchasesError, setRepurchasesError] = useState('');
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [changedFields, setChangedFields] = useState<Record<string, {old:any,new:any}>>({});
 
 
     const inputRefs = [
@@ -48,6 +51,16 @@ function ProductForm() {
 
     const reviewRequirementsRef = useRef<HTMLTextAreaElement>(null);
     const agreeRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!file) {
+            setPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(file);
+        setPreview(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
 
     const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter') {
@@ -84,9 +97,9 @@ function ProductForm() {
     };
 
 
-    const [imageFile, setImageFile] = useState<File | null>(null);
-
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    // const [imageFile, setImageFile] = useState<File | null>(null);
+    //
+    // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -132,28 +145,31 @@ function ProductForm() {
         })();
     }, [isEditMode, productId]);
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        setImageFile(file);
-
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewUrl(objectUrl);
-        } else {
-            setPreviewUrl(null);
-        }
-    };
+    // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0] || null;
+    //     setImageFile(file);
+    //
+    //     if (file) {
+    //         const objectUrl = URL.createObjectURL(file);
+    //         setPreviewUrl(objectUrl);
+    //     } else {
+    //         setPreviewUrl(null);
+    //     }
+    // };
 
     const validateField = (name: string, value: any, newFormData: ProductFormData) => {
-        if (name === 'price') {
-            if (Number(value) > newFormData.wb_price) {
+        // Проверяем оба поля цены, если поменяли или цену покупателя, или цену на сайте
+        if (['price', 'wb_price'].includes(name)) {
+            if (newFormData.price > newFormData.wb_price) {
                 setPriceError('Цена для покупателя не должна быть больше цены на сайте');
             } else {
                 setPriceError('');
             }
         }
-        if (name === 'daily_repurchases') {
-            if (Number(value) > newFormData.general_repurchases) {
+
+        // Аналогично — оба поля выкупа
+        if (['daily_repurchases', 'general_repurchases'].includes(name)) {
+            if (newFormData.daily_repurchases > newFormData.general_repurchases) {
                 setRepurchasesError('Ежедневные выкупы не могут превышать общий план');
             } else {
                 setRepurchasesError('');
@@ -163,15 +179,15 @@ function ProductForm() {
 
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type, checked } = e.target as HTMLInputElement;
+        const {name, value, type, checked} = e.target as HTMLInputElement;
         const newValue = type === 'checkbox'
             ? checked
-            : ['general_repurchases','daily_repurchases','price','wb_price'].includes(name)
+            : ['general_repurchases', 'daily_repurchases', 'price', 'wb_price'].includes(name)
                 ? Number(value)
                 : value;
 
         setFormData(prev => {
-            const updated = { ...prev, [name]: newValue };
+            const updated = {...prev, [name]: newValue};
             validateField(name, newValue, updated);
             return updated;
         });
@@ -238,8 +254,8 @@ function ProductForm() {
             fd.append('review_requirements', formData.review_requirements);
             fd.append('requirements_agree', String(formData.requirements_agree));
 
-            if (imageFile) {
-                fd.append('image', imageFile);
+            if (file) {
+                fd.append('image', file);
             }
 
             if (isEditMode) {
@@ -316,34 +332,12 @@ function ProductForm() {
                     />
                 </div>
 
-                <div>
-                    <p className="uppercase text-xs text-gray-500">Фото товара</p>
-                    <label
-                        className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex items-center gap-2">
-                        {previewUrl ? (
-                            <img
-                                src={previewUrl}
-                                alt="preview"
-                                className="w-32 h-32 object-cover mb-2"
-                            />
-                        ) : formData.image_path ? (
-                            <img
-                                src={GetUploadLink(formData.image_path)}
-                                alt="existing"
-                                className="w-32 h-32 object-cover mb-2"
-                            />
-                        ) : (
-                            <div className="text-brand text-sm mb-2">Выбрать файл</div>
-                        )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
-                    </label>
-
-                </div>
+                <FileUploader
+                    label="Фото товара"
+                    file={file}
+                    preview={preview}
+                    onFileChange={setFile}
+                />
 
 
                 <div>

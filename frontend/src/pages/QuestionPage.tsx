@@ -28,9 +28,27 @@ function QuestionPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
-                <div className="bg-brandlight rounded-lg p-4 mb-6">
-                    <h1 className="text-2xl font-bold mb-6 text-left">
+            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-6">
+                <p className="italic">
+                    Привет! Наша команда создала бота, чтобы покупатели и продавцы могли легче заключать сделки.
+                    <br/><br/>
+                    <strong>ВАЖНО!</strong> Бот не проводит выплат, не дает никаких гарантий, поэтому будьте осторожны.
+                    Мы проверяем каждого продавца перед тем как разместить его, но гарантий на 100% нет.
+                    <br/><br/>
+                    Перед выкупом проверяйте продавцов через бота{" "}
+                    <a
+                        href="https://t.me/bigblacklist_bot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                    >
+                        @bigblacklist_bot
+                    </a>{" "}
+                    или в других группах, где пишут отзывы. Не выкупайте одновременно много товара — вам никто не возместит деньги, если продавец окажется мошенником.
+                </p>
+
+                {/*<div className="bg-white rounded-lg p-4 mb-6">*/}
+                    <h1 className="text-2xl font-bold mb-6 mt-2 text-left">
                         ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ (FAQ):
                     </h1>
 
@@ -255,7 +273,7 @@ function QuestionPage() {
                             На главную
                         </button>
                     </div>
-                </div>
+                {/*</div>*/}
             </div>
         </div>
     );
