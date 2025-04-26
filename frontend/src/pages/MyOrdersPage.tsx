@@ -153,14 +153,14 @@ function MyOrdersPage() {
                     className={`
             px-4 py-2 rounded-full
             ${isOnOrders
-                        ? 'bg-gradient-tr-white text-black'
+                        ? 'text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
                     Мои покупки
                 </Link>
             </div>
-            <div className="sticky top-0 z-10 mt-2 bg-gradient-t-gray">
+            <div className="sticky top-0 z-10 mt-2">
                 <div className="flex items-center justify-center relative mb-4">
                     <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
                 </div>

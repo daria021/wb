@@ -52,7 +52,7 @@ function SellerCabinet() {
                     ВБКэшбэк — сервис для управления раздачами товара за кэшбэк
                 </p>
 
-                <div className="border-gradient-tr-darkGray border border-gradient-tr-darkGray rounded-md p-4 mb-4"
+                <div className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4"
                      onClick={handleMyBalanceClick}
                 >
                     <p className="text-md font-semibold mb-1">Баланс</p>
@@ -63,7 +63,7 @@ function SellerCabinet() {
                 {/*<div className="flex justify-end mb-4">*/}
                     <button
                         onClick={() => navigate('/create-product')}
-                        className="w-full border border-gradient-r-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                        className="w-full border bg-gradient-tr-white border-gradient-r-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
                     >
                         Разместить товар
                     </button>
@@ -71,7 +71,7 @@ function SellerCabinet() {
 
                 <div
                     onClick={handleMyProductsClick}
-                    className="border-gradient-tr-darkGray border border-gradient-tr-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer"
+                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer"
                 >
                     <p className="text-md font-semibold mb-1">Мои товары</p>
                     <p className="text-sm text-gray-500">Товары по раздачам</p>

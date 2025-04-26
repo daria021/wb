@@ -53,8 +53,8 @@ function CatalogPage() {
     }, [searchParams]);
 
     useEffect(() => {
-        // const removeBackListener = on('back_button_pressed', () => navigate('/'));
-        // // return () => removeBackListener();
+        const removeBackListener = on('back_button_pressed', () => navigate('/'));
+        return () => removeBackListener();
     }, [navigate]);
 
     useEffect(() => {
