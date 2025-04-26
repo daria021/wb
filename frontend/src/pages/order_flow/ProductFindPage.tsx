@@ -63,9 +63,9 @@ function ProductFindPage() {
         if (!order) return;
         if (enteredArticle.trim() !== order.product.article) {
             setFlashInvalid(true);
-            setTimeout(() => setFlashInvalid(false), 500);
         }
     };
+
 
     useEffect(() => {
         if (!order) return;
@@ -197,13 +197,13 @@ function ProductFindPage() {
       border transition-colors duration-200
       ${
                         flashInvalid
-                            ? 'border-red-600 ring-2 ring-red-300 animate-ping'
+                            ? 'flash-border'
                             : articleStatus === 'Артикул правильный'
                                 ? 'border-green-500'
-                                : 'border-gradient-tr-darkGray'
+                                : 'border-gray-300'
                     }
-      focus:outline-none
     `}
+                    onAnimationEnd={() => setFlashInvalid(false)}
                 />
                 {articleStatus === 'Артикул правильный' && (
                     <p className="mt-2 text-sm font-semibold text-green-600">

@@ -10,8 +10,8 @@ const InviteFriendsPage: React.FC = () => {
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        // const removeBackListener = on('back_button_pressed', () => navigate('/'));
-        // return () => removeBackListener();
+        const removeBackListener = on('back_button_pressed', () => navigate('/'));
+        return () => removeBackListener();
     }, [navigate]);
 
     useEffect(() => {

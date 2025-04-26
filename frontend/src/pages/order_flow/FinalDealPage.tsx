@@ -156,10 +156,11 @@ function FinalDealPage() {
                 {/*<p>*/}
                 {/*    Крайний срок выплаты кешбека: <strong>{deadline}</strong>*/}
                 {/*</p>*/}
-                <p>
-                    Статус: <strong>{status || 'Неизвестен'}</strong>
-                </p>
+                {/*<p>*/}
+                {/*    Статус: <strong>{status || 'Неизвестен'}</strong>*/}
+                {/*</p>*/}
             </div>
+
 
             <div className="flex justify-between items-center text-sm">
                 <div>Покупатель: {order.user.nickname}</div>

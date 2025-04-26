@@ -8,6 +8,8 @@ module.exports = {
         brand2:      "#849cd6",
         brandlight:  "#adbbde",
         brandlight2: "#c8cedf",
+        white: "#f9fcff",
+        white2: "#a5a699",
       },
     },
 
@@ -15,9 +17,9 @@ module.exports = {
     linearGradientColors: theme => ({
       brand:      [theme("colors.brand"),      theme("colors.brand2")],
       brandlight: [theme("colors.brandlight"), theme("colors.brandlight2")],
-      gray:       [theme("colors.gray.400"),   theme("colors.gray.100")],
+      gray:       [theme("colors.gray.500"),   theme("colors.gray.100")],
       darkGray:       [theme("colors.gray.500"),   theme("colors.gray.300")],
-      white:       [theme("colors.white"),  theme("colors.gray.200")],
+      white:       [theme("colors.white"),  theme("colors.white2")],
     }),
 
     // для радиального
@@ -26,7 +28,7 @@ module.exports = {
       brandlight: [theme("colors.brandlight"), theme("colors.brandlight2")],
       gray:       [theme("colors.gray.400"),   theme("colors.gray.100")],
       darkGray:       [theme("colors.gray.500"),   theme("colors.gray.300")],
-      white:       [theme("colors.white"),  theme("colors.gray.200")],
+      white:       [theme("colors.white"),  theme("colors.white2")],
     }),
 
     // для конического
@@ -35,7 +37,7 @@ module.exports = {
       brandlight: [theme("colors.brandlight"), theme("colors.brandlight2")],
       gray:       [theme("colors.gray.400"),   theme("colors.gray.100")],
       darkGray:       [theme("colors.gray.500"),   theme("colors.gray.300")],
-      white:       [theme("colors.white"),  theme("colors.gray.200")],
+      white:       [theme("colors.white"),  theme("colors.white2")],
     }),
   },
   variants: {
