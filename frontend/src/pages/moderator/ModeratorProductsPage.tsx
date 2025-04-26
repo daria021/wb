@@ -92,7 +92,7 @@ function ModeratorProductsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-200 p-6">
+        <div className="min-h-screen bg-gradient-t-gray p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Товары для проверки</h1>
             <div className="mb-4 flex justify-end">
                 <select
@@ -100,7 +100,7 @@ function ModeratorProductsPage() {
                     onChange={(e) =>
                         setStatusFilter(e.target.value as 'all' | 'active' | 'created' | 'rejected' | 'archived')
                     }
-                    className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none"
+                    className="border border-gradient-tr-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
                 >
                     <option value="all">Все статусы</option>
                     <option value="active">Активный</option>
@@ -110,7 +110,7 @@ function ModeratorProductsPage() {
                 </select>
             </div>
 
-            <div className="flex border-b border-gray-300 mb-6">
+            <div className="flex border-b border-gradient-tr-darkGray mb-6">
                 <button
                     className={`px-4 py-2 font-semibold ${activeTab === 'pending'
                         ? 'border-b-2 border-blue-500 text-blue-500'
@@ -134,7 +134,7 @@ function ModeratorProductsPage() {
             {loading ? (
                 <p className="text-center">Загрузка...</p>
             ) : error ? (
-                <div className="p-4 bg-brandlight border border-gray-300 rounded text-center">
+                <div className="p-4 bg-gradient-r-brandlight border border-gradient-tr-darkGray rounded text-center">
                     <p className="text-sm text-gray-700">{error}</p>
                 </div>
             ) : (
@@ -150,7 +150,7 @@ function ModeratorProductsPage() {
                                         <div
                                             key={product.id}
                                             onClick={() => handleReview(product.id)}
-                                            className="relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer bg-white"
+                                            className="relative border border-gradient-b-gray rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer bg-gradient-tr-white"
                                         >
                                             {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
                                                 <img
@@ -193,10 +193,10 @@ function ModeratorProductsPage() {
                                         <div
                                             key={product.id}
                                             onClick={() => handleReview(product.id)}
-                                            className={`relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
+                                            className={`relative border border-gradient-b-gray rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
                                                 product.status.toLowerCase() === 'archived'
-                                                    ? 'bg-gray-300 text-black border-dashed'
-                                                    : 'bg-white'
+                                                    ? 'border-gradient-tr-darkGray text-black border-dashed'
+                                                    : 'bg-gradient-tr-white'
                                             }`}
                                         >
                                             {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
@@ -239,7 +239,7 @@ function ModeratorProductsPage() {
                     }
                     window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
                 }}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">

@@ -116,9 +116,9 @@ function ProductFavoritePage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
 
-            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное</h1>
                 <p className="mb-2">• Добавьте товар в избранное</p>
                 <p className="mb-2">• Добавьте бренд в избранное</p>
@@ -141,7 +141,7 @@ function ProductFavoritePage() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`block w-full py-2 mb-4 rounded-lg text-white font-semibold text-center ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-400 cursor-not-allowed'
+                    canContinue ? 'bg-gradient-r-brand hover:bg-gradient-r-brand' : 'bg-gray-400 cursor-not-allowed'
                 }`}
             >
                 Продолжить
@@ -168,7 +168,7 @@ function ProductFavoritePage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -183,18 +183,18 @@ function ProductFavoritePage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 rounded-lg bg-gradient-tr-white border border-gradient-r-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
                 {showReport && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div className="space-y-2">
                                 {/* Шаг 1 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(1)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -240,7 +240,7 @@ function ProductFavoritePage() {
                                 </div>
 
                                 {/* Шаг 2 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(2)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -266,7 +266,7 @@ function ProductFavoritePage() {
                                     )}
                                 </div>
 
-                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                     <div className="font-semibold text-black">Шаг 3. Добавить товар в избранное
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кэшбэка
@@ -288,14 +288,14 @@ function ProductFavoritePage() {
 
                     <button
                         onClick={handleChannelClick}
-                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
                          justify-center gap-2">
                         <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                         <span>Подписаться на канал</span>
                     </button>
                     <button
                         onClick={handleSupportClick}
-                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold">
+                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold">
                         Нужна помощь
                     </button>
                 </div>

@@ -66,13 +66,13 @@ const PushAdminPage: React.FC = () => {
                 <div className="text-red-500">{error}</div>
             ) : (
                 <>
-                    <table className="min-w-full table-fixed border border-gray-300">
-                        <thead className="bg-brandlight">
+                    <table className="min-w-full table-fixed border border-gradient-tr-darkGray">
+                        <thead className="bg-gradient-r-brandlight">
                         <tr>
-                            <th className="border border-gray-300 p-2 text-left text-base">Название</th>
-                            <th className="border border-gray-300 p-2 text-left text-base">Текст рассылки</th>
-                            <th className="border border-gray-300 p-2 text-left text-base">Кнопка</th>
-                            <th className="border border-gray-300 p-2 w-12"></th>
+                            <th className="border border-gradient-tr-darkGray p-2 text-left text-base">Название</th>
+                            <th className="border border-gradient-tr-darkGray p-2 text-left text-base">Текст рассылки</th>
+                            <th className="border border-gradient-tr-darkGray p-2 text-left text-base">Кнопка</th>
+                            <th className="border border-gradient-tr-darkGray p-2 w-12"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -82,16 +82,16 @@ const PushAdminPage: React.FC = () => {
                                 className="cursor-pointer hover:bg-gray-50"
                                 onClick={() => navigate(`/moderator/pushes/${push.id}`)}
                             >
-                                <td className="border border-gray-300 p-2 text-base">{push.title}</td>
-                                <td className="border border-gray-300 p-2 text-base">{push.text}</td>
-                                <td className="border border-gray-300 p-2 text-base">
+                                <td className="border border-gradient-tr-darkGray p-2 text-base">{push.title}</td>
+                                <td className="border border-gradient-tr-darkGray p-2 text-base">{push.text}</td>
+                                <td className="border border-gradient-tr-darkGray p-2 text-base">
                                     {push.button_text ? (
                                         <span>{push.button_text}</span>
                                     ) : (
                                         '—'
                                     )}
                                 </td>
-                                <td className="border border-gray-300 p-2 text-center w-12">
+                                <td className="border border-gradient-tr-darkGray p-2 text-center w-12">
                                     <img
                                         src="/icons/trash.png"
                                         alt="Удалить"
@@ -103,7 +103,7 @@ const PushAdminPage: React.FC = () => {
                         ))}
                         {pushes.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="border border-gray-300 p-2 text-center">
+                                <td colSpan={4} className="border border-gradient-tr-darkGray p-2 text-center">
                                     Нет созданных рассылок.
                                 </td>
                             </tr>

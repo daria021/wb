@@ -44,9 +44,9 @@ function SellerBalancePage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-200 flex flex-col gap-4">
+        <div className="min-h-screen bg-gradient-t-gray flex flex-col gap-4">
 
-            <div className="bg-gray-300 border border-gray-300 rounded-md p-4 mx-4 mt-4">
+            <div className="border-gradient-tr-darkGray border border-gradient-tr-darkGray rounded-md p-4 mx-4 mt-4">
                 <p className="text-md font-semibold mb-1">Баланс</p>
                 <p className="text-2xl font-bold">{balance}</p>
                 <p className="text-sm text-gray-500">Доступное количество раздач</p>
@@ -56,7 +56,7 @@ function SellerBalancePage() {
             </p>
             <button
                 onClick={handleContactAdmin}
-                className="p-2 rounded-lg mx-4 text-white font-semibold bg-brand hover:bg-brand justify-center"
+                className="p-2 rounded-lg mx-4 text-white font-semibold bg-gradient-r-brand hover:bg-gradient-r-brand justify-center"
             >
                 Написать администратору
             </button>

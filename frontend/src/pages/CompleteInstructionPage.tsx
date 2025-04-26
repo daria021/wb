@@ -23,9 +23,9 @@ function CompleteInstructionPage() {
     }, [navigate, backRoute]);
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
-                {/*<div className="bg-white rounded-lg p-4 mb-8">*/}
+        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
+            <div className="max-w-screen-lg w-full bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow-lg p-8 relative">
+                {/*<div className="bg-gradient-tr-white rounded-lg p-4 mb-8">*/}
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Инструкция выкупа для покупателя
                     </h2>
@@ -44,7 +44,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Поиск товара</h3>
@@ -61,7 +61,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Товар в избранное</h3>
@@ -70,7 +70,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Реквизиты</h3>
@@ -83,7 +83,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Оформление заказа</h3>
@@ -96,7 +96,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Получение товара</h3>
@@ -108,7 +108,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 7. Публикация отзыва</h3>
@@ -124,7 +124,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gray-300"/>
+                    <hr className="my-6 border-gradient-tr-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Кэшбэк</h3>
@@ -141,7 +141,7 @@ function CompleteInstructionPage() {
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={handleHomeClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             На главную
                         </button>
@@ -153,7 +153,7 @@ function CompleteInstructionPage() {
                         className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
                         onClick={closeModal}
                     >
-                        <div className="bg-white p-4 rounded-lg" onClick={(e) => e.stopPropagation()}>
+                        <div className="bg-gradient-tr-white p-4 rounded-lg" onClick={(e) => e.stopPropagation()}>
                             <img src="/example4.png" alt="Пример" className="max-w-full h-auto"/>
                             <button
                                 onClick={closeModal}

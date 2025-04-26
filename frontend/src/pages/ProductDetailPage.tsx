@@ -15,6 +15,7 @@ interface Product {
     wb_price: number;
     payment_time: string;
     shortDescription?: string;
+    seller_id: string;
 }
 
 function ProductDetailPage() {
@@ -26,6 +27,11 @@ function ProductDetailPage() {
         if (product) {
             navigate(`/product/${product.id}/instruction`);
         }
+    };
+
+    const handleOpenSellerProducts = () => {
+        if (!product) return;
+        navigate(`/catalog?seller=${product.seller_id}`);
     };
 
     useEffect(() => {
@@ -71,7 +77,7 @@ function ProductDetailPage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
             <div className="relative w-full h-64 mb-4 mt-12 rounded-lg overflow-hidden">
                 {product.image_path ? (
                     <img
@@ -82,7 +88,7 @@ function ProductDetailPage() {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    <div className="w-full h-full bg-gradient-t-gray flex items-center justify-center text-gray-500">
                         Нет фото
                     </div>
                 )}
@@ -93,7 +99,7 @@ function ProductDetailPage() {
                 <p className="text-gray-600 mb-4 text-center">{product.shortDescription}</p>
             )}
 
-            <div className="bg-white rounded-lg shadow p-4 mb-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                 <p className="text-xl font-bold mb-1 text-brand">
                     {product.price} ₽
                 </p>
@@ -108,20 +114,20 @@ function ProductDetailPage() {
             <div className="flex gap-2 mb-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
-                    className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
+                    className="flex-1 bg-gradient-tr-white text-gray-700 py-2 rounded-lg border border-gradient-r-brand text-center"
                 >
                     Проверить продавца
                 </button>
 
                 <button
                     onClick={handleOpenInstructionClick}
-                    className="flex-1 bg-brand text-white py-2 rounded-lg border  text-center"
+                    className="flex-1 bg-gradient-r-brand text-white py-2 rounded-lg border  text-center"
                 >
                     Открыть инструкцию
                 </button>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4 mb-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                 <h2 className="font-semibold mb-2">Условия сделки</h2>
                 <p className="text-sm text-gray-700 mb-1">
                     Цена на сайте WB: {product.wb_price} руб
@@ -136,6 +142,14 @@ function ProductDetailPage() {
                     Условия оплаты: {product.payment_time}
                 </p>
             </div>
+
+            <button
+                onClick={handleOpenSellerProducts}
+                className="block w-full bg-gradient-tr-white text-gray-700 py-2 rounded-lg border border-gradient-r-brand text-center"
+            >
+                Перейти к товарам продавца
+            </button>
+
 
         </div>
     );

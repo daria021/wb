@@ -3,6 +3,24 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gray-200;
+  @apply bg-gradient-t-gray;
   font-family: 'Montserrat', sans-serif;
+}
+@layer utilities {
+  /* для каждого цвета */
+  .bg-gradient-t-gray {
+    background-image: linear-gradient(
+            135deg,
+            theme("colors.gray.100") 0%,
+            theme("colors.gray.300") 100%
+    );
+  }
+
+  .bg-gradient-tr-white {
+    background-image: linear-gradient(
+            135deg,
+            theme("colors.white") 10%,
+            #f9fafb 100%
+    );
+  }
 }

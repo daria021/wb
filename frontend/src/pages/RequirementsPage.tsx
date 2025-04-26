@@ -21,8 +21,8 @@ function RequirementsPage() {
     const closeModal = () => setShowModal(false);
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
+        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
+            <div className="max-w-screen-md w-full bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow-lg p-8 relative">
                 <div className="space-y-8">
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>
@@ -32,7 +32,7 @@ function RequirementsPage() {
                         </p>
                     </div>
 
-                    <hr className="border-gray-300" />
+                    <hr className="border-gradient-tr-darkGray" />
 
                     <ol className="list-decimal list-inside space-y-6 text-gray-800">
                         <li className="px-4">
@@ -82,24 +82,24 @@ function RequirementsPage() {
                         </li>
                     </ol>
 
-                    <hr className="border-gray-300" />
+                    <hr className="border-gradient-tr-darkGray" />
 
                     <div className="flex flex-col gap-2 mt-6">
                         <button
                             onClick={() => navigate('/about')}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent"
                         >
                             О сервисе
                         </button>
                         <button
                             onClick={() => navigate('/instruction')}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent"
                         >
                             Инструкция
                         </button>
                         <button
                             onClick={() => navigate('/requirements')}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent"
                         >
                             Требования к отчету
                         </button>
@@ -112,13 +112,13 @@ function RequirementsPage() {
                             }}
 
 
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent"
                         >
                             Нужна помощь
                         </button>
                         <button
                             onClick={handleHomeClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             На главную
                         </button>
@@ -131,7 +131,7 @@ function RequirementsPage() {
                         onClick={closeModal}
                     >
                         <div
-                            className="bg-white p-4 rounded-lg"
+                            className="bg-gradient-tr-white p-4 rounded-lg"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <img src="/example4.png" alt="Пример" className="max-w-full h-auto" />

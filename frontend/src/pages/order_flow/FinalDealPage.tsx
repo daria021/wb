@@ -4,6 +4,7 @@ import {getOrderById, getOrderReport} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
+import {OrderStatus, PayoutTime} from "../../enums";
 
 interface Product {
     id: string;
@@ -29,7 +30,7 @@ interface Order {
     phone_number?: string;
     bank?: string;
     name?: string;
-    status?: string;
+    status?: OrderStatus;
 }
 
 
@@ -50,14 +51,14 @@ interface OrderReport {
     article?: string;
 }
 
-function getDeadline(): string {
-    const now = new Date();
-    const plusTwoWeeks = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-    const day = String(plusTwoWeeks.getDate()).padStart(2, '0');
-    const month = String(plusTwoWeeks.getMonth() + 1).padStart(2, '0');
-    const year = plusTwoWeeks.getFullYear();
-    return `${day}.${month}.${year}`;
-}
+// function getDeadline(): string {
+//     const now = new Date();
+//     const plusTwoWeeks = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+//     const day = String(plusTwoWeeks.getDate()).padStart(2, '0');
+//     const month = String(plusTwoWeeks.getMonth() + 1).padStart(2, '0');
+//     const year = plusTwoWeeks.getFullYear();
+//     return `${day}.${month}.${year}`;
+// }
 
 function FinalDealPage() {
     const {orderId} = useParams<{ orderId: string }>();
@@ -119,11 +120,11 @@ function FinalDealPage() {
     const productPrice = product.price ?? 0;
     const productWbPrice = product.wb_price ?? 0;
     const cashback = productWbPrice - productPrice;
-    const deadline = getDeadline();
+    // const deadline = getDeadline();
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto space-y-4">
 
             <div className="flex items-center space-x-3">
                 <img
@@ -139,7 +140,7 @@ function FinalDealPage() {
                 </div>
             </div>
 
-            <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-3 rounded-md text-sm text-gray-700 space-y-2">
                 <p>Ваш отчет передан продавцу.</p>
                 <p>
                     В случае задержек оплаты и любые другие вопросы по кэшбэку решайте напрямую
@@ -152,9 +153,9 @@ function FinalDealPage() {
                 <p>
                     Ваш кэшбэк: <strong>{cashback} руб.</strong>
                 </p>
-                <p>
-                    Крайний срок: <strong>{deadline}</strong>
-                </p>
+                {/*<p>*/}
+                {/*    Крайний срок выплаты кешбека: <strong>{deadline}</strong>*/}
+                {/*</p>*/}
                 <p>
                     Статус: <strong>{status || 'Неизвестен'}</strong>
                 </p>
@@ -166,17 +167,17 @@ function FinalDealPage() {
                 <div>Продавец: {order.product.tg}</div>
             </div>
 
-            <div className="bg-white border border-brand p-3 rounded-md space-y-1 text-sm">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-3 rounded-md space-y-1 text-sm">
                 <div className="font-semibold">Сделка</div>
                 <div>Условия оплаты: {product.payment_time}</div>
                 <div>Сумма покупки: {productWbPrice} руб.</div>
                 <div>Цена для вас: {productPrice} руб.</div>
                 <div>Кэшбэк: {cashback} руб.</div>
-                <div>Крайний срок: {deadline}</div>
+                {/*<div>Крайний срок: {deadline}</div>*/}
                 <div>Статус оплаты: {status || 'Неизвестен'}</div>
             </div>
 
-            <div className="bg-white border border-brand p-3 rounded-md space-y-1 text-sm">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-3 rounded-md space-y-1 text-sm">
                 <div className="font-semibold">Реквизиты</div>
                 <div>Номер карты: {order.card_number || '—'}</div>
                 <div>Номер телефона: {order.phone_number || '—'}</div>
@@ -187,19 +188,19 @@ function FinalDealPage() {
             <div className="flex flex-col space-y-2">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 bg-gradient-tr-white rounded-lg border border-gradient-r-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
 
                 {showReport && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div className="space-y-2">
                                 {/* Шаг 1 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(1)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -245,7 +246,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 2 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(2)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -272,7 +273,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 3 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(3)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -299,7 +300,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 4 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(4)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -331,7 +332,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 5 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(5)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -363,7 +364,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 6 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(6)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -409,7 +410,7 @@ function FinalDealPage() {
                                 </div>
 
                                 {/* Шаг 7 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(7)}
                                         className="w-full flex justify-between items-center p-4 text-left"

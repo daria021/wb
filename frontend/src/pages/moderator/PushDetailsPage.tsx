@@ -160,7 +160,7 @@ const PushDetailsPage: React.FC = () => {
             {loadingPush ? (
                 <div>Загрузка рассылки...</div>
             ) : push ? (
-                <div className="bg-brandlight border border-gray-300 p-6 rounded mb-6 shadow relative">
+                <div className="bg-gradient-r-brandlight border border-gradient-tr-darkGray p-6 rounded mb-6 shadow relative">
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <h2 className="text-xl font-semibold">{push.title}</h2>
@@ -199,13 +199,13 @@ const PushDetailsPage: React.FC = () => {
                             />
                             {actionsOpen && (
                                 <div
-                                    className="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded shadow z-10">
+                                    className="absolute right-0 mt-2 w-32 bg-gradient-tr-white border border-gradient-tr-darkGray rounded shadow z-10">
                                     <button
                                         onClick={() => {
                                             setActionsOpen(false);
                                             handleUpdatePush();
                                         }}
-                                        className="w-full text-left px-2 py-1 text-sm hover:bg-brandlight"
+                                        className="w-full text-left px-2 py-1 text-sm hover:bg-gradient-r-brandlight"
                                     >
                                         Редактировать
                                     </button>
@@ -214,7 +214,7 @@ const PushDetailsPage: React.FC = () => {
                                             setActionsOpen(false);
                                             handleDeletePush();
                                         }}
-                                        className="w-full text-left px-2 py-1 text-sm hover:bg-brandlight text-red-500"
+                                        className="w-full text-left px-2 py-1 text-sm hover:bg-gradient-r-brandlight text-red-500"
                                     >
                                         Удалить
                                     </button>
@@ -242,7 +242,7 @@ const PushDetailsPage: React.FC = () => {
                 </select>
             </div>
 
-            <div className="bg-white border border-gray-300 rounded shadow overflow-auto">
+            <div className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded shadow overflow-auto">
                 <table className="min-w-full">
                     <thead className="bg-gray-100">
                     <tr>

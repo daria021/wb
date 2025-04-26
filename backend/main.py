@@ -54,9 +54,10 @@ app.mount("/static/images", StaticFiles(directory="upload"), name="upload")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        # "http://localhost:3000",
-        # "https://df07-45-15-159-88.ngrok-free.app",
-        "*"
+        "http://localhost:3000",
+        "https://df07-45-15-159-88.ngrok-free.app",
+        "https://3c1e-45-150-33-208.ngrok-free.app",
+        # "*"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "PATCH", "DELETE"],

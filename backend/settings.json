@@ -10,7 +10,7 @@
     "secret_key": "very-secret-wb-key-innit",
     "issuer": "wb-back",
     "audience": "wb-front",
-    "access_expire": 1800,
+    "access_expire": 18000,
     "refresh_expire": 6000
   },
   "bot": {

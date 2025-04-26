@@ -46,7 +46,7 @@ export enum ProductStatus {
 }
 
 export enum OrderStatus {
-    CASHBACK_PAID = "cashback_paid",
-    CASHBACK_NOT_PAID = "cashback_not_paid",
-    CANCELLED = "cancelled"
+    CASHBACK_PAID = "Кешбек выплачен",
+    CASHBACK_NOT_PAID = "Кешбек не выплачен",
+    CANCELLED = "Отменено"
 }

@@ -198,7 +198,7 @@ function StepReviewReportPage() {
     if (error || !order) return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
             <div className="flex items-center justify-between mb-4">
 
                 <button
@@ -220,7 +220,7 @@ function StepReviewReportPage() {
 
             </div>
 
-            <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
                 <h1 className="text-lg font-bold">Шаг 7. Отзыв</h1>
                 <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
                 {order.product.requirements_agree ? (
@@ -278,13 +278,13 @@ function StepReviewReportPage() {
                     value={checkNumber}
                     onChange={(e) => setCheckNumber(e.target.value)}
                     placeholder="Введите номер чека"
-                    className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                    className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                 />
             </div>
             <div className="flex gap-2 mb-4 mt-4">
                 <button
                     onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
-                    className="flex-1 bg-white text-gray-700 text-sm py-2 rounded-lg border border-brand text-center"
+                    className="flex-1 bg-gradient-tr-white text-gray-700 text-sm py-2 rounded-lg border border-gradient-r-brand text-center"
                 >
                     Проверить продавца
                 </button>
@@ -292,7 +292,7 @@ function StepReviewReportPage() {
                     onClick={handleContinue}
                     disabled={!canContinue}
                     className={`flex-1 py-2 rounded text-white text-sm ${
-                        canContinue ? 'bg-brand hover:bg-brand-dark' : 'bg-gray-400 cursor-not-allowed'
+                        canContinue ? 'bg-gradient-r-brand hover:bg-gradient-r-brand-dark' : 'bg-gray-400 cursor-not-allowed'
                     }`}
                 >
                     Продолжить
@@ -300,7 +300,7 @@ function StepReviewReportPage() {
             </div>
 
             {/* Инструкции */}
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция на отзыв</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -312,7 +312,7 @@ function StepReviewReportPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4 mt-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4">
                 <p className="text-base font-medium mb-2">Инструкция на чек</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -324,7 +324,7 @@ function StepReviewReportPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4 mt-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4">
                 <p className="text-base font-medium mb-2">Инструкция на номер чека</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -339,17 +339,17 @@ function StepReviewReportPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 rounded-lg bg-gradient-tr-white border border-gradient-r-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
                 {showReport && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                                 <div className="space-y-2">
                                     {/* Шаг 1 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(1)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -395,7 +395,7 @@ function StepReviewReportPage() {
                                     </div>
 
                                     {/* Шаг 2 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(2)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -422,7 +422,7 @@ function StepReviewReportPage() {
                                     </div>
 
                                     {/* Шаг 3 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(3)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -449,7 +449,7 @@ function StepReviewReportPage() {
                                     </div>
 
                                     {/* Шаг 4 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(4)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -481,7 +481,7 @@ function StepReviewReportPage() {
                                     </div>
 
                                     {/* Шаг 5 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(5)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -513,7 +513,7 @@ function StepReviewReportPage() {
                                     </div>
 
                                     {/* Шаг 6 */}
-                                    <div className="bg-white rounded-lg shadow">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(6)}
                                             className="w-full flex justify-between items-center p-4 text-left"
@@ -558,7 +558,7 @@ function StepReviewReportPage() {
                                         )}
                                     </div>
 
-                                    <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                         <div className="font-semibold text-black">Шаг 7. Отзыв</div>
                                     </div>
                                 </div>
@@ -576,7 +576,7 @@ function StepReviewReportPage() {
             <div className="flex flex-col gap-3 mt-4 text-center">
                 <button
                     onClick={handleChannelClick}
-                    className="w-full bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex
+                    className="w-full bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex
                     items-center justify-center gap-2"
                 >
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
@@ -584,7 +584,7 @@ function StepReviewReportPage() {
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="w-full bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold"
+                    className="w-full bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold"
                 >
                     Нужна помощь
                 </button>

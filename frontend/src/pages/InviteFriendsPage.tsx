@@ -10,8 +10,8 @@ const InviteFriendsPage: React.FC = () => {
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => navigate('/'));
-        return () => removeBackListener();
+        // const removeBackListener = on('back_button_pressed', () => navigate('/'));
+        // return () => removeBackListener();
     }, [navigate]);
 
     useEffect(() => {
@@ -54,10 +54,10 @@ const InviteFriendsPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-6">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-6">
+            <div className="w-full max-w-md bg-gradient-tr-white rounded-lg shadow-lg p-6">
                 <h1 className="text-2xl font-bold text-center text-brand mb-6">
-                    Пригласи продавца и заработай
+                    Приглашай продавцов и зарабатывай с нами!
                 </h1>
 
                 <p className="leading-relaxed mb-4 text-gray-800">
@@ -72,14 +72,14 @@ const InviteFriendsPage: React.FC = () => {
                     Минимальная выплата 1000р.
                 </p>
 
-                <div className="bg-brandlight border-l-4 border-brand p-4 mb-6 rounded">
+                <div className="bg-gradient-r-brandlight border-l-4 border-gradient-r-brand p-4 mb-6 rounded">
                     <p className="text-center text-gray-900">
                         Деньги начисляются после того, как продавец совершит покупку.
                     </p>
                 </div>
 
                 {/* Invite link display */}
-                <div className="flex items-center bg-gray-100 border border-gray-300 rounded p-2 mb-6 break-all">
+                <div className="flex items-center bg-gray-100 border border-gradient-tr-darkGray rounded p-2 mb-6 break-all">
                     <span className="flex-1 text-sm text-gray-700">{displayLink}</span>
                     <button onClick={copyInviteLink} className="ml-2">
                         <img src="/icons/copy.png" alt="Копировать" className="w-4 h-4" />
@@ -96,7 +96,7 @@ const InviteFriendsPage: React.FC = () => {
                 {/* Share button */}
                 <button
                     onClick={handleShareInvite}
-                    className="w-full flex items-center justify-center bg-brand text-white py-3 rounded-lg hover:bg-brand-dark transition"
+                    className="w-full flex items-center justify-center bg-gradient-r-brand text-white py-3 rounded-lg hover:bg-gradient-r-brand-dark transition"
                 >
                     <img src="/icons/telegram.png" alt="Telegram" className="w-5 h-5 mr-2" />
                     Поделиться в Telegram
