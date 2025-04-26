@@ -129,11 +129,7 @@ async def update_order(
 
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ):
-    """
-    Универсальное обновление заказа:
-    - Меняем step, если он пришёл.
-    - Если пришли файлы/поля для конкретного шага — сохраняем их и передаём через DTO.
-    """
+
 
     # Собираем данные для UpdateOrderDTO в словарь
     update_data = {}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {getUserOrders, updateOrderStatus} from '../services/api';
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
@@ -66,10 +66,13 @@ function MyOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const isOnOrders = location.pathname === ('/user/orders') ;
+
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate('/');
+            navigate(`/`);
         });
         return () => {
             removeBackListener();
@@ -124,15 +127,40 @@ function MyOrdersPage() {
 
     if (error) {
         return (
-            <div className="p-4 bg-brandlight border border-brand rounded text-center">
+            <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
                 <p className="text-sm text-brand">{error}</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-gray-200 min-h-screen p-4 pb-8">
-            <div className="sticky top-0 z-10 bg-gray-200">
+        <div className="bg-gradient-t-gray min-h-screen">
+            <div className="flex w-max mx-auto mb-2 mt-2 bg-gradient-t-gray p-1 rounded-full">
+                <Link
+                    to="/catalog"
+                    className={`
+            px-4 py-2 rounded-full
+            ${!isOnOrders
+                        ? 'bg-gradient-tr-white text-black'
+                        : 'text-gray-500 hover:text-black'}
+          `}
+                >
+                    Каталог
+                </Link>
+
+                <Link
+                    to="/user/orders"
+                    className={`
+            px-4 py-2 rounded-full
+            ${isOnOrders
+                        ? 'bg-gradient-tr-white text-black'
+                        : 'text-gray-500 hover:text-black'}
+          `}
+                >
+                    Мои покупки
+                </Link>
+            </div>
+            <div className="sticky top-0 z-10 mt-2 bg-gradient-t-gray">
                 <div className="flex items-center justify-center relative mb-4">
                     <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
                 </div>
@@ -150,7 +178,7 @@ function MyOrdersPage() {
                         return (
                             <Link to={linkTo} key={order.id}>
                                 <div
-                                    className="relative bg-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                    className="relative bg-gradient-tr-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {order.step < 7 && (
                                         <button
                                             onClick={(e) => handleCancelOrder(order.id, e)}
@@ -197,7 +225,7 @@ function MyOrdersPage() {
                         );
                     })
                 ) : (
-                    <div className="bg-white rounded-md shadow-sm p-3 text-center">
+                    <div className="bg-gradient-tr-white rounded-md shadow-sm p-3 text-center">
                         Покупки не найдены
                     </div>
                 )}
@@ -205,7 +233,7 @@ function MyOrdersPage() {
 
             <div
                 onClick={handleSupportClick}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">

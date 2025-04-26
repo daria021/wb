@@ -9,6 +9,7 @@ from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO, UpdateProd
 from domain.models import Order
 from domain.responses.order_report import OrderReport
 from infrastructure.enums.order_status import OrderStatus
+from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
 
 
@@ -45,9 +46,17 @@ class OrderService(OrderServiceInterface):
             await self.user_repository.update(seller.id, seller_dto)
 
             product = await self.product_repository.get(product.id)
-            product_dto = UpdateProductDTO(
-                remaining_products=product.remaining_products - 1,
-            )
+            remaining_products = product.remaining_products - 1
+            if remaining_products == 0:
+                product_dto = UpdateProductDTO(
+                    remaining_products=product.remaining_products - 1,
+                    status=ProductStatus.ARCHIVED
+                )
+            else:
+                product_dto = UpdateProductDTO(
+                    remaining_products=product.remaining_products - 1,
+                )
+
             await self.product_repository.update(product.id, product_dto)
         if dto.status == OrderStatus.CASHBACK_PAID:
             await self.notification_service.send_cashback_paid(order_id)

@@ -14,7 +14,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                                                    }) => (
     <div className="flex flex-col gap-2 items-start px-4">
         <p className="uppercase text-xs text-gray-500">{label}</p>
-        <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex flex-col items-center gap-2">
+        <label className="bg-gradient-r-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex flex-col items-center gap-2">
             {preview ? (
                 <>
                     <img

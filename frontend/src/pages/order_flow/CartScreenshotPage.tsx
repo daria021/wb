@@ -127,9 +127,9 @@ function CartScreenshotPage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto space-y-4 relative">
 
-            <div className="bg-white border border-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
                 <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Загрузите скриншоты по поиску товара</h2>
 
                 <p>
@@ -166,13 +166,13 @@ function CartScreenshotPage() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`w-full py-2 rounded-lg text-white font-semibold ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-400 cursor-not-allowed'
+                    canContinue ? 'bg-gradient-r-brand hover:bg-gradient-r-brand' : 'bg-gray-400 cursor-not-allowed'
                 }`}
             >
                 Продолжить
             </button>
 
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -187,14 +187,14 @@ function CartScreenshotPage() {
             <div className="flex flex-col gap-3 mt-4 text-center">
                 <button
                     onClick={handleChannelClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
                     justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold"
+                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold"
                 >
                     Нужна помощь
                 </button>

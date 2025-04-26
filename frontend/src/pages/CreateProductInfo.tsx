@@ -148,16 +148,16 @@ function CreateProductInfo() {
     const reviewComment = lastReview ? getReviewComment(lastReview) : null;
 
     return (
-        <div className="p-4 min-h-screen bg-gray-200 mx-auto max-w-lg">
+        <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto max-w-lg">
             {(product.status === ProductStatus.CREATED || product.status === ProductStatus.DISABLED) && (
-                <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
+                <div className="mb-4 p-3 bg-gradient-r-brandlight border-l-4 border-gradient-r-brand text-brand rounded">
                     Новая карточка подготовлена к отправке модератору. Проверьте всю информацию.
                 </div>
             )}
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
-                <button onClick={handleEditClick} className="border border-brand text-brand px-2 py-1 text-sm rounded">
+                <button onClick={handleEditClick} className="border border-gradient-r-brand text-brand px-2 py-1 text-sm rounded">
                     Редактировать
                 </button>
             </div>
@@ -181,7 +181,7 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-md p-4">
+                <div className="bg-gradient-tr-white border border-gradient-b-gray rounded-md p-4">
                     <p className="text-lg font-bold mb-1">{product.article}</p>
                     <h3 className="text-xl font-semibold mb-3">{product.name}</h3>
 
@@ -209,7 +209,7 @@ function CreateProductInfo() {
 
             <div className="mb-4">
                 {lastReview && reviewComment && (
-                    <div key={lastReview.id} className="mb-3 p-4 bg-gray-50 border border-gray-200 rounded">
+                    <div key={lastReview.id} className="mb-3 p-4 bg-gray-50 border border-gradient-b-gray rounded">
                         <h3 className="text-lg font-semibold">
                             Комментарий модератора:
                         </h3>
@@ -226,21 +226,21 @@ function CreateProductInfo() {
             <div className="flex flex-col gap-2">
                 <button
                     onClick={handleMyBalanceClick}
-                    className="flex-1 bg-brand text-white p-2 rounded"
+                    className="flex-1 bg-gradient-r-brand text-white p-2 rounded"
                 >
                     Пополнить кабинет
                 </button>
                 {product.status === ProductStatus.ARCHIVED ? (
                     <button
                         onClick={handlePublish}
-                        className="flex-1 border border-brand text-brand p-2 rounded"
+                        className="flex-1 border border-gradient-r-brand text-brand p-2 rounded"
                     >
                         Опубликовать
                     </button>
                 ) : (
                     <button
                         onClick={handleStop}
-                        className="flex-1 border border-brand text-brand p-2 rounded"
+                        className="flex-1 border border-gradient-r-brand text-brand p-2 rounded"
                     >
                         Снять с публикации
                     </button>

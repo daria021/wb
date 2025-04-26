@@ -115,8 +115,8 @@ function MyProductsPage() {
 
 
     return (
-        <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            <div className="mb-4 p-4 bg-brandlight rounded shadow">
+        <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto">
+            <div className="mb-4 p-4 bg-gradient-r-brandlight rounded shadow">
                 <p className="text-sm">
                     Всего карточек: <strong>{totalCount}</strong>
                 </p>
@@ -153,11 +153,11 @@ function MyProductsPage() {
 
 
             </div>
-            <div className="sticky top-0 z-10 bg-gray-200">
+            <div className="sticky top-0 z-10 bg-gradient-t-gray">
                 {/*<div className="flex justify-end mb-4">*/}
                 {/*    <button*/}
                 {/*        onClick={() => navigate('/create-product')}*/}
-                {/*        className="border border-brand rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"*/}
+                {/*        className="border border-gradient-r-brand rounded-md px-4 py-2 text-sm font-semibold hover:bg-gray-100"*/}
                 {/*    >*/}
                 {/*        Разместить товар*/}
                 {/*    </button>*/}
@@ -172,7 +172,7 @@ function MyProductsPage() {
                         placeholder="Поиск"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
+                        className="w-full border border-gradient-tr-darkGray rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
                     />
                     <svg
                         className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
@@ -195,7 +195,7 @@ function MyProductsPage() {
                         onChange={(e) =>
                             setFilter(e.target.value as 'all' | 'active' | 'created' | 'rejected' | 'archived')
                         }
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none"
+                        className="w-full border border-gradient-tr-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
                     >
                         <option value="all">Все статусы</option>
                         <option value="active">Активный</option>
@@ -209,14 +209,14 @@ function MyProductsPage() {
             {loading && <p className="text-sm text-gray-500">Загрузка...</p>}
 
             {!loading && (error || filteredProducts.length === 0) && (
-                <div className="p-4 bg-brandlight border border-gray-300 rounded text-center">
+                <div className="p-4 bg-gradient-r-brandlight border border-gradient-tr-darkGray rounded text-center">
                     <p className="text-sm text-gray-700">Товары не найдены</p>
                 </div>
             )}
 
             <button
                 onClick={() => navigate('/create-product')}
-                className="w-full border border-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                className="w-full border border-gradient-r-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
             >
                 Разместить товар
             </button>
@@ -227,12 +227,12 @@ function MyProductsPage() {
                         <div
                             key={product.id}
                             onClick={() => navigate(`/product/${product.id}/seller`)}
-                            className={`relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
+                            className={`relative border border-gradient-b-gray rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
                                 product.status.toLowerCase() === 'active'
                                     ? 'bg-green-100'
                                     : product.status.toLowerCase() === 'archived'
                                         ? 'bg-gray-400 text-black border-dashed'
-                                        : 'bg-white'
+                                        : 'bg-gradient-tr-white'
                             }`}
 
                         >
@@ -266,7 +266,7 @@ function MyProductsPage() {
             )}
             <div
                 onClick={handleSupportClick}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">

@@ -27,8 +27,8 @@ function QuestionPage() {
     }, [navigate]);
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-6">
+        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
+            <div className="max-w-screen-md w-full bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow-lg p-6">
                 <p className="italic">
                     Привет! Наша команда создала бота, чтобы покупатели и продавцы могли легче заключать сделки.
                     <br/><br/>
@@ -47,7 +47,7 @@ function QuestionPage() {
                     или в других группах, где пишут отзывы. Не выкупайте одновременно много товара — вам никто не возместит деньги, если продавец окажется мошенником.
                 </p>
 
-                {/*<div className="bg-white rounded-lg p-4 mb-6">*/}
+                {/*<div className="bg-gradient-tr-white rounded-lg p-4 mb-6">*/}
                     <h1 className="text-2xl font-bold mb-6 mt-2 text-left">
                         ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ (FAQ):
                     </h1>
@@ -95,7 +95,7 @@ function QuestionPage() {
                                 </li>
                             </ul>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <section className="mb-8">
@@ -142,7 +142,7 @@ function QuestionPage() {
                                 </a>.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <section className="mb-8">
@@ -178,7 +178,7 @@ function QuestionPage() {
                                 товаров, пока не получите оплату.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <section className="mb-8">
@@ -199,7 +199,7 @@ function QuestionPage() {
                                 мошенником.
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <section className="mb-8">
@@ -215,7 +215,7 @@ function QuestionPage() {
                                 Обратитесь в техподдержку
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <section className="mb-8">
@@ -238,37 +238,37 @@ function QuestionPage() {
                                 Обратитесь в техподдержку
                             </p>
                         </div>
-                        <hr className="my-6 border-gray-300"/>
+                        <hr className="my-6 border-gradient-tr-darkGray"/>
                     </section>
 
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={handleAbout}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             О сервисе
                         </button>
                         <button
                             onClick={handleInstruction}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             Инструкция
                         </button>
                         <button
                             onClick={handleRequirements}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             Требования к отчету
                         </button>
                         <button
                             onClick={handleSupportClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             Нужна помощь
                         </button>
                         <button
                             onClick={handleHomeClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             На главную
                         </button>

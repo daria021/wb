@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {getProducts, getUser} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
@@ -35,9 +35,26 @@ function CatalogPage() {
 
     const navigate = useNavigate();
 
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const isOnCatalog = location.pathname === ('/catalog');
+
+    const hasActiveFilters =
+        searchQuery.trim() !== '' ||
+        filterPrice !== '' ||
+        filterCategory !== '' ||
+        filterSeller !== '';
+
     useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => navigate('/'));
-        return () => removeBackListener();
+        const sellerParam = searchParams.get('seller');
+        if (sellerParam) {
+            setFilterSeller(sellerParam);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        // const removeBackListener = on('back_button_pressed', () => navigate('/'));
+        // // return () => removeBackListener();
     }, [navigate]);
 
     useEffect(() => {
@@ -84,7 +101,7 @@ function CatalogPage() {
 
     if (loading) return <div className="p-4">Загрузка каталога...</div>;
     if (error) return (
-        <div className="w-full max-w-sm mx-auto p-4 bg-brandlight border border-brand rounded text-center mt-4">
+        <div className="w-full max-w-sm mx-auto p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center mt-4">
             <p className="text-sm text-brand">{error}</p>
         </div>
     );
@@ -98,25 +115,72 @@ function CatalogPage() {
     const categories = Array.from(new Set(products.map(p => p.category)));
 
     return (
-        <div className="min-h-screen bg-gray-200">
+        <div className="min-h-screen bg-gradient-t-gray">
+            <div className="flex w-max mx-auto mt-2 bg-gradient-t-gray p-1 rounded-full">
+                <Link
+                    to="/catalog"
+                    className={`
+            px-4 py-2 rounded-full
+            ${isOnCatalog
+                        ? 'bg-gradient-tr-white text-black'
+                        : 'text-gray-500 hover:text-black'}
+          `}
+                >
+                    Каталог
+                </Link>
+
+                <Link
+                    to="/user/orders"
+                    className={`
+            px-4 py-2 rounded-full
+            ${!isOnCatalog
+                        ? 'bg-gradient-tr-white text-black'
+                        : 'text-gray-500 hover:text-black'}
+          `}
+                >
+                    Мои покупки
+                </Link>
+            </div>
             <div className="p-4 mx-auto max-w-screen-sm relative">
                 {/* Search + filter toggle */}
-                <div className="sticky top-0 z-10 bg-gray-200 mb-4 flex items-center gap-2">
+                <div className="sticky top-0 z-10 bg-gradient-t-gray mb-4 flex items-center gap-2">
                     <input
                         type="text"
                         placeholder="Поиск по названию или артикулу"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="flex-1 border border-gray-300 rounded-md p-2"
+                        className="flex-1 border border-gradient-tr-darkGray rounded-md p-2"
                     />
-                    <button onClick={() => setShowFilters(prev => !prev)}>
-                        <img src="/icons/filter.png" alt="Фильтр" className="w-6 h-6"/>
+                    <button
+                        onClick={() => setShowFilters(prev => !prev)}
+                        className="relative"
+                    >
+                        <img
+                            src="/icons/filter.png"
+                            alt="Фильтр"
+                            className="w-6 h-6"
+                        />
+
+                        {hasActiveFilters && (
+                            <span
+                                className={`
+                                    absolute
+                                    top-0 right-0
+                                    inline-flex items-center justify-center
+                                    w-3 h-3
+                                    bg-red-600
+                                    border-2 border-gradient-tr-white
+                                    rounded-full
+                                  `}
+                            />
+                        )}
                     </button>
+
                 </div>
 
                 {/* Inline filters panel */}
                 {showFilters && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4 space-y-4">
+                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4 space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Максимальная цена</label>
                             <input
@@ -124,7 +188,7 @@ function CatalogPage() {
                                 min={0}
                                 value={filterPrice}
                                 onChange={e => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
                             />
                         </div>
                         <div>
@@ -132,7 +196,7 @@ function CatalogPage() {
                             <select
                                 value={filterCategory}
                                 onChange={e => setFilterCategory(e.target.value)}
-                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
                             >
                                 <option value="">Все категории</option>
                                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -143,7 +207,7 @@ function CatalogPage() {
                             <select
                                 value={filterSeller}
                                 onChange={e => setFilterSeller(e.target.value)}
-                                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring"
+                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
                             >
                                 <option value="">Все продавцы</option>
                                 {sellerOptions.map(sel => <option key={sel.id} value={sel.id}>{sel.nickname}</option>)}
@@ -163,7 +227,7 @@ function CatalogPage() {
                             </button>
                             <button
                                 onClick={() => setShowFilters(false)}
-                                className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-dark"
+                                className="px-4 py-2 bg-gradient-r-brand text-white rounded-md hover:bg-gradient-r-brand-dark"
                             >
                                 Применить
                             </button>
@@ -177,7 +241,7 @@ function CatalogPage() {
                         <div
                             key={product.id}
                             onClick={() => navigate(`/product/${product.id}`)}
-                            className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                            className="border border-gradient-b-gray rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
                         >
                             <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
                                 {product.image_path
@@ -188,7 +252,7 @@ function CatalogPage() {
                                         фото</div>
                                 }
                             </div>
-                            <div className="p-3 bg-white flex flex-col">
+                            <div className="p-3 bg-gradient-tr-white flex flex-col">
                                 <h3
                                     className="
                                         text-sm font-semibold mb-1

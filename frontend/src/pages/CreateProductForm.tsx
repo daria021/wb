@@ -282,13 +282,13 @@ function ProductForm() {
 
 
     return (
-        <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
-            <div className="sticky top-0 z-10 bg-gray-200">
+        <div className="p-4 max-w-screen-sm bg-gradient-t-gray mx-auto">
+            <div className="sticky top-0 z-10 bg-gradient-t-gray">
                 <div className="flex justify-between items-center px-2 py-1">
                     <button
                         onClick={() => navigate('/')}
                         type="button"
-                        className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
+                        className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-gradient-r-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
                     >
                         Отменить
                     </button>
@@ -312,7 +312,7 @@ function ProductForm() {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                         placeholder="Название товара"
                     />
                 </div>
@@ -327,7 +327,7 @@ function ProductForm() {
                         value={formData.article}
                         onChange={handleInputChange}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                         placeholder="Артикул"
                     />
                 </div>
@@ -350,7 +350,7 @@ function ProductForm() {
                         value={formData.brand}
                         onChange={handleInputChange}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
 
@@ -361,7 +361,7 @@ function ProductForm() {
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     >
                         {Object.values(Category).map((cat) => (
                             <option key={cat} value={cat}>
@@ -381,7 +381,7 @@ function ProductForm() {
                         value={formData.key_word}
                         onChange={handleInputChange}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                         placeholder="Например, 'рубашка в клетку'"
                     />
                 </div>
@@ -397,7 +397,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         onFocus={handleFocus}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
 
@@ -412,7 +412,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         onFocus={handleFocus}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                     {repurchasesError && <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>}
                 </div>
@@ -428,7 +428,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         onFocus={handleFocus}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
 
@@ -443,7 +443,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         onFocus={handleFocus}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                     {priceError && <p className="text-red-500 text-xs mt-1">{priceError}</p>}
 
@@ -460,7 +460,7 @@ function ProductForm() {
                         value={formData.tg}
                         onChange={handleInputChange}
                         required
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                         placeholder="@username"
                     />
                 </div>
@@ -471,7 +471,7 @@ function ProductForm() {
                         name="payment_time"
                         value={formData.payment_time}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     >
                         {Object.values(PayoutTime).map((pt) => (
                             <option key={pt} value={pt}>
@@ -490,7 +490,7 @@ function ProductForm() {
                         value={formData.review_requirements}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                         placeholder="Опишите требования к отзыву..."
                     />
                 </div>
@@ -502,7 +502,7 @@ function ProductForm() {
                         checked={formData.requirements_agree}
                         onChange={handleInputChange}
                         ref={agreeRef}
-                        className="h-4 w-4 text-brand border-gray-300 rounded"
+                        className="h-4 w-4 text-brand border-gradient-tr-darkGray rounded"
                     />
                     <label htmlFor="requirements_agree" className="text-sm">
                         Согласовать отзыв
@@ -510,16 +510,16 @@ function ProductForm() {
                 </div>
                 <button
                     type="submit"
-                    className="w-full py-3 bg-brand text-white rounded-md text-sm font-semibold hover:bg-brand-dark transition-colors"
+                    className="w-full py-3 bg-gradient-r-brand text-white rounded-md text-sm font-semibold hover:bg-gradient-r-brand-dark transition-colors"
                 >
                     Отправить заявку
                 </button>
             </form>
             {showConfirmation && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                    <div className="bg-gradient-tr-white p-6 rounded shadow-lg max-w-md w-full">
                         <h2 className="text-xl font-bold mb-4">Вы изменили:</h2>
-                        <div className="bg-brandlight rounded p-4">
+                        <div className="bg-gradient-r-brandlight rounded p-4">
                             <ul className="text-sm mb-4">
                                 {Object.entries(changedFields).map(([field, values]) => (
                                     <li key={field}>
@@ -534,7 +534,7 @@ function ProductForm() {
                         <div className="flex justify-end gap-3 mt-4">
                             <button
                                 onClick={() => setShowConfirmation(false)}
-                                className="px-4 py-2 bg-white border border-brand rounded text-brand hover:bg-gray-100"
+                                className="px-4 py-2 bg-gradient-tr-white border border-gradient-r-brand rounded text-brand hover:bg-gray-100"
                             >
                                 Отмена
                             </button>
@@ -543,7 +543,7 @@ function ProductForm() {
                                     setShowConfirmation(false);
                                     await submitData();
                                 }}
-                                className="px-4 py-2 bg-white text-brand rounded border border-brand"
+                                className="px-4 py-2 bg-gradient-tr-white text-brand rounded border border-gradient-r-brand"
                             >
                                 Все верно. Применить
                             </button>

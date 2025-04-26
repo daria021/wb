@@ -58,12 +58,12 @@ function ModeratorProductReviewPage() {
     if (loading || !product) return <p>Загрузка...</p>;
 
     return (
-        <div className="min-h-screen bg-gray-200 p-6">
+        <div className="min-h-screen bg-gradient-t-gray p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">
                 Проверка продукта: {product.name}
             </h1>
 
-            <div className="bg-white shadow rounded p-6 mb-6">
+            <div className="bg-gradient-tr-white shadow rounded p-6 mb-6">
                 <h2 className="text-lg font-semibold mb-4">Информация о продукте</h2>
                 {product.image_path && (
                     <img
@@ -94,19 +94,19 @@ function ModeratorProductReviewPage() {
             </div>
 
             {product.moderator_reviews && product.moderator_reviews.length > 0 && (
-                <div className="bg-white shadow rounded p-6 mb-6">
+                <div className="bg-gradient-tr-white shadow rounded p-6 mb-6">
                     <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
                     {product.moderator_reviews.map((review: any) => (
                         <div key={review.id} className="border p-4 mb-4 rounded">
                             {review.comment_to_moderator && (
-                                <div className="bg-brandlight p-2 rounded mb-2">
+                                <div className="bg-gradient-r-brandlight p-2 rounded mb-2">
                                     <p>
                                         <strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}
                                     </p>
                                 </div>
                             )}
                             {review.comment_to_seller && (
-                                <div className="bg-brandlight p-2 rounded mb-2">
+                                <div className="bg-gradient-r-brandlight p-2 rounded mb-2">
                                     <p>
                                         <strong>Комментарий для продавца:</strong> {review.comment_to_seller}
                                     </p>

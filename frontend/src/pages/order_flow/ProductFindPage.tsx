@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
+import {getMe, getOrderById, getOrderReport, updateOrder} from "../../services/api";
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
@@ -48,10 +48,35 @@ function ProductFindPage() {
     const [articleStatus, setArticleStatus] = useState('');
     const [showReport, setShowReport] = useState(false);
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+    const [flashInvalid, setFlashInvalid] = useState(false);
+
+    const isEmpty        = enteredArticle.trim() === "";
+    const isCorrect      = order && enteredArticle.trim() === order.product.article;
+    const minLengthReached = enteredArticle.trim().length >= 8;
+    const isIncorrect      = minLengthReached && !isCorrect;
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
     };
+
+    const onArticleBlur = () => {
+        if (!order) return;
+        if (enteredArticle.trim() !== order.product.article) {
+            setFlashInvalid(true);
+            setTimeout(() => setFlashInvalid(false), 500);
+        }
+    };
+
+    useEffect(() => {
+        if (!order) return;
+        if (enteredArticle.trim() === order.product.article) {
+            setArticleStatus('Артикул правильный');
+        } else {
+            setArticleStatus('');
+        }
+    }, [enteredArticle, order]);
+
+
 
     useEffect(() => {
         if (!orderId) return;
@@ -98,6 +123,9 @@ function ProductFindPage() {
         }
     };
 
+
+
+
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             if (!orderId) return;
@@ -111,7 +139,7 @@ function ProductFindPage() {
                     setError('Не удалось загрузить заказ');
                 });
         });
-        return () => removeBackListener();
+        // return () => removeBackListener();
     }, [orderId, navigate]);
 
     if (loading) {
@@ -135,8 +163,8 @@ function ProductFindPage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4">
+        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
+            <div className="bg-gradient-tr-white border border-gradient-r-brand p-4 rounded-lg shadow mb-4">
                 <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите наш товар</h2>
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
                     <li>Найдите наш товар на сайте или в приложении WB</li>
@@ -161,22 +189,36 @@ function ProductFindPage() {
                     id="articleInput"
                     type="text"
                     value={enteredArticle}
-                    onChange={(e) => setEnteredArticle(e.target.value)}
+                    onChange={e => setEnteredArticle(e.target.value)}
+                    onBlur={onArticleBlur}
                     placeholder="Введите артикул..."
-                    className="border border-gray-300 rounded-md p-2 w-full text-sm"
+                    className={`
+      rounded-md p-2 w-full text-sm
+      border transition-colors duration-200
+      ${
+                        flashInvalid
+                            ? 'border-red-600 ring-2 ring-red-300 animate-ping'
+                            : articleStatus === 'Артикул правильный'
+                                ? 'border-green-500'
+                                : 'border-gradient-tr-darkGray'
+                    }
+      focus:outline-none
+    `}
                 />
-                {articleStatus && (
-                    <p className={`mt-2 text-sm font-semibold ${articleStatus === 'Артикул правильный' ? 'text-green-600' : 'text-red-600'}`}>
-                        {articleStatus}
+                {articleStatus === 'Артикул правильный' && (
+                    <p className="mt-2 text-sm font-semibold text-green-600">
+                        Артикул правильный
                     </p>
                 )}
             </div>
+
+
 
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`w-full py-2 mb-4 rounded-lg text-white font-semibold text-center ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-400 cursor-not-allowed'
+                    canContinue ? 'bg-gradient-r-brand hover:bg-gradient-r-brand' : 'bg-gray-400 cursor-not-allowed'
                 }`}
             >
                 Продолжить
@@ -203,7 +245,7 @@ function ProductFindPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-gradient-tr-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -218,18 +260,18 @@ function ProductFindPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 rounded-lg bg-gradient-tr-white border border-gradient-r-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
                 {showReport && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div className="space-y-2">
                                 {/* Шаг 1 */}
-                                <div className="bg-white rounded-lg shadow">
+                                <div className="bg-gradient-tr-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(1)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -275,7 +317,7 @@ function ProductFindPage() {
                                 </div>
 
 
-                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                     <div className="font-semibold text-black">Шаг 2. Найдите наш товар
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
@@ -298,15 +340,21 @@ function ProductFindPage() {
 
                     <button
                         onClick={handleChannelClick}
-                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold flex items-center
+                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
                          justify-center gap-2">
                         <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                         <span>Подписаться на канал</span>
                     </button>
                     <button
                         onClick={handleSupportClick}
-                        className="bg-white border border-gray-300 rounded-lg p-3 text-sm font-semibold">
+                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold">
                         Нужна помощь
+                    </button>
+                    <button
+                        onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
+                        className="flex-1 bg-gradient-tr-white text-gray-700 py-2 rounded-lg border border-gradient-r-brand text-center"
+                    >
+                        Проверить продавца
                     </button>
                 </div>
             </div>
