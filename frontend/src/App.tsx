@@ -21,7 +21,7 @@ import FinalDealPage from "./pages/order_flow/FinalDealPage";
 import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
-// import eruda from 'eruda';
+import eruda from 'eruda';
 import SellerBalancePage from "./pages/SellerBalance";
 import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
@@ -38,14 +38,14 @@ import PushAdminPage from "./pages/moderator/PushAdminPage";
 import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 
 
-// import { init } from '@telegram-apps/sdk';
+import { init } from '@telegram-apps/sdk';
 
 
 function App() {
-    // window.Telegram.WebApp.expand();
-    // eruda.init();
-    //
-    // init();
+    window.Telegram.WebApp.expand();
+    eruda.init();
+
+    init();
 
     return (
         <AuthProvider>

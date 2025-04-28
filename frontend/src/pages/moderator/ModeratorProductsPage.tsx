@@ -196,7 +196,7 @@ function ModeratorProductsPage() {
                                             className={`relative border border-gradient-b-gray rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
                                                 product.status.toLowerCase() === 'archived'
                                                     ? 'border-gradient-tr-darkGray text-black border-dashed'
-                                                    : 'bg-gradient-tr-white'
+                                                    : 'bg-white'
                                             }`}
                                         >
                                             {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
