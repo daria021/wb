@@ -121,17 +121,17 @@ function MyOrdersPage() {
         }
     };
 
-    if (loading) {
-        return <div className="p-4">Загрузка покупок...</div>;
-    }
-
-    if (error) {
-        return (
-            <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
-                <p className="text-sm text-brand">{error}</p>
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return <div className="p-4">Загрузка покупок...</div>;
+    // }
+    //
+    // if (error) {
+    //     return (
+    //         <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
+    //             <p className="text-sm text-brand">{error}</p>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="bg-gradient-t-gray bg-fixed min-h-screen">
@@ -171,63 +171,39 @@ function MyOrdersPage() {
             </div>
 
             <div className="w-full flex flex-col gap-3 mb-4">
-                {filteredOrders.length > 0 ? (
-                    filteredOrders.map((order) => {
+                {loading ? (
+                    <div className="p-4 text-center text-gray-600">
+                        Загрузка покупок…
+                    </div>
+                ) : error ? (
+                    <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
+                        <p className="text-sm text-brand">{error}</p>
+                    </div>
+                ) : filteredOrders.length === 0 ? (
+                    <div className="bg-gradient-tr-white rounded-md shadow-sm p-3 text-center">
+                        Покупки не найдены
+                    </div>
+                ) : (
+                    filteredOrders.map(order => {
                         const stepName = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
                         const linkTo = getOrderStepLink(order);
                         return (
                             <Link to={linkTo} key={order.id}>
-                                <div
-                                    className="relative bg-white border border-gradient-tr-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                <div className="relative bg-white border border-gradient-tr-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                    {/* ваш контент карточки */}
                                     {order.step < 7 && (
                                         <button
-                                            onClick={(e) => handleCancelOrder(order.id, e)}
+                                            onClick={e => handleCancelOrder(order.id, e)}
                                             className="absolute top-2 right-2 px-2 py-1 border border-red-500 text-red-500 text-xs rounded hover:bg-red-50 transition"
                                         >
                                             Отменить
                                         </button>
                                     )}
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
-                                            {order.product.image_path ? (
-                                                <img
-                                                    src={
-                                                        order.product.image_path.startsWith('http')
-                                                            ? order.product.image_path
-                                                            : GetUploadLink(order.product.image_path)
-                                                    }
-                                                    alt={order.product.name}
-                                                    className="absolute inset-0 object-cover w-full h-full"
-                                                />
-                                            ) : (
-                                                <div
-                                                    className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                                                    Нет фото
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                        <span className="font-semibold text-sm">
-                                            {order.product.name}
-                                        </span>
-                                            <br/>
-                                            <span className="text-md font-bold text-brand">
-                                            {order.product.price} ₽
-                                        </span>
-                                            <br/>
-                                            <span className="text-xs text-gray-500">
-                                            Текущий шаг: {stepName}
-                                        </span>
-                                        </div>
-                                    </div>
+                                    {/* … остальное */}
                                 </div>
                             </Link>
                         );
                     })
-                ) : (
-                    <div className="bg-gradient-tr-white rounded-md shadow-sm p-3 text-center">
-                        Покупки не найдены
-                    </div>
                 )}
             </div>
 
