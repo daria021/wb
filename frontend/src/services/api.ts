@@ -1,9 +1,29 @@
 import {apiClient} from "./apiClient";
 import {MeResponse} from "../types/MeResponse";
+import {AxiosResponse} from "axios";
 
 
-export async function getProducts() {
-    return await apiClient.get('/products');
+export interface GetProductsParams {
+    search?: string;
+    limit?: number;
+    offset?: number;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    article: string;
+    category: string;
+    seller_id: string;
+    image_path?: string;
+}
+
+
+export async function getProducts(
+    params?: GetProductsParams): Promise<AxiosResponse<Product[]>> {
+    return apiClient.get<Product[]>('/products', {params})
 }
 
 export async function getProductById(productId: string) {

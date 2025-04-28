@@ -42,6 +42,13 @@ function SellerCabinet() {
         fetchBalance();
     }, []);
 
+    const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
+    };
+
     return (
         <div className="min-h-screen bg-gradient-t-gray">  {/* Обертка на весь экран */}
 
@@ -89,12 +96,21 @@ function SellerCabinet() {
 
 
                 <div
-                    className="border-gradient-tr-darkGray border border-gradient-tr-darkGray rounded-md p-4 flex items-center gap-2 cursor-pointer">
-                    <img src="/icons/support.png" alt="Support" className="w-8 h-8"/>
-                    <div>
-                        <p className="text-sm font-semibold">Техподдержка</p>
-                        <p className="text-xs text-gray-500">Оперативно ответим на все вопросы</p>
+                    onClick={handleSupportClick}
+                    className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                >
+                    <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
+                    <div className="flex flex-col">
+                        <span>Техподдержка</span>
+                        <span className="text-xs text-gray-500">
+                            Оперативно ответим на все вопросы
+                        </span>
                     </div>
+                    <img
+                        src="/icons/small_arrow.png"
+                        alt="arrow"
+                        className="w-5 h-5 ml-auto"
+                    />
                 </div>
             </div>
         </div>

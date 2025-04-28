@@ -10,6 +10,7 @@ from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
 from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import TSVECTOR
 
 Base = declarative_base()
 
@@ -49,6 +50,10 @@ class Product(AbstractBase):
         'ModeratorReview',
         order_by="ModeratorReview.created_at",
         back_populates='product',
+    )
+    search_vector: Mapped[str] = mapped_column(
+        TSVECTOR(),
+        nullable=True,
     )
 
 

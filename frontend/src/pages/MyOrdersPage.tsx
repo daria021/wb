@@ -67,7 +67,7 @@ function MyOrdersPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
-    const isOnOrders = location.pathname === ('/user/orders') ;
+    const isOnOrders = location.pathname === ('/user/orders');
 
 
     useEffect(() => {
@@ -153,7 +153,7 @@ function MyOrdersPage() {
                     className={`
             px-4 py-2 rounded-full
             ${isOnOrders
-                        ? 'text-black'
+                        ? 'bg-gradient-tr-white text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
@@ -178,7 +178,7 @@ function MyOrdersPage() {
                         return (
                             <Link to={linkTo} key={order.id}>
                                 <div
-                                    className="relative bg-gradient-tr-white rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                    className="relative bg-white2 rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {order.step < 7 && (
                                         <button
                                             onClick={(e) => handleCancelOrder(order.id, e)}

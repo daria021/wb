@@ -43,5 +43,5 @@ class ProductService(ProductServiceInterface):
     async def get_by_seller(self, seller_id: UUID) -> Optional[list[Product]]:
         return await self.product_repository.get_by_seller(seller_id)
 
-    async def get_active_products(self, limit: int = 100, offset: int = 0) -> List[Product]:
-        return await self.product_repository.get_active_products(limit=limit, offset=offset)
+    async def get_active_products(self, limit: int = 100, offset: int = 0, search: Optional[str] = None) -> List[Product]:
+        return await self.product_repository.get_active_products(limit=limit, offset=offset, search=search)

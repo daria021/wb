@@ -9,16 +9,15 @@ module.exports = {
         brandlight:  "#adbbde",
         brandlight2: "#c8cedf",
         white: "#f9fcff",
-        white2: "#a5a699",
+        white2: "#e3e4da",
       },
     },
 
-    // для линейного градиента
     linearGradientColors: theme => ({
       brand:      [theme("colors.brand"),      theme("colors.brand2")],
       brandlight: [theme("colors.brandlight"), theme("colors.brandlight2")],
-      gray:       [theme("colors.gray.500"),   theme("colors.gray.100")],
-      darkGray:       [theme("colors.gray.500"),   theme("colors.gray.300")],
+      gray:       [theme("colors.gray.300"),   theme("colors.gray.100")],
+      darkGray:       [theme("colors.gray.800"),   theme("colors.gray.400")],
       white:       [theme("colors.white"),  theme("colors.white2")],
     }),
 
