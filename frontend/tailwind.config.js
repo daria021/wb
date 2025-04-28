@@ -50,7 +50,6 @@ module.exports = {
   },
   plugins: [
     require('tailwindcss-gradients'),
-    require('@tailwindcss/line-clamp'),
     require('@tailwindcss/aspect-ratio'),
   ],
 }
