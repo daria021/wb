@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {getProducts, getUser} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
+import {useDebounce} from "../hooks/useDebounce";
 
 interface Product {
     id: string;
@@ -31,6 +32,8 @@ function CatalogPage() {
     const [filterSeller, setFilterSeller] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
+    const [searchIsActive, setSearchIsActive] = useState(false);
+
     const [sellerOptions, setSellerOptions] = useState<Seller[]>([]);
 
     const navigate = useNavigate();
@@ -38,6 +41,8 @@ function CatalogPage() {
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const isOnCatalog = location.pathname === ('/catalog');
+    const searchRef = useRef<HTMLInputElement>(null);
+
 
     const hasActiveFilters =
         searchQuery.trim() !== '' ||
@@ -57,29 +62,16 @@ function CatalogPage() {
         return () => removeBackListener();
     }, [navigate]);
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const response = await getProducts();
-                const uniqueProducts = Object.values(
-                    (response.data as Product[]).reduce((acc, p) => {
-                        if (!acc[p.id] || (!acc[p.id].image_path && p.image_path)) {
-                            acc[p.id] = p;
-                        }
-                        return acc;
-                    }, {} as Record<string, Product>)
-                );
-                setProducts(uniqueProducts);
-            } catch (err) {
-                console.error('Ошибка при загрузке товаров:', err);
-                setError('Не удалось загрузить каталог товаров.');
-            } finally {
-                setLoading(false);
-            }
-        }
+    const debouncedSearch = useDebounce(searchQuery, 600);
 
-        fetchProducts();
-    }, []);
+    useEffect(() => {
+        setLoading(true);
+        getProducts({search: debouncedSearch /* можно добавить: , limit, offset */})
+            .then(res => setProducts(res.data))
+            .catch(() => setError('Не удалось загрузить каталог товаров.'))
+            .finally(() => setLoading(false));
+    }, [debouncedSearch /*, limit, offset если нужно */]);
+
 
     useEffect(() => {
         if (!products.length) return;
@@ -99,15 +91,22 @@ function CatalogPage() {
         })();
     }, [products]);
 
-    if (loading) return <div className="p-4">Загрузка каталога...</div>;
-    if (error) return (
-        <div className="w-full max-w-sm mx-auto p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center mt-4">
-            <p className="text-sm text-brand">{error}</p>
-        </div>
-    );
+
+    useEffect(() => {
+        if (searchIsActive) {
+            searchRef.current?.focus()
+        }
+    })
+
+    // if (loading) return <div className="p-4">Загрузка каталога...</div>;
+    // if (error) return (
+    //     <div
+    //         className="w-full max-w-sm mx-auto p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center mt-4">
+    //         <p className="text-sm text-brand">{error}</p>
+    //     </div>
+    // );
 
     const filtered = products
-        .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.article.toLowerCase().includes(searchQuery.toLowerCase()))
         .filter(p => (filterPrice === '' || p.price <= filterPrice))
         .filter(p => (filterCategory === '' || p.category === filterCategory))
         .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
@@ -142,13 +141,16 @@ function CatalogPage() {
                 </Link>
             </div>
             <div className="p-4 mx-auto max-w-screen-sm relative">
-                {/* Search + filter toggle */}
-                <div className="sticky top-0 z-10 bg-gradient-t-gray mb-4 flex items-center gap-2">
+                {/* Search  filter toggle */}
+                <div className="sticky top-0 z-10 mb-4 flex items-center gap-2">
                     <input
+                        ref={searchRef}
                         type="text"
                         placeholder="Поиск по названию или артикулу"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
+                        onFocus={() => setSearchIsActive(true)}
+                        onBlur={() => setSearchIsActive(false)}
                         className="flex-1 border border-gradient-tr-darkGray rounded-md p-2"
                     />
                     <button
@@ -175,8 +177,14 @@ function CatalogPage() {
                             />
                         )}
                     </button>
-
                 </div>
+                     {/* Показываем загрузку и ошибку под шапкой, но инпут не размонтируем */}
+                     {loading && (
+                       <div className="p-4 text-center text-gray-600">Загрузка каталога…</div>
+                     )}
+                     {error && (
+                       <div className="p-4 text-center text-red-600">{error}</div>
+                     )}
 
                 {/* Inline filters panel */}
                 {showFilters && (
@@ -256,10 +264,9 @@ function CatalogPage() {
                                 <h3
                                     className="
                                         text-sm font-semibold mb-1
-                                        h-10            /* высота = 2 строки (2 × 1.25rem line-height) */
-                                        overflow-hidden /* обрезаем выступающий текст */
-                                        line-clamp-2    /* ограничиваем двумя строками и добавляем ... */
-  "
+                                        h-10
+                                        overflow-hidden
+                                        line-clamp-2"
                                 >
                                     {product.name}
                                 </h3>

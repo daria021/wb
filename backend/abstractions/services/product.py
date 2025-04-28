@@ -41,5 +41,5 @@ class ProductServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def get_active_products(self, limit: int = 100, offset: int = 0) -> list[Product]:
+    async def get_active_products(self, limit: int = 100, offset: int = 0, search: Optional[str] = None) -> list[Product]:
         ...

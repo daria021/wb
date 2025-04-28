@@ -32,16 +32,20 @@ class ProductRepository(
             joinedload(self.entity.moderator_reviews),
         ]
 
-    async def get_active_products(self, limit: int = 100, offset: int = 9) -> list[ProductModel]:
+    async def get_active_products(self, limit=100, offset=0, search: Optional[str] = None):
         async with self.session_maker() as session:
-            result = await session.execute(
-                select(self.entity)
-                .where(self.entity.status == ProductStatus.ACTIVE)
-                .limit(limit)
-                .offset(offset)
-            )
+            stmt = select(self.entity).where(self.entity.status == ProductStatus.ACTIVE)
+
+            if search:
+                # разбиваем запрос на слова и делаем префиксный поиск по каждому
+                tokens = [tok for tok in search.strip().split() if tok]
+                prefix_query = ' & '.join(f"{tok}:*" for tok in tokens)
+                tsq = func.to_tsquery('russian', prefix_query)
+                stmt = stmt.where(self.entity.search_vector.op('@@')(tsq))
+
+            result = await session.execute(stmt.limit(limit).offset(offset))
             products = result.scalars().all()
-        return [self.entity_to_model(product) for product in products]
+        return [self.entity_to_model(p) for p in products]
 
     async def get_by_seller(self, user_id: UUID) -> Optional[list[ProductModel]]:
         priority_case = case(

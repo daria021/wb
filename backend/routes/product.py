@@ -25,9 +25,12 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("")
-async def get_products(request: Request):
+async def get_products(
+        request: Request,
+        search: Optional[str] = None,
+):
     product_service = get_product_service()
-    products = await product_service.get_active_products()  # Метод должен возвращать список продуктов
+    products = await product_service.get_active_products(search=search)
     return products
 
 

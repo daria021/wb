@@ -28,5 +28,5 @@ class ProductRepositoryInterface(
         ...
 
     @abstractmethod
-    async def get_active_products(self, limit: int = 100, offset: int = 9) -> list[Product]:
+    async def get_active_products(self, limit: int = 100, offset: int = 9, search: Optional[str] = None) -> list[Product]:
         ...
