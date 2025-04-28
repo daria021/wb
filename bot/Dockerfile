@@ -1,6 +1,6 @@
 FROM python:3.12
 
-ENV ENVIRONMENT=local
+ENV ENVIRONMENT=dev
 
 RUN apt-get update
 
