@@ -134,7 +134,7 @@ function MyOrdersPage() {
     }
 
     return (
-        <div className="bg-gradient-t-gray min-h-screen">
+        <div className="bg-gradient-t-gray bg-fixed min-h-screen">
             <div className="flex w-max mx-auto mb-2 mt-2 bg-gradient-t-gray p-1 rounded-full">
                 <Link
                     to="/catalog"
@@ -160,7 +160,7 @@ function MyOrdersPage() {
                     Мои покупки
                 </Link>
             </div>
-            <div className="sticky top-0 z-10 mt-2">
+            <div className="sticky top-0 z-10 mt-2 bg-inherit">
                 <div className="flex items-center justify-center relative mb-4">
                     <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
                 </div>
@@ -178,7 +178,7 @@ function MyOrdersPage() {
                         return (
                             <Link to={linkTo} key={order.id}>
                                 <div
-                                    className="relative bg-white2 rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                    className="relative bg-white border border-gradient-tr-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {order.step < 7 && (
                                         <button
                                             onClick={(e) => handleCancelOrder(order.id, e)}

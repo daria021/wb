@@ -114,7 +114,7 @@ function ModeratorUsersPage() {
             </h1>
 
             {/* Блок с поиском и фильтром */}
-            <div className="mb-4 flex gap-2 bg-gradient-tr-white p-4 rounded shadow">
+            <div className="mb-4 flex gap-2 bg-white p-4 rounded shadow">
                 <div className="flex-1">
                     <input
                         type="text"
