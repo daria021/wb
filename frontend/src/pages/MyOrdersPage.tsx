@@ -199,7 +199,39 @@ function MyOrdersPage() {
                                             Отменить
                                         </button>
                                     )}
-                                    {/* … остальное */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
+                                            {order.product.image_path ? (
+                                                <img
+                                                    src={
+                                                        order.product.image_path.startsWith('http')
+                                                            ? order.product.image_path
+                                                            : GetUploadLink(order.product.image_path)
+                                                    }
+                                                    alt={order.product.name}
+                                                    className="absolute inset-0 object-cover w-full h-full"
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                                                    Нет фото
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                        <span className="font-semibold text-sm">
+                                            {order.product.name}
+                                        </span>
+                                            <br/>
+                                            <span className="text-md font-bold text-brand">
+                                            {order.product.price} ₽
+                                        </span>
+                                            <br/>
+                                            <span className="text-xs text-gray-500">
+                                            Текущий шаг: {stepName}
+                                        </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </Link>
                         );

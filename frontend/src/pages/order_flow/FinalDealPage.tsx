@@ -76,7 +76,7 @@ function FinalDealPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate('/catalog');
+            navigate(-1);
         });
         return () => {
             removeBackListener();

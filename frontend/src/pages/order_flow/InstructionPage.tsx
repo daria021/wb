@@ -70,7 +70,7 @@ function InstructionPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/product/${productId}`);
+            navigate(-1);
         });
 
         return () => {

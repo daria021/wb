@@ -56,7 +56,7 @@ function ProductFavoritePage() {
     };
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/order/${orderId}/step-2`);
+            navigate(-1);
         });
         return () => {
             removeBackListener();

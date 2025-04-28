@@ -28,7 +28,6 @@ function CartScreenshotPage() {
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
 
-    // создаём preview URL для file1
     useEffect(() => {
         if (!file1) {
             setPreview1(null);
@@ -99,7 +98,7 @@ function CartScreenshotPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/product/${productId}/instruction`);
+            navigate(-1);
         });
 
         return () => {

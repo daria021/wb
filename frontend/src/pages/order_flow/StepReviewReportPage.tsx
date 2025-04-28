@@ -98,7 +98,7 @@ function StepReviewReportPage() {
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             if (!orderId) return;
-            navigate(`/order/${orderId}/step-6`);
+            navigate(-1);
         });
         return () => {
             removeBackListener();

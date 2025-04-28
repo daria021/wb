@@ -124,15 +124,13 @@ function ProductFindPage() {
     };
 
 
-
-
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
             if (!orderId) return;
             getOrderById(orderId)
                 .then((response: AxiosResponse<Order>) => {
                     const productId = response.data.product.id;
-                    navigate(`/product/${productId}/step-1`);
+                    navigate(-1);
                 })
                 .catch((err) => {
                     console.error('Ошибка при загрузке заказа:', err);
