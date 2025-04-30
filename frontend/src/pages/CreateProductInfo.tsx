@@ -224,12 +224,14 @@ function CreateProductInfo() {
             </div>
 
             <div className="flex flex-col gap-2">
+                {product.status === ProductStatus.NOT_PAID && (
                 <button
                     onClick={handleMyBalanceClick}
                     className="flex-1 bg-gradient-r-brand text-white p-2 rounded"
                 >
                     Пополнить кабинет
                 </button>
+                )}
                 {product.status === ProductStatus.ARCHIVED ? (
                     <button
                         onClick={handlePublish}

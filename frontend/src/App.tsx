@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/CatalogPage';
@@ -38,14 +38,29 @@ import PushAdminPage from "./pages/moderator/PushAdminPage";
 import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 
 
-import { init } from '@telegram-apps/sdk';
+import { init, mountViewport, expandViewport } from '@telegram-apps/sdk';
 
 
 function App() {
-    window.Telegram.WebApp.expand();
-    eruda.init();
+    useEffect(() => {
+        // 1) Локальная консоль ошибок
+        eruda.init();
 
-    init();
+        // 2) Инициализируем Telegram Mini App SDK
+        init();
+
+        // 3) Монтируем viewport (запрашиваем у Telegram параметры вьюпорта)
+        if (mountViewport.isAvailable()) {
+            mountViewport()
+                .then(() => {
+                    // 4) После успешного монтирования расширяем WebApp
+                    if (expandViewport.isAvailable()) {
+                        expandViewport();
+                    }
+                })
+                .catch(console.error);
+        }
+    }, []);
 
     return (
         <AuthProvider>

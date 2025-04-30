@@ -102,7 +102,7 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
                     obj = res.unique().scalars().one()
                 else:
                     obj = await session.get(self.entity, obj_id)
-                return self.entity_to_model(obj)
+                return self.entity_to_model(obj) if obj else None
             except NoResultFound:
                 raise NotFoundException
 

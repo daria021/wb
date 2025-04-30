@@ -4,4 +4,6 @@ class OrderStatus(StrEnum):
     CASHBACK_PAID = "cashback_paid"
     CASHBACK_NOT_PAID = "cashback_not_paid"
     CANCELLED = "cancelled"
+    PAYMENT_CONFIRMED = "payment_confirmed"
+
 

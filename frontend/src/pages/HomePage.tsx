@@ -2,6 +2,7 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import {getMe} from '../services/api';
 import {useAuth} from '../contexts/auth';
+import {ReferralGlowingButton} from "../components/ReferralButton";
 
 function HomePage() {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ function HomePage() {
         console.log(typeof message, typeof message === "string");
         return false;
     };
+
 
     const handleAboutClick = () => navigate('/about');
     const handleInstructionClick = () => navigate('/instruction', {state: {backRoute: '/'}});
@@ -128,17 +130,33 @@ function HomePage() {
                 </div>
             </div>
 
-            <div
-                onClick={handleReferralClick}
-                className="bg-gradient-tr-white border border-gradient-r-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
-            >
-                <span className="font-body">Реферальная программа</span>
+            {/*<div*/}
+            {/*    onClick={handleReferralClick}*/}
+            {/*    className="bg-gradient-tr-white border border-gradient-r-brand rounded-full shadow-sm p-4 mb-4 text-lg font-semibold cursor-pointer text-center"*/}
+            {/*>*/}
+            {/*    <span className="font-body">Реферальная программа</span>*/}
+            {/*</div>*/}
+
+            {/* Центрируем и задаём форму как у «Помодерируем?» */}
+
+            <div className="flex justify-center">
+                <ReferralGlowingButton
+                    onClick={handleReferralClick}
+                    className="
+                      bg-gradient-tr-white border border-gradient-r-brand
+                      rounded-full shadow-sm p-4 mb-6
+                      text-sm font-semibold text-center
+                      cursor-pointer w-full"
+                />
             </div>
 
             {!loading && isModerator && (
                 <div
                     onClick={() => navigate('/moderator')}
-                    className="bg-gradient-tr-white border border-gradient-r-brand rounded-full shadow-sm p-4 mb-4 text-sm font-semibold cursor-pointer text-center"
+                    className="
+                    bg-gradient-tr-white border border-gradient-r-brand
+                     rounded-full shadow-sm p-4 mb-4
+                      text-sm font-semibold cursor-pointer text-center"
                 >
                     <span className="font-body">Помодерируем?</span>
                 </div>
@@ -182,5 +200,6 @@ function HomePage() {
         </div>
     );
 }
+
 
 export default HomePage;

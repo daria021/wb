@@ -78,21 +78,22 @@ function ProductDetailPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
-            <div className="relative w-full h-64 mb-4 mt-12 rounded-lg overflow-hidden">
+            <div
+                className="relative w-full h-[50vh] mb-1 mt-12 rounded-lg bg-gray-100 flex items-center justify-center"
+            >
                 {product.image_path ? (
                     <img
-                        src={
-                            getLink(product.image_path)
-                        }
+                        src={getLink(product.image_path)}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-t-gray flex items-center justify-center text-gray-500">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
                         Нет фото
                     </div>
                 )}
             </div>
+
 
             <h1 className="text-2xl font-bold mb-2 text-left">{product.name}</h1>
             {product.shortDescription && (
@@ -123,9 +124,27 @@ function ProductDetailPage() {
                     onClick={handleOpenInstructionClick}
                     className="flex-1 bg-gradient-r-brand text-white py-2 rounded-lg border  text-center"
                 >
-                    Открыть инструкцию
+                    Выкупить товар
                 </button>
             </div>
+
+
+            <div
+                onClick={() =>
+                    navigate(`/product/${product.id}/instruction?preview=1`)
+                }
+                className="flex items-center justify-start mt-2 mb-2 cursor-pointer select-none"
+            >
+                <img
+                    src="/icons/question.png"
+                    alt="Question"
+                    className="w-7 h-7 mr-2"
+                />
+                <span className="block text-sm text-gray-600 hover:underline">
+                Хотите узнать, как выкупить товар?
+              </span>
+            </div>
+
 
             <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
                 <h2 className="font-semibold mb-2">Условия сделки</h2>

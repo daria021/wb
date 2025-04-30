@@ -120,6 +120,27 @@ function MyOrdersPage() {
             alert("Ошибка отмены заказа");
         }
     };
+    const handleCashbackPaid = async (orderId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            formData.append("status", "payment_confirmed");
+            await updateOrderStatus(orderId, formData);
+            // Вот эта строка обновит статус в локальном стейте и вызовет перерендер
+            setOrders(prev =>
+                prev.map(o =>
+                    o.id === orderId
+                        ? { ...o, status: "payment_confirmed" }
+                        : o
+                )
+            );
+        } catch (err) {
+            console.error("Ошибка отметки выплаты кешбека:", err);
+            alert("Возникла ошибка, попробуйте позже");
+        }
+    };
+
 
     // if (loading) {
     //     return <div className="p-4">Загрузка покупок...</div>;
@@ -191,14 +212,12 @@ function MyOrdersPage() {
                             <Link to={linkTo} key={order.id}>
                                 <div className="relative bg-white border border-gradient-tr-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {/* ваш контент карточки */}
-                                    {order.step < 7 && (
-                                        <button
-                                            onClick={e => handleCancelOrder(order.id, e)}
-                                            className="absolute top-2 right-2 px-2 py-1 border border-red-500 text-red-500 text-xs rounded hover:bg-red-50 transition"
-                                        >
-                                            Отменить
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={e => handleCancelOrder(order.id, e)}
+                                        className="absolute top-2 right-2 px-2 py-1 border border-red-500 text-red-500 text-xs rounded hover:bg-red-50 transition"
+                                    >
+                                        Отменить
+                                    </button>
                                     <div className="flex items-center gap-3">
                                         <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
                                             {order.product.image_path ? (
@@ -232,6 +251,19 @@ function MyOrdersPage() {
                                         </span>
                                         </div>
                                     </div>
+                                    {order.status === "payment_confirmed" ? (
+                                        <span className="absolute bottom-2 right-2 text-xs font-semibold text-green-700">
+                                        Кешбек выплачен
+                                      </span>
+                                    ) : order.step === 6 ? (
+                                        <button
+                                            onClick={e => handleCashbackPaid(order.id, e)}
+                                            className="absolute bottom-2 right-2 text-xs bg-gradient-br-brand text-brandlight border border-green-200 px-2 py-0.5 rounded-full"
+                                        >
+                                            Кешбек выплачен
+                                        </button>
+                                    ) : null}
+
                                 </div>
                             </Link>
                         );

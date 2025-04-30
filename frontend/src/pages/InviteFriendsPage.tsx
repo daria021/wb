@@ -69,7 +69,7 @@ const InviteFriendsPage: React.FC = () => {
                 </p>
 
                 <p className="leading-relaxed mb-4 text-gray-800">
-                    Минимальная выплата 1000р.
+                    Минимальная сумма для вывода средств 1000р.
                 </p>
 
                 <div className="bg-gradient-r-brandlight border-l-4 border-gradient-r-brand p-4 mb-6 rounded">

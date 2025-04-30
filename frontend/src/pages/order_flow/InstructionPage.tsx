@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getProductById} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
@@ -36,6 +36,8 @@ function InstructionPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { search } = useLocation();
+    const preview = new URLSearchParams(search).get('preview') === '1';
 
     const [agreeRules, setAgreeRules] = useState(false);
     const [agreePersonalData, setAgreePersonalData] = useState(false);
@@ -163,7 +165,7 @@ function InstructionPage() {
                         </ol>
                     </div>
                 </div>
-
+                {!preview && (
                 <div className="mb-6">
                     <div className="flex items-center mb-3">
                         <input
@@ -189,7 +191,7 @@ function InstructionPage() {
                             Даю согласие на обработку персональных данных
                         </label>
                     </div>
-                </div>
+
                 <button
                     onClick={handleContinue}
                     disabled={!canContinue}
@@ -201,6 +203,8 @@ function InstructionPage() {
                 >
                     Продолжить
                 </button>
+                </div>
+                )}
 
             </div>
         </div>
