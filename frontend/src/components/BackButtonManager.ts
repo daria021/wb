@@ -1,7 +1,7 @@
-// import useBackButtonVisibility from "../hooks/backButton";
+import useBackButtonVisibility from "../hooks/backButton";
 
 function BackButtonManager() {
-    // useBackButtonVisibility();
+    useBackButtonVisibility();
     return null;
 }
 

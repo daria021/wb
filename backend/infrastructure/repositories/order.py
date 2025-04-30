@@ -1,3 +1,4 @@
+import logging
 from dataclasses import field, dataclass
 from typing import List, Optional
 from uuid import UUID
@@ -14,6 +15,8 @@ from domain.responses.order_report import OrderReport
 from infrastructure.entities import Order, Product
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -144,4 +147,6 @@ class OrderRepository(
                 .options(*self.options)
             )
             orders = result.scalars().all()
+            logger.info(f"orders found {len(orders)} orders for seller {seller_id}")
+            logger.info([x.__dict__ for x in orders])
             return [self.entity_to_model(order) for order in orders]
