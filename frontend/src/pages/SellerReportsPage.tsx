@@ -68,7 +68,6 @@ function SellerReportsPage() {
         : OrderStatus.CASHBACK_NOT_PAID;
     const [activeTab, setActiveTab] = useState<OrderStatus>(initialTab);
 
-
     const fetchReports = async () => {
         if (!sellerId) return;
         try {

@@ -78,14 +78,12 @@ function ProductDetailPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
-            <div
-                className="relative w-full h-[50vh] mb-1 mt-12 rounded-lg bg-gray-100 flex items-center justify-center"
-            >
+            <div className="relative w-full h-[60vh] overflow-hidden">
                 {product.image_path ? (
                     <img
                         src={getLink(product.image_path)}
                         alt={product.name}
-                        className="w-full h-full object-contain"
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500">

@@ -220,7 +220,7 @@ function MyProductsPage() {
 
             <button
                 onClick={() => navigate('/create-product')}
-                className="w-full border border-gradient-r-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                className="w-full border border-gradient-tr-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
             >
                 Разместить товар
             </button>
@@ -271,7 +271,17 @@ function MyProductsPage() {
 
             <button
                 onClick={handleMyBalanceClick}
-                className="flex-1 bg-gradient-r-brand text-white p-2 rounded"
+                className="    w-full
+                                bg-gradient-r-brand
+                                text-white
+                                rounded-full
+                                shadow-sm
+                                p-4
+                                mt-2
+                                mb-2
+                                text-sm font-semibold
+                                text-center
+                                cursor-pointer"
             >
                 Пополнить кабинет
             </button>
