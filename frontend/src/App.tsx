@@ -21,7 +21,7 @@ import FinalDealPage from "./pages/order_flow/FinalDealPage";
 import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
-// import eruda from 'eruda';
+import eruda from 'eruda';
 import SellerBalancePage from "./pages/SellerBalance";
 import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
@@ -38,29 +38,29 @@ import PushAdminPage from "./pages/moderator/PushAdminPage";
 import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 
 
-// import { init, mountViewport, expandViewport } from '@telegram-apps/sdk';
+import { init, mountViewport, expandViewport } from '@telegram-apps/sdk';
 
 
 function App() {
-    // useEffect(() => {
+    useEffect(() => {
         // 1) Локальная консоль ошибок
-        // eruda.init();
-        //
+        eruda.init();
+
         // 2) Инициализируем Telegram Mini App SDK
-        // init();
-        //
+        init();
+
         // 3) Монтируем viewport (запрашиваем у Telegram параметры вьюпорта)
-    //     if (mountViewport.isAvailable()) {
-    //         mountViewport()
-    //             .then(() => {
-    //                 // 4) После успешного монтирования расширяем WebApp
-    //                 if (expandViewport.isAvailable()) {
-    //                     expandViewport();
-    //                 }
-    //             })
-    //             .catch(console.error);
-    //     }
-    // }, []);
+        if (mountViewport.isAvailable()) {
+            mountViewport()
+                .then(() => {
+                    // 4) После успешного монтирования расширяем WebApp
+                    if (expandViewport.isAvailable()) {
+                        expandViewport();
+                    }
+                })
+                .catch(console.error);
+        }
+    }, []);
 
     return (
         <AuthProvider>

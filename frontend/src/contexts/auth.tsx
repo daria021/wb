@@ -1,40 +1,56 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { getMe } from "../services/api";
+import {createContext, useContext, useEffect, useState} from "react";
+import {apiClient} from "../services/apiClient";
+import {getMe} from "../services/api";
+import {initData} from "@telegram-apps/sdk";
+
 
 interface AuthContextType {
     userId: string | null;
-    isModerator: boolean;
-    isAdmin: boolean;
+    isModerator: boolean | null;
+    isAdmin: boolean | null;
     loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [userId, setUserId] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [isModerator, setIsModerator] = useState<boolean>(false);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
+    const [isModerator, setIsModerator] = useState<boolean | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
     useEffect(() => {
         const authenticateUser = async () => {
-            // Hardcoded tokens for browser startup
-            localStorage.setItem(
-                "authToken",
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMjg1Y2Y1ZS01Mjk5LTQ1MDQtOWIxNi1hODA4ZmExMDI4ZTgiLCJleHAiOjE3NDYwNDU4MTEsImlzcyI6IndiLWJhY2siLCJhdWQiOiJ3Yi1mcm9udCJ9.pz6uAR8gBywD6YfLEmnpR-rK1uRL6rcxqRca1OUjTjk"
-            );
-            localStorage.setItem(
-                "refreshToken",
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMjg1Y2Y1ZS01Mjk5LTQ1MDQtOWIxNi1hODA4ZmExMDI4ZTgiLCJleHAiOjE3NDYwMzM4MTEsImlzcyI6IndiLWJhY2siLCJhdWQiOiJ3Yi1mcm9udCJ9.NYpGFhNvAgQRJY4AGULxCyh3L143Tq5375u5kbscCZA"
-            );
+            initData.restore();
+            const data = initData.raw();
+
+            if (!data) {
+                console.error("No initData found");
+                setLoading(false);
+                return;
+            }
 
             try {
+                // Extract the "ref" query parameter from the URL, if it exists.
+                const searchParams = new URLSearchParams(window.location.search);
+                const ref = searchParams.get("ref");
+
+                // Create the payload, including initData and, if present, the ref parameter.
+                const payload: { initData: string; ref?: string } = { initData: data };
+                if (ref) {
+                    payload.ref = ref;
+                }
+
+                const response = await apiClient.post("/auth/telegram", payload);
+                localStorage.setItem("authToken", response.data.access_token);
+                localStorage.setItem("refreshToken", response.data.refresh_token);
+
                 const me = await getMe();
                 setUserId(me.id);
                 setIsModerator(me.role === "moderator" || me.role === "admin");
                 setIsAdmin(me.role === "admin");
             } catch (error) {
-                console.error("Failed to fetch user data", error);
+                console.error("Authentication failed", error);
             } finally {
                 setLoading(false);
             }
@@ -44,16 +60,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userId, isModerator, isAdmin, loading }}>
+        <AuthContext.Provider value={{userId, loading, isModerator, isAdmin}}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = (): AuthContextType => {
+// Hook for consuming authentication context
+export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
+    if (!context) throw new Error("useAuth must be used within an AuthProvider");
     return context;
 };

@@ -133,7 +133,7 @@ function ProductDetailPage() {
                 onClick={() =>
                     navigate(`/product/${product.id}/instruction?preview=1`)
                 }
-                className="flex items-center justify-start mt-2 cursor-pointer select-none"
+                className="flex items-center justify-start mt-2 mb-2 cursor-pointer select-none"
             >
                 <img
                     src="/icons/question.png"
