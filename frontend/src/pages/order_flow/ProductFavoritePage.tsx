@@ -122,6 +122,7 @@ function ProductFavoritePage() {
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное</h1>
                 <p className="mb-2">• Добавьте товар в избранное</p>
                 <p className="mb-2">• Добавьте бренд в избранное</p>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
             <div className="flex items-center mb-4">

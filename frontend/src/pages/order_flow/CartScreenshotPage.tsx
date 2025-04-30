@@ -144,6 +144,7 @@ function CartScreenshotPage() {
                 <p>
                     Ключевое слово: <strong>{product.key_word}</strong>
                 </p>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
 

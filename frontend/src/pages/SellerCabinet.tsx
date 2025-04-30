@@ -63,7 +63,7 @@ function SellerCabinet() {
                      onClick={handleMyBalanceClick}
                 >
                     <p className="text-md font-semibold mb-1">Баланс</p>
-                    <p className="text-2xl font-bold">{balance}</p>
+                    <p className="text-2xl font-bold">{balance} раздач</p>
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>
                 </div>
 

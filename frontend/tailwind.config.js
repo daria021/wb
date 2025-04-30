@@ -38,6 +38,28 @@ module.exports = {
       darkGray:       [theme("colors.gray.500"),   theme("colors.gray.300")],
       white:       [theme("colors.white"),  theme("colors.white2")],
     }),
+
+    keyframes: {
+      borderShine: {
+        '0%':   { transform: 'translateX(-100%)' },
+        '100%': { transform: 'translateX(100%)' },
+      },
+      textShine: {
+        '0%':   { 'background-position': '0% 50%' },
+        '100%': { 'background-position': '200% 50%' },
+      },
+    },
+    animation: {
+      'once-border-shine': 'borderShine 1s ease-out forwards',
+      'once-text-shine':   'textShine   1.5s ease-out forwards',
+    },
+    backgroundImage: {
+      'shine-text':
+          'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)',
+    },
+    backgroundSize: {
+      '300%': '300% auto',
+    },
   },
   variants: {
     backgroundImage:           ['responsive'],

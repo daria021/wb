@@ -184,6 +184,7 @@ function ProductPickupPage() {
                 <p>
                     Ваш кэшбэк: <strong>{cashback} руб.</strong>
                 </p>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
             <div className="flex items-center mb-4">

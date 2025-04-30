@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {getMe, getOrderBySellerId, updateOrderStatus} from '../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
@@ -61,7 +61,13 @@ function SellerReportsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [sellerId, setSellerId] = useState<string>('');
-    const [activeTab, setActiveTab] = useState<OrderStatus>(OrderStatus.CASHBACK_NOT_PAID);
+    const { search } = useLocation();
+    const params = new URLSearchParams(search);
+    const initialTab = params.get('tab') === 'paid'
+        ? OrderStatus.CASHBACK_PAID
+        : OrderStatus.CASHBACK_NOT_PAID;
+    const [activeTab, setActiveTab] = useState<OrderStatus>(initialTab);
+
 
     const fetchReports = async () => {
         if (!sellerId) return;
@@ -86,6 +92,7 @@ function SellerReportsPage() {
             removeBackListener();
         };
     }, [navigate]);
+
 
     useEffect(() => {
         async function fetchSellerId() {

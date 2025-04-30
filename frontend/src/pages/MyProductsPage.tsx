@@ -113,6 +113,10 @@ function MyProductsPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+    const handleMyBalanceClick = () => {
+        navigate(`/seller-cabinet/balance`);
+    };
+
 
     return (
         <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto">
@@ -121,7 +125,7 @@ function MyProductsPage() {
                     Всего карточек: <strong>{totalCount}</strong>
                 </p>
                 <p className="text-sm">
-                    На модерации: <strong>{moderationCount}</strong>
+                    На проверке: <strong>{moderationCount}</strong>
                 </p>
                 <p className="text-sm">
                     Опубликовано: <strong>{publishedCount}</strong>
@@ -264,6 +268,13 @@ function MyProductsPage() {
                     ))}
                 </div>
             )}
+
+            <button
+                onClick={handleMyBalanceClick}
+                className="flex-1 bg-gradient-r-brand text-white p-2 rounded"
+            >
+                Пополнить кабинет
+            </button>
             <div
                 onClick={handleSupportClick}
                 className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"

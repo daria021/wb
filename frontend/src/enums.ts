@@ -42,11 +42,13 @@ export enum ProductStatus {
     NOT_PAID = "not_paid",
     DISABLED = "disabled",
     REJECTED = "rejected",
-    ARCHIVED = "archived"
+    ARCHIVED = "archived",
 }
 
 export enum OrderStatus {
     CASHBACK_PAID = "Кешбек выплачен",
     CASHBACK_NOT_PAID = "Кешбек не выплачен",
-    CANCELLED = "Отменено"
+    CANCELLED = "Отменено",
+    PAYMENT_CONFIRMED = "payment_confirmed"
+
 }

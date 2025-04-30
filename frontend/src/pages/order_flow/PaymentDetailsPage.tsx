@@ -107,6 +107,7 @@ function PaymentDetailsPage() {
             <div className="bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow p-4 space-y-4 mb-4">
 
                 <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кэшбэка</h1>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
