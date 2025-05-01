@@ -113,27 +113,28 @@ function MyProductsPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
-    // сколько не хватает
-    const missing = Math.max(0, totalPlan - seller!.balance);
-// текст сообщения
-    const refillMessage = `Добрый день! Хочу пополнить баланс на ${missing} рублей. Пришлите, пожалуйста, реквизиты.`;
-    // URL, который попытается открыть чат менеджера с заранее заполненным текстом
-    const telegramUrl = `${process.env.REACT_APP_SUPPORT_URL}?text=${encodeURIComponent(refillMessage)}`;
-
 
     const handleMyBalanceClick = () => {
-        // закроем WebApp, если нужно
-        if (window.Telegram?.WebApp?.close) {
-            window.Telegram.WebApp.close();
+        if (!seller) {
+            // ещё не загрузился — можно просто ничего не делать
+            return;
         }
-        // попробуем открыть прямой чат с текстом
+        // сколько не хватает (только положительные или ноль)
+        const missing = Math.max(0, totalPlan - seller.balance);
+
+        // текст сообщения
+        const refillMessage = `Добрый день! Хочу пополнить баланс на ${missing} рублей. Пришлите, пожалуйста, реквизиты.`;
+
+        // формируем URL внутри обработчика
+        const telegramUrl = `${process.env.REACT_APP_SUPPORT_URL}?text=${encodeURIComponent(refillMessage)}`;
+
+        // закрываем WebApp и открываем чат
+        window.Telegram?.WebApp?.close?.();
         window.open(telegramUrl, '_blank');
-        // если он не работает в вашем окружении, можно использовать:
-        // window.open(shareUrl, '_blank');
     };
 
 
-    return (
+return (
         <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto">
             <div className="mb-4 p-4 bg-gradient-r-brandlight rounded shadow">
                 <p className="text-sm">
@@ -155,8 +156,9 @@ function MyProductsPage() {
                     Общий план по раздачам: <strong>{totalPlan}</strong>
                 </p>
                 {seller && (() => {
+                    const missing=Math.max(0, totalPlan - seller.balance)
 
-                    return missing > 0 ? (
+                    return (missing) > 0 ? (
                         <p className="text-sm text-red-800">
                             Баланс раздач: <strong>{seller.balance}</strong><br/>
                             Для публикации товара необходимо пополнить баланс
