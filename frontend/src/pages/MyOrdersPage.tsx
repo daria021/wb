@@ -142,18 +142,6 @@ function MyOrdersPage() {
     };
 
 
-    // if (loading) {
-    //     return <div className="p-4">Загрузка покупок...</div>;
-    // }
-    //
-    // if (error) {
-    //     return (
-    //         <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
-    //             <p className="text-sm text-brand">{error}</p>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div className="bg-gradient-t-gray bg-fixed min-h-screen">
             <div className="flex w-max mx-auto mb-2 mt-2 bg-gradient-t-gray p-1 rounded-full">
@@ -257,10 +245,17 @@ function MyOrdersPage() {
                                       </span>
                                     ) : order.step === 6 ? (
                                         <button
-                                            onClick={e => handleCashbackPaid(order.id, e)}
-                                            className="absolute bottom-2 right-2 text-xs bg-gradient-br-brand text-brandlight border border-green-200 px-2 py-0.5 rounded-full"
+                                          onClick={e => handleCashbackPaid(order.id, e)}
+                                          className="absolute top-2 right-2
+                                                px-2 py-1
+                                                border border-blue-500
+                                                text-blue-500 text-xs
+                                                rounded
+                                                hover:bg-blue-50
+                                                transition
+                                              "
                                         >
-                                            Кешбек выплачен
+                                          Кешбек выплачен
                                         </button>
                                     ) : null}
 

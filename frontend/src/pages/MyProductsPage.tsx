@@ -140,7 +140,7 @@ function MyProductsPage() {
                     Общий план по раздачам: <strong>{totalPlan}</strong>
                 </p>
                 {seller && (() => {
-                    const diff = seller.balance - totalPlan;
+                    const diff = totalPlan - seller.balance;
                     return diff >= 0 ? (
                         <p className="text-sm text-black">
                             Баланс раздач: <strong>{seller.balance}</strong>
@@ -220,7 +220,7 @@ function MyProductsPage() {
 
             <button
                 onClick={() => navigate('/create-product')}
-                className="w-full border border-gradient-tr-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                className="w-full border border-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-100"
             >
                 Разместить товар
             </button>
@@ -277,7 +277,7 @@ function MyProductsPage() {
                                 rounded-full
                                 shadow-sm
                                 p-4
-                                mt-2
+                                mt-4
                                 mb-2
                                 text-sm font-semibold
                                 text-center
@@ -287,7 +287,7 @@ function MyProductsPage() {
             </button>
             <div
                 onClick={handleSupportClick}
-                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mt-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mt-2 text-sm font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">
