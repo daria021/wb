@@ -38,7 +38,7 @@ class NotificationService(NotificationServiceInterface):
                 url=f'https://api.telegram.org/bot{self.token}/sendMessage',
                 params={
                     'chat_id': user.telegram_id,
-                    'text': f'Ваш баланс раздач полонен на {amount}',
+                    'text': f'Ваш баланс полонен на {amount} раздач',
                 }
             )
 

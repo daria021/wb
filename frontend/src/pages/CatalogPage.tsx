@@ -4,6 +4,7 @@ import {getProducts, getUser} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from "../hooks/useDebounce";
+import { Combobox } from '@headlessui/react';
 
 interface Product {
     id: string;
@@ -35,6 +36,15 @@ function CatalogPage() {
     const [searchIsActive, setSearchIsActive] = useState(false);
 
     const [sellerOptions, setSellerOptions] = useState<Seller[]>([]);
+
+    const [sellerQuery, setSellerQuery] = useState('');
+
+    // отфильтрованный список продавцов под комбо
+    const filteredSellers = sellerQuery === ''
+        ? sellerOptions
+        : sellerOptions.filter(s =>
+            s.nickname.toLowerCase().includes(sellerQuery.toLowerCase())
+        );
 
     const navigate = useNavigate();
 
@@ -212,15 +222,40 @@ function CatalogPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Продавец</label>
-                            <select
-                                value={filterSeller}
-                                onChange={e => setFilterSeller(e.target.value)}
-                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
-                            >
-                                <option value="">Все продавцы</option>
-                                {sellerOptions.map(sel => <option key={sel.id} value={sel.id}>{sel.nickname}</option>)}
-                            </select>
+                            <Combobox value={filterSeller} onChange={setFilterSeller}>
+                                <div className="relative">
+                                    <Combobox.Input
+                                        className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
+                                        placeholder="Поиск продавца"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSellerQuery(e.target.value)}
+                                        displayValue={(id: string) => {
+                                            const sel = sellerOptions.find(s => s.id === id);
+                                            return sel ? sel.nickname : '';
+                                        }}
+                                    />
+                                    <Combobox.Options className="absolute z-20 mt-1 w-full bg-white shadow-lg max-h-60 overflow-auto rounded">
+                                        {filteredSellers.length === 0 ? (
+                                            <div className="p-2 text-sm text-gray-500">Ничего не найдено</div>
+                                        ) : (
+                                            filteredSellers.map(sel => (
+                                                <Combobox.Option
+                                                    key={sel.id}
+                                                    value={sel.id}
+                                                    className={({ active }: { active: boolean }) =>
+                                                        `cursor-pointer select-none p-2 ${
+                                                            active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'
+                                                        }`
+                                                    }
+                                                >
+                                                    {sel.nickname}
+                                                </Combobox.Option>
+                                            ))
+                                        )}
+                                    </Combobox.Options>
+                                </div>
+                            </Combobox>
                         </div>
+
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={() => {
