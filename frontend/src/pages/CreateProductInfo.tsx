@@ -151,7 +151,7 @@ function CreateProductInfo() {
         <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto max-w-lg">
             {(product.status === ProductStatus.CREATED || product.status === ProductStatus.DISABLED) && (
                 <div className="mb-4 p-3 bg-gradient-r-brandlight border-l-4 border-gradient-r-brand text-brand rounded">
-                    Новая карточка подготовлена к отправке модератору. Проверьте всю информацию.
+                    Новая карточка отправлена на модерацию. Проверьте всю информацию. Вы еще можете внести изменения.
                 </div>
             )}
 

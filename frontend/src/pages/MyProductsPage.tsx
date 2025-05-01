@@ -113,8 +113,23 @@ function MyProductsPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+    // сколько не хватает
+    const missing = Math.max(0, totalPlan - seller!.balance);
+// текст сообщения
+    const refillMessage = `Добрый день! Хочу пополнить баланс на ${missing} рублей. Пришлите, пожалуйста, реквизиты.`;
+    // URL, который попытается открыть чат менеджера с заранее заполненным текстом
+    const telegramUrl = `${process.env.REACT_APP_SUPPORT_URL}?text=${encodeURIComponent(refillMessage)}`;
+
+
     const handleMyBalanceClick = () => {
-        navigate(`/seller-cabinet/balance`);
+        // закроем WebApp, если нужно
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        // попробуем открыть прямой чат с текстом
+        window.open(telegramUrl, '_blank');
+        // если он не работает в вашем окружении, можно использовать:
+        // window.open(shareUrl, '_blank');
     };
 
 
@@ -140,21 +155,19 @@ function MyProductsPage() {
                     Общий план по раздачам: <strong>{totalPlan}</strong>
                 </p>
                 {seller && (() => {
-                    const diff = totalPlan - seller.balance;
-                    return diff >= 0 ? (
-                        <p className="text-sm text-black">
-                            Баланс раздач: <strong>{seller.balance}</strong>
-                        </p>
-                    ) : (
+
+                    return missing > 0 ? (
                         <p className="text-sm text-red-800">
                             Баланс раздач: <strong>{seller.balance}</strong><br/>
                             Для публикации товара необходимо пополнить баланс
-                            на <strong>{diff}</strong> раздач
+                            на <strong>{missing}</strong> раздач
+                        </p>
+                    ) : (
+                        <p className="text-sm text-black">
+                            Баланс раздач: <strong>{seller.balance}</strong>
                         </p>
                     );
                 })()}
-
-
 
             </div>
             <div className="sticky top-0 z-10 bg-gradient-t-gray">
