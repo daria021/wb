@@ -4,6 +4,7 @@ import {createProduct, getProductById, updateProduct} from '../services/api';
 import {Category, PayoutTime} from '../enums';
 import {on} from "@telegram-apps/sdk";
 import FileUploader from "../components/FileUploader";
+import {NumericInput} from "../components/NumericInput";
 
 interface ProductFormData {
     id?: string;
@@ -12,10 +13,10 @@ interface ProductFormData {
     brand: string;
     category: Category;
     key_word: string;
-    general_repurchases: number;
-    daily_repurchases: number;
-    price: number;
-    wb_price: number;
+    general_repurchases: string;
+    daily_repurchases: string;
+    price: string;
+    wb_price: string;
     tg: string;
     payment_time: PayoutTime;
     review_requirements: string;
@@ -23,18 +24,18 @@ interface ProductFormData {
     image_path?: string;
 }
 
+
 function ProductForm() {
     const navigate = useNavigate();
     const {productId} = useParams();
     const isEditMode = Boolean(productId);
     const [originalFormData, setOriginalFormData] = useState<ProductFormData | null>(null);
-    // const [changedFields, setChangedFields] = useState<Record<string, { old: any, new: any }>>({});
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [priceError, setPriceError] = useState('');
     const [repurchasesError, setRepurchasesError] = useState('');
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-    const [changedFields, setChangedFields] = useState<Record<string, {old:any,new:any}>>({});
+    const [changedFields, setChangedFields] = useState<Record<string, { old: any, new: any }>>({});
 
 
     const inputRefs = [
@@ -68,16 +69,17 @@ function ProductForm() {
         }
     };
 
+
     const [formData, setFormData] = useState<ProductFormData>({
         name: '',
         article: '',
         brand: '',
         category: Category.WOMEN,
         key_word: '',
-        general_repurchases: 0,
-        daily_repurchases: 0,
-        price: 0,
-        wb_price: 0,
+        general_repurchases: '',
+        daily_repurchases: '',
+        price: '',
+        wb_price: '',
         tg: '',
         payment_time: PayoutTime.AFTER_REVIEW,
         review_requirements: '',
@@ -96,10 +98,6 @@ function ProductForm() {
         }
     };
 
-
-    // const [imageFile, setImageFile] = useState<File | null>(null);
-    //
-    // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -123,10 +121,10 @@ function ProductForm() {
                     brand: data.brand,
                     category: data.category,
                     key_word: data.key_word,
-                    general_repurchases: data.general_repurchases,
-                    daily_repurchases: data.daily_repurchases,
-                    price: data.price,
-                    wb_price: data.wb_price,
+                    general_repurchases: String(data.general_repurchases),
+                    daily_repurchases: String(data.daily_repurchases),
+                    price: String(data.price),
+                    wb_price: String(data.wb_price),
                     tg: data.tg,
                     payment_time: data.payment_time,
                     review_requirements: data.review_requirements,
@@ -145,22 +143,18 @@ function ProductForm() {
         })();
     }, [isEditMode, productId]);
 
-    // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    //     const file = e.target.files?.[0] || null;
-    //     setImageFile(file);
-    //
-    //     if (file) {
-    //         const objectUrl = URL.createObjectURL(file);
-    //         setPreviewUrl(objectUrl);
-    //     } else {
-    //         setPreviewUrl(null);
-    //     }
-    // };
+    // Обработчик для всех NumericInput
+    const handleNumericFieldChange = (field: string, val: string) => {
+        setFormData(prev => ({...prev, [field]: val}));
+    };
+
 
     const validateField = (name: string, value: any, newFormData: ProductFormData) => {
         // Проверяем оба поля цены, если поменяли или цену покупателя, или цену на сайте
         if (['price', 'wb_price'].includes(name)) {
-            if (newFormData.price > newFormData.wb_price) {
+            const numPrice = Number(newFormData.price);
+            const numWbPrice = Number(newFormData.wb_price);
+            if (numPrice > numWbPrice) {
                 setPriceError('Цена для покупателя не должна быть больше цены на сайте');
             } else {
                 setPriceError('');
@@ -182,10 +176,7 @@ function ProductForm() {
         const {name, value, type, checked} = e.target as HTMLInputElement;
         const newValue = type === 'checkbox'
             ? checked
-            : ['general_repurchases', 'daily_repurchases', 'price', 'wb_price'].includes(name)
-                ? Number(value)
-                : value;
-
+            : value;
         setFormData(prev => {
             const updated = {...prev, [name]: newValue};
             validateField(name, newValue, updated);
@@ -193,16 +184,6 @@ function ProductForm() {
         });
     }
 
-
-    const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        if (value === '0') {
-            setFormData((prev) => ({
-                ...prev,
-                [name]: '',
-            }));
-        }
-    };
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
@@ -247,7 +228,7 @@ function ProductForm() {
             fd.append('key_word', formData.key_word);
             fd.append('general_repurchases', String(formData.general_repurchases));
             fd.append('daily_repurchases', String(formData.daily_repurchases));
-            fd.append('price', String(formData.price));
+            fd.append('price', String(Number(formData.price)));
             fd.append('wb_price', String(formData.wb_price));
             fd.append('tg', formData.tg);
             fd.append('payment_time', formData.payment_time);
@@ -388,65 +369,52 @@ function ProductForm() {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Общий план выкупов</label>
-                    <input
-                        type="number"
-                        ref={inputRefs[4]}
-                        onKeyDown={handleKeyDown(4)}
+                    <NumericInput
                         name="general_repurchases"
                         value={formData.general_repurchases}
-                        onChange={handleInputChange}
-                        onFocus={handleFocus}
-                        required
+                        onValueChange={handleNumericFieldChange}
+                        onKeyDown={handleKeyDown(4)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>
-                    <input
-                        type="number"
-                        ref={inputRefs[5]}
-                        onKeyDown={handleKeyDown(5)}
+                    <NumericInput
                         name="daily_repurchases"
                         value={formData.daily_repurchases}
-                        onChange={handleInputChange}
-                        onFocus={handleFocus}
-                        required
+                        onValueChange={handleNumericFieldChange}
+                        onKeyDown={handleKeyDown(5)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
-                    {repurchasesError && <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>}
+                    {repurchasesError && (
+                        <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>
+                    )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (руб.)</label>
-                    <input
-                        type="number"
-                        ref={inputRefs[6]}
-                        onKeyDown={handleKeyDown(6)}
+                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (₽)</label>
+                    <NumericInput
                         name="wb_price"
                         value={formData.wb_price}
-                        onChange={handleInputChange}
-                        onFocus={handleFocus}
-                        required
+                        onValueChange={handleNumericFieldChange}
+                        onKeyDown={handleKeyDown(6)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Цена для покупателя</label>
-                    <input
-                        type="number"
-                        ref={inputRefs[7]}
-                        onKeyDown={handleKeyDown(7)}
+                    <label className="block text-sm font-medium mb-1">Цена для покупателя (₽)</label>
+                    <NumericInput
                         name="price"
                         value={formData.price}
-                        onChange={handleInputChange}
-                        onFocus={handleFocus}
-                        required
+                        onValueChange={handleNumericFieldChange}
+                        onKeyDown={handleKeyDown(7)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
-                    {priceError && <p className="text-red-500 text-xs mt-1">{priceError}</p>}
-
+                    {priceError && (
+                        <p className="text-red-500 text-xs mt-1">{priceError}</p>
+                    )}
                 </div>
 
 

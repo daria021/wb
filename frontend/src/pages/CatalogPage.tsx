@@ -4,7 +4,7 @@ import {getProducts, getUser} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from "../hooks/useDebounce";
-import { Combobox } from '@headlessui/react';
+import {Combobox} from '@headlessui/react';
 
 interface Product {
     id: string;
@@ -108,13 +108,6 @@ function CatalogPage() {
         }
     })
 
-    // if (loading) return <div className="p-4">Загрузка каталога...</div>;
-    // if (error) return (
-    //     <div
-    //         className="w-full max-w-sm mx-auto p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center mt-4">
-    //         <p className="text-sm text-brand">{error}</p>
-    //     </div>
-    // );
 
     const filtered = products
         .filter(p => (filterPrice === '' || p.price <= filterPrice))
@@ -122,6 +115,7 @@ function CatalogPage() {
         .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
 
     const categories = Array.from(new Set(products.map(p => p.category)));
+
 
     return (
         <div className="min-h-screen bg-gradient-t-gray">
@@ -159,8 +153,7 @@ function CatalogPage() {
                         placeholder="Поиск по названию или артикулу"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        onFocus={() => setSearchIsActive(true)}
-                        onBlur={() => setSearchIsActive(false)}
+
                         className="flex-1 border border-gradient-tr-darkGray rounded-md p-2"
                     />
                     <button
@@ -188,13 +181,13 @@ function CatalogPage() {
                         )}
                     </button>
                 </div>
-                     {/* Показываем загрузку и ошибку под шапкой, но инпут не размонтируем */}
-                     {loading && (
-                       <div className="p-4 text-center text-gray-600">Загрузка каталога…</div>
-                     )}
-                     {error && (
-                       <div className="p-4 text-center text-red-600">{error}</div>
-                     )}
+                {/* Показываем загрузку и ошибку под шапкой, но инпут не размонтируем */}
+                {loading && (
+                    <div className="p-4 text-center text-gray-600">Загрузка каталога…</div>
+                )}
+                {error && (
+                    <div className="p-4 text-center text-red-600">{error}</div>
+                )}
 
                 {/* Inline filters panel */}
                 {showFilters && (
@@ -222,39 +215,52 @@ function CatalogPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Продавец</label>
-                            <Combobox value={filterSeller} onChange={setFilterSeller}>
-                                <div className="relative">
-                                    <Combobox.Input
-                                        className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
-                                        placeholder="Поиск продавца"
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSellerQuery(e.target.value)}
-                                        displayValue={(id: string) => {
-                                            const sel = sellerOptions.find(s => s.id === id);
-                                            return sel ? sel.nickname : '';
-                                        }}
-                                    />
-                                    <Combobox.Options className="absolute z-20 mt-1 w-full bg-white shadow-lg max-h-60 overflow-auto rounded">
-                                        {filteredSellers.length === 0 ? (
-                                            <div className="p-2 text-sm text-gray-500">Ничего не найдено</div>
-                                        ) : (
-                                            filteredSellers.map(sel => (
-                                                <Combobox.Option
-                                                    key={sel.id}
-                                                    value={sel.id}
-                                                    className={({ active }: { active: boolean }) =>
-                                                        `cursor-pointer select-none p-2 ${
-                                                            active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'
-                                                        }`
-                                                    }
-                                                >
-                                                    {sel.nickname}
-                                                </Combobox.Option>
-                                            ))
-                                        )}
-                                    </Combobox.Options>
-                                </div>
+                            <Combobox value={filterSeller} onChange={setFilterSeller} as="div" className="relative">
+                                <Combobox.Input
+                                    className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
+                                    placeholder="Поиск продавца"
+                                    onChange={e => setSellerQuery(e.target.value)}
+                                    displayValue={(id: string) => {
+                                        const sel = sellerOptions.find(s => s.id === id);
+                                        return sel ? sel.nickname : '';
+                                    }}
+                                />
+                                <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                    <span className="text-gray-400 select-none">▾</span>
+                                </Combobox.Button>
+
+                                {/** render-props: получаем флаг open */}
+                                <Combobox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 overflow-auto rounded">
+                                    <Combobox.Option
+                                        key="all"
+                                        value=""
+                                        className={({ active }) =>
+                                            `cursor-pointer select-none p-2 ${active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'}`
+                                        }
+                                    >
+                                        Все продавцы
+                                    </Combobox.Option>
+
+                                    {filteredSellers.length === 0 ? (
+                                        <div className="p-2 text-sm text-gray-500">Ничего не найдено</div>
+                                    ) : (
+                                        filteredSellers.map(sel => (
+                                            <Combobox.Option
+                                                key={sel.id}
+                                                value={sel.id}
+                                                className={({ active }) =>
+                                                    `cursor-pointer select-none p-2 ${active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'}`
+                                                }
+                                            >
+                                                {sel.nickname}
+                                            </Combobox.Option>
+                                        ))
+                                    )}
+                                </Combobox.Options>
                             </Combobox>
+
                         </div>
+
 
                         <div className="flex justify-end space-x-2">
                             <button
