@@ -140,23 +140,27 @@ function RequirementsPage() {
 
                 {showModal && (
                     <div
-                        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
                         onClick={closeModal}
                     >
                         <div
-                            className="bg-gradient-tr-white p-4 rounded-lg"
-                            onClick={(e) => e.stopPropagation()}
+                            className="relative bg-gradient-tr-white p-4 rounded-lg max-w-full max-h-full overflow-auto"
+                            onClick={e => e.stopPropagation()}
                         >
-                            <img src={modalImage} alt="Пример" className="max-w-full h-auto" />
+                            {/* Кнопка закрыть в правом-верхнем углу */}
                             <button
+                                className="absolute top-2 right-2 text-xl font-bold text-gray-700 hover:text-gray-900"
                                 onClick={closeModal}
-                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                             >
-                                Закрыть
+                                &times;
                             </button>
+
+                            <img src={modalImage} alt="Пример" className="max-w-full h-auto mb-4" />
+
                         </div>
                     </div>
                 )}
+
             </div>
         </div>
     );

@@ -371,9 +371,10 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Общий план выкупов</label>
                     <NumericInput
                         name="general_repurchases"
+                        ref={inputRefs[4]}
+                        onKeyDown={handleKeyDown(4)}
                         value={formData.general_repurchases}
                         onValueChange={handleNumericFieldChange}
-                        onKeyDown={handleKeyDown(4)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
@@ -382,9 +383,10 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>
                     <NumericInput
                         name="daily_repurchases"
+                        ref={inputRefs[5]}
+                        onKeyDown={handleKeyDown(5)}
                         value={formData.daily_repurchases}
                         onValueChange={handleNumericFieldChange}
-                        onKeyDown={handleKeyDown(5)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                     {repurchasesError && (
@@ -396,9 +398,10 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Цена на сайте WB (₽)</label>
                     <NumericInput
                         name="wb_price"
+                        ref={inputRefs[6]}
+                        onKeyDown={handleKeyDown(6)}
                         value={formData.wb_price}
                         onValueChange={handleNumericFieldChange}
-                        onKeyDown={handleKeyDown(6)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                 </div>
@@ -407,9 +410,10 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Цена для покупателя (₽)</label>
                     <NumericInput
                         name="price"
+                        ref={inputRefs[7]}
+                        onKeyDown={handleKeyDown(7)}
                         value={formData.price}
                         onValueChange={handleNumericFieldChange}
-                        onKeyDown={handleKeyDown(7)}
                         className="w-full border border-gradient-tr-darkGray rounded-md p-2 text-sm"
                     />
                     {priceError && (

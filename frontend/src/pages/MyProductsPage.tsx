@@ -115,26 +115,29 @@ function MyProductsPage() {
 
 
     const handleMyBalanceClick = () => {
-        if (!seller) {
-            // ещё не загрузился — можно просто ничего не делать
-            return;
-        }
-        // сколько не хватает (только положительные или ноль)
+        if (!seller) return;
         const missing = Math.max(0, totalPlan - seller.balance);
+        const refillMessage =
+            missing > 0
+                ? `Добрый день! Хочу пополнить баланс на ${missing} раздач. Пришлите, пожалуйста, реквизиты.`
+                : `Добрый день! Хочу пополнить баланс на … раздач. Пришлите, пожалуйста, реквизиты.`;
 
-        // текст сообщения
-        const refillMessage = `Добрый день! Хочу пополнить баланс на ${missing} рублей. Пришлите, пожалуйста, реквизиты.`;
+        // Формируем share-ссылку: <url> будет вставлен перед текстом
+        const botLink = process.env.REACT_APP_SUPPORT_URL!;  // «!» говорит компилятору: я уверен, не undefined
+        const shareUrl =
+            `https://t.me/share/url?url=${encodeURIComponent(botLink)}` +
+            `&text=${encodeURIComponent(refillMessage)}`;
 
-        // формируем URL внутри обработчика
-        const telegramUrl = `${process.env.REACT_APP_SUPPORT_URL}?text=${encodeURIComponent(refillMessage)}`;
 
-        // закрываем WebApp и открываем чат
+        // Закрываем WebApp и открываем окно «Поделиться»
         window.Telegram?.WebApp?.close?.();
-        window.open(telegramUrl, '_blank');
+        window.open(shareUrl, "_blank");
     };
 
 
-return (
+
+
+    return (
         <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto">
             <div className="mb-4 p-4 bg-gradient-r-brandlight rounded shadow">
                 <p className="text-sm">
