@@ -115,26 +115,15 @@ function MyProductsPage() {
 
 
     const handleMyBalanceClick = () => {
-        if (!seller) {
-            // ещё не загрузился — можно просто ничего не делать
-            return;
-        }
-        // сколько не хватает (только положительные или ноль)
-        const missing = Math.max(0, totalPlan - seller.balance);
+        if (!seller) return;
 
-        // текст сообщения
-        const refillMessage = `Добрый день! Хочу пополнить баланс на ${missing} рублей. Пришлите, пожалуйста, реквизиты.`;
-
-        // формируем URL внутри обработчика
-        const telegramUrl = `${process.env.REACT_APP_SUPPORT_URL}?text=${encodeURIComponent(refillMessage)}`;
-
-        // закрываем WebApp и открываем чат
+        // Закрываем WebApp и переходим в чат поддержки
         window.Telegram?.WebApp?.close?.();
-        window.open(telegramUrl, '_blank');
+        window.open(process.env.REACT_APP_SUPPORT_URL, "_blank");
     };
 
 
-return (
+    return (
         <div className="p-4 min-h-screen bg-gradient-t-gray mx-auto">
             <div className="mb-4 p-4 bg-gradient-r-brandlight rounded shadow">
                 <p className="text-sm">
