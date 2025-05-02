@@ -116,25 +116,11 @@ function MyProductsPage() {
 
     const handleMyBalanceClick = () => {
         if (!seller) return;
-        const missing = Math.max(0, totalPlan - seller.balance);
-        const refillMessage =
-            missing > 0
-                ? `Добрый день! Хочу пополнить баланс на ${missing} раздач. Пришлите, пожалуйста, реквизиты.`
-                : `Добрый день! Хочу пополнить баланс на … раздач. Пришлите, пожалуйста, реквизиты.`;
 
-        // Формируем share-ссылку: <url> будет вставлен перед текстом
-        const botLink = process.env.REACT_APP_SUPPORT_URL!;  // «!» говорит компилятору: я уверен, не undefined
-        const shareUrl =
-            `https://t.me/share/url?url=${encodeURIComponent(botLink)}` +
-            `&text=${encodeURIComponent(refillMessage)}`;
-
-
-        // Закрываем WebApp и открываем окно «Поделиться»
+        // Закрываем WebApp и переходим в чат поддержки
         window.Telegram?.WebApp?.close?.();
-        window.open(shareUrl, "_blank");
+        window.open(process.env.REACT_APP_SUPPORT_URL, "_blank");
     };
-
-
 
 
     return (

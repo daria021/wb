@@ -40,17 +40,16 @@ export const NumericInput = React.forwardRef<HTMLInputElement, NumericInputProps
 
         return (
             <input
-                {...rest}
                 ref={ref}
                 name={name}
                 value={value}
+                type="text"
+                inputMode="numeric"
                 onFocus={handleFocus}
                 onChange={handleChange}
                 onKeyDown={onKeyDown}
-                type="text"
-                inputMode="numeric"
-                pattern="\d*"
                 className={className}
+                {...rest}
             />
         );
     }

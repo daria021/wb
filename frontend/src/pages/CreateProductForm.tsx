@@ -24,7 +24,7 @@ interface ProductFormData {
     image_path?: string;
 }
 
-
+//todo: написать паттерны в инпуты
 function ProductForm() {
     const navigate = useNavigate();
     const {productId} = useParams();

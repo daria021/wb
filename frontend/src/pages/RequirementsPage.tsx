@@ -144,22 +144,24 @@ function RequirementsPage() {
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-gradient-tr-white p-4 rounded-lg max-w-full max-h-full overflow-auto"
+                            className="relative bg-white rounded-lg shadow-lg p-4 max-w-lg max-h-[80vh] overflow-auto"
                             onClick={e => e.stopPropagation()}
                         >
-                            {/* Кнопка закрыть в правом-верхнем углу */}
                             <button
-                                className="absolute top-2 right-2 text-xl font-bold text-gray-700 hover:text-gray-900"
                                 onClick={closeModal}
+                                className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
                             >
                                 &times;
                             </button>
-
-                            <img src={modalImage} alt="Пример" className="max-w-full h-auto mb-4" />
-
+                            <img
+                                src={modalImage}
+                                alt="Пример"
+                                className="w-full h-auto"
+                            />
                         </div>
                     </div>
                 )}
+
 
             </div>
         </div>
