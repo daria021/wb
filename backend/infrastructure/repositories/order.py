@@ -121,8 +121,7 @@ class OrderRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.user_id == user_id, self.entity.step < 7, self.entity.status ==
-                       OrderStatus.CASHBACK_NOT_PAID)
+                .where(self.entity.user_id == user_id)
                 .options(*self.options)
             )
             orders = result.scalars().all()
