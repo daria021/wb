@@ -121,6 +121,7 @@ function FinalDealPage() {
     const productWbPrice = product.wb_price ?? 0;
     const cashback = productWbPrice - productPrice;
     // const deadline = getDeadline();
+    const handleHomeClick = () => navigate('/');
 
 
     return (
@@ -467,7 +468,14 @@ function FinalDealPage() {
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         }
                     </div>
+
                 )}
+                <button
+                    onClick={handleHomeClick}
+                    className="py-2 px-4 rounded-lg mt-2 text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                >
+                    На главную
+                </button>
             </div>
         </div>
     )

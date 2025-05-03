@@ -18,6 +18,8 @@ function AboutPage() {
     const handleQuestion = () => navigate('/question');
     const handleInstruction = () => navigate('/instruction', {state: {backRoute: '/about'}});
     const handleRequirements = () => navigate('/requirements');
+    const handleHomeClick = () => navigate('/');
+
 
     return (
         <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
@@ -109,6 +111,12 @@ function AboutPage() {
                                     className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                                 >
                                     Требования к отчету
+                                </button>
+                                <button
+                                    onClick={handleHomeClick}
+                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                                >
+                                    На главную
                                 </button>
                             </div>
                         </section>

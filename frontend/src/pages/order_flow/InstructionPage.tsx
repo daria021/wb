@@ -195,7 +195,7 @@ function InstructionPage() {
                 <button
                     onClick={handleContinue}
                     disabled={!canContinue}
-                    className={`w-full py-2 rounded-lg text-base font-semibold ${
+                    className={`w-full py-2 rounded-lg text-base font-semibold mt-2 ${
                         canContinue
                             ? 'bg-gradient-r-brand text-white hover:bg-blue-700'
                             : 'bg-gray-400 text-gray-700 cursor-not-allowed'

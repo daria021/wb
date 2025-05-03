@@ -14,7 +14,7 @@ function CompleteInstructionPage() {
 
     useEffect(() => {
         const removeBackListener = on('back_button_pressed', () => {
-            navigate(backRoute);
+            navigate(-1);
         });
 
         return () => {
