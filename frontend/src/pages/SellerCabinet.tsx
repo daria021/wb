@@ -18,6 +18,7 @@ function SellerCabinet() {
         };
     }, [navigate]);
 
+
     const handleReportsClick = () => {
         navigate(`/seller-cabinet/reports`);
     };
@@ -49,6 +50,8 @@ function SellerCabinet() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+
+
     return (
         <div className="min-h-screen bg-gradient-t-gray">  {/* Обертка на весь экран */}
 
@@ -59,9 +62,24 @@ function SellerCabinet() {
                     ВБКэшбэк — сервис для управления раздачами товара за кэшбэк
                 </p>
 
-                <div className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4"
-                     onClick={handleMyBalanceClick}
+                <div className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4 relative"
                 >
+                    <button
+                        onClick={handleMyBalanceClick}
+                        className="
+    absolute top-2 right-2
+    bg-brand
+    hover:bg-brand-dark
+    text-white
+    rounded-md
+    px-3 py-1.5
+    text-sm font-semibold
+    transition-colors
+  "
+                    >
+                        Пополнить
+                    </button>
+
                     <p className="text-md font-semibold mb-1">Баланс</p>
                     <p className="text-2xl font-bold">{balance} раздач</p>
                     <p className="text-sm text-gray-500">Доступное количество раздач</p>

@@ -16,10 +16,7 @@ const STEP_NAMES: { [key: number]: string } = {
 };
 
 const getOrderStepLink = (order: Order): string => {
-    if (order.step === 1) {
-        return `/product/${order.product.id}/step-1`;
-    }
-    if (order.step >= 2 && order.step <= 7) {
+    if (order.step >= 1 && order.step <= 7) {
         return `/order/${order.id}/step-${order.step + 1}`;
     }
     return `/order/${order.id}/order-info`;
@@ -243,7 +240,7 @@ function MyOrdersPage() {
                                         <span className="absolute bottom-2 right-2 text-xs font-semibold text-green-700">
                                         Кешбек выплачен
                                       </span>
-                                    ) : order.step === 6 ? (
+                                    ) : order.step === 7 ? (
                                         <button
                                           onClick={e => handleCashbackPaid(order.id, e)}
                                           className="absolute top-2 right-2
