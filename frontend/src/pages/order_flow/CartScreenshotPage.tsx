@@ -29,14 +29,7 @@ function CartScreenshotPage() {
     // для второго скрина
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
-    const [modalContent, setModalContent] = useState<ModalContent | null>(null);
 
-    const openModal = (src: string) => {
-        setModalContent({ src });
-    };
-    const closeModal = () => setModalContent(null);
-
-    const orderImgPath = '/images/order.jpg';
 
     useEffect(() => {
         if (!file1) {
@@ -154,12 +147,7 @@ function CartScreenshotPage() {
                 <p>
                     Ключевое слово: <strong>{product.key_word}</strong>
                 </p>
-                <div
-                    onClick={() => openModal(orderImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                  Пример скрина заказа
-                </div>
+
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
@@ -217,33 +205,6 @@ function CartScreenshotPage() {
 
             </div>
 
-
-            {modalContent && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                    onClick={closeModal}
-                >
-                    <div
-                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        {/* Крестик в правом верхнем углу */}
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
-                        >
-                            &times;
-                        </button>
-
-                        {/* Вот здесь вставляем картинку */}
-                        <img
-                            src={modalContent.src}
-                            alt="Пример"
-                            className="w-full h-auto mt-4"
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

@@ -23,6 +23,8 @@ interface OrderReport {
     article?: string;
 }
 
+type ModalContent = { src: string};
+
 function StepOrderPlacement() {
     const navigate = useNavigate();
     const {orderId} = useParams<{ orderId: string }>();
@@ -34,6 +36,14 @@ function StepOrderPlacement() {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+    const [modalContent, setModalContent] = useState<ModalContent | null>(null);
+    const orderImgPath = '/images/order.jpg';
+
+
+    const openModal = (src: string) => {
+        setModalContent({ src });
+    };
+    const closeModal = () => setModalContent(null);
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -118,6 +128,12 @@ function StepOrderPlacement() {
                 <p>2. Сделайте скрин из раздела «Доставки» в личном кабинете</p>
                 <p>3. На скрине обязательно должна быть указана цена</p>
                 <p>4. Загрузите скрин заказа в отчет</p>
+                <div
+                    onClick={() => openModal(orderImgPath)}
+                    className="underline text-blue-600 cursor-pointer"
+                >
+                    Пример скрина заказа
+                </div>
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
             </div>
@@ -348,7 +364,34 @@ function StepOrderPlacement() {
                     </button>
                 </div>
             </div>
-        </div>
+            {modalContent && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                    onClick={closeModal}
+                >
+                    <div
+                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* Крестик в правом верхнем углу */}
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
+                        >
+                            &times;
+                        </button>
+
+                        {/* Вот здесь вставляем картинку */}
+                        <img
+                            src={modalContent.src}
+                            alt="Пример"
+                            className="w-full h-auto mt-4"
+                        />
+                    </div>
+                </div>
+            )}
+            </div>
+
     );
 }
 

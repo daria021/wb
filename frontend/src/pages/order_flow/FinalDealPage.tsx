@@ -472,7 +472,7 @@ function FinalDealPage() {
                 )}
                 <button
                     onClick={handleHomeClick}
-                    className="py-2 px-4 rounded-lg mt-2 text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                 >
                     На главную
                 </button>
