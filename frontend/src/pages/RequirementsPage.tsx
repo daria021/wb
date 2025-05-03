@@ -2,17 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { on } from "@telegram-apps/sdk";
 import { useNavigate } from 'react-router-dom';
 
+
+type ModalContent = { src: string; isVideo: boolean };
+
 function RequirementsPage() {
     const navigate = useNavigate();
-    const [showModal, setShowModal] = useState(false);
-    const [modalImage, setModalImage] = useState('');
+
 
     // Пути к картинкам в public
     const orderImgPath = '/images/order.jpg';
     const receivingImgPath = '/images/receiving.jpg';
     const feedbackImgPath = '/images/feedback.jpg';
     const barcodeImgPath = '/images/barcode.jpg';
-    const receiptImgPath = '/images/receipt.jpg';
+    const receiptVideoPath = '/images/electronic_receipt.mp4';
+
+    // единственное состояние для модалки
+    const [modalContent, setModalContent] = useState<ModalContent | null>(null);
+
+    const openModal = (src: string) => {
+        setModalContent({ src, isVideo: src.endsWith('.mp4') });
+    };
+    const closeModal = () => setModalContent(null);
 
     const handleHomeClick = () => navigate('/');
 
@@ -25,14 +35,13 @@ function RequirementsPage() {
         };
     }, [navigate]);
 
-    const openModal = (imgPath: string) => {
-        setModalImage(imgPath);
-        setShowModal(true);
+    const handleSupportClick = () => {
+        if (window.Telegram?.WebApp?.close) {
+            window.Telegram.WebApp.close();
+        }
+        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
-    const closeModal = () => {
-        setShowModal(false);
-        setModalImage('');
-    };
+
 
     return (
         <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
@@ -53,116 +62,133 @@ function RequirementsPage() {
                             <p className="font-semibold mb-1 text-lg">Заказ оформлен</p>
                             <p className="mt-1">
                                 На скрине должна быть указана цена покупки и адрес ПВЗ.{' '}
-                                <span
+                                <div
                                     onClick={() => openModal(orderImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
                   Пример скрина заказа
-                </span>
+                </div>
                             </p>
                         </li>
                         <li className="px-4">
                             <p className="font-semibold mb-1 text-lg">Товар получен</p>
                             <p className="mt-1">
                                 На скрине должен быть указан статус "Доставлено" и дата получения.{' '}
-                                <span
+                                <div
                                     onClick={() => openModal(receivingImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
                   Пример скрина получения товара
-                </span>
+                </div>
                             </p>
                         </li>
                         <li className="px-4">
                             <p className="font-semibold mb-1 text-lg">Отзыв оставлен</p>
                             <p className="mt-1">
                                 На скрине должен быть опубликованный отзыв из вашего личного кабинета.{' '}
-                                <span
+                                <div
                                     onClick={() => openModal(feedbackImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
                   Пример отзыва
-                </span>
+                </div>
                             </p>
                         </li>
                         <li className="px-4">
                             <p className="font-semibold mb-1 text-lg">Разрезанный штрихкод</p>
                             <p className="mt-1">
                                 Разрежьте штрихкод на мелкие кусочки и сделайте фото на фоне товара.{' '}
-                                <span
+                                <div
                                     onClick={() => openModal(barcodeImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
                   Пример разрезанного штрихкода
-                </span>
+                </div>
                             </p>
                         </li>
                         <li className="px-4">
                             <p className="font-semibold mb-1 text-lg">Электронный чек</p>
                             <p className="mt-1">
-                                Как сделать скрин электронного чека — посмотрите на ВК.{' '}
-                                <span
-                                    onClick={() => openModal(receiptImgPath)}
-                                    className="underline text-blue-600 cursor-pointer"
-                                >
-                  Пример электронного чека
-                </span>
+                                Для того чтобы получить Электронный чек перейдите в Профиль &rarr;
+                                Финансы &rarr; вкладка "Эл. чеки" &rarr; Найдите ваш чек, откройте его &rarr;
+                                Скопируйте номер чека и сделайте скриншот.{' '}
+                                <div>
+                                    {/* Кнопка для открытия модального окна */}
+                                    <div
+                                        onClick={() => openModal(receiptVideoPath)}
+                                        className="underline text-blue-600 cursor-pointer"
+                                    >
+                                  Пример получения электронного чека
+                                </div>
+                                </div>
                             </p>
                         </li>
                     </ol>
 
                     <hr className="border-gradient-tr-darkGray" />
 
-                    <div className="flex flex-col gap-2 mt-6">
-                        <button onClick={() => navigate('/about')} className="btn">
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={() => navigate('/about')}
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                        >
                             О сервисе
                         </button>
-                        <button onClick={() => navigate('/instruction')} className="btn">
+                        <button
+                            onClick={() => navigate('/instruction')}
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                        >
                             Инструкция
                         </button>
-                        <button onClick={() => navigate('/requirements')} className="btn">
+                        <button
+                            onClick={() => navigate('/requirements')}
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                        >
                             Требования к отчету
                         </button>
                         <button
-                            onClick={() => {
-                                window.Telegram?.WebApp?.close?.();
-                                window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
-                            }}
-                            className="btn"
+                            onClick={handleSupportClick}
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
                         >
                             Нужна помощь
                         </button>
-                        <button onClick={handleHomeClick} className="btn">
+                        <button
+                            onClick={handleHomeClick}
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                        >
                             На главную
                         </button>
                     </div>
                 </div>
 
-                {showModal && (
+                {modalContent && (
                     <div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-white rounded-lg shadow-lg p-4 max-w-lg max-h-[80vh] overflow-auto"
+                            className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
                             onClick={e => e.stopPropagation()}
                         >
+                            {/* Крестик в правом верхнем углу */}
                             <button
                                 onClick={closeModal}
                                 className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
                             >
                                 &times;
                             </button>
-                            <img
-                                src={modalImage}
-                                alt="Пример"
-                                className="w-full h-auto"
-                            />
+
+                            {modalContent.isVideo ? (
+                                <video width="100%" height="auto" controls>
+                                    <source src={modalContent.src} type="video/mp4" />
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                            ) : (
+                                <img src={modalContent.src} alt="Пример" className="w-full h-auto" />
+                            )}
                         </div>
                     </div>
                 )}
-
-
             </div>
         </div>
     );
