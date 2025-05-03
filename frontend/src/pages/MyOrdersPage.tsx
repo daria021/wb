@@ -237,13 +237,13 @@ function MyOrdersPage() {
                                         </div>
                                     </div>
                                     {order.status === "payment_confirmed" ? (
-                                        <span className="absolute bottom-2 right-2 text-xs font-semibold text-green-700">
+                                        <span className="absolute top-10 right-2 text-xs font-semibold text-green-700">
                                         Кешбек выплачен
                                       </span>
                                     ) : order.step === 7 ? (
                                         <button
                                           onClick={e => handleCashbackPaid(order.id, e)}
-                                          className="absolute top-2 right-2
+                                          className="absolute top-10 right-2
                                                 px-2 py-1
                                                 border border-blue-500
                                                 text-blue-500 text-xs
