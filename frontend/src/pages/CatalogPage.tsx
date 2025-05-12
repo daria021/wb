@@ -118,14 +118,14 @@ function CatalogPage() {
 
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray">
-            <div className="flex w-max mx-auto mt-2 bg-gradient-t-gray p-1 rounded-full">
+        <div className="min-h-screen bg-gray-200">
+            <div className="flex w-max mx-auto mt-2 bg-gray-200 p-1 rounded-full">
                 <Link
                     to="/catalog"
                     className={`
             px-4 py-2 rounded-full
             ${isOnCatalog
-                        ? 'bg-gradient-tr-white text-black'
+                        ? 'bg-white text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
@@ -137,7 +137,7 @@ function CatalogPage() {
                     className={`
             px-4 py-2 rounded-full
             ${!isOnCatalog
-                        ? 'bg-gradient-tr-white text-black'
+                        ? 'bg-white text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
@@ -154,7 +154,7 @@ function CatalogPage() {
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
 
-                        className="flex-1 border border-gradient-tr-darkGray rounded-md p-2"
+                        className="flex-1 border border-darkGray rounded-md p-2"
                     />
                     <button
                         onClick={() => setShowFilters(prev => !prev)}
@@ -174,7 +174,7 @@ function CatalogPage() {
                                     inline-flex items-center justify-center
                                     w-3 h-3
                                     bg-red-600
-                                    border-2 border-gradient-tr-white
+                                    border-2 border-white
                                     rounded-full
                                   `}
                             />
@@ -191,7 +191,7 @@ function CatalogPage() {
 
                 {/* Inline filters panel */}
                 {showFilters && (
-                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4 space-y-4">
+                    <div className="bg-white rounded-lg shadow p-4 mb-4 space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Максимальная цена</label>
                             <input
@@ -199,7 +199,7 @@ function CatalogPage() {
                                 min={0}
                                 value={filterPrice}
                                 onChange={e => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
+                                className="w-full border border-darkGray rounded p-2 focus:outline-none focus:ring"
                             />
                         </div>
                         <div>
@@ -207,7 +207,7 @@ function CatalogPage() {
                             <select
                                 value={filterCategory}
                                 onChange={e => setFilterCategory(e.target.value)}
-                                className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
+                                className="w-full border border-darkGray rounded p-2 focus:outline-none focus:ring"
                             >
                                 <option value="">Все категории</option>
                                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -217,7 +217,7 @@ function CatalogPage() {
                             <label className="block text-sm font-medium mb-1">Продавец</label>
                             <Combobox value={filterSeller} onChange={setFilterSeller} as="div" className="relative">
                                 <Combobox.Input
-                                    className="w-full border border-gradient-tr-darkGray rounded p-2 focus:outline-none focus:ring"
+                                    className="w-full border border-darkGray rounded p-2 focus:outline-none focus:ring"
                                     placeholder="Поиск продавца"
                                     onChange={e => setSellerQuery(e.target.value)}
                                     displayValue={(id: string) => {
@@ -235,7 +235,7 @@ function CatalogPage() {
                                         key="all"
                                         value=""
                                         className={({ active }) =>
-                                            `cursor-pointer select-none p-2 ${active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'}`
+                                            `cursor-pointer select-none p-2 ${active ? 'bg-brandlight text-white' : 'text-gray-700'}`
                                         }
                                     >
                                         Все продавцы
@@ -249,7 +249,7 @@ function CatalogPage() {
                                                 key={sel.id}
                                                 value={sel.id}
                                                 className={({ active }) =>
-                                                    `cursor-pointer select-none p-2 ${active ? 'bg-gradient-r-brandlight text-white' : 'text-gray-700'}`
+                                                    `cursor-pointer select-none p-2 ${active ? 'bg-brandlight text-white' : 'text-gray-700'}`
                                                 }
                                             >
                                                 {sel.nickname}
@@ -270,13 +270,13 @@ function CatalogPage() {
                                     setFilterSeller('');
                                     setShowFilters(false);
                                 }}
-                                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100"
+                                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-200-100"
                             >
                                 Сбросить
                             </button>
                             <button
                                 onClick={() => setShowFilters(false)}
-                                className="px-4 py-2 bg-gradient-r-brand text-white rounded-md hover:bg-gradient-r-brand-dark"
+                                className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-dark"
                             >
                                 Применить
                             </button>
@@ -290,9 +290,9 @@ function CatalogPage() {
                         <div
                             key={product.id}
                             onClick={() => navigate(`/product/${product.id}`)}
-                            className="border border-gradient-b-gray rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                            className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
                         >
-                            <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
+                            <div className="w-full aspect-[3/4] bg-gray-200-100 overflow-hidden">
                                 {product.image_path
                                     ? <img
                                         src={product.image_path.startsWith('http') ? product.image_path : GetUploadLink(product.image_path)}
@@ -301,7 +301,7 @@ function CatalogPage() {
                                         фото</div>
                                 }
                             </div>
-                            <div className="p-3 bg-gradient-tr-white flex flex-col">
+                            <div className="p-3 bg-white flex flex-col">
                                 <h3
                                     className="
                                         text-sm font-semibold mb-1

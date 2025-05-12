@@ -22,12 +22,12 @@ function AboutPage() {
 
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow-lg p-6">
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-6">
                 <div className="gap-6">
                     <h1 className="text-2xl font-bold mb-6 text-left">О сервисе:</h1>
 
-                    {/*<div className="bg-gradient-tr-white rounded-lg p-4">*/}
+                    {/*<div className="bg-white rounded-lg p-4">*/}
                         <section className="mb-6 text-left">
                             <p className="text-base text-gray-800 mb-4">
                                 ВБ КЭШБЭК - бот поможет селлерам эффективнее проводить раздачи, а покупателям
@@ -39,7 +39,7 @@ function AboutPage() {
                         <div className="space-y-2">
                             <div>
                                 <a
-                                    href="https://t.me/wbcashmarket/45"
+                                    href="https://t.me/Premiumcash1/9"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:underline"
@@ -49,7 +49,7 @@ function AboutPage() {
                             </div>
                             <div>
                                 <a
-                                    href="https://t.me/wbcashmarket/44"
+                                    href="https://t.me/Premiumcash1/8"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:underline"
@@ -59,7 +59,7 @@ function AboutPage() {
                             </div>
                             <div>
                                 <a
-                                    href="https://t.me/wbcashback_go"
+                                    href="https://t.me/Premiumcashb/13"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:underline"
@@ -89,32 +89,32 @@ function AboutPage() {
                                 <li>Простая инструкция</li>
                                 <li>Проверенные продавцы</li>
                             </ul>
-                            <hr className="my-6 border-gradient-tr-darkGray"/>
+                            <hr className="my-6 border-darkGray"/>
                         </section>
 
                         <section className="mb-6 text-left">
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={handleQuestion}
-                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                                 >
                                     Ответы на частые вопросы
                                 </button>
                                 <button
                                     onClick={handleInstruction}
-                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                                 >
                                     Инструкция
                                 </button>
                                 <button
                                     onClick={handleRequirements}
-                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                                 >
                                     Требования к отчету
                                 </button>
                                 <button
                                     onClick={handleHomeClick}
-                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                                 >
                                     На главную
                                 </button>

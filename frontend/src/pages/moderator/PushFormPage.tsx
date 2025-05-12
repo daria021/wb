@@ -101,7 +101,7 @@ const PushFormPage: React.FC = () => {
     };
 
     return (
-        <div className="p-4 max-w-lg mx-auto bg-gray-100 rounded shadow">
+        <div className="p-4 max-w-lg mx-auto bg-gray-200-100 rounded shadow">
             <h1 className="text-2xl font-bold mb-4">
                 {isEditMode ? 'Редактировать рассылку' : 'Создать новую рассылку'}
             </h1>
@@ -119,7 +119,7 @@ const PushFormPage: React.FC = () => {
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full p-2 border border-gradient-tr-darkGray rounded"
+                            className="w-full p-2 border border-darkGray rounded"
                             required
                         />
                     </div>
@@ -131,7 +131,7 @@ const PushFormPage: React.FC = () => {
                             id="text"
                             value={text}
                             onChange={(e) => setText(e.target.value)}
-                            className="w-full p-2 border border-gradient-tr-darkGray rounded"
+                            className="w-full p-2 border border-darkGray rounded"
                             rows={4}
                             required
                         ></textarea>
@@ -158,7 +158,7 @@ const PushFormPage: React.FC = () => {
                             value={buttonText}
                             onChange={(e) => setButtonText(e.target.value)}
                             placeholder="Введите текст кнопки"
-                            className="w-full p-2 border border-gradient-tr-darkGray rounded"
+                            className="w-full p-2 border border-darkGray rounded"
                         />
                     </div>
                     <div>
@@ -171,14 +171,14 @@ const PushFormPage: React.FC = () => {
                             value={buttonLink}
                             onChange={(e) => setButtonLink(e.target.value)}
                             placeholder="Введите URL для кнопки"
-                            className="w-full p-2 border border-gradient-tr-darkGray rounded"
+                            className="w-full p-2 border border-darkGray rounded"
                         />
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button
                             type="button"
                             onClick={() => navigate(isEditMode && pushId ? `/moderator/pushes/${pushId}` : '/moderator/pushes')}
-                            className="px-4 py-2 border border-gradient-tr-darkGray rounded"
+                            className="px-4 py-2 border border-darkGray rounded"
                         >
                             Отмена
                         </button>

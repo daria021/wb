@@ -21,7 +21,6 @@ module.exports = {
       white:       [theme("colors.white"),  theme("colors.white2")],
     }),
 
-    // для радиального
     radialGradientColors: theme => ({
       brand:      [theme("colors.brand"),      theme("colors.brand2")],
       brandlight: [theme("colors.brandlight"), theme("colors.brandlight2")],

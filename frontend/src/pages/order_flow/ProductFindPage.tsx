@@ -149,7 +149,7 @@ function ProductFindPage() {
 
     const {product} = order;
     const handleChannelClick = () => {
-        window.open('https://t.me/grcashback', '_blank'); //todo
+        window.open('https://t.me/Premiumcash1', '_blank'); //todo
     };
 
     const handleSupportClick = () => {
@@ -161,8 +161,8 @@ function ProductFindPage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
-            <div className="bg-gradient-tr-white border border-gradient-r-brand p-4 rounded-lg shadow mb-4">
+        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4">
                 <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите наш товар</h2>
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
                     <li>Найдите наш товар на сайте или в приложении WB</li>
@@ -217,8 +217,8 @@ function ProductFindPage() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full py-2 mb-4 rounded-lg text-white font-semibold text-center ${
-                    canContinue ? 'bg-gradient-r-brand hover:bg-gradient-r-brand' : 'bg-gray-400 cursor-not-allowed'
+                className={`w-full py-2 mb-4 rounded-lg text-brand border border-brand font-semibold text-center ${
+                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить
@@ -226,7 +226,7 @@ function ProductFindPage() {
 
 
             <div className="mb-4">
-                <div className="w-full aspect-[3/4] bg-gray-100 rounded overflow-hidden relative">
+                <div className="w-full aspect-[3/4] bg-gray-200-100 rounded overflow-hidden relative">
                     {product.image_path ? (
                         <img
                             src={
@@ -245,7 +245,7 @@ function ProductFindPage() {
                 </div>
             </div>
 
-            <div className="bg-gradient-tr-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -260,18 +260,18 @@ function ProductFindPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-2 rounded-lg bg-gradient-tr-white border border-gradient-r-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-2 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
                 {showReport && (
-                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div className="space-y-2">
                                 {/* Шаг 1 */}
-                                <div className="bg-gradient-tr-white rounded-lg shadow">
+                                <div className="bg-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(1)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -317,7 +317,7 @@ function ProductFindPage() {
                                 </div>
 
 
-                                <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                     <div className="font-semibold text-black">Шаг 2. Найдите наш товар
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
@@ -340,19 +340,19 @@ function ProductFindPage() {
 
                     <button
                         onClick={handleChannelClick}
-                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
                          justify-center gap-2">
                         <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                         <span>Подписаться на канал</span>
                     </button>
                     <button
                         onClick={handleSupportClick}
-                        className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold">
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
                         Нужна помощь
                     </button>
                     <button
-                        onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
-                        className="flex-1 bg-gradient-tr-white text-gray-700 py-2 rounded-lg border border-gradient-r-brand text-center"
+                        onClick={() => window.open('https://t.me/Premiumcashb/1153', '_blank')}
+                        className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
                     >
                         Проверить продавца
                     </button>

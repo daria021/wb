@@ -140,14 +140,14 @@ function MyOrdersPage() {
 
 
     return (
-        <div className="bg-gradient-t-gray bg-fixed min-h-screen">
-            <div className="flex w-max mx-auto mb-2 mt-2 bg-gradient-t-gray p-1 rounded-full">
+        <div className="bg-gray-200 bg-fixed min-h-screen">
+            <div className="flex w-max mx-auto mb-2 mt-2 bg-gray-200 p-1 rounded-full">
                 <Link
                     to="/catalog"
                     className={`
             px-4 py-2 rounded-full
             ${!isOnOrders
-                        ? 'bg-gradient-tr-white text-black'
+                        ? 'bg-white text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
@@ -159,7 +159,7 @@ function MyOrdersPage() {
                     className={`
             px-4 py-2 rounded-full
             ${isOnOrders
-                        ? 'bg-gradient-tr-white text-black'
+                        ? 'bg-white text-black'
                         : 'text-gray-500 hover:text-black'}
           `}
                 >
@@ -182,11 +182,11 @@ function MyOrdersPage() {
                         Загрузка покупок…
                     </div>
                 ) : error ? (
-                    <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
+                    <div className="p-4 bg-brandlight border border-brand rounded text-center">
                         <p className="text-sm text-brand">{error}</p>
                     </div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="bg-gradient-tr-white rounded-md shadow-sm p-3 text-center">
+                    <div className="bg-white rounded-md shadow-sm p-3 text-center">
                         Покупки не найдены
                     </div>
                 ) : (
@@ -195,7 +195,7 @@ function MyOrdersPage() {
                         const linkTo = getOrderStepLink(order);
                         return (
                             <Link to={linkTo} key={order.id}>
-                                <div className="relative bg-white border border-gradient-tr-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                <div className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {/* ваш контент карточки */}
                                     <button
                                         onClick={e => handleCancelOrder(order.id, e)}
@@ -204,7 +204,7 @@ function MyOrdersPage() {
                                         Отменить
                                     </button>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-16 h-16 bg-gray-100 relative flex-shrink-0">
+                                        <div className="w-16 h-16 bg-gray-200-100 relative flex-shrink-0">
                                             {order.product.image_path ? (
                                                 <img
                                                     src={
@@ -265,7 +265,7 @@ function MyOrdersPage() {
 
             <div
                 onClick={handleSupportClick}
-                className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
             >
                 <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                 <div className="flex flex-col">

@@ -191,10 +191,10 @@ function ModeratorUserDetailPage() {
 
 
     return (
-        <div className="p-4 bg-gray-100 min-h-screen">
+        <div className="p-4 bg-gray-200-100 min-h-screen">
             <h1 className="text-2xl font-bold text-center mb-4 text-brand">Профиль пользователя</h1>
 
-            <div className="bg-gradient-tr-white rounded shadow p-4 mb-4">
+            <div className="bg-white rounded shadow p-4 mb-4">
                 <p><strong>ID:</strong> {user.id}</p>
                 <p><strong>Telegram ID:</strong> {user.telegram_id}</p>
                 <p><strong>Никнейм:</strong> {user.nickname}</p>
@@ -244,7 +244,7 @@ function ModeratorUserDetailPage() {
 
             {/* Блок для управления балансом продавца */}
             {user.is_seller && (
-                <div className="mb-4 p-4 bg-gradient-tr-white rounded shadow">
+                <div className="mb-4 p-4 bg-white rounded shadow">
                     <h2 className="text-lg font-bold mb-2 text-brand">Баланс продавца</h2>
                     <div className="flex gap-2 mb-2">
                         <input
@@ -256,7 +256,7 @@ function ModeratorUserDetailPage() {
                         />
                         <button
                             onClick={handleBalanceIncrease}
-                            className="bg-gradient-r-brand text-white px-2 py-1 rounded text-sm"
+                            className="bg-brand text-white px-2 py-1 rounded text-sm"
                         >
                             Пополнить
                         </button>
@@ -269,7 +269,7 @@ function ModeratorUserDetailPage() {
                     </div>
                     <button
                         onClick={handleBalanceClear}
-                        className="bg-gradient-r-brandlight text-brand px-2 py-1 rounded text-sm w-full"
+                        className="bg-brandlight text-brand px-2 py-1 rounded text-sm w-full"
                     >
                         Списать весь баланс
                     </button>
@@ -278,7 +278,7 @@ function ModeratorUserDetailPage() {
 
             {/* Блок для управления реферальным бонусом */}
             {user.invited_by && (
-                <div className="mb-4 p-4 bg-gradient-tr-white rounded shadow">
+                <div className="mb-4 p-4 bg-white rounded shadow">
                     <h2 className="text-lg font-bold mb-2 text-brand">Реферальный бонус</h2>
                     <div className="flex gap-2 mb-2">
                         <input
@@ -290,7 +290,7 @@ function ModeratorUserDetailPage() {
                         />
                         <button
                             onClick={handleReferralBonusIncrease}
-                            className="bg-gradient-r-brand text-white px-2 py-1 rounded text-sm"
+                            className="bg-brand text-white px-2 py-1 rounded text-sm"
                         >
                             Начислить
                         </button>
@@ -303,14 +303,14 @@ function ModeratorUserDetailPage() {
                     </div>
                     <button
                         onClick={handleReferralBonusClear}
-                        className="bg-gradient-r-brandlight text-brand px-2 py-1 rounded text-sm w-full"
+                        className="bg-brandlight text-brand px-2 py-1 rounded text-sm w-full"
                     >
                         Списать весь бонус
                     </button>
                     {user.invited_by && user.has_discount && (
                         <button
                             onClick={handleDiscountUsed}
-                            className="mt-2 bg-gradient-r-brandlight text-brand p-2 rounded text-sm w-full"
+                            className="mt-2 bg-brandlight text-brand p-2 rounded text-sm w-full"
                         >
                             Использовал скидку
                         </button>

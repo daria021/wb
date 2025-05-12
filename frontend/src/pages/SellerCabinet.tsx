@@ -53,7 +53,7 @@ function SellerCabinet() {
 
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray">  {/* Обертка на весь экран */}
+        <div className="min-h-screen bg-gray-200">  {/* Обертка на весь экран */}
 
             <div className="p-4 max-w-screen-sm mx-auto relative">
                 <h1 className="text-xl font-bold mb-4 text-center">Кабинет продавца</h1>
@@ -62,7 +62,7 @@ function SellerCabinet() {
                     ВБКэшбэк — сервис для управления раздачами товара за кэшбэк
                 </p>
 
-                <div className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4 relative"
+                <div className="bg-white border border-darkGray rounded-md p-4 mb-4 relative"
                 >
                     <button
                         onClick={handleMyBalanceClick}
@@ -88,7 +88,7 @@ function SellerCabinet() {
                 {/*<div className="flex justify-end mb-4">*/}
                     <button
                         onClick={() => navigate('/create-product')}
-                        className="w-full border bg-gradient-tr-white border-gradient-r-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-100"
+                        className="w-full border bg-white border-brand rounded-md px-4 py-2 text-base font-semibold hover:bg-gray-200-100"
                     >
                         Разместить товар
                     </button>
@@ -96,7 +96,7 @@ function SellerCabinet() {
 
                 <div
                     onClick={handleMyProductsClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer"
+                    className="bg-white border border-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer"
                 >
                     <p className="text-md font-semibold mb-1">Мои товары</p>
                     <p className="text-sm text-gray-500">Товары по раздачам</p>
@@ -104,7 +104,7 @@ function SellerCabinet() {
 
                 <div
                     onClick={handleReportsClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-md p-4 mb-4 cursor-pointer"
+                    className="bg-white border border-darkGray rounded-md p-4 mb-4 cursor-pointer"
                 >
                     <p className="text-md font-semibold mb-1">Отчеты по выкупам</p>
                     <p className="text-sm text-gray-500">
@@ -115,7 +115,7 @@ function SellerCabinet() {
 
                 <div
                     onClick={handleSupportClick}
-                    className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                    className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
                 >
                     <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                     <div className="flex flex-col">

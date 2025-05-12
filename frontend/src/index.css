@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gradient-t-gray;
+  @apply bg-gray-200;
   font-family: 'Montserrat', sans-serif;
 }
 

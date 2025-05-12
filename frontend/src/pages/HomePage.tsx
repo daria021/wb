@@ -20,7 +20,7 @@ function HomePage() {
     const handleAboutClick = () => navigate('/about');
     const handleInstructionClick = () => navigate('/instruction', {state: {backRoute: '/'}});
     const handleComplaintsClick = () => {
-        window.open('https://t.me/bookshaloba', '_blank');
+        window.open('https://t.me/Premiumcashb/1153', '_blank');
     };
     const handleMyOrdersClick = async () => {
         try {
@@ -36,7 +36,7 @@ function HomePage() {
     const handleCatalogClick = () => navigate(`/catalog`);
     const handleReferralClick = () => navigate('/invite');
     const handleChannelClick = () => {
-        window.open('https://t.me/grcashback', '_blank');
+        window.open('https://t.me/Premiumcash1', '_blank');
     };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -46,11 +46,11 @@ function HomePage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray p-6 font-body">
+        <div className="min-h-screen bg-gray-200 p-6 font-body">
             <div className="grid grid-cols-3 gap-4 mb-8">
                 <div
                     onClick={handleAboutClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
+                    className="bg-white border border-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
                     <img src="/icons/about.png" alt="О сервисе" className="w-4 h-4 mb-1"/>
                     <span className="font-body">О сервисе</span> {/* заголовок */}
@@ -58,7 +58,7 @@ function HomePage() {
 
                 <div
                     onClick={handleInstructionClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
+                    className="bg-white border border-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
                     <img src="/icons/instruction.png" alt="Инструкция" className="w-4 h-4 mb-1"/>
                     <span className="font-body">Инструкция</span>
@@ -66,7 +66,7 @@ function HomePage() {
 
                 <div
                     onClick={handleComplaintsClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
+                    className="bg-white border border-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
                     <img src="/icons/book.png" alt="Книга жалоб" className="w-4 h-4 mb-1"/>
                     <span className="font-body">Книга жалоб</span>
@@ -77,7 +77,7 @@ function HomePage() {
                 <div className="flex flex-col gap-4 col-span-2">
                     <div
                         onClick={handleMyOrdersClick}
-                        className="bg-gradient-tr-white border-2 border-gradient-r-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
+                        className="bg-white border-2 border-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
@@ -97,7 +97,7 @@ function HomePage() {
 
                     <div
                         onClick={handleSellerClick}
-                        className="bg-gradient-tr-white border-2 border-gradient-r-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
+                        className="bg-white border-2 border-brand rounded-lg shadow-sm p-4 text-base font-bold cursor-pointer"
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
@@ -117,7 +117,7 @@ function HomePage() {
 
                 <div
                     onClick={handleCatalogClick}
-                    className="bg-gradient-r-brand rounded-lg px-1 py-4 text-sm font-semibold text-white cursor-pointer relative"
+                    className="bg-brand rounded-lg px-1 py-4 text-sm font-semibold text-white cursor-pointer relative"
                 >
                     <span className="block text-left font-heading">
                         Каталог актуальных товаров
@@ -132,7 +132,7 @@ function HomePage() {
 
             {/*<div*/}
             {/*    onClick={handleReferralClick}*/}
-            {/*    className="bg-gradient-tr-white border border-gradient-r-brand rounded-full shadow-sm p-4 mb-4 text-lg font-semibold cursor-pointer text-center"*/}
+            {/*    className="bg-white border border-brand rounded-full shadow-sm p-4 mb-4 text-lg font-semibold cursor-pointer text-center"*/}
             {/*>*/}
             {/*    <span className="font-body">Реферальная программа</span>*/}
             {/*</div>*/}
@@ -143,7 +143,7 @@ function HomePage() {
                 <ReferralGlowingButton
                     onClick={handleReferralClick}
                     className="
-                      bg-gradient-tr-white border border-gradient-r-brand
+                      bg-white border border-brand
                       rounded-full shadow-sm p-4 mb-6
                       text-sm font-semibold text-center
                       cursor-pointer w-full"
@@ -154,7 +154,7 @@ function HomePage() {
                 <div
                     onClick={() => navigate('/moderator')}
                     className="
-                    bg-gradient-tr-white border border-gradient-r-brand
+                    bg-white border border-brand
                      rounded-full shadow-sm p-4 mb-4
                       text-sm font-semibold cursor-pointer text-center"
                 >
@@ -165,11 +165,11 @@ function HomePage() {
             <div className="flex flex-col gap-4">
                 <div
                     onClick={handleChannelClick}
-                    className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                    className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
                 >
                     <img src="/icons/telegram.png" alt="Telegram" className="w-7 h-7"/>
                     <div className="flex flex-col">
-                        <span className="font-body">@wbcashback_go</span>
+                        <span className="font-body">@Premiumcash1</span>
                         <span className="text-xs text-gray-500">Подпишись на канал</span>
                     </div>
                     <img
@@ -181,7 +181,7 @@ function HomePage() {
 
                 <div
                     onClick={handleSupportClick}
-                    className="bg-gradient-tr-white border border-gradient-r-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                    className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
                 >
                     <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                     <div className="flex flex-col">

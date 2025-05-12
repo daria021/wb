@@ -108,7 +108,7 @@ function ModeratorUsersPage() {
     );
 
     return (
-        <div className="bg-gradient-t-gray h-screen p-2">
+        <div className="bg-gray-200 h-screen p-2">
             <h1 className="text-xl font-bold mb-3 text-center">
                 Управление пользователями
             </h1>
@@ -121,7 +121,7 @@ function ModeratorUsersPage() {
                         placeholder="Поиск по нику"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                        className="w-full border border-darkGray rounded p-2 text-sm"
                     />
                 </div>
                 <div className="flex-1 flex items-center">
@@ -150,7 +150,7 @@ function ModeratorUsersPage() {
             ) : (
                 <div className="w-full overflow-x-auto">
                     <table className="w-full table-auto divide-y divide-gray-200 text-[8px]">
-                        <thead className="bg-gradient-r-brand text-white text-center">
+                        <thead className="bg-brand text-white text-center">
                         <tr>
                             <th className="py-1 px-1">ID</th>
                             <th className="py-1 px-1">Telegram ID</th>
@@ -162,11 +162,11 @@ function ModeratorUsersPage() {
                             <th className="py-1 px-1">Пригласивший</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-gradient-tr-white divide-y divide-gray-200 text-center">
+                        <tbody className="bg-white divide-y divide-gray-200 text-center">
                         {filteredUsers.map(user => (
                             <tr
                                 key={user.id}
-                                className="hover:bg-gray-50 cursor-pointer"
+                                className="hover:bg-gray-200-50 cursor-pointer"
                                 onClick={() => navigate(`/moderator/users/${user.id}`)}
                             >
                                 <td className="px-1 py-1 text-[5px]">

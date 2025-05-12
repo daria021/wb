@@ -88,13 +88,13 @@ function InstructionPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
-            <div className="fixed top-6 left-6 z-50 bg-gradient-r-brandlight rounded-lg p-2 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+            <div className="fixed top-6 left-6 z-50 bg-brandlight rounded-lg p-2 flex items-center justify-center">
                 <button onClick={handleHomeClick} aria-label="На главную">
                     <img src="/icons/home.png" alt="Домой" className="w-6 h-6" />
                 </button>
             </div>
-            <div className="max-w-screen-md w-full bg-gradient-tr-white rounded-lg shadow-lg p-6">
+            <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Правила и условия</h1>
                 <p className="text-base text-gray-800 mb-4">
                     Перед тем как начнем, пожалуйста, внимательно прочитайте все условия:
@@ -103,7 +103,7 @@ function InstructionPage() {
                 {/* Блок с правилами */}
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold text-blue-600 mb-3">Правила:</h2>
-                    <div className="bg-gradient-tr-white rounded-lg p-4 border border-gradient-tr-darkGray">
+                    <div className="bg-white rounded-lg p-4 border border-darkGray">
                         <ol className="list-decimal list-inside text-base text-gray-800 space-y-2">
                             <li>
                                 Вы заключаете сделку с продавцом{' '}
@@ -137,7 +137,7 @@ function InstructionPage() {
 
                 <div className="mb-6">
                     <h2 className="text-xl font-bold mb-3 text-blue-600">Условия сделки:</h2>
-                    <div className="bg-gradient-tr-white rounded-lg p-4 border border-gradient-tr-darkGray">
+                    <div className="bg-white rounded-lg p-4 border border-darkGray">
                         <ol className="list-decimal list-inside text-base text-gray-800 space-y-2">
                             <li>
                                 Цена на сайте: <strong>{product.wb_price} руб.</strong>
@@ -197,8 +197,8 @@ function InstructionPage() {
                     disabled={!canContinue}
                     className={`w-full py-2 rounded-lg text-base font-semibold mt-2 ${
                         canContinue
-                            ? 'bg-gradient-r-brand text-white hover:bg-blue-700'
-                            : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                            ? 'bg-brand text-brand hover:bg-blue-700'
+                            : 'bg-gray-200-400 border border-brand text-gray-700 cursor-not-allowed'
                     } mb-2`}
                 >
                     Продолжить

@@ -89,12 +89,12 @@ function OrderReportPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray py-6">
-            <div className="max-w-screen-md mx-auto bg-gradient-tr-white shadow-lg rounded-lg p-6">
+        <div className="min-h-screen bg-gray-200 py-6">
+            <div className="max-w-screen-md mx-auto bg-white shadow-lg rounded-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Отчет по заказу</h1>
 
                 {(report.search_screenshot_path || report.cart_screenshot_path) && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 1. Скрины корзины</h2>
                         {report.search_screenshot_path && (
                             <img
@@ -114,20 +114,20 @@ function OrderReportPage() {
                 )}
 
                 {report.article && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 2. Артикул товара</h2>
                         <p className="text-base">{report.article}</p>
                     </section>
                 )}
 
-                <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                <section className="mb-6 p-4 bg-gray-200 rounded-md">
                     <h2 className="text-xl font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
                     <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
                 </section>
 ё
 
                 {report.final_cart_screenshot_path && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 4. Финальный скрин корзины</h2>
                         <img
                             src={GetUploadLink(report.final_cart_screenshot_path)}
@@ -138,7 +138,7 @@ function OrderReportPage() {
                 )}
 
                 {(report.delivery_screenshot_path || report.barcodes_screenshot_path) && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 5. Скрины доставки и штрихкодов</h2>
                         {report.delivery_screenshot_path && (
                             <img
@@ -158,7 +158,7 @@ function OrderReportPage() {
                 )}
 
                 {(report.review_screenshot_path || report.receipt_screenshot_path || report.receipt_number) && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 6. Скрины отзыва и чека</h2>
                         {report.review_screenshot_path && (
                             <img
@@ -182,7 +182,7 @@ function OrderReportPage() {
 
 
                 {(report.card_number || report.phone_number || report.name || report.bank) && (
-                    <section className="mb-6 p-4 bg-gradient-t-gray rounded-md">
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="text-xl font-semibold">Реквизиты</h2>
                         </div>
