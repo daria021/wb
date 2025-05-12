@@ -132,16 +132,16 @@ function SellerReportsPage() {
     }
     if (error) {
         return (
-            <div className="p-4 bg-gradient-r-brandlight border border-gradient-r-brand rounded text-center">
+            <div className="p-4 bg-brandlight border border-brand rounded text-center">
                 <p className="text-sm text-brand">{error}</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray">
+        <div className="min-h-screen bg-gray-200">
             <div className="p-4 max-w-screen-md mx-auto">
-                <div className="sticky top-0 z-10 bg-gradient-t-gray">
+                <div className="sticky top-0 z-10 bg-gray-200">
 
                     <h1 className="text-2xl font-bold mb-4 text-center">Отчеты по выкупам</h1>
 
@@ -168,7 +168,7 @@ function SellerReportsPage() {
                             <div
                                 key={order.id}
                                 onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
-                                className="border border-gradient-b-gray rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer bg-gradient-tr-white"
+                                className="border border-gray-200 rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
                             >
                                 <h2 className="text-lg font-semibold">{order.product.name}</h2>
                                 <p className="text-sm text-gray-600">

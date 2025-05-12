@@ -91,7 +91,7 @@ function PaymentDetailsPage() {
     };
 
     const handleChannelClick = () => {
-        window.open('https://t.me/grcashback', '_blank'); //todo
+        window.open('https://t.me/Premiumcash1', '_blank'); //todo
     };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -102,9 +102,9 @@ function PaymentDetailsPage() {
 
 
     return (
-        <div className="p-4 max-w-screen-md bg-gradient-t-gray mx-auto">
+        <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
-            <div className="bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow p-4 space-y-4 mb-4">
+            <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
 
                 <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кэшбэка</h1>
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
@@ -118,7 +118,7 @@ function PaymentDetailsPage() {
                         placeholder="Введите номер карты"
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
-                        className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                        className="w-full border border-darkGray rounded p-2 text-sm"
                     />
                 </div>
 
@@ -131,7 +131,7 @@ function PaymentDetailsPage() {
                         placeholder="Введите номер телефона"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                        className="w-full border border-darkGray rounded p-2 text-sm"
                     />
                 </div>
 
@@ -144,7 +144,7 @@ function PaymentDetailsPage() {
                         placeholder="Введите фамилию и имя"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                        className="w-full border border-darkGray rounded p-2 text-sm"
                     />
                 </div>
 
@@ -155,7 +155,7 @@ function PaymentDetailsPage() {
                     <select
                         value={selectedBank}
                         onChange={handleChange}
-                        className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                        className="w-full border border-darkGray rounded p-2 text-sm"
                     >
                         <option value="">Выберите...</option>
                         <option value="Сбербанк">Сбербанк</option>
@@ -179,7 +179,7 @@ function PaymentDetailsPage() {
                                 type="text"
                                 value={otherBank}
                                 onChange={(e) => setOtherBank(e.target.value)}
-                                className="w-full border border-gradient-tr-darkGray rounded p-2 text-sm"
+                                className="w-full border border-darkGray rounded p-2 text-sm"
                                 placeholder="Введите название банка"
                             />
                         </div>
@@ -203,23 +203,23 @@ function PaymentDetailsPage() {
             <button
                 onClick={handleContinueClick}
                 disabled={!canContinue}
-                className={`w-full py-2 rounded text-white mb-4 ${
+                className={`w-full py-2 rounded text-brand mb-4 ${
                     canContinue
-                        ? 'bg-gradient-r-brand hover:bg-gradient-r-brand'
-                        : 'bg-gray-400 cursor-not-allowed'
+                        ? 'bg-brand hover:bg-brand'
+                        : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить
             </button>
 
             <button
-                onClick={() => window.open('https://t.me/bigblacklist_bot', '_blank')}
-                className="w-full flex-1 bg-gradient-tr-white text-gray-700 py-2 rounded-lg border border-gradient-r-brand text-center"
+                onClick={() => window.open('https://t.me/Premiumcashb/1153', '_blank')}
+                className="w-full flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
             >
                 Проверить продавца
             </button>
 
-            <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4">
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
                 <p className="text-base font-medium mb-2">Инструкция</p>
                 <div className="aspect-w-16 aspect-h-9 bg-black">
                     <iframe
@@ -234,19 +234,19 @@ function PaymentDetailsPage() {
             <div className="flex flex-col space-y-2 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 bg-gradient-tr-white rounded-lg border border-gradient-r-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-gray-600 font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
 
 
                 {showReport && (
-                    <div className="bg-gradient-tr-white rounded-lg shadow p-4 mb-4">
+                    <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
                         {reportData ? (
                             <div className="space-y-2">
                                 {/* Шаг 1 */}
-                                <div className="bg-gradient-tr-white rounded-lg shadow">
+                                <div className="bg-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(1)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -292,7 +292,7 @@ function PaymentDetailsPage() {
                                 </div>
 
                                 {/* Шаг 2 */}
-                                <div className="bg-gradient-tr-white rounded-lg shadow">
+                                <div className="bg-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(2)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -319,7 +319,7 @@ function PaymentDetailsPage() {
                                 </div>
 
                                 {/* Шаг 3 */}
-                                <div className="bg-gradient-tr-white rounded-lg shadow">
+                                <div className="bg-white rounded-lg shadow">
                                     <button
                                         onClick={() => toggleStep(3)}
                                         className="w-full flex justify-between items-center p-4 text-left"
@@ -344,7 +344,7 @@ function PaymentDetailsPage() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="bg-gradient-tr-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                     <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода кэшбэка
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
@@ -365,14 +365,14 @@ function PaymentDetailsPage() {
 
                 <button
                     onClick={handleChannelClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
                          justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-gradient-tr-white border border-gradient-tr-darkGray rounded-lg p-3 text-sm font-semibold">
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
                     Нужна помощь
                 </button>
             </div>

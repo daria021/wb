@@ -4,10 +4,8 @@ import {useLocation, useNavigate} from 'react-router-dom';
 
 function CompleteInstructionPage() {
     const navigate = useNavigate();
-    const [showModal, setShowModal] = useState(false);
     const location = useLocation();
-    const openModal = () => setShowModal(true);
-    const closeModal = () => setShowModal(false);
+
     const handleHomeClick = () => navigate('/');
 
     const backRoute = location.state?.backRoute || '/';
@@ -23,17 +21,26 @@ function CompleteInstructionPage() {
     }, [navigate, backRoute]);
 
     return (
-        <div className="min-h-screen bg-gradient-t-gray flex items-center justify-center p-4">
-            <div className="max-w-screen-lg w-full bg-gradient-tr-white border border-gradient-r-brand rounded-lg shadow-lg p-8 relative">
-                {/*<div className="bg-gradient-tr-white rounded-lg p-4 mb-8">*/}
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+            <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
+                {/*<div className="bg-white rounded-lg p-4 mb-8">*/}
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Инструкция выкупа для покупателя
                     </h2>
                     <p className="text-base mb-8 text-left">
                         ВБ КЭШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
-                        <span onClick={openModal} className="underline text-blue-600 cursor-pointer">
+                        <a
+                            href="tg://resolve?domain=Premiumcash1&post=9"
+                            onClick={e => {
+                                // если хочешь fallback на веб, можно проверять
+                            }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-blue-600"
+                        >
                             Посмотреть видео инструкцию
-                        </span>
+                        </a>
+
                     </p>
 
                     <section className="mb-8">
@@ -44,7 +51,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Поиск товара</h3>
@@ -61,7 +68,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Товар в избранное</h3>
@@ -70,7 +77,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Реквизиты</h3>
@@ -83,20 +90,21 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Оформление заказа</h3>
                         <ul className="list-disc list-inside space-y-2 ml-6">
-                            <li>Оформите заказ, сделайте скрин и прикрепите его в отчет. Требования к скрину заказа смотрите здесь&nbsp;
-                                <span onClick={openModal} className="underline text-blue-600 cursor-pointer">Пример скрина заказа</span>
+                            <li>Оформите заказ, сделайте скрин и прикрепите его в отчет.
+                                {/*Требования к скрину заказа смотрите здесь&nbsp;*/}
+                                {/*<span onClick={openModal} className="underline text-blue-600 cursor-pointer">Пример скрина заказа</span>*/}
                             </li>
                             <p className="font-bold">Оформила заказ, а лимит закончился</p>
                             <li>Свяжитесь с техподдержкой. Мы пожем решить данный вопрос</li>
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Получение товара</h3>
@@ -108,7 +116,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Шаг 7. Публикация отзыва</h3>
@@ -124,7 +132,7 @@ function CompleteInstructionPage() {
                         </ul>
                     </section>
 
-                    <hr className="my-6 border-gradient-tr-darkGray"/>
+                    <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-left">Кэшбэк</h3>
@@ -141,29 +149,12 @@ function CompleteInstructionPage() {
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={handleHomeClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-gradient-r-brand text-brand bg-transparent w-auto"
+                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                         >
                             На главную
                         </button>
                     </div>
                 </div>
-
-                {showModal && (
-                    <div
-                        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                        onClick={closeModal}
-                    >
-                        <div className="bg-gradient-tr-white p-4 rounded-lg" onClick={(e) => e.stopPropagation()}>
-                            <img src="/example4.png" alt="Пример" className="max-w-full h-auto"/>
-                            <button
-                                onClick={closeModal}
-                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                            >
-                                Закрыть
-                            </button>
-                        </div>
-                    </div>
-                )}
 
             {/*</div>*/}
         </div>
