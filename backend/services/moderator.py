@@ -52,10 +52,11 @@ class ModeratorService(ModeratorServiceInterface):
                 status = request.status
         else:
             status = request.status
+
         product_dto = UpdateProductDTO(
             status=status,
         )
-        logger.info(request)
+
         review_dto = CreateModeratorReviewDTO(
             moderator_id=moderator_id,
             product_id=product_id,
@@ -69,6 +70,9 @@ class ModeratorService(ModeratorServiceInterface):
             obj_id=product_id,
             obj=product_dto,
         )
+
+        if review_dto.status_after == ProductStatus.ACTIVE and review_dto.status_before != ProductStatus.ACTIVE:
+            await self.notification_service.send_new_product(product_id)
 
     async def get_users(self) -> list[User]:
         return await self.user_service.get_users()

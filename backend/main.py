@@ -55,7 +55,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://f938-45-150-33-208.ngrok-free.app",
+        "https://51b5-45-150-33-208.ngrok-free.app",
         "https://7f02-45-150-33-208.ngrok-free.app"
         # "*"
     ],

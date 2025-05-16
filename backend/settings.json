@@ -16,11 +16,13 @@
   "bot": {
     "local": {
       "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
-      "username": "WBJarvisBot"
+      "username": "WBJarvisBot",
+      "channel_id": -1002666193715
     },
     "dev": {
       "token": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg",
-      "username": "cashbackwb_ru_bot"
+      "username": "cashbackwb_ru_bot",
+      "channel_id": -1001713824160
     }
   }
 }
