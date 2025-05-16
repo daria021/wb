@@ -31,7 +31,6 @@ class ProductService(ProductServiceInterface):
             obj_id=dto.seller_id,
             obj=update_user
         )
-        await self.user_repository.become_seller(dto.seller_id)
 
         return dto.id
 
