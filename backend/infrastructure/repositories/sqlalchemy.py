@@ -153,7 +153,6 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
     @staticmethod
     def _get_relation(entity: Entity, relation: str, use_list: bool = False) -> Optional[Any]:
         try:
-            logger.info(f"Getting {relation} from {entity.id}")
             return getattr(entity, relation)
         except DetachedInstanceError:
             logger.error(f"Could not get {relation} from {entity.id}")

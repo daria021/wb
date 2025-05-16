@@ -37,3 +37,7 @@ class NotificationServiceInterface(ABC):
     @abstractmethod
     async def delete_push(self, push_id: UUID) -> None:
         ...
+
+    @abstractmethod
+    async def send_new_product(self, product_id: UUID) -> None:
+        ...

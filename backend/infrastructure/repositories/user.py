@@ -130,8 +130,6 @@ class UserRepository(
 
         inviter = self._get_relation(entity, 'inviter')
 
-        logger.info(f'inviter1 {inviter}')
-
         return UserModel(
             id=entity.id,
             telegram_id=entity.telegram_id,
