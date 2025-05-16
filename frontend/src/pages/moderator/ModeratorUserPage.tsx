@@ -19,7 +19,7 @@ import CopyableUuid from '../../components/CopyableUuid';
 interface User {
     id: string;
     telegram_id: bigint;
-    nickname: string;
+    nickname?: string;
     role: UserRole;
     is_banned: boolean;
     is_seller: boolean;
@@ -104,7 +104,7 @@ function ModeratorUsersPage() {
 
     // Фильтруем пользователей по нику
     const filteredUsers = users.filter(user =>
-        user.nickname.toLowerCase().includes(searchQuery.toLowerCase())
+        user.nickname && user.nickname.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
