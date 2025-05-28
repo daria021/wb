@@ -213,7 +213,7 @@ function PaymentDetailsPage() {
             </button>
 
             <button
-                onClick={() => window.open('https://t.me/Premiumcashb/1153', '_blank')}
+                onClick={() => navigate(`/black-list`)}
                 className="w-full flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
             >
                 Проверить продавца

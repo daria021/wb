@@ -16,6 +16,10 @@ class UserRepositoryInterface(
         ...
 
     @abstractmethod
+    async def get_by_nickname(self, nickname: str) -> Optional[User]:
+        ...
+
+    @abstractmethod
     async def ensure_user(self, dto: CreateUserDTO) -> User:
         ...
 

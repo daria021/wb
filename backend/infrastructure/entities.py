@@ -168,3 +168,10 @@ class UserPush(AbstractBase):
 
     push: Mapped["Push"] = relationship("Push")
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
+
+class SellerReview(AbstractBase):
+    __tablename__ = "seller_reviews"
+
+    seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    sender_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    review: Mapped[Optional[str]]
