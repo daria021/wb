@@ -87,6 +87,20 @@ class UserRepository(
 
         return None
 
+    async def get_by_nickname(self, nickname: str) -> Optional[User]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.nickname == nickname)
+                .options(*self.options)
+            )
+            user = result.unique().scalars().first()
+        if user:
+            return self.entity_to_model(user)
+
+        return None
+
+
     async def become_seller(self, user_id: UUID):
         async with self.session_maker() as session:
             user = await session.get(self.entity, user_id)

@@ -323,3 +323,21 @@ export async function getInviteLink() {
     return apiClient.get(`/users/invite`);
 }
 
+export async function getSellerReviews(sellerNickname: string) {
+  return apiClient.get(`/seller_review/seller`,
+      {
+          params: {
+              seller_nickname: sellerNickname,
+          }
+      });
+}
+
+export async function createSellerReview(
+  sellerNickname: string,
+  review: string,
+) {
+  return apiClient.post(`/seller_review`, {
+    seller_nickname: sellerNickname,
+    review,
+  });
+}

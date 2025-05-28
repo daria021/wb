@@ -39,6 +39,7 @@ import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 
 
 import { init, mountViewport, expandViewport } from '@telegram-apps/sdk';
+import BlacklistPage from "./pages/BlacklistPage";
 
 
 function App() {
@@ -84,6 +85,7 @@ function App() {
                     <Route path="/order/:orderId/step-6" element={<ProductPickupPage/>}/>
                     <Route path="/order/:orderId/step-7" element={<StepReviewReportPage/>}/>
                     <Route path="/order/:orderId/order-info" element={<FinalDealPage/>}/>
+                    <Route path="/black-list" element={<BlacklistPage/>}/>
 
                     <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
                     <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>

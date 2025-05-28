@@ -5,7 +5,6 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart, CommandObject
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
-from aiogram.utils.deep_linking import decode_payload
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "local")}.env')
