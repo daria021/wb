@@ -20,7 +20,7 @@ function HomePage() {
     const handleAboutClick = () => navigate('/about');
     const handleInstructionClick = () => navigate('/instruction', {state: {backRoute: '/'}});
     const handleComplaintsClick = () => {
-        window.open('https://t.me/Premiumcashb/1153', '_blank');
+        window.open('https://t.me/Premiumcashb', '_blank');
     };
     const handleMyOrdersClick = async () => {
         try {
