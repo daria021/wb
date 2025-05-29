@@ -103,7 +103,7 @@ const BlacklistPage: React.FC = () => {
                 onClick={() => { setIsAdding(true); setError(null); }}
                 className="flex-1 py-3 text-base font-semibold rounded-lg bg-brand text-white hover:bg-brand-light transition"
             >
-              Добавить отзыв
+              Добавить в ЧС
             </button>
           </div>
 
