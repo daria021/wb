@@ -220,6 +220,10 @@ export async function getUser(userId: string) {
     return apiClient.get(`/moderator/users/${userId}`);
 }
 
+export async function getBlackListUser(userId: string) {
+    return apiClient.get(`/users/${userId}`);
+}
+
 export async function banUser(userId: string) {
     return apiClient.post(`/moderator/users/${userId}/ban`);
 }
