@@ -45,7 +45,7 @@ class UserRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                .where(self.entity.role == UserRole.SELLER)
+                .where(self.entity.role == UserRole.SELLER or self.entity.is_seller == True)
             )
 
             result = result.scalars().all()

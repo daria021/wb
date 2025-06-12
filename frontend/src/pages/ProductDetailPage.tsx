@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {getProductById} from '../services/api';
+import {getProductById, getUser} from '../services/api';
 import {AxiosResponse} from "axios";
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
@@ -22,12 +22,20 @@ function ProductDetailPage() {
     const {productId} = useParams();
     const [product, setProduct] = useState<Product | null>(null);
     const navigate = useNavigate();
+    const [sellerNickname, setSellerNickname] = useState('');
 
     const handleOpenInstructionClick = () => {
         if (product) {
             navigate(`/product/${product.id}/instruction`);
         }
     };
+
+    useEffect(() => {
+    if (!product?.seller_id) return;
+    getUser(product.seller_id)
+      .then(res => setSellerNickname(res.data.nickname))
+      .catch(err => console.error('Ошибка загрузки данных продавца:', err));
+  }, [product]);
 
     const handleOpenSellerProducts = () => {
         if (!product) return;
@@ -112,7 +120,7 @@ function ProductDetailPage() {
 
             <div className="flex gap-2 mb-4">
                 <button
-                    onClick={() => navigate(`/black-list`)}
+                    onClick={() => navigate(`/black-list/${sellerNickname}`)}
                     className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
                 >
                     Проверить продавца
@@ -157,6 +165,9 @@ function ProductDetailPage() {
                 </p>
                 <p className="text-sm text-gray-700 mb-1">
                     Условия оплаты: {product.payment_time}
+                </p>
+                <p className="text-sm text-gray-700 mb-1">
+                    Продавец: {sellerNickname}
                 </p>
             </div>
 

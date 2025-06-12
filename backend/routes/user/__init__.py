@@ -25,9 +25,14 @@ logger = logging.getLogger(__name__)
 @router.get("")
 async def list_users(request: Request):
     user_service = get_user_service()
-    users = await user_service.get_users()  # Метод должен возвращать список пользователей
+    users = await user_service.get_users()
     return users
 
+@router.get("/sellers")
+async def list_sellers(request: Request):
+    user_service = get_user_service()
+    users = await user_service.get_sellers()
+    return users
 
 @router.get("/me")
 async def get_me(request: Request) -> User:
