@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {createSellerReview, getSellerReviews, getSellersForBlackList, getUser} from '../services/api';
+import {createSellerReview, getBlackListUser, getSellerReviews, getSellersForBlackList} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import {useNavigate, useParams} from 'react-router-dom';
 
@@ -92,7 +92,7 @@ const BlacklistPage: React.FC = () => {
             }
             const enriched = await Promise.all(
                 data.map(async (rev) => {
-                    const userRes = await getUser(rev.sender_id);
+                    const userRes = await getBlackListUser(rev.sender_id);
                     return {...rev, sender_nickname: userRes.data.nickname};
                 })
             );
