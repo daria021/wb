@@ -41,7 +41,6 @@ class SellerReviewService(SellerReviewServiceInterface):
         seller = await self.seller_repository.get_by_nickname(seller_nickname)
         if not seller:
             raise NoSuchEntity
-
         return await self.seller_review_repository.get_seller_reviews_by_seller(seller.id)
 
     async def update_seller_review(self, seller_review_id: UUID, dto: UpdateSellerReviewDTO) -> None:

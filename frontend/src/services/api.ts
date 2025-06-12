@@ -204,6 +204,10 @@ export async function getSellers() {
     return apiClient.get('/moderator/users/sellers');
 }
 
+export async function getSellersForBlackList() {
+    return apiClient.get('/users/sellers');
+}
+
 export async function getClients() {
     return apiClient.get('/moderator/users/clients');
 }
