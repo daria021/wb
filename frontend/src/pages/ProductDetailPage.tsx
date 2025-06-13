@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {getProductById, getUser} from '../services/api';
+import {getProductById, getBlackListUser} from '../services/api';
 import {AxiosResponse} from "axios";
 import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
@@ -32,7 +32,7 @@ function ProductDetailPage() {
 
     useEffect(() => {
     if (!product?.seller_id) return;
-    getUser(product.seller_id)
+    getBlackListUser(product.seller_id)
       .then(res => setSellerNickname(res.data.nickname))
       .catch(err => console.error('Ошибка загрузки данных продавца:', err));
   }, [product]);
