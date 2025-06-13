@@ -6,6 +6,8 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
 COPY . .
+
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN yarn build
 
 # Stage 2: Serve with Nginx
