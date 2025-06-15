@@ -62,18 +62,17 @@ class NotificationService(NotificationServiceInterface):
         kb = InlineKeyboardBuilder()
         kb.button(
             text="Карточка товара 🏷",
-            url=f"{settings.web_app.url}/product/{product.id}"
+            url=f"{settings.web.url}/product/{product.id}"
         )
         kb.button(
             text="Каталог продавца 📂",
-            url=f"{settings.web_app.url}/catalog?seller={product.seller_id}"
+            url=f"{settings.web.url}/catalog?seller={product.seller_id}"
         )
         kb.button(
             text="Весь каталог 🛍",
-            url=f"{settings.web_app.url}/catalog"
+            url=f"{settings.web.url}/catalog"
         )
-        kb.adjust(1)  # по одной кнопке в строке
-
+        kb.adjust(1)
         caption = (
             f"🛒 <b>Новый товар в каталоге!</b>\n"
             f"{product.name}\n"

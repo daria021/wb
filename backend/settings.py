@@ -13,6 +13,9 @@ from pydantic_settings import (
 ENV = os.getenv("ENVIRONMENT", "local")
 
 
+class WebAppSettings(BaseSettings):
+    url: str
+
 class DBSettings(BaseSettings):
     host: str
     port: int
@@ -76,6 +79,7 @@ class Settings(BaseSettings):
     jwt: JwtSettings
 
     bot: BotSettings
+    web: WebAppSettings
 
     debug: bool = True
 
