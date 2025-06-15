@@ -2,15 +2,16 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
 
+from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
+from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
+
 from infrastructure.enums.category import Category
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
-from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import TSVECTOR
 
 Base = declarative_base()
 
@@ -74,7 +75,6 @@ class User(AbstractBase):
     user_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.user_id")
     seller_orders: Mapped[List["Order"]] = relationship("Order", foreign_keys="Order.seller_id")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="user")
-
 
 
 class Order(AbstractBase):
@@ -169,9 +169,16 @@ class UserPush(AbstractBase):
     push: Mapped["Push"] = relationship("Push")
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
 
+
 class SellerReview(AbstractBase):
     __tablename__ = "seller_reviews"
 
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     sender_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     review: Mapped[Optional[str]]
+
+
+class Deeplink(AbstractBase):
+    __tablename__ = 'deeplinks'
+
+    url: Mapped[str]

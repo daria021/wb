@@ -3,15 +3,20 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from aiogram import Bot
-from aiogram.types import FSInputFile, WebAppInfo
+from aiogram.types import FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from abstractions.repositories import OrderRepositoryInterface, UserRepositoryInterface, ProductRepositoryInterface
+from abstractions.repositories import (
+    OrderRepositoryInterface,
+    ProductRepositoryInterface,
+    UserRepositoryInterface,
+)
 from abstractions.repositories.push import PushRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
+from abstractions.services.deeplink import DeeplinkServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
 from abstractions.services.upload import UploadServiceInterface
-from domain.dto import CreatePushDTO, CreateUserPushDTO, UpdatePushDTO
+from domain.dto import CreatePushDTO, UpdatePushDTO, CreateUserPushDTO
 from domain.models import Push
 from infrastructure.enums.product_status import ProductStatus
 from settings import settings
@@ -28,16 +33,29 @@ class NotificationService(NotificationServiceInterface):
     push_repository: PushRepositoryInterface
     user_push_repository: UserPushRepositoryInterface
     upload_service: UploadServiceInterface
+    deeplink_service: DeeplinkServiceInterface
 
     _bot: Bot = None
 
+    # ---------- infra ----------
     @property
-    def bot(self):
+    def bot(self) -> Bot:
         if self._bot is None:
             self._bot = Bot(token=self.bot_token)
-
         return self._bot
 
+    async def _make_miniapp_link(self, path: str) -> str:
+        deeplink = await self.deeplink_service.ensure_deeplink(path)
+
+        payload = f"link_{deeplink.key}"
+
+        return (
+            f"https://t.me/{settings.bot.username}/"
+            f"{settings.bot.app_short_name}"
+            f"?startapp={payload}&mode=compact"
+        )
+
+    # ---------- публичные методы ----------
     async def send_cashback_paid(self, order_id: UUID) -> None:
         order = await self.orders_repository.get(order_id)
         user = await self.users_repository.get(order.user_id)
@@ -55,38 +73,33 @@ class NotificationService(NotificationServiceInterface):
 
     async def send_new_product(self, product_id: UUID) -> None:
         product = await self.products_repository.get(product_id)
-        if product.status != ProductStatus.ACTIVE:
+        if product.status is not ProductStatus.ACTIVE:
             return
 
-        # Строим инлайн-кнопки
+        # --- inline-кнопки c deep-link Mini-App ---
         kb = InlineKeyboardBuilder()
         kb.button(
             text="Карточка товара 🏷",
-            web_app=WebAppInfo(
-                url=f"{settings.web.url}/product/{product.id}",
-            ),
+            url=await self._make_miniapp_link(f"/product/{product.id}"),
         )
         kb.button(
             text="Каталог продавца 📂",
-            web_app=WebAppInfo(
-                url=f"{settings.web.url}/catalog?seller={product.seller_id}",
-            ),
+            url=await self._make_miniapp_link(f"/catalog?seller={product.seller_id}"),
         )
         kb.button(
             text="Весь каталог 🛍",
-            web_app=WebAppInfo(
-                url=f"{settings.web.url}/catalog",
-            ),
+            url=await self._make_miniapp_link("/catalog"),
         )
-        kb.adjust(1)
+        kb.adjust(1)  # по одной кнопке в строке
+
         caption = (
-            f"🛒 <b>Новый товар в каталоге!</b>\n"
+            f"🛒 <b>Новый товар!</b>\n"
             f"{product.name}\n"
             f"Цена: <b>{product.price} ₽</b>"
         )
 
         photo_path = self.upload_service.get_file_path(product.image_path)
-        input_file = FSInputFile(photo_path)  # <-- корректный класс-обёртка
+        input_file = FSInputFile(photo_path)
 
         await self.bot.send_photo(
             chat_id=settings.bot.channel_id,
