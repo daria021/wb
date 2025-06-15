@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from aiogram import Bot
-from aiogram.types import FSInputFile
+from aiogram.types import FSInputFile, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from abstractions.repositories import OrderRepositoryInterface, UserRepositoryInterface, ProductRepositoryInterface
@@ -62,15 +62,21 @@ class NotificationService(NotificationServiceInterface):
         kb = InlineKeyboardBuilder()
         kb.button(
             text="Карточка товара 🏷",
-            url=f"{settings.web.url}/product/{product.id}"
+            web_app=WebAppInfo(
+                url=f"{settings.web.url}/product/{product.id}",
+            ),
         )
         kb.button(
             text="Каталог продавца 📂",
-            url=f"{settings.web.url}/catalog?seller={product.seller_id}"
+            web_app=WebAppInfo(
+                url=f"{settings.web.url}/catalog?seller={product.seller_id}",
+            ),
         )
         kb.button(
             text="Весь каталог 🛍",
-            url=f"{settings.web.url}/catalog"
+            web_app=WebAppInfo(
+                url=f"{settings.web.url}/catalog",
+            ),
         )
         kb.adjust(1)
         caption = (
