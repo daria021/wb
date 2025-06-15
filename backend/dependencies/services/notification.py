@@ -17,5 +17,5 @@ def get_notification_service() -> NotificationServiceInterface:
         user_push_repository=get_user_push_repository(),
         products_repository=get_product_repository(),
         upload_service=get_upload_service(),
-        bot=settings.bot.bot,
+        bot_token=settings.bot.token,
     )

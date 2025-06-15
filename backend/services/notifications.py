@@ -1,37 +1,42 @@
 import logging
 from dataclasses import dataclass
+from uuid import UUID
 
+from aiogram import Bot
+from aiogram.types import FSInputFile
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+from abstractions.repositories import OrderRepositoryInterface, UserRepositoryInterface, ProductRepositoryInterface
 from abstractions.repositories.push import PushRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
 from abstractions.services.notification import NotificationServiceInterface
 from abstractions.services.upload import UploadServiceInterface
-
-logger = logging.getLogger(__name__)
-import logging
-from uuid import UUID
-
-from aiogram import Bot
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-from aiogram.types import FSInputFile
-
-from abstractions.repositories import OrderRepositoryInterface, UserRepositoryInterface, ProductRepositoryInterface
-from infrastructure.enums.product_status import ProductStatus
-from settings import settings
 from domain.dto import CreatePushDTO, CreateUserPushDTO, UpdatePushDTO
 from domain.models import Push
+from infrastructure.enums.product_status import ProductStatus
+from settings import settings
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class NotificationService(NotificationServiceInterface):
-    bot: Bot
+    bot_token: str
     orders_repository: OrderRepositoryInterface
     users_repository: UserRepositoryInterface
     products_repository: ProductRepositoryInterface
     push_repository: PushRepositoryInterface
     user_push_repository: UserPushRepositoryInterface
     upload_service: UploadServiceInterface
+
+    _bot: Bot = None
+
+    @property
+    def bot(self):
+        if self._bot is None:
+            self._bot = Bot(token=self.bot_token)
+
+        return self._bot
 
     async def send_cashback_paid(self, order_id: UUID) -> None:
         order = await self.orders_repository.get(order_id)
