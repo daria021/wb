@@ -4,3 +4,4 @@ from .review import Review
 from .order import Order
 from .user_push import UserPush
 from .push import Push
+from .deeplink import Deeplink

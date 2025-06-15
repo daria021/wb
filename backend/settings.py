@@ -42,6 +42,7 @@ class JwtSettings(BaseSettings):
 class BotTokenSettings(BaseSettings):
     token: str
     username: str
+    app_short_name: str
     channel_id: int
 
 
@@ -72,6 +73,14 @@ class BotSettings(BaseSettings):
                 return self.dev.channel_id
             case "local":
                 return self.local.channel_id
+
+    @property
+    def app_short_name(self) -> str:
+        match ENV:
+            case "dev":
+                return self.dev.app_short_name
+            case "local":
+                return self.local.app_short_name
 
 
 class Settings(BaseSettings):

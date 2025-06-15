@@ -17,12 +17,14 @@
     "local": {
       "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
       "username": "WBJarvisBot",
-      "channel_id": -1002666193715
+      "channel_id": -1002666193715,
+      "app_short_name": "cashback"
     },
     "dev": {
       "token": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg",
       "username": "cashbackwb_ru_bot",
-      "channel_id": -1001713824160
+      "channel_id": -1001713824160,
+      "app_short_name": "cashback"
     }
   },
   "web": {

@@ -349,3 +349,11 @@ export async function createSellerReview(
     review,
   });
 }
+
+export async function resolveDeeplink(startParam: string) {
+  return apiClient.get("/deeplink/resolve", {
+      params: {
+          key: startParam,
+      },
+  });
+}

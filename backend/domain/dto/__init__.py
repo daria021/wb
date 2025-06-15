@@ -4,3 +4,4 @@ from .product import CreateProductDTO, UpdateProductDTO
 from .review import CreateReviewDTO, UpdateReviewDTO
 from .push import CreatePushDTO, UpdatePushDTO
 from .user_push import CreateUserPushDTO, UpdateUserPushDTO
+from .deeplink import CreateDeeplinkDTO, UpdateDeeplinkDTO
