@@ -11,11 +11,11 @@ from settings import settings
 
 def get_notification_service() -> NotificationServiceInterface:
     return NotificationService(
-        token=settings.bot.token,
         users_repository=get_user_repository(),
         orders_repository=get_order_repository(),
         push_repository=get_push_repository(),
         user_push_repository=get_user_push_repository(),
         products_repository=get_product_repository(),
         upload_service=get_upload_service(),
+        bot=settings.bot.bot,
     )

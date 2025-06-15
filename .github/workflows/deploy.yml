@@ -23,6 +23,6 @@ jobs:
         run: |
           sudo docker compose up --build -d
 
-      - name: Cleanup
-        run: |
-          docker system prune -a -f
+#      - name: Cleanup
+#        run: |
+#          docker system prune -a -f
