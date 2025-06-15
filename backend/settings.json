@@ -24,5 +24,8 @@
       "username": "cashbackwb_ru_bot",
       "channel_id": -1001713824160
     }
+  },
+  "web": {
+    "url": "https://cashbackwb.ru/"
   }
 }
