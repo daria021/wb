@@ -16,25 +16,35 @@ export const DeepLinkRouter = () => {
   const [ isRedirected, setIsRedirected ]  = useState<boolean>(false);
 
   useEffect(() => {
+    console.log("hi", isRedirected, loading);
     const followDeeplink = async () => {
       if (loading || isRedirected) {
-          return;
+        console.log("oops", isRedirected, loading);
+        return;
       }
       const tg = (window as any).Telegram?.WebApp;
       const param: string | undefined = tg?.initDataUnsafe?.start_param;
       if (!param) {
+        console.log("wtf");
         setIsRedirected(true);
         return;
       }
 
       try {
+        console.log("start");
         const response = await resolveDeeplink(param);
+        console.log("response", response.data);
         const deeplink = response.data as Deeplink;
+        console.log("deeplink", deeplink);
         if (deeplink.url.startsWith('/')) {
+          console.log("url", deeplink.url);
           setIsRedirected(true);
           navigate(deeplink.url, {
             replace: true
           });
+        }
+        else {
+          console.log("url fail", deeplink.url);
         }
       } catch (e) {
         console.error('Broken start_param', e);
