@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
                 setUserId(me.id);
                 setIsModerator(me.role === "moderator" || me.role === "admin");
                 setIsAdmin(me.role === "admin");
+                setLoading(false);
             } catch (error) {
                 console.error("Authentication failed", error);
             } finally {
