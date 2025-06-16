@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {resolveDeeplink} from "../services/api";
+import {useAuth} from "../contexts/auth";
 
 interface Deeplink {
     id: string;
@@ -10,6 +11,7 @@ interface Deeplink {
 }
 
 export const DeepLinkRouter = () => {
+  useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
