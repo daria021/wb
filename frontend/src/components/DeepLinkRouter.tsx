@@ -11,7 +11,6 @@ interface Deeplink {
 }
 
 export const DeepLinkRouter = () => {
-  useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +18,9 @@ export const DeepLinkRouter = () => {
       const tg = (window as any).Telegram?.WebApp;
       const param: string | undefined = tg?.initDataUnsafe?.start_param;
       if (!param) return;
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useAuth();
 
       try {
         const response = await resolveDeeplink(param);
