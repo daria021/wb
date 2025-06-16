@@ -2,74 +2,112 @@ import logging
 from dataclasses import dataclass
 from uuid import UUID
 
-from httpx import AsyncClient
+from aiogram import Bot
+from aiogram.types import FSInputFile
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from abstractions.repositories import OrderRepositoryInterface, UserRepositoryInterface
+from abstractions.repositories import (
+    OrderRepositoryInterface,
+    ProductRepositoryInterface,
+    UserRepositoryInterface,
+)
 from abstractions.repositories.push import PushRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
+from abstractions.services.deeplink import DeeplinkServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
 from abstractions.services.upload import UploadServiceInterface
-from domain.dto import CreatePushDTO, CreateUserPushDTO, UpdatePushDTO
+from domain.dto import CreatePushDTO, UpdatePushDTO, CreateUserPushDTO
 from domain.models import Push
-
-from abstractions.repositories import ProductRepositoryInterface
 from infrastructure.enums.product_status import ProductStatus
 from settings import settings
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class NotificationService(NotificationServiceInterface):
-    token: str
+    bot_token: str
     orders_repository: OrderRepositoryInterface
     users_repository: UserRepositoryInterface
+    products_repository: ProductRepositoryInterface
     push_repository: PushRepositoryInterface
     user_push_repository: UserPushRepositoryInterface
-    products_repository: ProductRepositoryInterface
     upload_service: UploadServiceInterface
+    deeplink_service: DeeplinkServiceInterface
 
+    _bot: Bot = None
+
+    # ---------- infra ----------
+    @property
+    def bot(self) -> Bot:
+        if self._bot is None:
+            self._bot = Bot(token=self.bot_token)
+        return self._bot
+
+    async def _make_miniapp_link(self, path: str) -> str:
+        deeplink = await self.deeplink_service.ensure_deeplink(path)
+
+        payload = f"link_{deeplink.key}"
+
+        return (
+            f"https://t.me/{settings.bot.username}/"
+            f"{settings.bot.app_short_name}"
+            f"?startapp={payload}&mode=compact"
+        )
+
+    # ---------- публичные методы ----------
     async def send_cashback_paid(self, order_id: UUID) -> None:
         order = await self.orders_repository.get(order_id)
         user = await self.users_repository.get(order.user_id)
-        async with AsyncClient() as client:
-            await client.post(
-                url=f'https://api.telegram.org/bot{self.token}/sendMessage',
-                params={
-                    'chat_id': user.telegram_id,
-                    'text': 'Ваш кешбек выплачен!',
-                }
-            )
+        await self.bot.send_message(
+            chat_id=user.telegram_id,
+            text="Ваш кешбек выплачен! 💰",
+        )
 
     async def send_balance_increased(self, user_id: UUID, amount: int) -> None:
         user = await self.users_repository.get(user_id)
-        async with AsyncClient() as client:
-            await client.post(
-                url=f'https://api.telegram.org/bot{self.token}/sendMessage',
-                params={
-                    'chat_id': user.telegram_id,
-                    'text': f'Ваш баланс полонен на {amount} раздач',
-                }
-            )
+        await self.bot.send_message(
+            chat_id=user.telegram_id,
+            text=f"Ваш баланс пополнен на {amount} раздач 📈",
+        )
 
     async def send_new_product(self, product_id: UUID) -> None:
         product = await self.products_repository.get(product_id)
-        if product.status == ProductStatus.ACTIVE:
+        if product.status is not ProductStatus.ACTIVE:
+            return
 
-            data = {
-                "chat_id": settings.bot.channel_id,
-                "caption": f"🛒 Новый товар в каталоге!\n{product.name}\nЦена: {product.price} ₽"
-            }
-            product_image_path = self.upload_service.get_file_path(product.image_path)
-            with open(product_image_path, "rb") as img:
-                files = {"photo": img}
-                async with AsyncClient() as client:
-                    response = await client.post(
-                        url=f'https://api.telegram.org/bot{self.token}/sendPhoto',
-                        data=data,
-                        files=files
-                    )
+        # --- inline-кнопки c deep-link Mini-App ---
+        kb = InlineKeyboardBuilder()
+        kb.button(
+            text="Карточка товара 🏷",
+            url=await self._make_miniapp_link(f"/product/{product.id}"),
+        )
+        kb.button(
+            text="Каталог продавца 📂",
+            url=await self._make_miniapp_link(f"/catalog?seller={product.seller_id}"),
+        )
+        kb.button(
+            text="Весь каталог 🛍",
+            url=await self._make_miniapp_link("/catalog"),
+        )
+        kb.adjust(1)  # по одной кнопке в строке
 
-                logger.info(response.content.decode())
+        caption = (
+            f"🛒 <b>Новый товар!</b>\n"
+            f"{product.name}\n"
+            f"Цена: <b>{product.price} ₽</b>"
+        )
+
+        photo_path = self.upload_service.get_file_path(product.image_path)
+        input_file = FSInputFile(photo_path)
+
+        await self.bot.send_photo(
+            chat_id=settings.bot.channel_id,
+            photo=input_file,
+            caption=caption,
+            parse_mode="HTML",
+            reply_markup=kb.as_markup(),
+        )
 
     async def create_push(self, push: CreatePushDTO) -> None:
         await self.push_repository.create(push)

@@ -40,6 +40,7 @@ import PushDetailsPage from "./pages/moderator/PushDetailsPage";
 
 import { init, mountViewport, expandViewport } from '@telegram-apps/sdk';
 import BlacklistPage from "./pages/BlacklistPage";
+import {DeepLinkRouter} from "./components/DeepLinkRouter";
 
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
+                <DeepLinkRouter />
                 <BackButtonManager/>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>

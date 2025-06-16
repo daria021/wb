@@ -13,6 +13,9 @@ from pydantic_settings import (
 ENV = os.getenv("ENVIRONMENT", "local")
 
 
+class WebAppSettings(BaseSettings):
+    url: str
+
 class DBSettings(BaseSettings):
     host: str
     port: int
@@ -39,6 +42,7 @@ class JwtSettings(BaseSettings):
 class BotTokenSettings(BaseSettings):
     token: str
     username: str
+    app_short_name: str
     channel_id: int
 
 
@@ -70,12 +74,21 @@ class BotSettings(BaseSettings):
             case "local":
                 return self.local.channel_id
 
+    @property
+    def app_short_name(self) -> str:
+        match ENV:
+            case "dev":
+                return self.dev.app_short_name
+            case "local":
+                return self.local.app_short_name
+
 
 class Settings(BaseSettings):
     db: DBSettings
     jwt: JwtSettings
 
     bot: BotSettings
+    web: WebAppSettings
 
     debug: bool = True
 

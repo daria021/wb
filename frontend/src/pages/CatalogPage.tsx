@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
-import {getProducts, getUser} from '../services/api';
+import {getBlackListUser, getProducts} from '../services/api';
 import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from "../hooks/useDebounce";
@@ -90,7 +90,7 @@ function CatalogPage() {
             try {
                 const sellers = await Promise.all(
                     uniqueIds.map(async id => {
-                        const res = await getUser(id);
+                        const res = await getBlackListUser(id);
                         return {id, nickname: res.data.nickname!};
                     })
                 );

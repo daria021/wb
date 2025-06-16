@@ -49,7 +49,7 @@ class UserRepository(
 
         return [self.entity_to_model(x) for x in result]
 
-    async def get_by_telegram_id(self, telegram_id: str) -> Optional[User]:
+    async def get_by_telegram_id(self, telegram_id: str) -> Optional[UserModel]:
         async with self.session_maker() as session:
             result = await session.execute(select(self.entity).where(self.entity.telegram_id == telegram_id))
             user = result.scalars().first()
@@ -63,7 +63,7 @@ class UserRepository(
             async with session.begin():
                 user.is_seller = True
 
-    async def ensure_user(self, dto: CreateUserDTO) -> User:
+    async def ensure_user(self, dto: CreateUserDTO) -> UserModel:
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
