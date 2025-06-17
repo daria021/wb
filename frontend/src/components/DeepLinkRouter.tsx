@@ -23,7 +23,14 @@ export const DeepLinkRouter = () => {
         return;
       }
       const tg = (window as any).Telegram?.WebApp;
+      console.log("tg", tg);
+      console.log("tgid", tg?.initData);
+      console.log("tgidsp", tg?.initData?.start_param);
+      console.log("location", window.location);
       const param: string | undefined = tg?.initDataUnsafe?.start_param;
+      console.log("tgidu", tg?.initDataUnsafe);
+      console.log("param", tg?.initDataUnsafe?.start_param);
+      console.log("param", param);
       if (!param) {
         console.log("wtf");
         setIsRedirected(true);
