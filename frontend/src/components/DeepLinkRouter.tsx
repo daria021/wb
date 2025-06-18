@@ -25,7 +25,8 @@ export const DeepLinkRouter = () => {
       const param = window.location.href
           .split("tgWebAppStartParam")[1]
           .split("#")[0]
-          .replace("=link_", "");
+          .replace("=link_", "")
+          .replace("=", "");
       console.log("param", param);
       console.log("loc", window.location);
       if (!param) {
