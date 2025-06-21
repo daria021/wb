@@ -171,9 +171,10 @@ function ModeratorProductsPage() {
                                                         ? 'Отклонено'
                                                         : product.status === ProductStatus.ARCHIVED
                                                             ? 'Архив'
-                                                            : product.status === ProductStatus.CREATED ||
-                                                            product.status === ProductStatus.DISABLED
-                                                                ? 'Создано / Отключено'
+                                                            : product.status === ProductStatus.CREATED
+                                                                ? 'Создано'
+                                                                : product.status === ProductStatus.DISABLED
+                                                                    ? 'Отключено'
                                                                 : product.status}
                                             </p>
                                         </div>
@@ -218,9 +219,10 @@ function ModeratorProductsPage() {
                                                         ? 'Отклонено'
                                                         : product.status === ProductStatus.ARCHIVED
                                                             ? 'Архив'
-                                                            : product.status === ProductStatus.CREATED ||
-                                                            product.status === ProductStatus.DISABLED
-                                                                ? 'Создано / Отключено'
+                                                            : product.status === ProductStatus.CREATED
+                                                                ? 'Создано'
+                                                                : product.status === ProductStatus.DISABLED
+                                                                    ? 'Отключено'
                                                                 : product.status}
                                             </p>
                                         </div>

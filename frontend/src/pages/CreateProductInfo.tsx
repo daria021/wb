@@ -149,9 +149,14 @@ function CreateProductInfo() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto max-w-lg">
-            {(product.status === ProductStatus.CREATED || product.status === ProductStatus.DISABLED) && (
+            {(product.status === ProductStatus.CREATED) && (
                 <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
                     Новая карточка отправлена на модерацию. Проверьте всю информацию. Вы еще можете внести изменения.
+                </div>
+            )}
+            {(product.status === ProductStatus.DISABLED) && (
+                <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
+                    Модератор оставил комментарий. Исправьте его и отправьте карточку на повторную модерацию.
                 </div>
             )}
 

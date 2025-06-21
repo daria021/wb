@@ -16,3 +16,9 @@ body {
         animation: flash-border 0.5s ease-in-out 2; /* длительность 0.5с, 2 цикла */
     }
 }
+
+@keyframes rotate360 { to { transform: rotate(360deg); } }
+
+.always-spin {
+  animation: rotate360 0.8s linear infinite !important;
+}

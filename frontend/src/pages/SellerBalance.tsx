@@ -46,7 +46,7 @@ function SellerBalancePage() {
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col gap-4">
 
-            <div className="border-darkGray border border-darkGray rounded-md p-4 mx-4 mt-4">
+            <div className="border-darkGray bg-white border-darkGray rounded-md p-4 mx-4 mt-4">
                 <p className="text-md font-semibold mb-1">Баланс</p>
                 <p className="text-2xl font-bold">{balance}</p>
                 <p className="text-sm text-gray-500">Доступное количество раздач</p>
