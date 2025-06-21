@@ -57,8 +57,8 @@ app.add_middleware(
         "http://localhost:3000",
         "https://8af6-45-150-33-208.ngrok-free.app",
         "https://b2a1-45-150-33-208.ngrok-free.app",
-        "https://517e-45-150-33-208.ngrok-free.app"
-        # "*"
+        "https://517e-45-150-33-208.ngrok-free.app",
+        "https://a19c-45-91-236-218.ngrok-free.app"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "PATCH", "DELETE"],

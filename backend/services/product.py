@@ -39,6 +39,12 @@ class ProductService(ProductServiceInterface):
 
     async def update_product(self, product_id: UUID, dto: UpdateProductDTO) -> None:
         old_product = await self.product_repository.get(product_id)
+        logger.info(dto.status)
+        logger.info(old_product.status)
+        if dto.status is None:
+            if (old_product.status == ProductStatus.DISABLED or
+                    old_product.status == ProductStatus.ACTIVE):
+                dto.status = ProductStatus.CREATED
         await self.product_repository.update(product_id, dto)
 
         if dto.status == ProductStatus.ACTIVE and old_product.status != ProductStatus.ACTIVE:

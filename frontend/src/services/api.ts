@@ -1,12 +1,14 @@
 import {apiClient} from "./apiClient";
 import {MeResponse} from "../types/MeResponse";
-import {AxiosResponse} from "axios";
+import {AxiosRequestConfig, AxiosResponse} from "axios";
+import {ProductStatus} from "../enums";
 
 
 export interface GetProductsParams {
     search?: string;
     limit?: number;
     offset?: number;
+    signal?: AbortSignal;
 }
 
 interface Product {
@@ -22,8 +24,12 @@ interface Product {
 
 
 export async function getProducts(
-    params?: GetProductsParams): Promise<AxiosResponse<Product[]>> {
-    return apiClient.get<Product[]>('/products', {params})
+    params: GetProductsParams
+): Promise<AxiosResponse<Product[]>> {
+    return apiClient.get<Product[]>('/products', {
+        params,
+        signal: params.signal
+    });
 }
 
 export async function getProductById(productId: string) {
@@ -325,7 +331,6 @@ export async function markDiscountUsed(userId: string) {
 export async function useDiscount(userId: string) {
     return apiClient.post(`/moderator/users/${userId}/use-discount`);
 }
-
 
 export async function getInviteLink() {
     return apiClient.get(`/users/invite`);

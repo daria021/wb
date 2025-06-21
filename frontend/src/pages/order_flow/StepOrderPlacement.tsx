@@ -166,7 +166,7 @@ function StepOrderPlacement() {
                 disabled={!canContinue}
                 className={`w-full py-2 rounded text-brand mb-4 mt-4 ${
                     canContinue
-                        ? 'bg-brand hover:bg-brand'
+                        ? 'bg-brand text-white'
                         : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >

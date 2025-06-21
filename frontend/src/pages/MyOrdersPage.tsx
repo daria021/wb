@@ -280,6 +280,12 @@ function MyOrdersPage() {
                     className="w-5 h-5 ml-auto"
                 />
             </div>
+
+            {loading && (
+  <div className="flex justify-center mt-4">
+    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin" />
+  </div>
+)}
         </div>
     );
 }

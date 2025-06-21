@@ -218,7 +218,7 @@ function ProductFindPage() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`w-full py-2 mb-4 rounded-lg text-brand border border-brand font-semibold text-center ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+                    canContinue ? 'bg-brand text-white hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить

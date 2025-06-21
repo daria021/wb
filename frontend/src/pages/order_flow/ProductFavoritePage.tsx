@@ -142,7 +142,7 @@ function ProductFavoritePage() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`block w-full py-2 mb-4 rounded-lg text-brand font-semibold text-center ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+                    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить

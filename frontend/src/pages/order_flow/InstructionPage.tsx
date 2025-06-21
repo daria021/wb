@@ -197,8 +197,8 @@ function InstructionPage() {
                     disabled={!canContinue}
                     className={`w-full py-2 rounded-lg text-base font-semibold mt-2 ${
                         canContinue
-                            ? 'bg-brand text-brand hover:bg-blue-700'
-                            : 'bg-gray-200-400 border border-brand text-gray-700 cursor-not-allowed'
+                            ? 'bg-brand text-white'
+                            : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
                     } mb-2`}
                 >
                     Продолжить

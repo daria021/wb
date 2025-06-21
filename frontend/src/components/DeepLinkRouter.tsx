@@ -22,7 +22,13 @@ export const DeepLinkRouter = () => {
         console.log("oops", isRedirected, loading);
         return;
       }
-      const param = window.location.href
+      const currentPath = window.location.href;
+      if (!currentPath.includes('tgWebAppStartParam')) {
+        console.log("no tgWebAppStartParam");
+        return;
+
+      }
+      const param = currentPath
           .split("tgWebAppStartParam")[1]
           .split("#")[0]
           .replace("link_", "");

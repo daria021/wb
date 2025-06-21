@@ -205,8 +205,8 @@ function PaymentDetailsPage() {
                 disabled={!canContinue}
                 className={`w-full py-2 rounded text-brand mb-4 ${
                     canContinue
-                        ? 'bg-brand hover:bg-brand'
-                        : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+                        ? 'bg-brand text-white'
+                        : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить
@@ -365,14 +365,13 @@ function PaymentDetailsPage() {
 
                 <button
                     onClick={handleChannelClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                         justify-center gap-2">
+                    className="bg-white text-brand justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                    className="bg-white text-brand border border-darkGray rounded-lg p-3 text-sm font-semibold">
                     Нужна помощь
                 </button>
             </div>

@@ -190,7 +190,7 @@ function FinalDealPage() {
             <div className="flex flex-col space-y-2">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-gray-600 font-semibold text-center"
+                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-brand font-semibold text-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -472,7 +472,7 @@ function FinalDealPage() {
                 )}
                 <button
                     onClick={handleHomeClick}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-brand font-semibold text-center"
                 >
                     На главную
                 </button>

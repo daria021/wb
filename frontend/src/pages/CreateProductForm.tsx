@@ -50,8 +50,27 @@ function ProductForm() {
         useRef<HTMLInputElement>(null)
     ];
 
+    const fieldLabels: Record<keyof ProductFormData, string> = {
+        id: 'ID товара',
+        name: 'Название товара',
+        article: 'Артикул',
+        brand: 'Бренд',
+        category: 'Категория',
+        key_word: 'Ключевое слово',
+        general_repurchases: 'Общий план выкупов',
+        daily_repurchases: 'План выкупов на сутки',
+        price: 'Цена для покупателя',
+        wb_price: 'Цена на сайте WB',
+        tg: 'Телеграм для связи',
+        payment_time: 'Время выплаты',
+        review_requirements: 'Требования к отзыву',
+        requirements_agree: 'Согласование отзыва',
+        image_path: 'Фото товара',
+    };
+
     const reviewRequirementsRef = useRef<HTMLTextAreaElement>(null);
     const agreeRef = useRef<HTMLInputElement>(null);
+
 
     useEffect(() => {
         if (!file) {
@@ -90,7 +109,7 @@ function ProductForm() {
     const handleKeyDown = (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (index === 8) {
+            if (index === inputRefs.length - 1) {
                 reviewRequirementsRef.current?.focus();
             } else {
                 inputRefs[index + 1]?.current?.focus();
@@ -129,7 +148,7 @@ function ProductForm() {
                     payment_time: data.payment_time,
                     review_requirements: data.review_requirements,
                     requirements_agree: data.requirements_agree ?? false,
-                    image_path: data.image_path || '', // если есть
+                    image_path: data.image_path || '',
                 };
                 setFormData(loadedData);
                 setOriginalFormData(loadedData);
@@ -493,9 +512,10 @@ function ProductForm() {
                         <h2 className="text-xl font-bold mb-4">Вы изменили:</h2>
                         <div className="bg-brandlight rounded p-4">
                             <ul className="text-sm mb-4">
-                                {Object.entries(changedFields).map(([field, values]) => (
+                                {Object.entries(changedFields).map(([field, vals]) => (
                                     <li key={field}>
-                                        <strong>{field}</strong>: {String(values.old)} → {String(values.new)}
+                                        <strong>{fieldLabels[field as keyof ProductFormData] || field}</strong>:&nbsp;
+                                        {String(vals.old)} → {String(vals.new)}
                                     </li>
                                 ))}
                             </ul>

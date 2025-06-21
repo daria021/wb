@@ -309,7 +309,7 @@ function StepReviewReportPage() {
                     onClick={handleContinue}
                     disabled={!canContinue}
                     className={`flex-1 py-2 rounded text-brand text-sm ${
-                        canContinue ? 'bg-brand hover:bg-brand-dark' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+                        canContinue ? 'bg-brand text-white hover:bg-brand-dark' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                     }`}
                 >
                     Продолжить

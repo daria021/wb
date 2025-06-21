@@ -3,3 +3,5 @@
 **/node_modules
 **/.DS_Store
 **/.idea
+scrape.py
+collected_py_files.json

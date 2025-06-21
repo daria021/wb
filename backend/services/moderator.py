@@ -43,7 +43,11 @@ class ModeratorService(ModeratorServiceInterface):
             logger.info(f"Reviewing product {product}")
             seller = await self.user_service.get_user(product.seller_id)
             seller_products = await self.products_repository.get_by_seller(product.seller_id)
-            required_balance = sum(product.general_repurchases for product in seller_products)
+            required_balance = sum(
+                product.general_repurchases
+                for product in seller_products
+                if product.status == ProductStatus.ACTIVE or product.status == ProductStatus.NOT_PAID
+            )
             logger.info(f"required_balance {required_balance}")
             logger.info(f"seller.balance {seller.balance}")
             if required_balance > seller.balance:
@@ -57,6 +61,11 @@ class ModeratorService(ModeratorServiceInterface):
             status=status,
         )
 
+        await self.products_repository.update(
+            obj_id=product_id,
+            obj=product_dto,
+        )
+
         review_dto = CreateModeratorReviewDTO(
             moderator_id=moderator_id,
             product_id=product_id,
@@ -66,10 +75,6 @@ class ModeratorService(ModeratorServiceInterface):
             status_after=status,
         )
         await self.moderator_review_repository.create(review_dto)
-        await self.products_repository.update(
-            obj_id=product_id,
-            obj=product_dto,
-        )
 
         if review_dto.status_after == ProductStatus.ACTIVE and review_dto.status_before != ProductStatus.ACTIVE:
             await self.notification_service.send_new_product(product_id)

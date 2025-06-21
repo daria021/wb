@@ -170,7 +170,7 @@ function CartScreenshotPage() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`w-full py-2 rounded-lg text-brand font-semibold ${
-                    canContinue ? 'bg-brand hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+                    canContinue ? 'bg-brand hover:bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
                 Продолжить
