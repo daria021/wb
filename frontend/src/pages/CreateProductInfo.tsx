@@ -154,7 +154,7 @@ function CreateProductInfo() {
                     Новая карточка отправлена на модерацию. Проверьте всю информацию. Вы еще можете внести изменения.
                 </div>
             )}
-            {(product.status === ProductStatus.DISABLED) && (
+            {(lastReview && reviewComment && product.status === ProductStatus.DISABLED) && (
                 <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
                     Модератор оставил комментарий. Исправьте его и отправьте карточку на повторную модерацию.
                 </div>
@@ -214,7 +214,7 @@ function CreateProductInfo() {
 
             <div className="mb-4">
                 {lastReview && reviewComment && (
-                    <div key={lastReview.id} className="mb-3 p-4 bg-gray-200-50 border border-gray-200 rounded">
+                    <div key={lastReview.id} className="mb-3 p-4 bg-white border border-gray-200 rounded">
                         <h3 className="text-lg font-semibold">
                             Комментарий модератора:
                         </h3>

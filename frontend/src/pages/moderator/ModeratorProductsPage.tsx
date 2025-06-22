@@ -60,11 +60,11 @@ function ModeratorProductsPage() {
     }, []);
 
     const pendingProducts = products.filter(product =>
-        product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase() ||
-        product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase()
+        product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
     );
     const reviewedProducts = products.filter(product =>
         product.status.toLowerCase() === ProductStatus.ACTIVE.toLowerCase() ||
+        product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase() ||
         product.status.toLowerCase() === ProductStatus.REJECTED.toLowerCase() ||
         product.status.toLowerCase() === ProductStatus.ARCHIVED.toLowerCase()
     );
@@ -75,8 +75,7 @@ function ModeratorProductsPage() {
         }
         if (statusFilter === 'created') {
             return list.filter(product =>
-                product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase() ||
-                product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase()
+                product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
             );
         }
         return list.filter(product =>
@@ -175,7 +174,7 @@ function ModeratorProductsPage() {
                                                                 ? 'Создано'
                                                                 : product.status === ProductStatus.DISABLED
                                                                     ? 'Отключено'
-                                                                : product.status}
+                                                                    : product.status}
                                             </p>
                                         </div>
                                     ))}
@@ -194,11 +193,23 @@ function ModeratorProductsPage() {
                                         <div
                                             key={product.id}
                                             onClick={() => handleReview(product.id)}
-                                            className={`relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
-                                                product.status.toLowerCase() === 'archived'
-                                                    ? 'border-darkGray text-black border-dashed'
-                                                    : 'bg-white'
-                                            }`}
+                                            className={`
+    relative border border-gray-200 rounded-md p-3
+    hover:shadow transition-shadow duration-300 cursor-pointer
+    ${
+                                                product.status.toLowerCase() === ProductStatus.ACTIVE.toLowerCase()
+                                                    ? 'bg-green-100'
+                                                    : product.status.toLowerCase() === ProductStatus.ARCHIVED.toLowerCase()
+                                                        ? 'bg-gray-300 text-black border-dashed'
+                                                        : product.status.toLowerCase() === ProductStatus.REJECTED.toLowerCase()
+                                                            ? 'bg-red-100 text-red-800'
+                                                            : product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
+                                                                ? 'bg-white text-black'
+                                                                : product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase()
+                                                                    ? 'bg-red-100 text-red-800'
+                                                                    : 'bg-white'
+                                            }
+  `}
                                         >
                                             {product.moderator_reviews?.some(review => review.comment_to_moderator) && (
                                                 <img
@@ -223,7 +234,7 @@ function ModeratorProductsPage() {
                                                                 ? 'Создано'
                                                                 : product.status === ProductStatus.DISABLED
                                                                     ? 'Отключено'
-                                                                : product.status}
+                                                                    : product.status}
                                             </p>
                                         </div>
                                     ))}

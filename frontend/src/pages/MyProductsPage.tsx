@@ -236,7 +236,6 @@ function MyProductsPage() {
             {!loading && !error && filteredProducts.length > 0 && (
                 <div className="flex flex-col gap-2 mt-4">
                     {filteredProducts.map((product) => {
-                        // --- вычисляем нужен ли флажок ---
                         const lastReview = product.moderator_reviews?.at(-1);
                         const showFlag =
                             !!lastReview?.comment_to_seller &&
@@ -250,7 +249,15 @@ function MyProductsPage() {
                                     product.status.toLowerCase() === 'active'
                                         ? 'bg-green-100'
                                         : product.status.toLowerCase() === 'archived'
-                                            ? 'bg-gray-200-400 text-black border-dashed'
+                                            ? 'bg-gray-300 text-black border-dashed'
+                                            : product.status.toLowerCase() === 'rejected'
+                                                ? 'bg-red-100 text-red-800'
+                                                : product.status.toLowerCase() === 'created'
+                                                    ? 'bg-white text-black'
+                                                    : product.status.toLowerCase() === 'disabled'
+                                                        ? 'bg-red-100 text-red-800'
+                                                        : product.status.toLowerCase() === 'not_paid'
+                                                            ? 'bg-orange-100 text-orange-800'
                                             : 'bg-white'
                                 }`}
                             >
