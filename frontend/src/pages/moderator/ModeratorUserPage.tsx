@@ -39,14 +39,14 @@ function ModeratorUsersPage() {
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/moderator');
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/moderator');
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     const fetchUsers = async () => {
         setLoading(true);

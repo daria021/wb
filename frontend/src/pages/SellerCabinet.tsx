@@ -8,15 +8,17 @@ function SellerCabinet() {
     const [balance, setBalance] = useState(0);
 
     const handleMyProductsClick = () => navigate('/my-products');
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/');
-        });
 
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/');
+    //     });
+    //
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
 
     const handleReportsClick = () => {

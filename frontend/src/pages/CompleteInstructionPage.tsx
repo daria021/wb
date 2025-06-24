@@ -9,16 +9,16 @@ function CompleteInstructionPage() {
     const handleHomeClick = () => navigate('/');
 
     const backRoute = location.state?.backRoute || '/';
-
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(-1);
-        });
-
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate, backRoute]);
+    //
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(-1);
+    //     });
+    //
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate, backRoute]);
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">

@@ -56,14 +56,14 @@ const PushDetailsPage: React.FC = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/moderator/pushes');
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/moderator/pushes');
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     useEffect(() => {
         const fetchPushDetails = async () => {

@@ -54,14 +54,15 @@ function ProductFavoritePage() {
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
     };
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(-1);
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [orderId, navigate]);
+
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(-1);
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [orderId, navigate]);
 
     useEffect(() => {
         if (!orderId) return;

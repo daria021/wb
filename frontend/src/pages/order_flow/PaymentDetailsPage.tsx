@@ -53,14 +53,14 @@ function PaymentDetailsPage() {
         selectedBank !== '' &&
         agreed;
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(-1);
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate, orderId]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(-1);
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate, orderId]);
 
 
     useEffect(() => {

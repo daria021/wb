@@ -42,15 +42,14 @@ function ProductDetailPage() {
         navigate(`/catalog?seller=${product.seller_id}`);
     };
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/catalog');
-        });
-
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(`/catalog`);
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     useEffect(() => {
         if (!productId) return;
