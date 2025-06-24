@@ -5,14 +5,14 @@ import {on} from "@telegram-apps/sdk";
 function ModeratorDashboard() {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/');
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/');
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     const handleUsersClick = () => navigate('/moderator/users');
     const handleProductsClick = () => navigate('/moderator/products');

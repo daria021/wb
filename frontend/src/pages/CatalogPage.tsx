@@ -70,10 +70,10 @@ function CatalogPage() {
         }
     }, [searchParams]);
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => navigate('/'));
-        return () => removeBackListener();
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => navigate('/'));
+    //     return () => removeBackListener();
+    // }, [navigate]);
 
     const debouncedSearch = useDebounce(searchQuery, 600);
 

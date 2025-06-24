@@ -16,15 +16,15 @@ function QuestionPage() {
     const handleAbout = () => navigate('/about');
     const handleHomeClick = () => navigate('/');
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/about');
-        });
-
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/about');
+    //     });
+    //
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">

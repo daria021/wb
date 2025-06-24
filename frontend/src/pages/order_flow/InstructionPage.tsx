@@ -70,15 +70,15 @@ function InstructionPage() {
         navigate(`/`);
     };
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(-1);
-        });
-
-        return () => {
-            removeBackListener();
-        };
-    }, [productId, navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(-1);
+    //     });
+    //
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [productId, navigate]);
 
     if (loading) {
         return <div className="p-4">Загрузка...</div>;

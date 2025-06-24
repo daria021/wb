@@ -23,18 +23,18 @@ const PushFormPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            if (isEditMode && pushId) {
-                navigate(`/moderator/pushes/${pushId}`);
-            } else {
-                navigate(`/moderator/pushes`);
-            }
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate, isEditMode, pushId]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         if (isEditMode && pushId) {
+    //             navigate(`/moderator/pushes/${pushId}`);
+    //         } else {
+    //             navigate(`/moderator/pushes`);
+    //         }
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate, isEditMode, pushId]);
 
     useEffect(() => {
         if (isEditMode && pushId) {

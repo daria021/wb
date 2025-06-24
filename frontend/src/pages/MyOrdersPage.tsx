@@ -67,14 +67,14 @@ function MyOrdersPage() {
     const isOnOrders = location.pathname === ('/user/orders');
 
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/`);
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(`/`);
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {

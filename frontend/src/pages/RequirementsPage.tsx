@@ -26,14 +26,15 @@ function RequirementsPage() {
 
     const handleHomeClick = () => navigate('/');
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate('/about');
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    //
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate('/about');
+    //     });
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {

@@ -5,15 +5,15 @@ import {on} from "@telegram-apps/sdk";
 function AboutPage() {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/`);
-        });
-
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
+    // useEffect(() => {
+    //     const removeBackListener = on('back_button_pressed', () => {
+    //         navigate(`/`);
+    //     });
+    //
+    //     return () => {
+    //         removeBackListener();
+    //     };
+    // }, [navigate]);
 
     const handleQuestion = () => navigate('/question');
     const handleInstruction = () => navigate('/instruction', {state: {backRoute: '/about'}});
