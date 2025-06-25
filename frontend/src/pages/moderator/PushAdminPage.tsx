@@ -18,14 +18,12 @@ const PushAdminPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/moderator');
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate(`/moderator`, { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     // Load pushes on mount
     useEffect(() => {

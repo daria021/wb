@@ -83,14 +83,12 @@ function SellerReportsPage() {
         }
     };
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/seller-cabinet');
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate(`/seller-cabinet`, { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
 
     useEffect(() => {

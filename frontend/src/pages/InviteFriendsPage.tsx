@@ -9,10 +9,12 @@ const InviteFriendsPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => navigate('/'));
-    //     return () => removeBackListener();
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate(`/`, { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     useEffect(() => {
         async function fetchInviteLink() {

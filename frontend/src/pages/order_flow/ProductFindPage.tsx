@@ -123,32 +123,6 @@ function ProductFindPage() {
         }
     };
 
-    //
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         if (!orderId) return;
-    //         getOrderById(orderId)
-    //             .then((response: AxiosResponse<Order>) => {
-    //                 const productId = response.data.product.id;
-    //                 navigate(-1);
-    //             })
-    //             .catch((err) => {
-    //                 console.error('Ошибка при загрузке заказа:', err);
-    //                 setError('Не удалось загрузить заказ');
-    //             });
-    //     });
-    //     // return () => removeBackListener();
-    // }, [orderId, navigate]);
-
-    //     useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate(-1);
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate, orderId]);
-
     if (loading) {
         return <div className="p-4">Загрузка...</div>;
     }

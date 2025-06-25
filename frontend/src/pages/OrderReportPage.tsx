@@ -54,15 +54,12 @@ function OrderReportPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/seller-cabinet/reports');
-    //     });
-    //
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate('/seller-cabinet/reports', { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     const handleCashbackPaid = async (orderId: string) => {
         try {
