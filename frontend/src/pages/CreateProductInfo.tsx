@@ -75,15 +75,12 @@ function CreateProductInfo() {
             });
     }, []);
 
-    //
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/my-products');
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate('/my-products', { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     const handleMyBalanceClick = () => {
         navigate(`/seller-cabinet/balance`);

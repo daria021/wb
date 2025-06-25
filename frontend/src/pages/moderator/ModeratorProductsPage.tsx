@@ -32,14 +32,12 @@ function ModeratorProductsPage() {
     const [activeTab, setActiveTab] = useState<'pending' | 'reviewed'>('pending');
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/moderator');
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate(`/moderator`, { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     const fetchProducts = async () => {
         setLoading(true);

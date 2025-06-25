@@ -203,17 +203,6 @@ function ProductForm() {
         });
     }
 
-
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate(-1);
-    //     });
-    //
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
-
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 

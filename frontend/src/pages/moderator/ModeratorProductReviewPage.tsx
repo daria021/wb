@@ -27,14 +27,12 @@ function ModeratorProductReviewPage() {
         }
     };
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         navigate('/moderator/products');
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate]);
+    useEffect(() => {
+      const unsub = on('back_button_pressed', () => {
+        navigate(`/moderator/products`, { replace: true });
+      });
+      return unsub;
+    }, [navigate]);
 
     useEffect(() => {
         fetchProduct();

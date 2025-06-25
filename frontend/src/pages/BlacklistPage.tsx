@@ -124,11 +124,6 @@ const BlacklistPage: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        const remove = on('back_button_pressed', () => navigate(-1));
-        return () => remove();
-    }, [navigate]);
-
     return (
         <div className="min-h-screen bg-brandlight p-4">
             <div className="max-w-lg mx-auto">

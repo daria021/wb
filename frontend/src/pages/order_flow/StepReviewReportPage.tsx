@@ -105,16 +105,6 @@ function StepReviewReportPage() {
         file2 !== null &&
         checkNumber.trim() !== '';
 
-    // useEffect(() => {
-    //     const removeBackListener = on('back_button_pressed', () => {
-    //         if (!orderId) return;
-    //         navigate(-1);
-    //     });
-    //     return () => {
-    //         removeBackListener();
-    //     };
-    // }, [navigate, orderId]);
-
     useEffect(() => {
         if (!orderId) return;
         getOrderReport(orderId)
