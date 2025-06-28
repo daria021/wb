@@ -37,8 +37,8 @@ function MyProductsPage() {
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState<
-        'all' | 'active' | 'created' | 'rejected' | 'archived'
-    >('all');
+        'все' | 'активные' | 'созданные' | 'ожидают редактирования' | 'отклоненные' | 'архивированные' | 'не оплаченные'
+    >('все');
 
     const totalCount = products.length;
     const moderationCount = products.filter(
@@ -48,36 +48,52 @@ function MyProductsPage() {
     const disabledCount = products.filter((p) => p.status === ProductStatus.DISABLED).length;
     const archivedCount = products.filter((p) => p.status === ProductStatus.ARCHIVED).length;
     const notPaidCount = products.filter((p) => p.status === ProductStatus.NOT_PAID).length;
+    const rejectedCount = products.filter((p) => p.status === ProductStatus.REJECTED).length;
     const totalPlan = products
         .filter(
             (p) => p.status === ProductStatus.ACTIVE || p.status === ProductStatus.NOT_PAID,
         )
         .reduce((sum, p) => sum + p.remaining_products, 0);
 
-    const filteredProducts = products.filter((product) => {
-        if (filter !== 'all') {
-            if (filter === 'created') {
-                if (
-                    product.status.toLowerCase() !== ProductStatus.CREATED.toLowerCase() &&
-                    product.status.toLowerCase() !== ProductStatus.DISABLED.toLowerCase()
-                ) {
-                    return false;
-                }
-            } else if (product.status.toLowerCase() !== filter.toLowerCase()) {
-                return false;
-            }
+    const filteredProducts = products.filter(product => {
+        switch (filter) {
+            case 'активные':
+                if (product.status !== ProductStatus.ACTIVE) return false;
+                break;
+            case 'созданные':
+                if (product.status !== ProductStatus.CREATED) return false;
+                break;
+            case 'ожидают редактирования':
+                if (product.status !== ProductStatus.DISABLED) return false;
+                break;
+            case 'архивированные':
+                if (product.status !== ProductStatus.ARCHIVED) return false;
+                break;
+            case 'не оплаченные':
+                if (product.status !== ProductStatus.NOT_PAID) return false;
+                break;
+            case 'отклоненные':
+                if (product.status !== ProductStatus.REJECTED) return false;
+                break;
+            case 'все':
+                break;
         }
+
         if (searchQuery) {
-            return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+            return product.name
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
         }
+
         return true;
     });
 
+
     useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate('/seller-cabinet', { replace: true });
-      });
-      return unsub;
+        const unsub = on('back_button_pressed', () => {
+            navigate('/seller-cabinet', {replace: true});
+        });
+        return unsub;
     }, [navigate]);
 
     useEffect(() => {
@@ -144,6 +160,9 @@ function MyProductsPage() {
                     Заявка оформлена и не оплачена: <strong>{notPaidCount}</strong>
                 </p>
                 <p className="text-sm">
+                    Отклоненные: <strong>{rejectedCount}</strong>
+                </p>
+                <p className="text-sm">
                     Общий план по раздачам: <strong>{totalPlan}</strong>
                 </p>
                 {seller &&
@@ -193,22 +212,30 @@ function MyProductsPage() {
                 <div className="mb-4">
                     <select
                         value={filter}
-                        onChange={(e) =>
+                        onChange={e =>
                             setFilter(
-                                e.target.value as 'all' | 'active' | 'created' | 'rejected' | 'archived',
+                                e.target.value as
+                                    | 'все'
+                                    | 'активные'
+                                    | 'созданные'
+                                    | 'ожидают редактирования'
+                                    | 'отклоненные'
+                                    | 'архивированные'
+                                    | 'не оплаченные'
                             )
                         }
                         className="w-full border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
                     >
-                        <option value="all">Все статусы</option>
-                        <option value="active">Активный</option>
-                        <option value="created">Создано</option>
-                        <option value="rejected">Отклонено</option>
-                        <option value="archived">Архив</option>
+                        <option value="все">Все статусы</option>
+                        <option value="активные">Активные</option>
+                        <option value="созданные">Созданные</option>
+                        <option value="ожидают редактирования">Ожидают редактирования</option>
+                        <option value="отклоненные">Отклонённые</option>
+                        <option value="архивированные">Архивированные</option>
+                        <option value="не оплаченные">Не оплаченные</option>
                     </select>
                 </div>
             </div>
-
             {/* Состояния загрузки / ошибок */}
             {!loading && (error || filteredProducts.length === 0) && (
                 <div className="p-4 bg-brandlight border border-darkGray rounded text-center">
@@ -256,7 +283,7 @@ function MyProductsPage() {
                                                         ? 'bg-red-100 text-red-800'
                                                         : product.status.toLowerCase() === 'not_paid'
                                                             ? 'bg-orange-100 text-orange-800'
-                                            : 'bg-white'
+                                                            : 'bg-white'
                                 }`}
                             >
                                 {showFlag && (
@@ -276,17 +303,17 @@ function MyProductsPage() {
                                 >
                                     Статус:{' '}
                                     {product.status === ProductStatus.ACTIVE
-                                        ? 'Активный'
+                                        ? 'Активные'
                                         : product.status === ProductStatus.REJECTED
-                                            ? 'Отклонено'
+                                            ? 'Отклоненные'
                                             : product.status === ProductStatus.ARCHIVED
-                                                ? 'Архив'
+                                                ? 'Архивированные'
                                                 : product.status === ProductStatus.CREATED
-                                                    ? 'Создано'
+                                                    ? 'Созданные'
                                                     : product.status === ProductStatus.DISABLED
-                                                        ? 'Отключено'
+                                                        ? 'Ожидают редактирования'
                                                         : product.status === ProductStatus.NOT_PAID
-                                                            ? 'Не оплачено'
+                                                            ? 'Не оплаченные'
                                                             : product.status}
                                 </p>
                             </div>
