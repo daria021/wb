@@ -39,12 +39,12 @@ function ModeratorUserDetailPage() {
     // Состояния для реферального бонуса
     const [bonusInput, setBonusInput] = useState('');
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate(`/moderator/users`, { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate(`/moderator/users`, { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     useEffect(() => {
         if (!userId) return;

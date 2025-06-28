@@ -39,12 +39,12 @@ function ModeratorUsersPage() {
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate(`/moderator`, { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate(`/moderator`, { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     const fetchUsers = async () => {
         setLoading(true);

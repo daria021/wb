@@ -16,12 +16,12 @@ function QuestionPage() {
     const handleAbout = () => navigate('/about');
     const handleHomeClick = () => navigate('/');
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate(`/about`, { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate(`/about`, { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">

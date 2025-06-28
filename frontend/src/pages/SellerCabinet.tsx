@@ -10,12 +10,12 @@ function SellerCabinet() {
     const handleMyProductsClick = () => navigate('/my-products');
 
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate('/', { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate('/', { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
 
     const handleReportsClick = () => {

@@ -70,12 +70,12 @@ function CatalogPage() {
         }
     }, [searchParams]);
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate('/', { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate('/', { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     const debouncedSearch = useDebounce(searchQuery, 600);
 
@@ -355,7 +355,6 @@ function CatalogPage() {
                                 {product.name}
                             </h3>
                             <p className="text-md font-bold mb-1 text-brand">{product.price} ₽</p>
-                            <p className="text-xs text-gray-500 mt-auto">Арт. {product.article}</p>
                         </div>
                     </div>
                 ))}

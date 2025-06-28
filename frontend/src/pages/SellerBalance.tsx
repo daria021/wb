@@ -15,12 +15,12 @@ function SellerBalancePage() {
     const navigate = useNavigate();
     const [balance, setBalance] = useState(0);
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate(`/seller-cabinet`, { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate(`/seller-cabinet`, { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     useEffect(() => {
         const fetchBalance = async () => {
