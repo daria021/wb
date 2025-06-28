@@ -18,7 +18,6 @@ interface Product {
 interface Order {
     id: string;
     product: Product;
-    // Другие поля заказа, если необходимо
 }
 
 interface OrderReport {
@@ -42,10 +41,12 @@ function ProductFavoritePage() {
     const navigate = useNavigate();
     const {orderId} = useParams<{ orderId: string }>();
 
-    const [addedToFavorite, setAddedToFavorite] = useState(false);
+    const [productFavorited, setProductFavorited] = useState(false);
+    const [brandFavorited, setBrandFavorited] = useState(false);
+    // кнопка активна только когда оба true
+    const canContinue = productFavorited && brandFavorited;
     const [reportData, setReportData] = useState<OrderReport | null>(null);
     const [showReport, setShowReport] = useState(false);
-    const canContinue = addedToFavorite;
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -117,18 +118,26 @@ function ProductFavoritePage() {
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
-            <div className="flex items-center mb-4">
-                <input
-                    type="checkbox"
-                    id="favoriteCheckbox"
-                    checked={addedToFavorite}
-                    onChange={(e) => setAddedToFavorite(e.target.checked)}
-                    className="mr-2"
-                />
-                <label htmlFor="favoriteCheckbox" className="text-sm text-gray-700">
-                    Добавил товар в избранное
-                </label>
-            </div>
+        <div className="flex items-center mb-4 space-x-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={productFavorited}
+              onChange={e => setProductFavorited(e.target.checked)}
+              className="mr-2"
+            />
+            Добавил товар в избранное
+          </label>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={brandFavorited}
+              onChange={e => setBrandFavorited(e.target.checked)}
+              className="mr-2"
+            />
+            Добавил бренд в избранное
+          </label>
+        </div>
 
             <button
                 onClick={handleContinue}
