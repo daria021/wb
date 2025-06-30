@@ -42,12 +42,12 @@ function ProductDetailPage() {
         navigate(`/catalog?seller=${product.seller_id}`);
     };
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate('/catalog', { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate('/catalog', { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     useEffect(() => {
         if (!productId) return;
@@ -109,9 +109,6 @@ function ProductDetailPage() {
                 </p>
                 {product.description && (
                     <p className="text-sm text-gray-700 mb-2">{product.description}</p>
-                )}
-                {product.article && (
-                    <p className="text-xs text-gray-500">Арт. {product.article}</p>
                 )}
             </div>
 

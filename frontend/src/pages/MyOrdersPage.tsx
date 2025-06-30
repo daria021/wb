@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {getUserOrders, updateOrderStatus} from '../services/api';
-import {on} from "@telegram-apps/sdk";
+import {on, off} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
+import BackButtonManager from "../components/BackButtonManager";
 
 const STEP_NAMES: { [key: number]: string } = {
     1: 'Шаг 1: Поиск товара по ключевому слову',
@@ -66,15 +67,19 @@ function MyOrdersPage() {
     const location = useLocation();
     const isOnOrders = location.pathname === ('/user/orders');
 
+  //
+  //   useEffect(() => {
+  //       off('back_button_pressed', BackButtonManager);
+  //
+  //       const unsub = on('back_button_pressed', () => {
+  //   navigate('/', { replace: true });
+  // });
+  //       return () => {
+  //           unsub();
+  //           on('back_button_pressed', BackButtonManager);
+  //       };
+  //   }, [navigate]);
 
-    useEffect(() => {
-        const removeBackListener = on('back_button_pressed', () => {
-            navigate(`/`);
-        });
-        return () => {
-            removeBackListener();
-        };
-    }, [navigate]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {

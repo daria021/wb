@@ -26,12 +26,12 @@ function RequirementsPage() {
 
     const handleHomeClick = () => navigate('/');
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate('/about', { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate('/about', { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {

@@ -56,12 +56,12 @@ const PushDetailsPage: React.FC = () => {
         };
     }, []);
 
-    useEffect(() => {
-      const unsub = on('back_button_pressed', () => {
-        navigate(`/moderator/pushes`, { replace: true });
-      });
-      return unsub;
-    }, [navigate]);
+    // useEffect(() => {
+    //   const unsub = on('back_button_pressed', () => {
+    //     navigate(`/moderator/pushes`, { replace: true });
+    //   });
+    //   return unsub;
+    // }, [navigate]);
 
     useEffect(() => {
         const fetchPushDetails = async () => {
