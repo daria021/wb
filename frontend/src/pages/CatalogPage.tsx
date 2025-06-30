@@ -70,13 +70,6 @@ function CatalogPage() {
         }
     }, [searchParams]);
 
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate('/', { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
-
     const debouncedSearch = useDebounce(searchQuery, 600);
 
     const MAX_RETRIES = Number(process.env.REACT_APP_MAX_RETRIES ?? 5);
@@ -231,7 +224,7 @@ function CatalogPage() {
 
             {/* Inline filters panel */}
             {showFilters && (
-                <div className="bg-white rounded-lg shadow p-4 mb-4 space-y-4">
+                <div className="bg-white rounded-lg shadow p-4 mb-2 space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Максимальная цена</label>
                         <input
@@ -335,7 +328,7 @@ function CatalogPage() {
                         onClick={() => navigate(`/product/${product.id}`)}
                         className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
                     >
-                        <div className="w-full aspect-[3/4] bg-gray-200-100 overflow-hidden">
+<div className="w-full aspect-square bg-gray-200-100 overflow-hidden">
                             {product.image_path
                                 ? <img
                                     src={product.image_path.startsWith('http') ? product.image_path : GetUploadLink(product.image_path)}
@@ -348,7 +341,6 @@ function CatalogPage() {
                             <h3
                                 className="
                                         text-sm font-semibold mb-1
-                                        h-10
                                         overflow-hidden
                                         line-clamp-2"
                             >

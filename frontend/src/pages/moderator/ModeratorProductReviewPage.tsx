@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {getModeratorProductById, reviewProduct} from '../../services/api';
 import {ProductStatus} from '../../enums';
-import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
 function ModeratorProductReviewPage() {
@@ -13,6 +12,15 @@ function ModeratorProductReviewPage() {
     const [commentModerator, setCommentModerator] = useState('');
     const [commentSeller, setCommentSeller] = useState('');
     const navigate = useNavigate();
+
+    const statusLabels: Record<ProductStatus, string> = {
+        [ProductStatus.CREATED]: 'Создано',
+        [ProductStatus.ACTIVE]: 'Активно',
+        [ProductStatus.NOT_PAID]: 'Не оплачено',
+        [ProductStatus.DISABLED]: 'Отключено',
+        [ProductStatus.REJECTED]: 'Отклонено',
+        [ProductStatus.ARCHIVED]: 'В архиве',
+    };
 
     const fetchProduct = async () => {
         setLoading(true);
@@ -27,13 +35,6 @@ function ModeratorProductReviewPage() {
         }
     };
 
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate(`/moderator/products`, { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
-
     useEffect(() => {
         fetchProduct();
     }, [productId]);
@@ -41,9 +42,9 @@ function ModeratorProductReviewPage() {
     const handleSubmit = async () => {
         try {
             const payload = {
-                    status,
-                    commentModerator,
-                    commentSeller
+                status,
+                commentModerator,
+                commentSeller
             };
             await reviewProduct(productId!, payload);
             alert('Проверка продукта обновлена!');
@@ -123,14 +124,15 @@ function ModeratorProductReviewPage() {
                 <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">
                     <label className="block mb-2">Статус:</label>
+
                     <select
                         value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                         className="border p-2 rounded w-full"
                     >
-                        {Object.values(ProductStatus).map((value) => (
+                        {Object.values(ProductStatus).map(value => (
                             <option key={value} value={value}>
-                                {value.charAt(0).toUpperCase() + value.slice(1)}
+                                {statusLabels[value]}
                             </option>
                         ))}
                     </select>
@@ -162,7 +164,8 @@ function ModeratorProductReviewPage() {
                 >
                     Отправить
                 </button>
-            </div>¬
+            </div>
+            ¬
         </div>
     );
 }

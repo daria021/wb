@@ -36,46 +36,62 @@ class ModeratorService(ModeratorServiceInterface):
             moderator_id: UUID,
             request: UpdateProductStatusRequest,
     ):
+        # 1) Получаем текущее состояние товара
         product = await self.products_repository.get(product_id)
+        original_status = product.status
 
+        # 2) Вычисляем итоговый статус
         if request.status == ProductStatus.ACTIVE:
-            product = await self.products_repository.get(product_id)
-            logger.info(f"Reviewing product {product}")
+            # 2.1) Берём продавца и все его товары
             seller = await self.user_service.get_user(product.seller_id)
             seller_products = await self.products_repository.get_by_seller(product.seller_id)
-            required_balance = sum(
-                product.general_repurchases
-                for product in seller_products
-                if product.status == ProductStatus.ACTIVE or product.status == ProductStatus.NOT_PAID
+
+            # 2.2) Суммируем уже зарезервированные (активные) раздачи
+            existing_reserved = sum(
+                p.general_repurchases
+                for p in seller_products
+                if p.status == ProductStatus.ACTIVE
             )
-            logger.info(f"required_balance {required_balance}")
-            logger.info(f"seller.balance {seller.balance}")
-            if required_balance > seller.balance:
-                status = ProductStatus.NOT_PAID
+
+            # 2.3) Если товар ещё не был активен, добавляем его запрос
+            to_reserve = existing_reserved
+            if original_status != ProductStatus.ACTIVE:
+                to_reserve += product.general_repurchases
+
+            logger.info(f"Existing reserved: {existing_reserved}, "
+                        f"New request: {product.general_repurchases if original_status != ProductStatus.ACTIVE else 0}, "
+                        f"Total required: {to_reserve}, Seller balance: {seller.balance}")
+
+            # 2.4) Решаем, хватит ли баланса
+            if to_reserve > seller.balance:
+                final_status = ProductStatus.NOT_PAID
             else:
-                status = request.status
+                final_status = ProductStatus.ACTIVE
+
         else:
-            status = request.status
+            # Любой другой статус просто применяем как есть
+            final_status = request.status
 
-        product_dto = UpdateProductDTO(
-            status=status,
-        )
-
+        # 3) Обновляем статус товара
         await self.products_repository.update(
             obj_id=product_id,
-            obj=product_dto,
+            obj=UpdateProductDTO(status=final_status)
         )
 
+        # 4) Создаём запись ревью
         review_dto = CreateModeratorReviewDTO(
             moderator_id=moderator_id,
             product_id=product_id,
             comment_to_seller=request.comment_to_seller,
             comment_to_moderator=request.comment_to_moderator,
-            status_before=product.status,
-            status_after=status,
+            status_before=original_status,
+            status_after=final_status,
         )
         await self.moderator_review_repository.create(review_dto)
 
+        # 5) Если товар только что стал активным — шлём нотификацию
+        if final_status == ProductStatus.ACTIVE and original_status != ProductStatus.ACTIVE:
+            await self.notification_service.send_new_product(product_id)
         if review_dto.status_after == ProductStatus.ACTIVE and review_dto.status_before != ProductStatus.ACTIVE:
             await self.notification_service.send_new_product(product_id)
 
