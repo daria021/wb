@@ -1,3 +1,4 @@
+import logging
 import uuid
 from dataclasses import dataclass
 from typing import Optional
@@ -7,6 +8,7 @@ from abstractions.services.deeplink import DeeplinkServiceInterface
 from domain.dto import CreateDeeplinkDTO
 from domain.models import Deeplink
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class DeeplinkService(DeeplinkServiceInterface):
@@ -26,6 +28,9 @@ class DeeplinkService(DeeplinkServiceInterface):
     async def resolve_deeplink(self, key: str) -> Optional[Deeplink]:
         try:
             deeplink_uuid = uuid.UUID(key)
-            return await self.deeplink_repository.get(deeplink_uuid)
+            res = await self.deeplink_repository.get(deeplink_uuid)
+            logger.info(f"Deeplink {deeplink_uuid} resolved to {res}")
+            return res
         except ValueError:
+            logger.warning(f"Could not resolve Deeplink {key}", exc_info=True)
             return None

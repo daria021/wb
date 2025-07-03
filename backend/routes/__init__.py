@@ -8,6 +8,8 @@ from .review import router as review_router
 from .user import router as user_router
 from .upload import router as upload_router
 from .seller_review import router as seller_router
+from .deeplink import router as deeplink_router
+
 router = APIRouter(
     prefix="/api",
 )
@@ -21,4 +23,5 @@ router.include_router(product_router)
 router.include_router(orders_router)
 router.include_router(upload_router)
 router.include_router(seller_router)
+router.include_router(deeplink_router)
 
