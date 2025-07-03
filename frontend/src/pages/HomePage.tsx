@@ -1,12 +1,15 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
-import {getMe} from '../services/api';
+// import {getMe} from '../services/api';
+import {useUser} from '../contexts/user';
 import {useAuth} from '../contexts/auth';
 import {ReferralGlowingButton} from "../components/ReferralButton";
 
 function HomePage() {
     const navigate = useNavigate();
     const {isModerator, loading} = useAuth();
+    const {user, loading: userLoading} = useUser();
+
 
     window.onerror = (message, source, lineno, colno, error) => {
         if (typeof message === "string" && message.includes("window.TelegramGameProxy.receiveEvent")) {
@@ -22,14 +25,12 @@ function HomePage() {
     const handleComplaintsClick = () => {
         window.open('https://t.me/Premiumcashb', '_blank');
     };
-    const handleMyOrdersClick = async () => {
-        try {
-            await getMe();
-            navigate(`/user/orders`);
-        } catch (error) {
-            console.error('Ошибка получения данных пользователя:', error);
-        }
+
+    const handleMyOrdersClick = () => {
+        if (!user) return;      // ждём, пока профиль из контекста подтянется
+        navigate(`/user/orders`);
     };
+
     const handleSellerClick = () => {
         navigate(`/seller-cabinet`);
     };

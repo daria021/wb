@@ -1,9 +1,9 @@
 import React, {FormEvent, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {getMe, getProductById, updateProductStatus} from '../services/api';
+import {getProductById, updateProductStatus} from '../services/api';
 import {Category, PayoutTime, ProductStatus} from '../enums';
-import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
+import {useUser} from '../contexts/user';
 
 
 interface ModeratorReview {
@@ -54,7 +54,8 @@ function CreateProductInfo() {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+    const {user, loading: userLoading} = useUser()
+
 
     useEffect(() => {
         if (!productId) return;
@@ -67,20 +68,6 @@ function CreateProductInfo() {
             .finally(() => setLoading(false));
     }, [productId]);
 
-    useEffect(() => {
-        getMe()
-            .then((user) => setCurrentUser(user))
-            .catch((err) => {
-                console.error('Ошибка получения данных пользователя:', err);
-            });
-    }, []);
-
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate('/my-products', { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
 
     const handleMyBalanceClick = () => {
         navigate(`/seller-cabinet/balance`);
@@ -144,6 +131,13 @@ function CreateProductInfo() {
 
     const lastReview = product.last_moderator_review;
     const reviewComment = lastReview ? getReviewComment(lastReview) : null;
+
+    if (userLoading) {
+        return <div className="p-4">Загрузка профиля…</div>;
+    }
+    if (!user) {
+        return <div className="p-4 text-red-600">Не авторизован</div>;
+    }
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto max-w-lg">
@@ -228,12 +222,12 @@ function CreateProductInfo() {
 
             <div className="flex flex-col gap-2">
                 {product.status === ProductStatus.NOT_PAID && (
-                <button
-                    onClick={handleMyBalanceClick}
-                    className="flex-1 bg-brand text-white p-2 rounded"
-                >
-                    Пополнить кабинет
-                </button>
+                    <button
+                        onClick={handleMyBalanceClick}
+                        className="flex-1 bg-brand text-white p-2 rounded"
+                    >
+                        Пополнить кабинет
+                    </button>
                 )}
                 {product.status === ProductStatus.ARCHIVED ? (
                     <button

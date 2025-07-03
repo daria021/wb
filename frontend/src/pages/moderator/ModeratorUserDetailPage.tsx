@@ -120,7 +120,7 @@ function ModeratorUserDetailPage() {
     const handleBalanceClear = async () => {
         if (user.balance <= 0) return;
         const fd = new FormData();
-        fd.append("balance", (-user.balance).toString());
+        fd.append("balance", (0).toString());
         try {
             await increaseSellerBalance(user.id, fd);
             setUser({...user, balance: 0});

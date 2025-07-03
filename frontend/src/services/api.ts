@@ -22,6 +22,52 @@ interface Product {
     image_path?: string;
 }
 
+export interface UserWithBalance {
+  id: string
+  telegram_id?: number
+  nickname?: string
+  role: 'user' | 'client' | 'seller' | 'moderator' | 'admin'
+  balance: number
+  is_banned: boolean
+  is_seller: boolean
+  created_at: string  // ISO-строка
+  updated_at: string  // ISO-строка
+  total_plan: number        // общий план (ACTIVE + NOT_PAID)
+  reserved_active: number   // зарезервировано под ACTIVE
+  unpaid_plan: number       // план под NOT_PAID
+  free_balance: number      // сколько свободно (balance – reserved_active)
+}
+
+
+export interface UserWithBalance {
+  id: string
+  telegram_id?: number
+  nickname?: string
+  role: 'user' | 'client' | 'seller' | 'moderator' | 'admin'
+  balance: number
+  is_banned: boolean
+  is_seller: boolean
+  created_at: string  // ISO-строка
+  updated_at: string  // ISO-строка
+
+  // Новые поля
+  total_plan: number        // общий план (ACTIVE + NOT_PAID)
+  reserved_active: number   // зарезервировано под ACTIVE
+  unpaid_plan: number       // план под NOT_PAID
+  free_balance: number      // сколько свободно (balance – reserved_active)
+}
+
+/**
+ * Делает один GET-запрос к /api/users/me и возвращает десериализованные данные.
+ * Бросает ошибку, если получен не-2xx ответ.
+ */
+export async function fetchMe(): Promise<UserWithBalance> {
+  const response = await apiClient.get<UserWithBalance>('/users/me', {
+    withCredentials: true, // если используете куки
+  })
+  return response.data
+}
+
 
 export async function getProducts(
     params: GetProductsParams

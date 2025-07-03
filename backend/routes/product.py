@@ -7,7 +7,9 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request, D
 from abstractions.services.upload import UploadServiceInterface
 from dependencies.services.product import get_product_service  # функция, возвращающая экземпляр ProductService
 from dependencies.services.upload import get_upload_service
+from dependencies.services.user_context import get_me_cached
 from domain.dto import CreateProductDTO, UpdateProductDTO
+from domain.dto.user_with_balance import UserWithBalanceDTO
 from domain.models import Product
 from domain.responses.product import ProductResponse
 from infrastructure.enums.category import Category
@@ -40,14 +42,35 @@ async def get_by_article(article: str) -> Product:
     return await product_service.get_by_article(article)
 
 
+# @router.get("/seller")
+# async def get_by_seller(
+#         request: Request,
+# ) -> Optional[list[Product]]:
+#     product_service = get_product_service()
+#     seller_id = get_user_id_from_request(request)
+#     return await product_service.get_by_seller(seller_id)
+
 @router.get("/seller")
 async def get_by_seller(
-        request: Request,
-) -> Optional[list[Product]]:
-    product_service = get_product_service()
-    seller_id = get_user_id_from_request(request)
-    return await product_service.get_by_seller(seller_id)
-
+    me: UserWithBalanceDTO = Depends(get_me_cached),
+    product_service=Depends(get_product_service),
+) -> dict:   # todo: убью
+    """
+    Ответ содержит:
+      - free_balance: сколько ещё свободно
+      - reserved_active: сколько занято активными
+      - unpaid_plan: сколько в NOT_PAID
+      - total_plan: reserved_active + unpaid_plan
+      - products: список продуктов
+      """
+    prods = await product_service.get_by_seller(me.id)
+    return {
+        "free_balance": me.free_balance,
+        "reserved_active": me.reserved_active,
+        "unpaid_plan": me.unpaid_plan,
+        "total_plan": me.total_plan,
+        "products": prods,
+    }
 
 @router.get("/{product_id}")
 async def get_product(

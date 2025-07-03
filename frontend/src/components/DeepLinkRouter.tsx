@@ -11,59 +11,48 @@ interface Deeplink {
 }
 
 export const DeepLinkRouter = () => {
-  const navigate = useNavigate();
-  const { loading } = useAuth();
-  const [ isRedirected, setIsRedirected ]  = useState<boolean>(false);
+  const navigate = useNavigate()
+  const { loading } = useAuth()
+  const [isRedirected, setIsRedirected] = useState(false)
 
   useEffect(() => {
-    console.log("hi", isRedirected, loading);
-    const followDeeplink = async () => {
-      if (loading || isRedirected) {
-        console.log("oops", isRedirected, loading);
-        return;
-      }
-      const currentPath = window.location.href;
-      if (!currentPath.includes('tgWebAppStartParam')) {
-        console.log("no tgWebAppStartParam");
-        return;
+    // Ждём, пока профиль инициализируется
+    if (loading || isRedirected) return
 
-      }
-      const param = currentPath
-          .split("tgWebAppStartParam")[1]
-          .split("#")[0]
-          .replace("link_", "");
-      console.log("param", param);
-      console.log("loc", window.location);
-      if (!param) {
-        console.log("wtf");
-        setIsRedirected(true);
-        return;
-      }
+    const href = window.location.href
+    // Ищем startParam через регулярку сразу
+    const m = /tgWebAppStartParam([^#]+)/.exec(href)
+    // Если нет ни одного — сразу помечаем, что отработали, и выходим
+    if (!m) {
+      setIsRedirected(true)
+      return
+    }
 
-      try {
-        console.log("start");
-        const response = await resolveDeeplink(param);
-        console.log("response", response.data);
-        const deeplink = response.data as Deeplink;
-        console.log("deeplink", deeplink);
-        if (deeplink.url.startsWith('/')) {
-          console.log("url", deeplink.url);
-          setIsRedirected(true);
-          navigate(deeplink.url, {
-            replace: true
-          });
+    // Достаём параметр и чистим префикс
+    const raw = m[1] // например "link_abc123"
+    const param = raw.replace(/^link_/, '')
+    if (!param) {
+      setIsRedirected(true)
+      return
+    }
+
+    // Всё ок, пробуем резолвить
+    resolveDeeplink(param)
+      .then((res) => {
+        const { url } = res.data as Deeplink;
+        setIsRedirected(true)
+        if (url.startsWith('/')) {
+          navigate(url, { replace: true })
+        } else {
+          // если внешняя ссылка
+          window.location.href = url
         }
-        else {
-          console.log("url fail", deeplink.url);
-        }
-      } catch (e) {
-        console.error('Broken start_param', e);
-      }
-    };
+      })
+      .catch((err) => {
+        console.error('Broken start_param', err)
+        setIsRedirected(true)
+      })
+  }, [loading, isRedirected, navigate])
 
-    followDeeplink();
-
-  }, [loading, navigate]);
-
-  return null;
-};
+  return null
+}

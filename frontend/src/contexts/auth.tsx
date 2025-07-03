@@ -1,75 +1,62 @@
-import {createContext, useContext, useEffect, useState} from "react";
-import {apiClient} from "../services/apiClient";
-import {getMe} from "../services/api";
-import {initData} from "@telegram-apps/sdk";
-
+import React, { createContext, useContext, useEffect } from 'react'
+import { initData } from '@telegram-apps/sdk'
+import { apiClient } from '../services/apiClient'
+import { useUser } from '../contexts/user'
 
 interface AuthContextType {
-    userId: string | null;
-    isModerator: boolean | null;
-    isAdmin: boolean | null;
-    loading: boolean;
+  userId: string | null
+  isModerator: boolean
+  isAdmin: boolean
+  loading: boolean
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const [userId, setUserId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isModerator, setIsModerator] = useState<boolean | null>(null);
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading: userLoading, refresh } = useUser();
 
-    useEffect(() => {
-        const authenticateUser = async () => {
-            initData.restore();
-            const data = initData.raw();
+  useEffect(() => {
+    async function authenticate() {
+      initData.restore()
+      const data = initData.raw()
+      if (!data) {
+        console.error('No initData found')
+        return
+      }
 
-            if (!data) {
-                console.error("No initData found");
-                setLoading(false);
-                return;
-            }
+      const params = new URLSearchParams(window.location.search)
+      const ref = params.get('ref') || undefined
+      const payload: { initData: string; ref?: string } = { initData: data }
+      if (ref) payload.ref = ref
 
-            try {
-                // Extract the "ref" query parameter from the URL, if it exists.
-                const searchParams = new URLSearchParams(window.location.search);
-                const ref = searchParams.get("ref");
+      try {
+        const res = await apiClient.post('/auth/telegram', payload)
+        localStorage.setItem('authToken', res.data.access_token)
+        localStorage.setItem('refreshToken', res.data.refresh_token)
+        // После сохранения токенов — обновляем контекст пользователя
+        // await refresh()
+      } catch (err) {
+        console.error('Authentication failed', err)
+      }
+    }
 
-                // Create the payload, including initData and, if present, the ref parameter.
-                const payload: { initData: string; ref?: string } = { initData: data };
-                if (ref) {
-                    payload.ref = ref;
-                }
+    authenticate()
+  }, [refresh])
 
-                const response = await apiClient.post("/auth/telegram", payload);
-                localStorage.setItem("authToken", response.data.access_token);
-                localStorage.setItem("refreshToken", response.data.refresh_token);
+  const userId = user?.id ?? null
+  const isModerator = user?.role === 'moderator'
+  const isAdmin = user?.role === 'admin'
+  const loading = userLoading
 
-                const me = await getMe();
-                setUserId(me.id);
-                setIsModerator(me.role === "moderator" || me.role === "admin");
-                setIsAdmin(me.role === "admin");
-                setLoading(false);
-            } catch (error) {
-                console.error("Authentication failed", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+  return (
+    <AuthContext.Provider value={{ userId, isModerator, isAdmin, loading }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
 
-        authenticateUser();
-    }, []);
-
-    return (
-        <AuthContext.Provider value={{userId, loading, isModerator, isAdmin}}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
-
-// Hook for consuming authentication context
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("useAuth must be used within an AuthProvider");
-    return context;
-};
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  return ctx
+}

@@ -28,9 +28,17 @@ function ModeratorProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'created' | 'rejected' | 'archived'>('all');
     const [activeTab, setActiveTab] = useState<'pending' | 'reviewed'>('pending');
     const navigate = useNavigate();
+    const [statusFilter, setStatusFilter] = useState<
+    | 'все'
+    | 'активные'
+    | 'созданные'
+    | 'ожидают редактирования'
+    | 'отклонённые'
+    | 'архивированные'
+    | 'не оплаченные'
+  >('все');
 
     // useEffect(() => {
     //   const unsub = on('back_button_pressed', () => {
@@ -57,29 +65,36 @@ function ModeratorProductsPage() {
         fetchProducts();
     }, []);
 
-    const pendingProducts = products.filter(product =>
-        product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
-    );
-    const reviewedProducts = products.filter(product =>
-        product.status.toLowerCase() === ProductStatus.ACTIVE.toLowerCase() ||
-        product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase() ||
-        product.status.toLowerCase() === ProductStatus.REJECTED.toLowerCase() ||
-        product.status.toLowerCase() === ProductStatus.ARCHIVED.toLowerCase()
-    );
+      const pendingProducts = products.filter(p => p.status === ProductStatus.CREATED);
+  const reviewedProducts = products.filter(
+    p =>
+      p.status === ProductStatus.ACTIVE ||
+      p.status === ProductStatus.DISABLED ||
+      p.status === ProductStatus.REJECTED ||
+      p.status === ProductStatus.ARCHIVED ||
+      p.status === ProductStatus.NOT_PAID
+  );
 
-    const filterByStatus = (list: Product[]) => {
-        if (statusFilter === 'all') {
-            return list;
-        }
-        if (statusFilter === 'created') {
-            return list.filter(product =>
-                product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
-            );
-        }
-        return list.filter(product =>
-            product.status.toLowerCase() === statusFilter.toLowerCase()
-        );
-    };
+  const filterByStatus = (list: Product[]) => {
+    switch (statusFilter) {
+      case 'все':
+        return list;
+      case 'созданные':
+        return list.filter(p => p.status === ProductStatus.CREATED);
+      case 'активные':
+        return list.filter(p => p.status === ProductStatus.ACTIVE);
+      case 'ожидают редактирования':
+        return list.filter(p => p.status === ProductStatus.DISABLED);
+      case 'отклонённые':
+        return list.filter(p => p.status === ProductStatus.REJECTED);
+      case 'архивированные':
+        return list.filter(p => p.status === ProductStatus.ARCHIVED);
+      case 'не оплаченные':
+        return list.filter(p => p.status === ProductStatus.NOT_PAID);
+      default:
+        return list;
+    }
+  };
 
     const filteredPending = filterByStatus(pendingProducts);
     const filteredReviewed = filterByStatus(reviewedProducts);
@@ -92,19 +107,19 @@ function ModeratorProductsPage() {
         <div className="min-h-screen bg-gray-200 p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Товары для проверки</h1>
             <div className="mb-4 flex justify-end">
-                <select
-                    value={statusFilter}
-                    onChange={(e) =>
-                        setStatusFilter(e.target.value as 'all' | 'active' | 'created' | 'rejected' | 'archived')
-                    }
-                    className="border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
-                >
-                    <option value="all">Все статусы</option>
-                    <option value="active">Активный</option>
-                    <option value="created">Создано / Отключено</option>
-                    <option value="rejected">Отклонено</option>
-                    <option value="archived">Архив</option>
-                </select>
+               <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value as any)}
+          className="border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
+        >
+          <option value="все">Все статусы</option>
+          <option value="активные">Активные</option>
+          <option value="созданные">Созданные</option>
+          <option value="ожидают редактирования">Ожидают редактирования</option>
+          <option value="отклонённые">Отклонённые</option>
+          <option value="архивированные">Архивированные</option>
+          <option value="не оплаченные">Не оплаченные</option>
+        </select>
             </div>
 
             <div className="flex border-b border-darkGray mb-6">
@@ -160,20 +175,22 @@ function ModeratorProductsPage() {
                                             <p className="text-sm text-gray-600">
                                                 Цена: {product.price} ₽
                                             </p>
-                                            <p className="text-xs text-gray-400">
-                                                Статус:{' '}
-                                                {product.status === ProductStatus.ACTIVE
-                                                    ? 'Активный'
-                                                    : product.status === ProductStatus.REJECTED
-                                                        ? 'Отклонено'
-                                                        : product.status === ProductStatus.ARCHIVED
-                                                            ? 'Архив'
-                                                            : product.status === ProductStatus.CREATED
-                                                                ? 'Создано'
-                                                                : product.status === ProductStatus.DISABLED
-                                                                    ? 'Отключено'
-                                                                    : product.status}
-                                            </p>
+                                                                  <p className="text-xs text-gray-400">
+                        Статус: {' '}
+                        {product.status === ProductStatus.ACTIVE
+                          ? 'Активные'
+                          : product.status === ProductStatus.REJECTED
+                            ? 'Отклонённые'
+                            : product.status === ProductStatus.ARCHIVED
+                              ? 'Архивированные'
+                              : product.status === ProductStatus.CREATED
+                                ? 'Созданные'
+                                : product.status === ProductStatus.DISABLED
+                                  ? 'Ожидают редактирования'
+                                  : product.status === ProductStatus.NOT_PAID
+                                    ? 'Не оплаченные'
+                                    : product.status}
+                      </p>
                                         </div>
                                     ))}
                                 </div>
@@ -195,17 +212,19 @@ function ModeratorProductsPage() {
     relative border border-gray-200 rounded-md p-3
     hover:shadow transition-shadow duration-300 cursor-pointer
     ${
-                                                product.status.toLowerCase() === ProductStatus.ACTIVE.toLowerCase()
-                                                    ? 'bg-green-100'
-                                                    : product.status.toLowerCase() === ProductStatus.ARCHIVED.toLowerCase()
-                                                        ? 'bg-gray-300 text-black border-dashed'
-                                                        : product.status.toLowerCase() === ProductStatus.REJECTED.toLowerCase()
-                                                            ? 'bg-red-100 text-red-800'
-                                                            : product.status.toLowerCase() === ProductStatus.CREATED.toLowerCase()
-                                                                ? 'bg-white text-black'
-                                                                : product.status.toLowerCase() === ProductStatus.DISABLED.toLowerCase()
-                                                                    ? 'bg-red-100 text-red-800'
-                                                                    : 'bg-white'
+                                                product.status === ProductStatus.ACTIVE
+                          ? 'bg-green-100'
+                          : product.status === ProductStatus.ARCHIVED
+                            ? 'bg-gray-300 text-black border-dashed'
+                            : product.status === ProductStatus.REJECTED
+                              ? 'bg-red-100 text-red-800'
+                              : product.status === ProductStatus.CREATED
+                                ? 'bg-white text-black'
+                                : product.status === ProductStatus.DISABLED
+                                  ? 'bg-red-100 text-red-800'
+                                  : product.status === ProductStatus.NOT_PAID
+                                    ? 'bg-orange-100 text-orange-800'
+                                    : 'bg-white'
                                             }
   `}
                                         >
@@ -223,16 +242,18 @@ function ModeratorProductsPage() {
                                             <p className="text-xs">
                                                 Статус:{' '}
                                                 {product.status === ProductStatus.ACTIVE
-                                                    ? 'Активный'
-                                                    : product.status === ProductStatus.REJECTED
-                                                        ? 'Отклонено'
-                                                        : product.status === ProductStatus.ARCHIVED
-                                                            ? 'Архив'
-                                                            : product.status === ProductStatus.CREATED
-                                                                ? 'Создано'
-                                                                : product.status === ProductStatus.DISABLED
-                                                                    ? 'Отключено'
-                                                                    : product.status}
+                          ? 'Активные'
+                          : product.status === ProductStatus.REJECTED
+                            ? 'Отклонённые'
+                            : product.status === ProductStatus.ARCHIVED
+                              ? 'Архивированные'
+                              : product.status === ProductStatus.CREATED
+                                ? 'Созданные'
+                                : product.status === ProductStatus.DISABLED
+                                  ? 'Ожидают редактирования'
+                                  : product.status === ProductStatus.NOT_PAID
+                                    ? 'Не оплаченные'
+                                    : product.status}
                                             </p>
                                         </div>
                                     ))}

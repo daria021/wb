@@ -1,10 +1,12 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Request, HTTPException, Form
+from fastapi import APIRouter, Request, HTTPException, Form, Depends
 
 from dependencies.services.user import get_user_service
+from dependencies.services.user_context import get_me_cached
 from domain.dto import CreateUserDTO, UpdateUserDTO
+from domain.dto.user_with_balance import UserWithBalanceDTO
 from domain.models import User
 from routes.requests.user import CreateUserRequest, UpdateUserRequest
 from .order import router as order_router
@@ -34,15 +36,20 @@ async def list_sellers(request: Request):
     users = await user_service.get_sellers()
     return users
 
-@router.get("/me")
-async def get_me(request: Request) -> User:
-    user_id = get_user_id_from_request(request)
-    logger.info("id AAAA")
-    logger.info(user_id)
-    user_service = get_user_service()
-    user = await user_service.get_user(user_id)
-    return user
+# @router.get("/me")
+# async def get_me(request: Request) -> User:
+#     user_id = get_user_id_from_request(request)
+#     logger.info("id AAAA")
+#     logger.info(user_id)
+#     user_service = get_user_service()
+#     user = await user_service.get_user(user_id)
+#     return user
 
+@router.get("/me")
+async def get_me(
+    me: UserWithBalanceDTO = Depends(get_me_cached)
+) -> UserWithBalanceDTO:
+    return me
 
 @router.get("/invite")
 async def get_invite_link(request: Request):
