@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {createOrder, getMe, getProductById} from '../../services/api';
+import {createOrder, getProductById} from '../../services/api';
+import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
-import {on} from "@telegram-apps/sdk";
 import FileUploader from "../../components/FileUploader";
 
 interface Product {
@@ -12,7 +12,7 @@ interface Product {
     seller_id: string;
 }
 
-type ModalContent = { src: string};
+type ModalContent = { src: string };
 
 
 function CartScreenshotPage() {
@@ -29,6 +29,7 @@ function CartScreenshotPage() {
     // для второго скрина
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
+    const {user, loading: userLoading} = useUser();
 
 
     useEffect(() => {
@@ -80,10 +81,10 @@ function CartScreenshotPage() {
     const handleContinue = async () => {
         if (!canContinue) return;
         try {
-            const me = await getMe();
-            const userId = me.id;
+            if (!user) return;              // если профиль ещё не загрузился или неавторизован
             const formData = new FormData();
-            formData.append('user_id', userId);
+            formData.append('user_id', user.id);
+
             formData.append('step', '1');
             formData.append('seller_id', product!.seller_id);
             formData.append('product_id', productId || '');
@@ -117,6 +118,9 @@ function CartScreenshotPage() {
         window.open('https://t.me/Premiumcash1', '_blank'); //todo
     };
 
+    if (userLoading) {
+        return <div className="p-4">Загрузка профиля…</div>;
+    }
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
@@ -132,13 +136,15 @@ function CartScreenshotPage() {
                     корзину.
                 </p>
                 <p>
-                    <strong>Сделайте два скриншота</strong>: первый – скриншот поискового запроса, второй – скриншот корзины.
+                    <strong>Сделайте два скриншота</strong>: первый – скриншот поискового запроса, второй – скриншот
+                    корзины.
                 </p>
                 <p>
                     Ключевое слово: <strong>{product.key_word}</strong>
                 </p>
 
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
             </div>
 
 

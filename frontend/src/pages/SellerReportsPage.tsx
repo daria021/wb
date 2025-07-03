@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {getMe, getOrderBySellerId, updateOrderStatus} from '../services/api';
+import {getOrderBySellerId, updateOrderStatus} from '../services/api';
 import {AxiosResponse} from 'axios';
-import {on} from "@telegram-apps/sdk";
 import {OrderStatus} from '../enums';
+import {useUser} from "../contexts/user";
 
 interface Product {
     id: string;
@@ -60,8 +60,11 @@ function SellerReportsPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [sellerId, setSellerId] = useState<string>('');
-    const { search } = useLocation();
+
+    const {user, loading: userLoading} = useUser();
+    const sellerId = user?.id;
+
+    const {search} = useLocation();
     const params = new URLSearchParams(search);
     const initialTab = params.get('tab') === 'paid'
         ? OrderStatus.CASHBACK_PAID
@@ -83,32 +86,30 @@ function SellerReportsPage() {
         }
     };
 
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate(`/seller-cabinet`, { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
-
 
     useEffect(() => {
-        async function fetchSellerId() {
+        if (!sellerId) return;
+
+        setLoading(true);
+
+        async function loadReports() {
+            if (!sellerId) return;
+
             try {
-                const me = await getMe();
-                setSellerId(me.id);
+                const response = await getOrderBySellerId(sellerId);
+                setOrders(response.data);
+                setError('');
             } catch (err) {
-                console.error("Ошибка при получении sellerId:", err);
+                console.error('Ошибка при загрузке отчётов:', err);
+                setError('Не удалось загрузить отчёты по выкупам');
+            } finally {
+                setLoading(false);
             }
         }
 
-        fetchSellerId();
-    }, []);
-
-    useEffect(() => {
-        if (sellerId) {
-            fetchReports();
-        }
+        loadReports();
     }, [sellerId]);
+
 
     const filteredOrders = orders.filter(order => order.status === activeTab);
 

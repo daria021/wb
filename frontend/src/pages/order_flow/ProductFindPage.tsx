@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import {getMe, getOrderById, getOrderReport, updateOrder} from "../../services/api";
-import {on} from "@telegram-apps/sdk";
+import { getOrderById, getOrderReport, updateOrder} from "../../services/api";
+// import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
 interface Product {
