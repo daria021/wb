@@ -118,7 +118,7 @@ function ProductFavoritePage() {
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
-        <div className="flex items-center mb-4 space-x-4">
+        <div className="flex flex-col items-start mb-4 space-y-4">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -271,7 +271,7 @@ function ProductFavoritePage() {
                                 <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                     <div className="font-semibold text-black">Шаг 3. Добавить товар в избранное
                                     </div>
-                                    <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кэшбэка
+                                    <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кешбэка
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
                                     <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>

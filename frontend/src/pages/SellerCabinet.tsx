@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {getProductsBySellerId} from "../services/api";
 import {useUser} from "../contexts/user";
@@ -39,67 +39,54 @@ function SellerCabinet() {
     const {user, loading: userLoading, refresh} = useUser();
     const location = useLocation();
 
-    useEffect(() => {
-
-        if (location.pathname === '/seller-cabinet') {
-            refresh();
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            await refresh(); // обновляем free_balance, unpaid_plan и т.д.
+            const response = await getProductsBySellerId();
+            setProducts(response.data.products);
+            setError('');
+        } catch (e) {
+            console.error('Ошибка при загрузке данных кабинета:', e);
+            setError('Не удалось загрузить данные');
+        } finally {
+            setLoading(false);
         }
-    }, [location.pathname, refresh]);
+    }, [refresh]);
 
+    // 2) при монтировании и при каждом заходе на /seller-cabinet
     useEffect(() => {
-        const handleFocus = () => {
+        if (location.pathname === '/seller-cabinet') {
+            fetchData();
+        }
+    }, [location.pathname, fetchData]);
+
+    // 3) при возврате в фокус
+    useEffect(() => {
+        const onFocus = () => {
             if (location.pathname === '/seller-cabinet') {
-                refresh();
+                fetchData();
             }
         };
-        window.addEventListener('focus', handleFocus);
-        return () => {
-            window.removeEventListener('focus', handleFocus);
-        };
-    }, [location.pathname, refresh]);
+        window.addEventListener('focus', onFocus);
+        return () => window.removeEventListener('focus', onFocus);
+    }, [location.pathname, fetchData]);
 
-    console.log("products", products);
-    console.log("filter func", products.filter);
-    const activeSum = products
-        .filter(p => p.status === ProductStatus.ACTIVE)
-        .reduce((s, p) => s + p.remaining_products, 0);
-
+    // подсчёты
     const notPaidSum = products
         .filter(p => p.status === ProductStatus.NOT_PAID)
-        .reduce((s, p) => s + p.remaining_products, 0);
+        .reduce((s, p) => s + p.remaining_products, 0)
 
-    const freeBalance = user ? user.free_balance : 0;
-    console.log('activeSum', activeSum);
-    console.log('freeBalance', freeBalance);
-
-    useEffect(() => {
-        let isMounted = true
-        setLoading(true)
-
-        ;(async () => {
-            try {
-                // 1) Обновляем контекст пользователя
-                await refresh()
-
-                const response = await getProductsBySellerId();
-                if (!isMounted) return
-                setProducts(response.data.products);
-                setError('');
-            } catch (e) {
-                console.error('Ошибка при инициализации страницы:', e)
-                if (!isMounted) return
-                setError('Не удалось загрузить данные')
-            } finally {
-                if (isMounted) setLoading(false)
-            }
-        })()
-
-        return () => {
-            // флаг защиты от состояния после анмаунта
-            isMounted = false
-        }
-    }, [])
-
+    ;
+    // const activeSum = products
+    //     .filter(p => p.status === ProductStatus.ACTIVE)
+    //     .reduce((s, p) => s + p.remaining_products, 0);
+    //
+    //
+    // const freeBalance = user ? user.free_balance : 0;
+    // console.log('activeSum', activeSum);
+    // console.log('freeBalance', freeBalance);
+    //
 
     const handleReportsClick = () => {
         navigate(`/seller-cabinet/reports`);
@@ -122,7 +109,7 @@ function SellerCabinet() {
                 <h1 className="text-xl font-bold mb-4 text-center">Кабинет продавца</h1>
 
                 <p className="text-sm text-gray-700 mb-6 text-center">
-                    ВБКэшбэк — сервис для управления раздачами товара за кэшбэк
+                    ВБКешбэк — сервис для управления раздачами товара за кешбэк
                 </p>
 
                 <div className="bg-white border border-darkGray rounded-md p-4 mb-4 relative"
@@ -130,15 +117,15 @@ function SellerCabinet() {
                     <button
                         onClick={handleMyBalanceClick}
                         className="
-    absolute top-2 right-2
-    bg-brand
-    hover:bg-brand-dark
-    text-white
-    rounded-md
-    px-3 py-1.5
-    text-sm font-semibold
-    transition-colors
-  "
+                            absolute top-2 right-2
+                            bg-brand
+                            hover:bg-brand-dark
+                            text-white
+                            rounded-md
+                            px-3 py-1.5
+                            text-sm font-semibold
+                            transition-colors
+                          "
                     >
                         Пополнить
                     </button>
@@ -150,7 +137,7 @@ function SellerCabinet() {
                     ) : notPaidSum > 0 ? (
 
                         <>
-                            <p>Не оплачено</p>
+                            <p>Доступно и не оплачено</p>
                             <p className="text-2xl font-bold">{user?.unpaid_plan} раздач</p>
                             <hr/>
                             <p>Баланс</p>

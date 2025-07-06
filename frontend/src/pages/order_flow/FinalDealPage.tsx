@@ -134,7 +134,7 @@ function FinalDealPage() {
             <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2">
                 <p>Ваш отчет передан продавцу.</p>
                 <p>
-                    В случае задержек оплаты и любые другие вопросы по кэшбэку решайте напрямую
+                    В случае задержек оплаты и любые другие вопросы по кешбэку решайте напрямую
                     с продавцом.
                 </p>
                 <p>
@@ -142,10 +142,10 @@ function FinalDealPage() {
                     добавлены все обманутые покупатели и продавец.
                 </p>
                 <p>
-                    Ваш кэшбэк: <strong>{cashback} руб.</strong>
+                    Ваш кешбэк: <strong>{cashback} руб.</strong>
                 </p>
                 {/*<p>*/}
-                {/*    Крайний срок выплаты кешбека: <strong>{deadline}</strong>*/}
+                {/*    Крайний срок выплаты кешбэка: <strong>{deadline}</strong>*/}
                 {/*</p>*/}
                 {/*<p>*/}
                 {/*    Статус: <strong>{status || 'Неизвестен'}</strong>*/}
@@ -164,7 +164,7 @@ function FinalDealPage() {
                 <div>Условия оплаты: {product.payment_time}</div>
                 <div>Сумма покупки: {productWbPrice} руб.</div>
                 <div>Цена для вас: {productPrice} руб.</div>
-                <div>Кэшбэк: {cashback} руб.</div>
+                <div>Кешбэк: {cashback} руб.</div>
                 {/*<div>Крайний срок: {deadline}</div>*/}
                 <div>Статус оплаты: {status || 'Неизвестен'}</div>
             </div>

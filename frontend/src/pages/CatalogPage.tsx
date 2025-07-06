@@ -180,7 +180,7 @@ function CatalogPage() {
                     <input
                         ref={searchRef}
                         type="text"
-                        placeholder="Поиск по названию или артикулу"
+                        placeholder="Поиск по названию"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
 

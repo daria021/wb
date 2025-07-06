@@ -96,7 +96,7 @@ function PaymentDetailsPage() {
 
             <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
 
-                <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кэшбэка</h1>
+                <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кешбэка</h1>
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
                 <div>
@@ -335,7 +335,7 @@ function PaymentDetailsPage() {
                                     )}
                                 </div>
                                 <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                    <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода кэшбэка
+                                    <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода кешбэка
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
                                     <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
@@ -355,7 +355,13 @@ function PaymentDetailsPage() {
 
                 <button
                     onClick={handleChannelClick}
-                    className="bg-white text-brand justify-center gap-2">
+                    className="w-full
+    flex items-center justify-center gap-2
+    py-2
+    bg-white border border-gray-300 rounded-lg
+    text-brand
+    focus:outline-none
+    active:opacity-80">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
                 </button>

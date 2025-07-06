@@ -46,8 +46,7 @@ function SellerBalancePage() {
 
             <div className="border-darkGray bg-white border-darkGray rounded-md p-4 mx-4 mt-4">
                 <p className="text-md font-semibold mb-1">Баланс</p>
-                <p className="text-2xl font-bold">{user.free_balance}</p>
-                <p className="text-sm text-gray-500">Доступное количество раздач</p>
+                <p className="text-2xl font-bold">{user.free_balance} раздач</p>
             </div>
             <p className="text-center text-gray-700 mx-4">
                 Чтобы пополнить кабинет, свяжитесь с админом.

@@ -148,7 +148,6 @@ export async function getOrderBySellerId(sellerId: string) {
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
-
 export async function increaseSellerBalance(sellerId: string, balance: FormData) {
     return apiClient.patch(`/users/balance/${sellerId}`, balance, {
         headers: {

@@ -62,6 +62,7 @@ function StepReviewReportPage() {
     const [showReport, setShowReport] = useState(false);
     const [file1, setFile1] = useState<File | null>(null);
     const [preview1, setPreview1] = useState<string | null>(null);
+    const receiptVideoPath = '/images/electronic_receipt.mp4';
 
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
@@ -226,7 +227,7 @@ function StepReviewReportPage() {
                 {order.product.requirements_agree ? (
                     <>
                         <p className="mb-2 text-brand">
-                            Обратите внимание, что это обязательное условие для получения кешбека!
+                            Обратите внимание, что это обязательное условие для получения кешбэка!
                             <p className="mb-2 text-black">2. Фото, видео, текст, оценка 5.</p>
                         </p>
                     </>
@@ -240,6 +241,12 @@ function StepReviewReportPage() {
                     className="underline text-blue-600 cursor-pointer"
                 >
                   Пример отзыва
+                </div>
+                <div
+                        onClick={() => openModal(receiptVideoPath)}
+                        className="underline text-blue-600 cursor-pointer"
+                    >
+                  Пример получения электронного чека
                 </div>
                 <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
@@ -261,13 +268,13 @@ function StepReviewReportPage() {
             {leftReview && (
                 <>
                     <FileUploader
-                        label="Скрин статуса «Доставка» (из личного кабинета)"
+                        label="СКРИНШОТ ОТЗЫВА"
                         file={file1}
                         preview={preview1}
                         onFileChange={setFile1}
                     />
                     <FileUploader
-                        label="Фото разрезанных штрихкодов на фоне товара"
+                        label="СКРИНШОТ ЭЛЕКТРОННОГО ЧЕКА"
                         file={file2}
                         preview={preview2}
                         onFileChange={setFile2}
@@ -602,7 +609,7 @@ function StepReviewReportPage() {
                     onClick={closeModal}
                 >
                     <div
-                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
+                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Крестик в правом верхнем углу */}
@@ -617,7 +624,6 @@ function StepReviewReportPage() {
                         <img
                             src={modalContent.src}
                             alt="Пример"
-                            className="w-full h-auto mt-4"
                         />
                     </div>
                 </div>

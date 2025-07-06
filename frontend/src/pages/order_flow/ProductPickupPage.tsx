@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
-import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 import FileUploader from "../../components/FileUploader";
@@ -59,7 +58,6 @@ function ProductPickupPage() {
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
-    const receiptVideoPath = '/images/electronic_receipt.mp4';
     const receivingImgPath = '/images/receiving.jpg';
     const barcodeImgPath = '/images/barcode.jpg';
 
@@ -67,7 +65,7 @@ function ProductPickupPage() {
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
 
     const openModal = (src: string) => {
-        setModalContent({ src, isVideo: src.endsWith('.mp4') });
+        setModalContent({src, isVideo: src.endsWith('.mp4')});
     };
     const closeModal = () => setModalContent(null);
 
@@ -187,25 +185,20 @@ function ProductPickupPage() {
                         onClick={() => openModal(receivingImgPath)}
                         className="underline text-blue-600 cursor-pointer"
                     >
-                  Пример скрина получения товара
-                </div>
+                        Пример скрина получения товара
+                    </div>
                     <div
                         onClick={() => openModal(barcodeImgPath)}
                         className="underline text-blue-600 cursor-pointer"
                     >
-                  Пример разрезанного штрихкода
-                </div>
-                    <div
-                        onClick={() => openModal(receiptVideoPath)}
-                        className="underline text-blue-600 cursor-pointer"
-                    >
-                  Пример получения электронного чека
-                </div>
+                        Пример разрезанного штрихкода
+                    </div>
                 </p>
                 <p>
-                    Ваш кэшбэк: <strong>{cashback} руб.</strong>
+                    Ваш кешбэк: <strong>{cashback} руб.</strong>
                 </p>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
+                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
             </div>
 
             <div className="flex items-center mb-4">
@@ -483,16 +476,26 @@ function ProductPickupPage() {
                         Нужна помощь
                     </button>
                 </div>
-                {modalContent && (
+            </div>
+            {modalContent && (
+                <>
+                    {/* 1. Overlay */}
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 ease-out z-40"
+                        onClick={closeModal}
+                    />
+
+                    {/* 2. Окно модалки */}
+                    <div
+                        className="fixed inset-0 flex justify-center items-center z-50"
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
+                            className="relative bg-white p-4 rounded w-[90vw] h-[90vh]
+                            flex items-center justify-center"
                             onClick={e => e.stopPropagation()}
                         >
-                            {/* Крестик в правом верхнем углу */}
+                            {/* Кнопка «×» */}
                             <button
                                 onClick={closeModal}
                                 className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
@@ -502,20 +505,22 @@ function ProductPickupPage() {
 
                             {modalContent.isVideo ? (
                                 <video width="100%" height="auto" controls>
-                                    <source src={modalContent.src} type="video/mp4" />
+                                    <source src={modalContent.src} type="video/mp4"/>
                                     Ваш браузер не поддерживает видео.
                                 </video>
                             ) : (
-                                <img src={modalContent.src} alt="Пример" className="w-full h-auto" />
+                                <img
+                                    src={modalContent.src}
+                                    alt="Пример"
+  className="max-w-full max-h-full object-contain"
+                                />
                             )}
                         </div>
                     </div>
-                )}
-
-            </div>
+                </>
+            )}
         </div>
-    )
-        ;
+    );
 }
 
 export default ProductPickupPage;
