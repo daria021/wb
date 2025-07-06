@@ -305,7 +305,7 @@ function ProductFindPage() {
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
                                     </div>
-                                    <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кэшбэка
+                                    <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кешбэка
                                     </div>
                                     <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
                                     <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>

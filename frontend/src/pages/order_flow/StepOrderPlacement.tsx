@@ -361,7 +361,7 @@ function StepOrderPlacement() {
                     onClick={closeModal}
                 >
                     <div
-                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
+                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Крестик в правом верхнем углу */}
@@ -376,7 +376,6 @@ function StepOrderPlacement() {
                         <img
                             src={modalContent.src}
                             alt="Пример"
-                            className="w-full h-auto mt-4"
                         />
                     </div>
                 </div>

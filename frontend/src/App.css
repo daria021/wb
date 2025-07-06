@@ -36,3 +36,75 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Подключаем в утилиты Tailwind, либо просто пишем: */
+.animate-fade-in { animation: fade-in 0.3s forwards; }
+.animate-zoom-in { animation: zoom-in 0.3s forwards; }
+
+/* во-первых, дайте контейнеру модалки понятный класс */
+.modal-overlay,
+.modal-content {
+  /* никакой прокрутки у контейнера картинки */
+  overflow: hidden;
+}
+
+/* а вот правила для <img> внутри модалки */
+.modal-content img {
+  display: block;
+  margin: 0 auto;          /* по центру */
+  max-width: 100%;         /* не шире контейнера */
+  max-height: 80vh;        /* не выше 80% высоты экрана */
+  object-fit: contain;     /* сохраним пропорции */
+}
+
+/* полупрозрачный фон + блюр */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+}
+
+/* контейнер модалки по центру */
+.modal-content {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  overflow: hidden; /* чтобы тело модалки не скроллилось вместе с окном */
+}
+
+/* сам «фрейм» модалки */
+.modal-body {
+  position: relative;
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  max-width: 32rem;      /* примерно max-w-lg */
+  max-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;      /* скрываем скролл внутри */
+}
+
+/* ключевая часть: картинки внутри .modal-body */
+.modal-body img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}

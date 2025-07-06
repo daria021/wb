@@ -49,7 +49,7 @@ function RequirementsPage() {
                         <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>
                         <p className="text-base font-semibold text-left">
                             Не закрашивайте и не обрезайте скрины — они должны быть без повреждений.<br />
-                            За нарушение требований кэшбэк не будет выплачиваться.
+                            За нарушение требований кешбэк не будет выплачиваться.
                         </p>
                     </div>
 
@@ -159,7 +159,7 @@ function RequirementsPage() {
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-white p-4 rounded max-w-lg max-h-[80vh] overflow-auto"
+                            className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
                             onClick={e => e.stopPropagation()}
                         >
                             {/* Крестик в правом верхнем углу */}
@@ -176,7 +176,7 @@ function RequirementsPage() {
                                     Ваш браузер не поддерживает видео.
                                 </video>
                             ) : (
-                                <img src={modalContent.src} alt="Пример" className="w-full h-auto" />
+                                <img src={modalContent.src} alt="Пример" />
                             )}
                         </div>
                     </div>

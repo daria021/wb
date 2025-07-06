@@ -245,7 +245,7 @@ function OrderReportPage() {
                         )}
                         {report.cashback && (
                             <div className="flex items-center justify-between">
-                                <span className="text-base">Кешбек: {report.cashback}</span>
+                                <span className="text-base">Кешбэк: {report.cashback}</span>
                                 <button
                                     onClick={() => copyToClipboard(report.cashback.toString()!)}
                                     className="ml-2"

@@ -73,4 +73,6 @@ module.exports = {
     require('tailwindcss-gradients'),
     require('@tailwindcss/aspect-ratio'),
   ],
+
+
 }

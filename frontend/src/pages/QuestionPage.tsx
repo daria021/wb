@@ -56,8 +56,8 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Как работает бот?</h3>
                             <p className="mt-1">
-                                Бот помогает покупать товары с кэшбэком, соблюдая пошаговую инструкцию. Выбираете товар
-                                – проходите инструкцию – оформляете заказ, загружаете отчеты и получаете кэшбэк.
+                                Бот помогает покупать товары с кешбэком, соблюдая пошаговую инструкцию. Выбираете товар
+                                – проходите инструкцию – оформляете заказ, загружаете отчеты и получаете кешбэк.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
@@ -97,12 +97,12 @@ function QuestionPage() {
 
                     <section className="mb-8">
                         <h2 className="text-xl font-bold mb-6 text-left">
-                            2. Выплаты кэшбэка
+                            2. Выплаты кешбэка
                         </h2>
                         <div className="mb-4 text-left text-sm">
-                            <h3 className="text-lg font-bold mb-1">Когда я получу кэшбэк?</h3>
+                            <h3 className="text-lg font-bold mb-1">Когда я получу кешбэк?</h3>
                             <p className="mt-1">
-                                Кэшбэк выплачивается согласно условиям в сделке:
+                                Кешбэк выплачивается согласно условиям в сделке:
                             </p>
                             <ul className="list-disc list-inside ml-4 mt-1">
                                 <li>После получения товара + 7 дней</li>
@@ -118,7 +118,7 @@ function QuestionPage() {
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">
-                            <h3 className="text-lg font-bold mb-1">Как проверить, что кэшбэк отправлен?</h3>
+                            <h3 className="text-lg font-bold mb-1">Как проверить, что кешбэк отправлен?</h3>
                             <p className="mt-1">
                                 Вы получите уведомление в боте (если продавец его отправил). Некоторые продавцы могут не
                                 отправлять уведомления, поэтому проверяйте поступления в банке.
@@ -156,7 +156,7 @@ function QuestionPage() {
                         <div className="mb-4 text-left text-sm">
                             <h3 className="text-lg font-bold mb-1">Как поменять реквизиты?</h3>
                             <ul className="list-disc list-inside ml-4 mt-1">
-                                <li>Если кэшбэк уже отправлен – изменить ничего нельзя.</li>
+                                <li>Если кешбэк уже отправлен – изменить ничего нельзя.</li>
                                 <li>Пройдите все этапы до конца, и там будет возможность поменять реквизиты.</li>
                             </ul>
                         </div>
@@ -171,7 +171,7 @@ function QuestionPage() {
                             <h3 className="text-lg font-bold mb-1">Можно ли купить у одного продавца несколько
                                 товаров?</h3>
                             <p className="mt-1">
-                                Только после получения кэшбэка за предыдущий товар. Важно! Не выкупайте несколько
+                                Только после получения кешбэка за предыдущий товар. Важно! Не выкупайте несколько
                                 товаров, пока не получите оплату.
                             </p>
                         </div>
@@ -223,7 +223,7 @@ function QuestionPage() {
                             <h3 className="text-lg font-bold mb-1">Можно ли вернуть товар?</h3>
                             <p className="mt-1">
                                 Только если обнаружен брак. Подайте заявку на возврат через приложение ВБ, укажите номер
-                                сделки. Не пишите, что вы выкупали по кэшбэку.
+                                сделки. Не пишите, что вы выкупали по кешбэку.
                             </p>
                         </div>
                         <div className="mb-4 text-left text-sm">

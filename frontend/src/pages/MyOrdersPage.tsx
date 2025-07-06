@@ -1,9 +1,7 @@
-import React, {useState, useMemo, useEffect} from 'react';
-import {Link, useLocation, useNavigate} from 'react-router-dom';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Link, useLocation} from 'react-router-dom';
 import {getUserOrders, updateOrderStatus} from '../services/api';
-import {on, off} from "@telegram-apps/sdk";
 import GetUploadLink from "../components/GetUploadLink";
-import BackButtonManager from "../components/BackButtonManager";
 
 const STEP_NAMES: { [key: number]: string } = {
     1: 'Шаг 1: Поиск товара по ключевому слову',
@@ -17,7 +15,7 @@ const STEP_NAMES: { [key: number]: string } = {
 };
 
 const getOrderStepLink = (order: Order): string => {
-    if (order.step >= 1 && order.step <= 7) {
+    if (order.step >= 0 && order.step <= 6) {
         return `/order/${order.id}/step-${order.step + 1}`;
     }
     return `/order/${order.id}/order-info`;
@@ -63,23 +61,28 @@ function MyOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
     const location = useLocation();
     const isOnOrders = location.pathname === ('/user/orders');
 
-  //
-  //   useEffect(() => {
-  //       off('back_button_pressed', BackButtonManager);
-  //
-  //       const unsub = on('back_button_pressed', () => {
-  //   navigate('/', { replace: true });
-  // });
-  //       return () => {
-  //           unsub();
-  //           on('back_button_pressed', BackButtonManager);
-  //       };
-  //   }, [navigate]);
 
+    const filteredOrders = orders.filter(order => order.status !== 'cancelled');
+
+    //Берём один заказ на каждый продукт: с максимальным step, а при равном step — самый свежий
+    const uniqueOrders = useMemo(() => {
+        const map = new Map<string, Order>();
+        filteredOrders.forEach(order => {
+            const prev = map.get(order.product.id);
+            if (
+                !prev ||
+                order.step > prev.step ||
+                (order.step === prev.step &&
+                    new Date(order.created_at) > new Date(prev.created_at))
+            ) {
+                map.set(order.product.id, order);
+            }
+        });
+        return Array.from(map.values());
+    }, [filteredOrders]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -105,7 +108,6 @@ function MyOrdersPage() {
         fetchOrders();
     }, []);
 
-    const filteredOrders = orders.filter(order => order.status !== 'cancelled');
 
     const handleCancelOrder = async (orderId: string, e: React.MouseEvent) => {
         e.stopPropagation(); // Предотвращаем переход по карточке
@@ -122,27 +124,26 @@ function MyOrdersPage() {
             alert("Ошибка отмены заказа");
         }
     };
-    const handleCashbackPaid = async (orderId: string, e: React.MouseEvent) => {
+
+    const handleToggleCashback = async (orderId: string, newStatus: string, e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append("status", "payment_confirmed");
+            formData.append("status", newStatus);
             await updateOrderStatus(orderId, formData);
-            // Вот эта строка обновит статус в локальном стейте и вызовет перерендер
             setOrders(prev =>
                 prev.map(o =>
                     o.id === orderId
-                        ? { ...o, status: "payment_confirmed" }
+                        ? {...o, status: newStatus}
                         : o
                 )
             );
         } catch (err) {
-            console.error("Ошибка отметки выплаты кешбека:", err);
-            alert("Возникла ошибка, попробуйте позже");
+            console.error("Ошибка при смене статуса кешбэка:", err);
+            alert("Не удалось сменить статус кешбэка");
         }
     };
-
 
     return (
         <div className="bg-gray-200 bg-fixed min-h-screen">
@@ -190,17 +191,18 @@ function MyOrdersPage() {
                     <div className="p-4 bg-brandlight border border-brand rounded text-center">
                         <p className="text-sm text-brand">{error}</p>
                     </div>
-                ) : filteredOrders.length === 0 ? (
+                ) : uniqueOrders.length === 0 ? (
                     <div className="bg-white rounded-md shadow-sm p-3 text-center">
                         Покупки не найдены
                     </div>
                 ) : (
-                    filteredOrders.map(order => {
+                    uniqueOrders.map(order => {
                         const stepName = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
                         const linkTo = getOrderStepLink(order);
                         return (
                             <Link to={linkTo} key={order.id}>
-                                <div className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+                                <div
+                                    className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
                                     {/* ваш контент карточки */}
                                     <button
                                         onClick={e => handleCancelOrder(order.id, e)}
@@ -228,39 +230,40 @@ function MyOrdersPage() {
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                        <span className="font-semibold text-sm">
-                                            {order.product.name}
-                                        </span>
+  <span className="font-semibold text-sm">
+    {order.product.name}
+  </span>
                                             <br/>
                                             <span className="text-md font-bold text-brand">
-                                            {order.product.price} ₽
-                                        </span>
+    {order.product.price} ₽
+  </span>
                                             <br/>
-                                            <span className="text-xs text-gray-500">
-                                            Текущий шаг: {stepName}
-                                        </span>
+                                            {order.step < 7 ? (
+                                                <span className="text-xs text-gray-500">
+      Текущий шаг: {STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`}
+    </span>
+                                            ) : (
+                                                <button
+                                                    onClick={e =>
+                                                        handleToggleCashback(
+                                                            order.id,
+                                                            order.status === "payment_confirmed"
+                                                                ? "cashback_not_paid"
+                                                                : "payment_confirmed",
+                                                            e
+                                                        )
+                                                    }
+                                                    className={`mt-1 px-3 py-1 text-xs rounded transition ${
+                                                        order.status === "payment_confirmed"
+                                                            ? "border border-green-500 text-green-500 hover:bg-green-50"
+                                                            : "border border-blue-500 text-blue-500 hover:bg-blue-50"
+                                                    }`}
+                                                >
+                                                    Кешбэк выплачен
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-                                    {order.status === "payment_confirmed" ? (
-                                        <span className="absolute top-10 right-2 text-xs font-semibold text-green-700">
-                                        Кешбек выплачен
-                                      </span>
-                                    ) : order.step === 7 ? (
-                                        <button
-                                          onClick={e => handleCashbackPaid(order.id, e)}
-                                          className="absolute top-10 right-2
-                                                px-2 py-1
-                                                border border-blue-500
-                                                text-blue-500 text-xs
-                                                rounded
-                                                hover:bg-blue-50
-                                                transition
-                                              "
-                                        >
-                                          Кешбек выплачен
-                                        </button>
-                                    ) : null}
-
                                 </div>
                             </Link>
                         );
@@ -287,10 +290,10 @@ function MyOrdersPage() {
             </div>
 
             {loading && (
-  <div className="flex justify-center mt-4">
-    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin" />
-  </div>
-)}
+                <div className="flex justify-center mt-4">
+                    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                </div>
+            )}
         </div>
     );
 }

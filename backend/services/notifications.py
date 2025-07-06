@@ -6,6 +6,7 @@ from aiogram import Bot
 from aiogram.types import FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+
 from abstractions.repositories import (
     OrderRepositoryInterface,
     ProductRepositoryInterface,
@@ -61,7 +62,7 @@ class NotificationService(NotificationServiceInterface):
         user = await self.users_repository.get(order.user_id)
         await self.bot.send_message(
             chat_id=user.telegram_id,
-            text="Ваш кешбек выплачен! 💰",
+            text="Ваш кешбэк выплачен! 💰",
         )
 
     async def send_balance_increased(self, user_id: UUID, amount: int) -> None:
@@ -76,7 +77,6 @@ class NotificationService(NotificationServiceInterface):
         if product.status is not ProductStatus.ACTIVE:
             return
 
-        # --- inline-кнопки c deep-link Mini-App ---
         kb = InlineKeyboardBuilder()
         kb.button(
             text="Карточка товара 🏷",

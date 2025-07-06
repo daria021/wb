@@ -18,7 +18,7 @@ function CompleteInstructionPage() {
                         Инструкция выкупа для покупателя
                     </h2>
                     <p className="text-base mb-8 text-left">
-                        ВБ КЭШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
+                        ВБ КЕШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
                         <a
                             href="tg://resolve?domain=Premiumcash1&post=9"
                             onClick={e => {
@@ -125,9 +125,9 @@ function CompleteInstructionPage() {
                     <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Кэшбэк</h3>
+                        <h3 className="text-xl font-bold mb-4 text-left">Кешбэк</h3>
                         <ul className="list-disc list-inside space-y-2 ml-6">
-                            <p>3 варианта выплаты кэшбэка:</p>
+                            <p>3 варианта выплаты кешбэка:</p>
                             <li>После получения товара</li>
                             <li>После публикации отзыва</li>
                             <li>на 15й день после получения товара</li>

@@ -109,7 +109,7 @@ function InstructionPage() {
                                 </strong>. Бот не несет ответственности за выплату.
                             </li>
                             <li>
-                                При задержках оплаты и любые другие вопросы по кэшбэку решайте напрямую с продавцом.
+                                При задержках оплаты и любые другие вопросы по кешбэку решайте напрямую с продавцом.
                             </li>
                             <li>
                                 Если продавец окажется мошенником, будет создана отдельная группа для обманутых
@@ -137,7 +137,7 @@ function InstructionPage() {
                                 <strong> {product.price} руб.</strong>
                             </li>
                             <li>
-                                Кэшбэк: <strong>{translatePaymentTime(product.payment_time)}</strong>
+                                Кешбэк: <strong>{translatePaymentTime(product.payment_time)}</strong>
                             </li>
                             <li>
                                 Если возникнут вопросы — напишите продавцу в Telegram:{' '}

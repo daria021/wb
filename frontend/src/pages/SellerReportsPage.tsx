@@ -149,13 +149,13 @@ function SellerReportsPage() {
                             onClick={() => setActiveTab(OrderStatus.CASHBACK_NOT_PAID)}
                             className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_NOT_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
                         >
-                            Кешбек не выплачен
+                            Кешбэк не выплачен
                         </button>
                         <button
                             onClick={() => setActiveTab(OrderStatus.CASHBACK_PAID)}
                             className={`px-4 py-2 font-semibold ${activeTab === OrderStatus.CASHBACK_PAID ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
                         >
-                            Кешбек выплачен
+                            Кешбэк выплачен
                         </button>
 
                     </div>
