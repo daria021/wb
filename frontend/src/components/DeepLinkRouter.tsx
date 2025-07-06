@@ -46,6 +46,7 @@ export const DeepLinkRouter = () => {
         } else {
           // если внешняя ссылка
           window.location.href = url
+
         }
       })
       .catch((err) => {
