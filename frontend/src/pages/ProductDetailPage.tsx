@@ -39,7 +39,9 @@ function ProductDetailPage() {
 
     const handleOpenSellerProducts = () => {
         if (!product) return;
-        navigate(`/catalog?seller=${product.seller_id}`);
+        navigate(`/catalog?seller=${product.seller_id}`,
+              { state: { fromProductDetail: true } }
+);
     };
 
     // useEffect(() => {
@@ -141,11 +143,9 @@ function ProductDetailPage() {
                     className="w-7 h-7 mr-2"
                 />
                 <span className="block text-sm text-gray-600 hover:underline">
-                Хотите узнать, как выкупить товар?
+                Узнать, как выкупить товар
               </span>
             </div>
-
-
             <div className="bg-white rounded-lg shadow p-4 mb-4">
                 <h2 className="font-semibold mb-2">Условия сделки</h2>
                 <p className="text-sm text-gray-700 mb-1">

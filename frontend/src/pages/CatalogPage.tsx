@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {getBlackListUser, getProducts} from '../services/api';
-import {on} from '@telegram-apps/sdk';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from "../hooks/useDebounce";
 import {Combobox} from '@headlessui/react';
@@ -57,6 +56,11 @@ function CatalogPage() {
     const isOnCatalog = location.pathname === ('/catalog');
     const searchRef = useRef<HTMLInputElement>(null);
 
+    const handleOpenSellerProducts = (sellerId: string) => {
+        navigate(`/catalog?seller=${sellerId}`, {state: {fromProductDetail: true}});
+    };
+
+
     const hasActiveFilters =
         searchQuery.trim() !== '' ||
         filterPrice !== '' ||
@@ -83,34 +87,34 @@ function CatalogPage() {
         abortRef.current = new AbortController();
 
         const fetchData = async () => {
-      setLoading(true);
-      setError('');                   // убираем текст ошибки, если был
+            setLoading(true);
+            setError('');                   // убираем текст ошибки, если был
 
-      try {
-        const res = await getProducts(
-          { search: debouncedSearch, signal: abortRef.current!.signal }
-        );
-        setProducts(res.data);        // успех
-        setLoading(false);
-      } catch (err) {
-        if (abortRef.current?.signal.aborted) return; // размонтировали
-        retryCnt.current += 1;
-        if (retryCnt.current < MAX_RETRIES) {
-          // ждём и повторяем
-          setTimeout(fetchData, RETRY_DELAY);
-        } else {
-          // исчерпали попытки – показываем сообщение
-          setLoading(false);
-          setError('Не удалось загрузить каталог товаров.');
-          console.error('getProducts failed:', err);
-        }
-      }
-    };
+            try {
+                const res = await getProducts(
+                    {search: debouncedSearch, signal: abortRef.current!.signal}
+                );
+                setProducts(res.data);        // успех
+                setLoading(false);
+            } catch (err) {
+                if (abortRef.current?.signal.aborted) return; // размонтировали
+                retryCnt.current += 1;
+                if (retryCnt.current < MAX_RETRIES) {
+                    // ждём и повторяем
+                    setTimeout(fetchData, RETRY_DELAY);
+                } else {
+                    // исчерпали попытки – показываем сообщение
+                    setLoading(false);
+                    setError('Не удалось загрузить каталог товаров.');
+                    console.error('getProducts failed:', err);
+                }
+            }
+        };
 
-    fetchData();
+        fetchData();
 
-    return () => abortRef.current?.abort(); // уборка при размонтировании
-  }, [debouncedSearch, authLoading]);
+        return () => abortRef.current?.abort(); // уборка при размонтировании
+    }, [debouncedSearch, authLoading]);
 
 
     useEffect(() => {
@@ -212,12 +216,12 @@ function CatalogPage() {
                     </button>
                 </div>
                 {/* Показываем загрузку и ошибку под шапкой, но инпут не размонтируем */}
-{loading && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center">
-    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin" />
-  </div>
-)}
-</div>
+                {loading && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                    </div>
+                )}
+            </div>
             {error && (
                 <div className="p-4 text-center text-red-600">{error}</div>
             )}
@@ -321,40 +325,61 @@ function CatalogPage() {
 
             {/* Products grid */}
             <div className="p-4">
-            <div className="grid grid-cols-2 gap-4">
-                {filtered.map(product => (
-                    <div
-                        key={product.id}
-                        onClick={() => navigate(`/product/${product.id}`)}
-                        className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                    >
-<div className="w-full aspect-square bg-gray-200-100 overflow-hidden">
-                            {product.image_path
-                                ? <img
-                                    src={product.image_path.startsWith('http') ? product.image_path : GetUploadLink(product.image_path)}
-                                    alt={product.name} className="w-full h-full object-cover"/>
-                                : <div className="flex items-center justify-center h-full text-gray-400">Нет
-                                    фото</div>
-                            }
-                        </div>
-                        <div className="p-3 bg-white flex flex-col">
-                            <h3
-                                className="
-                                        text-sm font-semibold mb-1
-                                        overflow-hidden
-                                        line-clamp-2"
+                <div className="grid grid-cols-2 gap-4">
+                    {filtered.map(product => {
+                        const seller = sellerOptions.find(s => s.id === product.seller_id);
+
+                        return (
+                            <div
+                                key={product.id}
+                                onClick={() => navigate(`/product/${product.id}`)}
+                                className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
                             >
-                                {product.name}
-                            </h3>
-                            <p className="text-md font-bold mb-1 text-brand">{product.price} ₽</p>
-                        </div>
-                    </div>
-                ))}
+                                <div className="w-full aspect-square bg-gray-200-100 overflow-hidden">
+                                    {product.image_path ? (
+                                        <img
+                                            src={
+                                                product.image_path.startsWith('http')
+                                                    ? product.image_path
+                                                    : GetUploadLink(product.image_path)
+                                            }
+                                            alt={product.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full text-gray-400">
+                                            Нет фото
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-3 bg-white flex flex-col">
+                                    <h3 className="text-sm font-semibold mb-1 overflow-hidden line-clamp-2">
+                                        {product.name}
+                                    </h3>
+
+                                    {seller && (
+                                        <p
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                handleOpenSellerProducts(product.seller_id);
+                                            }}
+                                            className="text-sm text-blue-600 hover:underline cursor-pointer mt-1"
+                                        >
+                                            {seller.nickname}
+                                        </p>
+                                    )}
+
+                                    <p className="text-md font-bold mb-1 text-brand">
+                                        {product.price} ₽
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
-            </div>
-        </div>
-)
-    ;
+        </div>)
 }
 
 export default CatalogPage;

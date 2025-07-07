@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {getOrderReport, updateOrder} from '../../services/api';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {getBlackListUser, getOrderById, getOrderReport, getProductById, updateOrder} from '../../services/api';
 import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from "axios";
 import GetUploadLink from "../../components/GetUploadLink";
@@ -23,6 +23,29 @@ interface OrderReport {
     article: string;
 }
 
+interface Order {
+    id: string;
+    product: Product;
+    seller: User
+}
+
+interface User {
+    nickname: string
+}
+
+interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    article: string;
+    image_path?: string;
+    wb_price: number;
+    payment_time: string;
+    shortDescription?: string;
+    seller_id: string;
+}
+
 function PaymentDetailsPage() {
     const navigate = useNavigate();
     const {orderId} = useParams<{ orderId: string }>();
@@ -36,6 +59,11 @@ function PaymentDetailsPage() {
     const [agreed, setAgreed] = useState(false);
     const [otherBank, setOtherBank] = useState('');
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+    const [order, setOrder] = useState<Order | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -53,16 +81,17 @@ function PaymentDetailsPage() {
         selectedBank !== '' &&
         agreed;
 
-    useEffect(() => {
-        if (!orderId) return;
-        getOrderReport(orderId)
-            .then((response: AxiosResponse<OrderReport>) => {
-                setReportData(response.data);
-            })
-            .catch((err) => {
-                console.error('Ошибка при загрузке отчета:', err);
-            });
-    }, [orderId]);
+
+useEffect(() => {
+  if (!orderId) return;
+  Promise.all([
+    getOrderById(orderId).then(res => setOrder(res.data)),
+    getOrderReport(orderId).then(res => setReportData(res.data))
+  ])
+  .catch(err => setError('Не удалось загрузить данные'))
+  .finally(() => setLoading(false));
+}, [orderId]);
+
 
     const handleContinueClick = async () => {
         if (!canContinue || !orderId) return;
@@ -90,14 +119,25 @@ function PaymentDetailsPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+    if (loading) return <div className="p-4">Загрузка...</div>;
+    if (error || !order) return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
+
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на четвертом шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
 
             <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
-
-                <h1 className="text-lg font-bold text-brand">Шаг 4. Реквизиты для перевода кешбэка</h1>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
+<p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
+                <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Реквизиты для перевода кешбэка</h1>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -203,28 +243,31 @@ function PaymentDetailsPage() {
             </button>
 
             <button
-                onClick={() => navigate(`/black-list`)}
+                onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
                 className="w-full flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
             >
                 Проверить продавца
             </button>
 
             <div className="bg-white rounded-lg shadow p-4 mt-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Заполняем реквизиты.<br />
+Если вдруг указали не те реквизиты.<br />
+Как связаться с тех поддержкой.
+</p>
+                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
+        <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/8%20Buyer%20Step%204%20Fill%20in%20the%20details%20If%20you%20have%20entered%20the%20wrong%20details%2C%20how%20to%20contact%20technical%20support%20Step%205.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
             </div>
 
-            <div className="flex flex-col space-y-2 mt-4">
+            <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-gray-600 font-semibold text-center"
+                className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -349,28 +392,24 @@ function PaymentDetailsPage() {
                         )}
                     </div>
                 )}
-            </div>
 
-            <div className="flex flex-col gap-3 mt-2 text-center">
-
-                <button
-                    onClick={handleChannelClick}
-                    className="w-full
-    flex items-center justify-center gap-2
-    py-2
-    bg-white border border-gray-300 rounded-lg
-    text-brand
-    focus:outline-none
-    active:opacity-80">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                    <span>Подписаться на канал</span>
-                </button>
                 <button
                     onClick={handleSupportClick}
-                    className="bg-white text-brand border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                    Нужна помощь
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    Нужна помощь с выполнением шага
+                </button>
+
+                 <button
+                    onClick={handleChannelClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <span>Подписаться на канал</span>
                 </button>
             </div>
+
+
         </div>
 )}
 

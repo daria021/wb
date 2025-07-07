@@ -3,7 +3,7 @@ import {Link, useLocation} from 'react-router-dom';
 import {getUserOrders, updateOrderStatus} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
 
-const STEP_NAMES: { [key: number]: string } = {
+export const STEP_NAMES: { [key: number]: string } = {
     1: 'Шаг 1: Поиск товара по ключевому слову',
     2: 'Шаг 2: Артикул товара',
     3: 'Шаг 3: Добавить в избранное',
@@ -63,6 +63,7 @@ function MyOrdersPage() {
     const [error, setError] = useState('');
     const location = useLocation();
     const isOnOrders = location.pathname === ('/user/orders');
+    const [showCount, setShowCount] = useState(5);
 
 
     const filteredOrders = orders.filter(order => order.status !== 'cancelled');
@@ -83,6 +84,25 @@ function MyOrdersPage() {
         });
         return Array.from(map.values());
     }, [filteredOrders]);
+
+    const displayOrders = useMemo(() => {
+        const notPaid = uniqueOrders.filter(o => o.status !== 'payment_confirmed');
+        const paid = uniqueOrders.filter(o => o.status === 'payment_confirmed');
+        return [...notPaid, ...paid];
+    }, [uniqueOrders]);
+// порядок шагов: 6→5→4→3→2→1→7
+    const stepPriority = [6, 5, 4, 3, 2, 1, 7];
+
+    const visibleOrders = useMemo(() => {
+  return displayOrders
+    .sort((a, b) => {
+      const pa = stepPriority.indexOf(a.step);
+      const pb = stepPriority.indexOf(b.step);
+      return pa - pb;
+    })
+    .slice(0, showCount);
+}, [displayOrders, showCount]);
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -145,157 +165,174 @@ function MyOrdersPage() {
         }
     };
 
+
+    const handleShowMore = () => {
+        setShowCount(prev => prev + 5);
+    };
+
+
     return (
-        <div className="bg-gray-200 bg-fixed min-h-screen">
-            <div className="flex w-max mx-auto mb-2 mt-2 bg-gray-200 p-1 rounded-full">
+        <div className="bg-gray-200 bg-fixed min-h-screen pb-6">
+            {/* Навигация */}
+            <div className="flex w-max mx-auto my-2 bg-gray-200 p-1 rounded-full">
                 <Link
                     to="/catalog"
                     className={`
-            px-4 py-2 rounded-full
-            ${!isOnOrders
-                        ? 'bg-white text-black'
-                        : 'text-gray-500 hover:text-black'}
-          `}
+          px-4 py-2 rounded-full
+          ${!isOnOrders ? 'bg-white text-black' : 'text-gray-500 hover:text-black'}
+        `}
                 >
                     Каталог
                 </Link>
-
                 <Link
                     to="/user/orders"
                     className={`
-            px-4 py-2 rounded-full
-            ${isOnOrders
-                        ? 'bg-white text-black'
-                        : 'text-gray-500 hover:text-black'}
-          `}
+          px-4 py-2 rounded-full
+          ${isOnOrders ? 'bg-white text-black' : 'text-gray-500 hover:text-black'}
+        `}
                 >
                     Мои покупки
                 </Link>
             </div>
-            <div className="sticky top-0 z-10 mt-2 bg-inherit">
-                <div className="flex items-center justify-center relative mb-4">
-                    <h2 className="text-2xl font-bold text-center">Мои покупки</h2>
-                </div>
 
-                <p className="text-sm text-gray-600 mb-4 text-center">
+            {/* Заголовок */}
+            <div className="sticky top-0 z-10 mt-2 bg-inherit">
+                <h2 className="text-2xl font-bold text-center mb-1">Мои покупки</h2>
+                <p className="text-sm text-gray-600 text-center">
                     Нажмите на карточку, чтобы открыть инструкцию
                 </p>
             </div>
 
-            <div className="w-full flex flex-col gap-3 mb-4">
+            {/* Контент */}
+            <div className="px-4 mt-4">
                 {loading ? (
-                    <div className="p-4 text-center text-gray-600">
+                    <div className="py-4 text-center text-gray-600">
                         Загрузка покупок…
                     </div>
                 ) : error ? (
-                    <div className="p-4 bg-brandlight border border-brand rounded text-center">
-                        <p className="text-sm text-brand">{error}</p>
+                    <div className="py-4 text-center text-red-600">
+                        {error}
                     </div>
-                ) : uniqueOrders.length === 0 ? (
-                    <div className="bg-white rounded-md shadow-sm p-3 text-center">
+                ) : displayOrders.length === 0 ? (
+                    <div className="py-4 text-center bg-white rounded shadow-sm">
                         Покупки не найдены
                     </div>
                 ) : (
-                    uniqueOrders.map(order => {
-                        const stepName = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
-                        const linkTo = getOrderStepLink(order);
-                        return (
-                            <Link to={linkTo} key={order.id}>
-                                <div
-                                    className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
-                                    {/* ваш контент карточки */}
-                                    <button
-                                        onClick={e => handleCancelOrder(order.id, e)}
-                                        className="absolute top-2 right-2 px-2 py-1 border border-red-500 text-red-500 text-xs rounded hover:bg-red-50 transition"
-                                    >
-                                        Отменить
-                                    </button>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-16 h-16 bg-gray-200-100 relative flex-shrink-0">
-                                            {order.product.image_path ? (
-                                                <img
-                                                    src={
-                                                        order.product.image_path.startsWith('http')
-                                                            ? order.product.image_path
-                                                            : GetUploadLink(order.product.image_path)
-                                                    }
-                                                    alt={order.product.name}
-                                                    className="absolute inset-0 object-cover w-full h-full"
-                                                />
-                                            ) : (
-                                                <div
-                                                    className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                                                    Нет фото
+                    <div className="flex flex-col space-y-3">
+                        {visibleOrders.map(order => {
+                            const linkTo = getOrderStepLink(order);
+                            const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
+                            return (
+                                <Link to={linkTo} key={order.id} className="block">
+                                    <div
+                                        className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition">
+                                        <button
+                                            onClick={e => handleCancelOrder(order.id, e)}
+                                            className="absolute top-2 right-2 text-red-500 border border-red-500 text-xs rounded hover:bg-red-50 transition"
+                                        >
+                                            Отменить
+                                        </button>
+
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
+                                                {order.product.image_path ? (
+                                                    <img
+                                                        src={
+                                                            order.product.image_path.startsWith('http')
+                                                                ? order.product.image_path
+                                                                : GetUploadLink(order.product.image_path)
+                                                        }
+                                                        alt={order.product.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className="flex items-center justify-center h-full text-gray-400 text-xs">
+                                                        Нет фото
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="font-semibold text-sm">
+                                                    {order.product.name}
                                                 </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-  <span className="font-semibold text-sm">
-    {order.product.name}
-  </span>
-                                            <br/>
-                                            <span className="text-md font-bold text-brand">
-    {order.product.price} ₽
-  </span>
-                                            <br/>
-                                            {order.step < 7 ? (
-                                                <span className="text-xs text-gray-500">
-      Текущий шаг: {STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`}
-    </span>
-                                            ) : (
-                                                <button
-                                                    onClick={e =>
-                                                        handleToggleCashback(
-                                                            order.id,
-                                                            order.status === "payment_confirmed"
-                                                                ? "cashback_not_paid"
-                                                                : "payment_confirmed",
-                                                            e
-                                                        )
-                                                    }
-                                                    className={`mt-1 px-3 py-1 text-xs rounded transition ${
-                                                        order.status === "payment_confirmed"
-                                                            ? "border border-green-500 text-green-500 hover:bg-green-50"
-                                                            : "border border-blue-500 text-blue-500 hover:bg-blue-50"
-                                                    }`}
-                                                >
-                                                    Кешбэк выплачен
-                                                </button>
-                                            )}
+                                                <div className="font-bold text-brand">
+                                                    {order.product.price} ₽
+                                                </div>
+
+                                                {order.step < 7 ? (
+                                                    <div className="text-xs text-gray-500">
+                                                        Текущий шаг: {title}
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={e =>
+                                                            handleToggleCashback(
+                                                                order.id,
+                                                                order.status === 'payment_confirmed'
+                                                                    ? 'cashback_not_paid'
+                                                                    : 'payment_confirmed',
+                                                                e
+                                                            )
+                                                        }
+                                                        className={`mt-1 px-3 py-1 text-xs rounded transition ${
+                                                            order.status === 'payment_confirmed'
+                                                                ? 'border border-green-500 text-green-500 hover:bg-green-50'
+                                                                : 'border border-blue-500 text-blue-500 hover:bg-blue-50'
+                                                        }`}
+                                                    >
+                                                        {order.status === 'payment_confirmed'
+                                                            ? 'Кешбэк выплачен'
+                                                            : 'Выплатить кешбэк'}
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Link>
-                        );
-                    })
-                )}
-            </div>
+                                </Link>
+                            );
+                        })}
 
-            <div
-                onClick={handleSupportClick}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
-            >
-                <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
-                <div className="flex flex-col">
-                    <span>Техподдержка</span>
-                    <span className="text-xs text-gray-500">
-                            Оперативно ответим на все вопросы
-                        </span>
-                </div>
-                <img
-                    src="/icons/small_arrow.png"
-                    alt="arrow"
-                    className="w-5 h-5 ml-auto"
-                />
-            </div>
+                        {displayOrders.length > showCount && (
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={handleShowMore}
+                                    className="px-6 py-2 bg-brand text-white font-medium rounded-2xl shadow hover:bg-brand-dark transition"
+                                >
+                                    Показать ещё
+                                </button>
+                            </div>
+                        )}
 
-            {loading && (
-                <div className="flex justify-center mt-4">
-                    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-                </div>
-            )}
-        </div>
-    );
+                        {/* Техподдержка */}
+                        <div
+                            onClick={handleSupportClick}
+                            className="bg-white border border-brand rounded-xl shadow-sm p-4 my-6 mx-4 font-semibold cursor-pointer flex items-center gap-3"
+                        >
+                            <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
+                            <div className="flex flex-col">
+                                <span>Техподдержка</span>
+                                <span className="text-xs text-gray-500">
+      Оперативно ответим на все вопросы
+    </span>
+                            </div>
+                            <img
+                                src="/icons/small_arrow.png"
+                                alt="arrow"
+                                className="w-5 h-5 ml-auto"
+                            />
+                        </div>
+
+                        {/* Спиннер внизу */}
+                        {loading && (
+                            <div className="flex justify-center mt-4">
+                                <div
+                                    className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                            </div>
+                        )}
+                    </div>)}
+            </div>
+        </div>)
 }
 
 export default MyOrdersPage;

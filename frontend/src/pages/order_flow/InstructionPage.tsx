@@ -79,6 +79,7 @@ function InstructionPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+
             <div className="fixed top-6 left-6 z-50 bg-brandlight rounded-lg p-2 flex items-center justify-center">
                 <button onClick={handleHomeClick} aria-label="На главную">
                     <img src="/icons/home.png" alt="Домой" className="w-6 h-6" />

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import { getOrderById, getOrderReport, updateOrder} from "../../services/api";
+import {getOrderById, updateOrder} from "../../services/api";
 // import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 
@@ -13,11 +13,20 @@ interface Product {
     article: string;
     image_path?: string;
     key_word?: string;
+    wb_price: number;
+    payment_time: string;
+    shortDescription?: string;
+    seller_id: string;
 }
 
 interface Order {
     id: string;
     product: Product;
+    seller: User
+}
+
+interface User {
+    nickname: string
 }
 
 interface OrderReport {
@@ -49,32 +58,8 @@ function ProductFindPage() {
     const [showReport, setShowReport] = useState(false);
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const [flashInvalid, setFlashInvalid] = useState(false);
-
-    const isEmpty        = enteredArticle.trim() === "";
-    const isCorrect      = order && enteredArticle.trim() === order.product.article;
-    const minLengthReached = enteredArticle.trim().length >= 8;
-    const isIncorrect      = minLengthReached && !isCorrect;
-
-    const toggleStep = (step: number) => {
-        setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
-    };
-
-    const onArticleBlur = () => {
-        if (!order) return;
-        if (enteredArticle.trim() !== order.product.article) {
-            setFlashInvalid(true);
-        }
-    };
-
-
-    useEffect(() => {
-        if (!order) return;
-        if (enteredArticle.trim() === order.product.article) {
-            setArticleStatus('Артикул правильный');
-        } else {
-            setArticleStatus('');
-        }
-    }, [enteredArticle, order]);
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
 
 
 
@@ -92,17 +77,6 @@ function ProductFindPage() {
     }, [orderId]);
 
     useEffect(() => {
-        if (!orderId) return;
-        getOrderReport(orderId)
-            .then((response: AxiosResponse<OrderReport>) => {
-                setReportData(response.data);
-            })
-            .catch((err) => {
-                console.error('Ошибка при загрузке отчета:', err);
-            });
-    }, [orderId]);
-
-    useEffect(() => {
         if (!order) return;
         if (enteredArticle.trim() === order.product.article) {
             setArticleStatus('Артикул правильный');
@@ -110,6 +84,20 @@ function ProductFindPage() {
             setArticleStatus('');
         }
     }, [enteredArticle, order]);
+
+
+    const toggleStep = (step: number) => {
+        setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
+    };
+
+    const onArticleBlur = () => {
+        if (!order) return;
+        if (enteredArticle.trim() !== order.product.article) {
+            setFlashInvalid(true);
+        }
+    };
+
+
 
     const canContinue = articleStatus === 'Артикул правильный';
 
@@ -130,7 +118,7 @@ function ProductFindPage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-    const {product} = order;
+
     const handleChannelClick = () => {
         window.open('https://t.me/Premiumcash1', '_blank'); //todo
     };
@@ -142,15 +130,24 @@ function ProductFindPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
-
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на втором шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
             <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4">
+                 <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
                 <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите наш товар</h2>
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
                     <li>Найдите наш товар на сайте или в приложении WB</li>
                     <li>
-                        Используйте ключевое слово{product.key_word ? `: «${product.key_word}»` : ''}
+                        Используйте ключевое слово{order.product!.key_word ? `: «${order.product!.key_word}»` : ''}
                     </li>
                     <li>Фото товара ниже</li>
                     <li>
@@ -159,7 +156,6 @@ function ProductFindPage() {
                     <p>
                         Если артикул правильный, вы перейдёте на следующий шаг
                     </p>
-                    <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
                 </ul>
             </div>
@@ -196,7 +192,6 @@ function ProductFindPage() {
             </div>
 
 
-
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -206,18 +201,24 @@ function ProductFindPage() {
             >
                 Продолжить
             </button>
+            <button
+                    onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
+                className="w-full flex-1 bg-white text-gray-700 mb-4 py-2 rounded-lg border border-brand text-center"
+                >
+                    Проверить продавца
+            </button>
 
 
             <div className="mb-4">
                 <div className="w-full aspect-[3/4] bg-gray-200-100 rounded overflow-hidden relative">
-                    {product.image_path ? (
+                    {order.product!.image_path ? (
                         <img
                             src={
-                                product.image_path.startsWith('http')
-                                    ? product.image_path
-                                    : GetUploadLink(product.image_path)
+                                order.product!.image_path.startsWith('http')
+                                    ? order.product!.image_path
+                                    : GetUploadLink(order.product!.image_path)
                             }
-                            alt={product.name}
+                            alt={order.product!.name}
                             className="absolute inset-0 w-full h-full object-cover"
                         />
                     ) : (
@@ -229,12 +230,28 @@ function ProductFindPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Пояснение условий.<br />
+Переход на вб, поиск товара, использование фильтра поиска, где находится артикул.<br />
+Переход в бота.<br />
+Проверка артикула (артикул верный).</p>
+                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
+        <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/5%20Buyer%20Step%202%20Explanation%20of%20the%20conditions%20Go%20to%20the%20WB%2C%20search%20for%20a%20product%2C%20use%20the%20search%20filter%2C%20where%20the%20article%20number%20is%20located%20Go%20to%20the%20bot%20Check%20the%20article%20number%20(the%20article%20number%20is%20correct).MP4"
+                        controls
+                        className="w-full h-full"
+                    />
+                </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-4">
+                <p className="text-base font-medium mb-2">Если артикул не верный.<br />
+Пояснение про ситуацию, когда товара нет в наличии на ВБ и про лимит на выкуп.</p>
+                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
+        <video
+                        title="Инструкция"
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/6%20Buyer%20Step%202%20If%20the%20SKU%20is%20incorrect%20Explanation%20about%20the%20situation%20when%20the%20product%20is%20not%20available%20on%20the%20WB%20and%20the%20redemption%20limit%20Step%203.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
@@ -243,7 +260,7 @@ function ProductFindPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-2 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -317,29 +334,23 @@ function ProductFindPage() {
                         ) : (
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         )}
+
                     </div>
                 )}
-                <div className="flex flex-col gap-3 text-center">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                    Нужна помощь с выполнением шага
+                </button>
 
-                    <button
-                        onClick={handleChannelClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                         justify-center gap-2">
-                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                        <span>Подписаться на канал</span>
-                    </button>
-                    <button
-                        onClick={handleSupportClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        Нужна помощь
-                    </button>
-                    <button
-                        onClick={() => navigate(`/black-list`)}
-                        className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
-                    >
-                        Проверить продавца
-                    </button>
-                </div>
+                <button
+                    onClick={handleChannelClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center
+                         ">
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                    <span>Подписаться на канал</span>
+                </button>
+
             </div>
         </div>
     );

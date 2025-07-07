@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderReport, updateOrder} from '../../services/api';
-import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 import FileUploader from "../../components/FileUploader";
+
 
 interface OrderReport {
     step: number;
@@ -23,11 +23,14 @@ interface OrderReport {
     article?: string;
 }
 
-type ModalContent = { src: string};
+type ModalContent = { src: string; isVideo: boolean };
 
 function StepOrderPlacement() {
     const navigate = useNavigate();
-    const {orderId} = useParams<{ orderId: string }>();
+
+    // 1) достаём сразу оба параметра
+    const {orderId, stepNumber} = useParams<{ orderId: string; stepNumber: string }>();
+    // приводим к числу
 
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
     // const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
@@ -38,10 +41,12 @@ function StepOrderPlacement() {
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
     const orderImgPath = '/images/order.jpg';
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
 
 
     const openModal = (src: string) => {
-        setModalContent({ src });
+        setModalContent({src, isVideo: src.endsWith('.mp4')});
     };
     const closeModal = () => setModalContent(null);
 
@@ -113,7 +118,18 @@ function StepOrderPlacement() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на пятом шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
+
             <div className="bg-white border border-brand rounded-md p-4 text-sm text-gray-700 mb-4 space-y-2">
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 5. Оформление заказа</h1>
                 <p>1. Оформите заказ на Wildberries</p>
                 <p>2. Сделайте скрин из раздела «Доставки» в личном кабинете</p>
@@ -125,7 +141,6 @@ function StepOrderPlacement() {
                 >
                     Пример скрина заказа
                 </div>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
             </div>
 
@@ -166,22 +181,25 @@ function StepOrderPlacement() {
 
 
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Оформление заказа на словах.<br/>
+                    Прикрепление скрина заказа.<br/>
+                    Ситуация если оформили заказ, но закончился лимит.
+                </p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/9%20Buyer%20Step%205%20Place%20an%20order%20in%20words%20Attach%20a%20screenshot%20of%20the%20order%20If%20you%20place%20an%20order%20but%20run%20out%20of%20funds%2C%20proceed%20to%20step%206.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
             </div>
 
 
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-3 mb-4 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-2 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -324,8 +342,6 @@ function StepOrderPlacement() {
                                     </div>
 
 
-
-
                                     <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                         <div className="font-semibold text-black">Шаг 5. Оформление заказа</div>
                                         <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
@@ -337,51 +353,80 @@ function StepOrderPlacement() {
                             ) :
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         }
-                    </div>
-                )}
-                <div className="flex flex-col gap-3 mt-2 text-center">
-
-                    <button
-                        onClick={handleChannelClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                         justify-center gap-2">
-                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                        <span>Подписаться на канал</span>
-                    </button>
-                    <button
-                        onClick={handleSupportClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        Нужна помощь
-                    </button>
-                </div>
-            </div>
-            {modalContent && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                    onClick={closeModal}
-                >
-                    <div
-                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        {/* Крестик в правом верхнем углу */}
                         <button
-                            onClick={closeModal}
-                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
+                            onClick={handleSupportClick}
+                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                         >
-                            &times;
+                            Нужна помощь с выполнением шага
+                        </button>
+                        <button
+                            onClick={handleChannelClick}
+                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                        >
+                            <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                            <span>Подписаться на канал</span>
                         </button>
 
-                        {/* Вот здесь вставляем картинку */}
-                        <img
-                            src={modalContent.src}
-                            alt="Пример"
-                        />
                     </div>
-                </div>
-            )}
-            </div>
+                )}
 
+            </div>
+            {modalContent && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-40"
+                        onClick={closeModal}
+                    />
+
+                {/* Centered modal */}
+                    <div
+                        className="fixed inset-0 flex items-center justify-center z-50"
+                        onClick={closeModal}
+                    >
+                        <div
+                            onClick={e => e.stopPropagation()}
+                            className="
+            relative
+            bg-white
+            rounded-lg
+            overflow-hidden
+            flex items-center justify-center
+            p-4
+            w-[90vw]      /* now 90% of viewport width */
+            h-[90vh]      /* now 90% of viewport height */
+            max-w-4xl     /* optional cap on very large screens */
+            max-h-[90vh]
+          "
+                        >
+                            {/* Close button */}
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-2 right-2 text-2xl text-gray-700 z-10"
+                            >
+                                &times;
+                            </button>
+
+                            {/* Content (95% of modal box) */}
+                            {modalContent.isVideo ? (
+                                <video
+                                    src={modalContent.src}
+                                    controls
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            ) : (
+                                <img
+                                    src={modalContent.src}
+                                    alt="Пример"
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
+
+        </div>
     );
 }
 
