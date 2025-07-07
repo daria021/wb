@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {AxiosResponse} from 'axios';
-import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 import FileUploader from "../../components/FileUploader";
 
@@ -15,6 +14,7 @@ interface Product {
     wb_price: number;
     requirements_agree: boolean;
     tg: string;
+    seller_id: string;
 }
 
 interface Order {
@@ -44,7 +44,7 @@ interface OrderReport {
     article?: string;
 }
 
-type ModalContent = { src: string};
+type ModalContent = { src: string; isVideo: boolean };
 
 function StepReviewReportPage() {
     const {orderId} = useParams<{ orderId: string }>();
@@ -56,8 +56,7 @@ function StepReviewReportPage() {
     const [reportData, setReportData] = useState<OrderReport | null>(null);
 
     const [leftReview, setLeftReview] = useState(false);
-    // const [reviewScreenshot, setReviewScreenshot] = useState<File | null>(null);
-    // const [checkScreenshot, setCheckScreenshot] = useState<File | null>(null);
+
     const [checkNumber, setCheckNumber] = useState('');
     const [showReport, setShowReport] = useState(false);
     const [file1, setFile1] = useState<File | null>(null);
@@ -69,9 +68,17 @@ function StepReviewReportPage() {
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
 
+
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
+
     const openModal = (src: string) => {
-        setModalContent({ src });
+        setModalContent({
+            src,
+            isVideo: src.toLowerCase().endsWith('.mp4')
+        });
     };
+
     const closeModal = () => setModalContent(null);
 
     const feedbackImgPath = '/images/feedback.jpg';
@@ -79,6 +86,7 @@ function StepReviewReportPage() {
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
     };
+
 
     useEffect(() => {
         if (!file1) {
@@ -134,21 +142,6 @@ function StepReviewReportPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // const handleReviewScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setReviewScreenshot(e.target.files[0]);
-    //     } else {
-    //         setReviewScreenshot(null);
-    //     }
-    // };
-    //
-    // const handleCheckScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setCheckScreenshot(e.target.files[0]);
-    //     } else {
-    //         setCheckScreenshot(null);
-    //     }
-    // };
 
     const handleLeftReviewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const checked = e.target.checked;
@@ -200,6 +193,14 @@ function StepReviewReportPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на седьмом шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
             <div className="flex items-center justify-between mb-4">
 
                 <button
@@ -222,6 +223,8 @@ function StepReviewReportPage() {
             </div>
 
             <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold">Шаг 7. Отзыв</h1>
                 <p className="mb-2">1. Согласуйте отзыв с продавцом.</p>
                 {order.product.requirements_agree ? (
@@ -233,22 +236,21 @@ function StepReviewReportPage() {
                     </>
                 ) : (
                     <p className="mb-2">
-                        1. Напишите отзыв. Фото, видео, текст, оценка 5.
+                        2. Напишите отзыв. Фото, видео, текст, оценка 5.
                     </p>
                 )}
                 <div
                     onClick={() => openModal(feedbackImgPath)}
                     className="underline text-blue-600 cursor-pointer"
                 >
-                  Пример отзыва
+                    Пример отзыва
                 </div>
                 <div
-                        onClick={() => openModal(receiptVideoPath)}
-                        className="underline text-blue-600 cursor-pointer"
-                    >
-                  Пример получения электронного чека
+                    onClick={() => openModal(receiptVideoPath)}
+                    className="underline text-blue-600 cursor-pointer"
+                >
+                    Пример получения электронного чека
                 </div>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
 
             </div>
 
@@ -297,7 +299,7 @@ function StepReviewReportPage() {
             </div>
             <div className="flex gap-2 mb-4 mt-4">
                 <button
-                    onClick={() => navigate(`/black-list`)}
+                    onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
                     className="flex-1 bg-white text-gray-700 text-sm py-2 rounded-lg border border-brand text-center"
                 >
                     Проверить продавца
@@ -315,36 +317,67 @@ function StepReviewReportPage() {
 
             {/* Инструкции */}
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Инструкция на отзыв</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Какие условия необходимо выполнить.<br/>
+                    Как связаться с покупателем.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция на отзыв"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/12%20Buyer%20Step%207%20What%20conditions%20must%20be%20met%20How%20to%20contact%20the%20buyer.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
             </div>
 
             <div className="bg-white rounded-lg shadow p-4 mt-4">
-                <p className="text-base font-medium mb-2">Инструкция на чек</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Согласование отзыва с продавцом.<br/>
+                    Что делать, если продавец не отвечает.<br/>
+                    Возможный вариант без согласования отзыва.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция на чек"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/13%20Buyer%20Step%207%20Review%20approval%20with%20the%20seller%20What%20to%20do%20if%20the%20seller%20does%20not%20respond%20Possible%20option%20without%20review%20approval.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
             </div>
 
             <div className="bg-white rounded-lg shadow p-4 mt-4">
-                <p className="text-base font-medium mb-2">Инструкция на номер чека</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Скриншот публикации отзыва.<br/>
+                    Требования к фото.<br/>
+                    Требования к тексту.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция на номер чека"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/14%20Buyer%20Step%207%20Screenshot%20of%20the%20review%20publication%20Photo%20requirements%20Text%20requirements.MP4"
+                        controls
+                        className="w-full h-full"
+                    />
+                </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">После скриншота отзыва, как найти эл.чек.<br/>
+                    Копирование чека и скриншот.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
+                        title="Инструкция на номер чека"
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/15%20Buyer%20Step%207%20After%20the%20screenshot%20of%20the%20review%2C%20how%20to%20find%20the%20email.receipt%20Copying%20the%20receipt%20and%20screenshot.MP4"
+                        controls
+                        className="w-full h-full"
+                    />
+                </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-4 mt-4">
+                <p className="text-base font-medium mb-2">Загрузка скриншотов, вставка номера чека.
+                </p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
+                        title="Инструкция на номер чека"
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/16%20Buyer%20Step%207%20Uploading%20screenshots%20and%20inserting%20the%20receipt%20number.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
@@ -353,7 +386,7 @@ function StepReviewReportPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-2 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -583,56 +616,88 @@ function StepReviewReportPage() {
                     </div>
                 )}
 
-            </div>
-
-
-
-            <div className="flex flex-col gap-3 mt-4 text-center">
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    Нужна помощь с выполнением шага
+                </button>
                 <button
                     onClick={handleChannelClick}
-                    className="w-full bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex
-                    items-center justify-center gap-2"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     Подписаться на канал
                 </button>
-                <button
-                    onClick={handleSupportClick}
-                    className="w-full bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold"
-                >
-                    Нужна помощь
-                </button>
+
+
             </div>
+
+            {/*{modalContent && (*/}
+            {/*    <Modal onClose={closeModal}>*/}
+            {/*        {modalContent.src.endsWith('.mp4') ? (*/}
+            {/*            <video*/}
+            {/*                src={modalContent.src}*/}
+            {/*                controls*/}
+            {/*                className="w-full h-auto max-h-[70vh]"*/}
+            {/*            />*/}
+            {/*        ) : (*/}
+            {/*            <img*/}
+            {/*                src={modalContent.src}*/}
+            {/*                alt="Пример"*/}
+            {/*                className="w-full h-auto max-h-[70vh] object-contain"*/}
+            {/*            />*/}
+            {/*        )}*/}
+            {/*    </Modal>*/}
+            {/*)}*/}
+
+            {/* …весь остальной JSX страницы… */}
+
             {modalContent && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                    onClick={closeModal}
-                >
+                <>
+                    {/* 1. Overlay */}
                     <div
-                        className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
-                        onClick={e => e.stopPropagation()}
+                        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 ease-out z-40"
+                        onClick={closeModal}
+                    />
+
+                    {/* 2. Окно модалки */}
+                    <div
+                        className="fixed inset-0 flex justify-center items-center z-50"
+                        onClick={closeModal}
                     >
-                        {/* Крестик в правом верхнем углу */}
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
+                        <div
+                            className="relative bg-white p-4 rounded-xl w-[90vw] h-[90vh] flex items-center justify-center"
+                            onClick={e => e.stopPropagation()}
                         >
-                            &times;
-                        </button>
+                            {/* Кнопка «×» */}
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-3 right-3 text-2xl leading-none"
+                            >
+                                &times;
+                            </button>
 
-                        {/* Вот здесь вставляем картинку */}
-                        <img
-                            src={modalContent.src}
-                            alt="Пример"
-                        />
+                                                    {modalContent.isVideo ? (
+                                <video
+                                    src={modalContent.src}
+                                    controls
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            ) : (
+                                <img
+                                    src={modalContent.src}
+                                    alt="Пример"
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
+                </>
             )}
+
         </div>
-
-
-    )
-        ;
+    );
 }
 
 export default StepReviewReportPage;

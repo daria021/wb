@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
@@ -60,6 +60,9 @@ function ProductPickupPage() {
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const receivingImgPath = '/images/receiving.jpg';
     const barcodeImgPath = '/images/barcode.jpg';
+
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
 
     // единственное состояние для модалки
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
@@ -173,9 +176,19 @@ function ProductPickupPage() {
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на шестом шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
 
 
             <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold text-brand">Шаг 6. Получение товара</h1>
                 <p>
                     Заберите товар как обычно, сделайте скрин раздела «доставки» из личного кабинета, где указана дата
@@ -197,8 +210,6 @@ function ProductPickupPage() {
                 <p>
                     Ваш кешбэк: <strong>{cashback} руб.</strong>
                 </p>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
-                    ПОКУПКИ"</p>
             </div>
 
             <div className="flex items-center mb-4">
@@ -249,12 +260,15 @@ function ProductPickupPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Пояснение условий.<br/>
+                    Переход на вб, скрин доставки и пояснение к скрину.<br/>
+                    Возвращение в бота.<br/>
+                    Пояснение к фото товара.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/10%20Buyer%20Step%206%20Explanation%20of%20the%20terms%20Transition%20to%20the%20WB%2C%20delivery%20screen%2C%20and%20explanation%20of%20the%20screen%20Return%20to%20the%20bot%20Explanation%20of%20the%20product%20photo.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
@@ -262,12 +276,14 @@ function ProductPickupPage() {
 
 
             <div className="bg-white rounded-lg shadow p-4 mt-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+                <p className="text-base font-medium mb-2">Пояснение, когда сдаем отчет.<br/>
+                    Выполнение условий.
+                </p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/11%20Buyer%20Step%206%20Explanation%20when%20submitting%20a%20report%20Meeting%20the%20requirements%20Moving%20on%20to%20step%207.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
@@ -276,7 +292,7 @@ function ProductPickupPage() {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-2 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -459,23 +475,21 @@ function ProductPickupPage() {
                             ) :
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         }
+                        <button
+                            onClick={handleChannelClick}
+                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                        >
+                            <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                            <span>Подписаться на канал</span>
+                        </button>
+                        <button
+                            onClick={handleSupportClick}
+                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                        >
+                            Нужна помощь
+                        </button>
                     </div>
                 )}
-                <div className="flex flex-col gap-3 text-center">
-
-                    <button
-                        onClick={handleChannelClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                         justify-center gap-2">
-                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                        <span>Подписаться на канал</span>
-                    </button>
-                    <button
-                        onClick={handleSupportClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        Нужна помощь
-                    </button>
-                </div>
             </div>
             {modalContent && (
                 <>
@@ -503,16 +517,17 @@ function ProductPickupPage() {
                                 &times;
                             </button>
 
-                            {modalContent.isVideo ? (
-                                <video width="100%" height="auto" controls>
-                                    <source src={modalContent.src} type="video/mp4"/>
-                                    Ваш браузер не поддерживает видео.
-                                </video>
+                                                     {modalContent.isVideo ? (
+                                <video
+                                    src={modalContent.src}
+                                    controls
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
                             ) : (
                                 <img
                                     src={modalContent.src}
                                     alt="Пример"
-  className="max-w-full max-h-full object-contain"
+                                    className="w-[95%] h-[95%] object-contain"
                                 />
                             )}
                         </div>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
@@ -50,15 +50,6 @@ interface OrderReport {
     receipt_number?: string;
     article?: string;
 }
-
-// function getDeadline(): string {
-//     const now = new Date();
-//     const plusTwoWeeks = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-//     const day = String(plusTwoWeeks.getDate()).padStart(2, '0');
-//     const month = String(plusTwoWeeks.getMonth() + 1).padStart(2, '0');
-//     const year = plusTwoWeeks.getFullYear();
-//     return `${day}.${month}.${year}`;
-// }
 
 function FinalDealPage() {
     const {orderId} = useParams<{ orderId: string }>();
@@ -180,7 +171,7 @@ function FinalDealPage() {
             <div className="flex flex-col space-y-2">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-brand font-semibold text-center"
+                className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -460,12 +451,14 @@ function FinalDealPage() {
                     </div>
 
                 )}
+
                 <button
                     onClick={handleHomeClick}
-                    className="w-full py-2 mb-4 bg-white rounded-lg border border-brand text-brand font-semibold text-center"
+                          className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     На главную
                 </button>
+
             </div>
         </div>
     )

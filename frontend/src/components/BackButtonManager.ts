@@ -4,26 +4,21 @@ import { on, postEvent } from '@telegram-apps/sdk';
 
 export default function BackButtonManager() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
 
-  // 1) Управляем видимостью стрелки: скрываем на главной "/"
   useEffect(() => {
     postEvent('web_app_setup_back_button', {
       is_visible: pathname !== '/',
     });
   }, [pathname]);
 
-  // 2) Обработчик «назад»
   useEffect(() => {
     const unsub = on('back_button_pressed', () => {
-      // редиректы-исключения
-      // ---------------------
-      // MyOrdersPage  => "/user/orders"   → домой "/"
+
       if (matchPath({ path: '/user/orders', end: true }, pathname)) {
         return navigate('/', { replace: true });
       }
 
-      // MyProductsPage /create-product и SellerCabinet  => "/seller-cabinet"
       if (
         matchPath({ path: '/seller-cabinet', end: true }, pathname) ||
         matchPath({ path: '/my-products', end: true }, pathname) ||
@@ -43,6 +38,13 @@ export default function BackButtonManager() {
       );
       if (reportDetail) {
         return navigate('/seller-cabinet/reports', { replace: true });
+      }
+      if (
+        matchPath({ path: '/catalog', end: true }, pathname) &&
+        state?.fromProductDetail
+      ) {
+        // простое «назад» вернёт на /product/:id
+        return navigate(-1);
       }
 
       // CatalogPage "/catalog" и AboutPage "/about"

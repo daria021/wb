@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { on } from "@telegram-apps/sdk";
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 
 type ModalContent = { src: string; isVideo: boolean };
@@ -20,7 +19,7 @@ function RequirementsPage() {
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
 
     const openModal = (src: string) => {
-        setModalContent({ src, isVideo: src.endsWith('.mp4') });
+        setModalContent({src, isVideo: src.endsWith('.mp4')});
     };
     const closeModal = () => setModalContent(null);
 
@@ -48,12 +47,12 @@ function RequirementsPage() {
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>
                         <p className="text-base font-semibold text-left">
-                            Не закрашивайте и не обрезайте скрины — они должны быть без повреждений.<br />
+                            Не закрашивайте и не обрезайте скрины — они должны быть без повреждений.<br/>
                             За нарушение требований кешбэк не будет выплачиваться.
                         </p>
                     </div>
 
-                    <hr className="border-darkGray" />
+                    <hr className="border-darkGray"/>
 
                     <ol className="list-decimal list-inside space-y-6 text-gray-800">
                         <li className="px-4">
@@ -64,8 +63,8 @@ function RequirementsPage() {
                                     onClick={() => openModal(orderImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
-                  Пример скрина заказа
-                </div>
+                                    Пример скрина заказа
+                                </div>
                             </p>
                         </li>
                         <li className="px-4">
@@ -76,8 +75,8 @@ function RequirementsPage() {
                                     onClick={() => openModal(receivingImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
-                  Пример скрина получения товара
-                </div>
+                                    Пример скрина получения товара
+                                </div>
                             </p>
                         </li>
                         <li className="px-4">
@@ -88,8 +87,8 @@ function RequirementsPage() {
                                     onClick={() => openModal(feedbackImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
-                  Пример отзыва
-                </div>
+                                    Пример отзыва
+                                </div>
                             </p>
                         </li>
                         <li className="px-4">
@@ -100,8 +99,8 @@ function RequirementsPage() {
                                     onClick={() => openModal(barcodeImgPath)}
                                     className="underline text-blue-600 cursor-pointer"
                                 >
-                  Пример разрезанного штрихкода
-                </div>
+                                    Пример разрезанного штрихкода
+                                </div>
                             </p>
                         </li>
                         <li className="px-4">
@@ -116,14 +115,14 @@ function RequirementsPage() {
                                         onClick={() => openModal(receiptVideoPath)}
                                         className="underline text-blue-600 cursor-pointer"
                                     >
-                                  Пример получения электронного чека
-                                </div>
+                                        Пример получения электронного чека
+                                    </div>
                                 </div>
                             </p>
                         </li>
                     </ol>
 
-                    <hr className="border-darkGray" />
+                    <hr className="border-darkGray"/>
 
                     <div className="flex flex-col gap-2">
                         <button
@@ -154,32 +153,47 @@ function RequirementsPage() {
                 </div>
 
                 {modalContent && (
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                        onClick={closeModal}
-                    >
+                    <>
+                        {/* 1. Overlay */}
                         <div
-                            className="relative bg-white p-4 rounded max-w-lg max-h-[80vh]"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            {/* Крестик в правом верхнем углу */}
-                            <button
-                                onClick={closeModal}
-                                className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
-                            >
-                                &times;
-                            </button>
+                            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 ease-out z-40"
+                            onClick={closeModal}
+                        />
 
-                            {modalContent.isVideo ? (
-                                <video width="100%" height="auto" controls>
-                                    <source src={modalContent.src} type="video/mp4" />
-                                    Ваш браузер не поддерживает видео.
-                                </video>
-                            ) : (
-                                <img src={modalContent.src} alt="Пример" />
-                            )}
+                        {/* 2. Окно модалки */}
+                        <div
+                            className="fixed inset-0 flex justify-center items-center z-50"
+                            onClick={closeModal}
+                        >
+                            <div
+                                className="relative bg-white p-4 rounded w-[90vw] h-[90vh]
+                            flex items-center justify-center"
+                                onClick={e => e.stopPropagation()}
+                            >
+                                {/* Кнопка «×» */}
+                                <button
+                                    onClick={closeModal}
+                                    className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
+                                >
+                                    &times;
+                                </button>
+
+                                {modalContent.isVideo ? (
+                                    <video
+                                        src={modalContent.src}
+                                        controls
+                                        className="w-[95%] h-[95%] object-contain"
+                                    />
+                                ) : (
+                                    <img
+                                        src={modalContent.src}
+                                        alt="Пример"
+                                        className="w-[95%] h-[95%] object-contain"
+                                    />
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
 import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
@@ -51,6 +51,8 @@ function ProductFavoritePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+    const location = useLocation();
+    const cameFromOrders = Boolean(location.state?.fromOrders);
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -111,11 +113,21 @@ function ProductFavoritePage() {
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
 
+            {cameFromOrders && (
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 mb-6 rounded">
+                    <p className="font-semibold">
+                        Вы остановились на третьем шаге.
+                    </p>
+                    <p>Можете продолжить выкуп.</p>
+                </div>
+            )}
+
             <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
+                 <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                    ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное</h1>
                 <p className="mb-2">• Добавьте товар в избранное</p>
                 <p className="mb-2">• Добавьте бренд в избранное</p>
-                <p className="mb-2 text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ ПОКУПКИ"</p>
             </div>
 
         <div className="flex flex-col items-start mb-4 space-y-4">
@@ -170,26 +182,29 @@ function ProductFavoritePage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Инструкция</p>
-                <div className="aspect-w-16 aspect-h-9 bg-black">
-                    <iframe
+            <div className="bg-white rounded-lg shadow mb-4">
+                <p className="text-base font-medium mb-2">Добавление товара и бренда в избранное на вб.<br />
+Отметка галочек.<br />
+Скрин не нужен.
+</p>
+                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
+        <video
                         title="Инструкция"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                        src="https://storage.googleapis.com/images_avocado/VideoCashback/7%20Buyer%20Step%203%20Adding%20a%20product%20and%20brand%20to%20your%20favorites%20on%20the%20WB%20website%20Checking%20the%20boxes%20You%20do%20not%20need%20a%20screenshot.%20Proceed%20to%20Step%204.MP4"
+                        controls
                         className="w-full h-full"
                     />
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-3 mb-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                    className="w-full py-2 mb-4 rounded-lg bg-white border border-brand text-gray-600 font-semibold text-center"
+
+                className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
-
                 {showReport && (
                     <div className="bg-white rounded-lg shadow p-4 mb-4">
                         <h3 className="text-lg font-bold mb-2">Отчет</h3>
@@ -284,23 +299,23 @@ function ProductFavoritePage() {
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         )}
                     </div>
-                )}
-            </div>
-                <div className="flex flex-col gap-3 mt-2 text-center">
 
-                    <button
-                        onClick={handleChannelClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                         justify-center gap-2">
-                        <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                        <span>Подписаться на канал</span>
-                    </button>
-                    <button
-                        onClick={handleSupportClick}
-                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        Нужна помощь
-                    </button>
-                </div>
+                )}
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    Нужна помощь с выполнением шага
+                </button>
+                <button
+                    onClick={handleChannelClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <span>Подписаться на канал</span>
+                </button>
+            </div>
+
             </div>
     );
 }
