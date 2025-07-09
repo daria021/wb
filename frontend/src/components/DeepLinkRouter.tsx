@@ -19,7 +19,8 @@ export const DeepLinkRouter = () => {
     // Ждём, пока профиль инициализируется
     if (loading || isRedirected) return
 
-    const href = window.location.href
+    const href = window.location.href;
+    // if (href.startsWith("")) {}
     // Ищем startParam через регулярку сразу
     const m = /tgWebAppStartParam([^#]+)/.exec(href)
     // Если нет ни одного — сразу помечаем, что отработали, и выходим
