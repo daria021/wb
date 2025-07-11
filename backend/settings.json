@@ -6,7 +6,7 @@
     "password": "wbpassword",
     "name": "postgres"
   },
-    "jwt": {
+  "jwt": {
     "secret_key": "very-secret-wb-key-innit",
     "issuer": "wb-back",
     "audience": "wb-front",
@@ -17,13 +17,17 @@
     "local": {
       "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
       "username": "WBJarvisBot",
-      "channel_id": -1002666193715,
+      "channel_id": -1001206912181,
+      "paid_topic_id": 13,
+      "free_topic_id": 1151,
       "app_short_name": "cashback"
     },
     "dev": {
       "token": "7923150921:AAGAUkeu-dfp_fXkwTwb3HQZZlYEf66MzYg",
       "username": "cashbackwb_ru_bot",
-      "channel_id": -1001713824160,
+      "channel_id": -1001206912181,
+      "paid_topic_id": 13,
+      "free_topic_id": 1151,
       "app_short_name": "cashback"
     }
   },

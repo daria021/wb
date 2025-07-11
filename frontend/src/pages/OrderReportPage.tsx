@@ -1,8 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import {getOrderReport, updateOrderStatus} from "../services/api";
-import {on} from "@telegram-apps/sdk";
+import {getOrderById, getOrderReport, updateOrderStatus} from "../services/api";
 import {OrderStatus} from "../enums";
 import GetUploadLink from "../components/GetUploadLink";
 
@@ -25,12 +24,24 @@ interface OrderReport {
     cashback: number;
 }
 
+interface UserInOrder {
+    nickname: string;
+}
+
+interface Order {
+    id: string;
+    user: UserInOrder;
+}
+
+
 function OrderReportPage() {
     const {orderId} = useParams<{ orderId: string }>();
     const navigate = useNavigate();
     const [report, setReport] = useState<OrderReport | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [order, setOrder] = useState<Order | null>(null);
+
 
     const copyToClipboard = useCallback((text: string) => {
         navigator.clipboard.writeText(text)
@@ -40,6 +51,20 @@ function OrderReportPage() {
             })
             .catch(() => alert('Не удалось скопировать'));
     }, []);
+
+
+    useEffect(() => {
+        if (!orderId) return;
+        getOrderById(orderId)
+            .then((response: AxiosResponse<Order>) => {
+                setOrder(response.data);
+            })
+            .catch((err) => {
+                console.error('Ошибка при загрузке заказа:', err);
+                setError('Не удалось загрузить заказ');
+            })
+            .finally(() => setLoading(false));
+    }, [orderId]);
 
     useEffect(() => {
         if (!orderId) return;
@@ -69,8 +94,8 @@ function OrderReportPage() {
             alert('Статус обновлен!');
             // При возврате на список, сразу на вкладке "выплаченные"
             navigate(
-                { pathname: '/seller-cabinet/reports', search: '?tab=paid' },
-                { replace: true }
+                {pathname: '/seller-cabinet/reports', search: '?tab=paid'},
+                {replace: true}
             );
 
         } catch {
@@ -121,7 +146,7 @@ function OrderReportPage() {
                     <h2 className="text-xl font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
                     <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
                 </section>
-ё
+                ё
 
                 {report.final_cart_screenshot_path && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
@@ -176,6 +201,22 @@ function OrderReportPage() {
                         )}
                     </section>
                 )}
+
+                <section className="mb-6 p-4 bg-gray-200 rounded-md">
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-base font-semibold">
+                            Покупатель:{' '}
+                            <a
+                                href={`https://t.me/${order!.user.nickname}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                            >
+                                @{order!.user.nickname}
+                            </a>
+                        </h2>
+                    </div>
+                </section>
 
 
                 {(report.card_number || report.phone_number || report.name || report.bank) && (

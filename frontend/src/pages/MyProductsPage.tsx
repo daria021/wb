@@ -29,6 +29,17 @@ interface Product {
     updated_at: string;
 }
 
+interface CardRow {
+    label: string;
+    value: number;
+    status: ProductStatus;
+}
+
+enum Panel {
+    CARDS = 'CARDS',
+    PURCHASES = 'PURCHASES',
+}
+
 function MyProductsPage() {
     const navigate = useNavigate();
 
@@ -36,9 +47,7 @@ function MyProductsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [filter, setFilter] = useState<
-        'все' | 'активные' | 'созданные' | 'ожидают редактирования' | 'отклоненные' | 'архивированные' | 'не оплаченные'
-    >('все');
+
     const {user, loading: userLoading, refresh} = useUser();
 
 
@@ -51,13 +60,46 @@ function MyProductsPage() {
     const archivedCount = products.filter((p) => p.status === ProductStatus.ARCHIVED).length;
     const notPaidCount = products.filter((p) => p.status === ProductStatus.NOT_PAID).length;
     const rejectedCount = products.filter((p) => p.status === ProductStatus.REJECTED).length;
-    // const totalPlan = products
-    //     .filter(
-    //         (p) => p.status === ProductStatus.ACTIVE || p.status === ProductStatus.NOT_PAID,
-    //     )
-    //     .reduce((sum, p) => sum + p.remaining_products, 0);
 
-    // const totalPlan = user?.total_plan;
+    const cardRows: CardRow[] = [
+        {label: 'Активные', value: publishedCount, status: ProductStatus.ACTIVE},
+        {label: 'Ожидает проверки модератора', value: moderationCount, status: ProductStatus.CREATED},
+        {label: 'Необходимо исправить', value: disabledCount, status: ProductStatus.DISABLED},
+        {label: 'Отклонённые', value: rejectedCount, status: ProductStatus.REJECTED},
+        {label: 'Архив', value: archivedCount, status: ProductStatus.ARCHIVED},
+        {label: 'Карточки оформлены и не оплачены', value: notPaidCount, status: ProductStatus.NOT_PAID},
+    ];
+
+    /* ---------- state ---------- */
+// открытые панели
+    const [openPanel, setOpenPanel] = useState<Record<Panel, boolean>>({
+        [Panel.CARDS]: true,
+        [Panel.PURCHASES]: false,
+    });
+
+// чекбоксы-фильтры
+    const initialStatusFilters: Record<ProductStatus, boolean> = {
+        [ProductStatus.ACTIVE]: false,
+        [ProductStatus.CREATED]: false,
+        [ProductStatus.DISABLED]: false,
+        [ProductStatus.ARCHIVED]: false,
+        [ProductStatus.NOT_PAID]: false,
+        [ProductStatus.REJECTED]: false,
+    };
+    const [statusFilters, setStatusFilters] =
+        useState<Record<ProductStatus, boolean>>(initialStatusFilters);
+    const activeStatuses = Object.entries(statusFilters)
+        .filter(([, checked]) => checked)      // оставляем только включённые
+        .map(([k]) => k as ProductStatus);
+
+    /* ---------- helpers ---------- */
+// переключить панель
+    const togglePanel = (panel: Panel) =>
+        setOpenPanel(prev => ({...prev, [panel]: !prev[panel]}));
+
+// переключить чекбокс-фильтр
+    const toggleStatusFilter = (status: ProductStatus) =>
+        setStatusFilters(prev => ({...prev, [status]: !prev[status]}));
 
     const location = useLocation();
 
@@ -82,72 +124,47 @@ function MyProductsPage() {
 
 
     useEffect(() => {
-  if (!loading && !userLoading && user) {
-    // 1) заведём локальную копию баланса
-    let balance = user.free_balance;
+        if (!loading && !userLoading && user) {
+            // 1) заведём локальную копию баланса
+            let balance = user.free_balance;
 
-    // 2) отбираем товары, которые можно оплатить
-    const toAutoPay = products.filter(
-      p =>
-        p.status === ProductStatus.NOT_PAID &&
-        balance >= p.general_repurchases
-    );
-    if (toAutoPay.length === 0) return;
+            // 2) отбираем товары, которые можно оплатить
+            const toAutoPay = products.filter(
+                p =>
+                    p.status === ProductStatus.NOT_PAID &&
+                    balance >= p.general_repurchases
+            );
+            if (toAutoPay.length === 0) return;
 
-    // 3) автопубликуем
-    toAutoPay.forEach(p => {
-      const fd = new FormData();
-      fd.append('status', ProductStatus.ACTIVE);
-      updateProductStatus(p.id, fd)
-        .then(() => {
-          balance -= p.general_repurchases;
-          setProducts(prev =>
-            prev.map(x =>
-              x.id === p.id ? { ...x, status: ProductStatus.ACTIVE } : x
-            )
-          );
-        })
-        .catch(err =>
-          console.error('Автопубликация не удалась для', p.id, err)
-        );
-    });
+            // 3) автопубликуем
+            toAutoPay.forEach(p => {
+                const fd = new FormData();
+                fd.append('status', ProductStatus.ACTIVE);
+                updateProductStatus(p.id, fd)
+                    .then(() => {
+                        balance -= p.general_repurchases;
+                        setProducts(prev =>
+                            prev.map(x =>
+                                x.id === p.id ? {...x, status: ProductStatus.ACTIVE} : x
+                            )
+                        );
+                    })
+                    .catch(err =>
+                        console.error('Автопубликация не удалась для', p.id, err)
+                    );
+            });
 
-    // 4) обновим баланс пользователя
-    refresh();
-  }
-}, [loading, userLoading, user?.free_balance, products, refresh]);
-    const filteredProducts = products.filter(product => {
-        switch (filter) {
-            case 'активные':
-                if (product.status !== ProductStatus.ACTIVE) return false;
-                break;
-            case 'созданные':
-                if (product.status !== ProductStatus.CREATED) return false;
-                break;
-            case 'ожидают редактирования':
-                if (product.status !== ProductStatus.DISABLED) return false;
-                break;
-            case 'архивированные':
-                if (product.status !== ProductStatus.ARCHIVED) return false;
-                break;
-            case 'не оплаченные':
-                if (product.status !== ProductStatus.NOT_PAID) return false;
-                break;
-            case 'отклоненные':
-                if (product.status !== ProductStatus.REJECTED) return false;
-                break;
-            case 'все':
-                break;
+            // 4) обновим баланс пользователя
+            refresh();
         }
+    }, [loading, userLoading, user?.free_balance, products, refresh]);
 
-        if (searchQuery) {
-            return product.name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
-        }
-
+    const filteredProducts = products.filter(p => {
+        if (activeStatuses.length && !activeStatuses.includes(p.status)) return false;
+        if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
     });
+
 
     useEffect(() => {
         let isMounted = true;
@@ -173,6 +190,15 @@ function MyProductsPage() {
         };
     }, [location.pathname, refresh]);
 
+    useEffect(() => {
+        const refreshIfOnPage = () => {
+            if (location.pathname === '/my-products') refresh();
+        };
+
+        refreshIfOnPage();          // при первом рендере
+        window.addEventListener('focus', refreshIfOnPage);  // при возврате в окно
+        return () => window.removeEventListener('focus', refreshIfOnPage);
+    }, [location.pathname, refresh]);
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -212,47 +238,143 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            <div className="mb-4 p-4 bg-brandlight rounded shadow">
-                <p className="text-sm">
-                    Всего карточек: <strong>{totalCount}</strong>
-                </p>
-                <p className="text-sm">
-                    На проверке: <strong>{moderationCount}</strong>
-                </p>
-                <p className="text-sm">
-                    Опубликовано: <strong>{publishedCount}</strong>
-                </p>
-                <p className="text-sm">
-                    Ожидают редактирования: <strong>{disabledCount}</strong>
-                </p>
-                <p className="text-sm">
-                    В архиве: <strong>{archivedCount}</strong>
-                </p>
-                <p className="text-sm">
-                    Заявка оформлена и не оплачена: <strong>{unpaidPlan}</strong>
-                </p>
-                <p className="text-sm">
-                    Отклоненные: <strong>{rejectedCount}</strong>
-                </p>
-                <p className="text-sm">
-                    Общий план по раздачам: <strong>{totalPlan}</strong>
-                </p>
-                <p className="text-sm">
-                    Оплачено: <strong>{paidPlan}</strong>
-                </p>
-                {user && !userLoading && unpaidPlan > 0 && user.free_balance < unpaidPlan ? (
-  <p className="text-sm text-red-800">
-    Баланс: <strong>{user.free_balance} раздач</strong>
-    <br/>
-    Для публикации всех неоплаченных товаров необходимо пополнить баланс на&nbsp;
-    <strong>{unpaidPlan - user.free_balance}</strong>&nbsp;раздач
-  </p>
-) : (
-  <p className="text-sm text-black">
-    Баланс: <strong>{user!.free_balance} раздач</strong>
-  </p>
-)}
+            {/*            <div className="mb-4 p-4 bg-brandlight rounded shadow">*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Всего карточек: <strong>{totalCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    На проверке: <strong>{moderationCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Опубликовано: <strong>{publishedCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Ожидают редактирования: <strong>{disabledCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    В архиве: <strong>{archivedCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Заявка оформлена и не оплачена: <strong>{unpaidPlan}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Отклоненные: <strong>{rejectedCount}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Общий план по раздачам: <strong>{totalPlan}</strong>*/}
+            {/*                </p>*/}
+            {/*                <p className="text-sm">*/}
+            {/*                    Оплачено: <strong>{paidPlan}</strong>*/}
+            {/*                </p>*/}
+            {/*                {user && !userLoading && unpaidPlan > 0 && user.free_balance < unpaidPlan ? (*/}
+            {/*  <p className="text-sm text-red-800">*/}
+            {/*    Баланс: <strong>{user.free_balance} раздач</strong>*/}
+            {/*    <br/>*/}
+            {/*    Для публикации всех неоплаченных товаров необходимо пополнить баланс на&nbsp;*/}
+            {/*    <strong>{unpaidPlan - user.free_balance}</strong>&nbsp;раздач*/}
+            {/*  </p>*/}
+            {/*) : (*/}
+            {/*  <p className="text-sm text-black">*/}
+            {/*    Баланс: <strong>{user!.free_balance} раздач</strong>*/}
+            {/*  </p>*/}
+            {/*)}*/}
 
+            {/*            </div>*/}
+
+            {/* --------------------------- Плашка «Карточки» -------------------------- */}
+            <div className="mb-3">
+                {/* ---------- HEADER «Карточки товаров» ---------- */}
+                <button
+                    onClick={() => togglePanel(Panel.CARDS)}
+                    style={{background: 'linear-gradient(90deg,#4872db 0%,#6e8ae2 50%,#4872db 100%)'}}
+ className={
+   `w-full flex justify-between items-center text-white px-5 py-2 shadow font-semibold uppercase tracking-wide
+    ${openPanel[Panel.CARDS] ? 'rounded-t-xl' : 'rounded-full'}`   // для Purchases то же, только Panel.PURCHASES
+ }                >
+                    <span>Карточки товаров</span>
+                    <span className="text-lg font-bold">{openPanel[Panel.CARDS] ? '−' : '+'}</span>
+                </button>
+
+                {/* ---------- Содержимое плашки «Карточки» ---------- */}
+                {openPanel[Panel.CARDS] && (
+                    <div className="bg-white border border-t-0 border-indigo-200 rounded-b-lg p-4">
+                        {/* сетка 2-колоночная */}
+                        <div className="grid gap-3 sm:grid-cols-[1fr_40px_1fr_40px]">
+                            {cardRows.map(row => (
+                                <label
+                                    key={row.status}
+                                    className="flex items-center gap-2 cursor-pointer select-none"
+                                >
+                                    {/* Пилюля со статусом */}
+                                    <div
+                                        className={`flex-1 rounded-full px-4 py-2 border
+                    text-xs sm:text-sm transition
+                    ${statusFilters[row.status]
+                                            ? 'bg-[#4872db] text-white border-transparent'
+                                            : 'bg-indigo-50 text-slate-900 border-indigo-200'}`}
+                                    >
+                                        <span>{row.label}</span>
+                                        <span className="float-right font-semibold">{row.value}</span>
+                                    </div>
+
+                                    {/* Видимый чекбокс-квадрат */}
+                                    <input
+                                        type="checkbox"
+                                        className="h-5 w-5 shrink-0 accent-[#4FD8C3] rounded-sm"
+                                        checked={statusFilters[row.status]}
+                                        onChange={() => toggleStatusFilter(row.status)}
+                                    />
+                                </label>
+                            ))}
+                        </div>
+
+
+                        <hr className="my-3"/>
+                        <div className="flex justify-between font-semibold text-base">
+                            <span>Всего карточек</span>
+                            <span>{totalCount}</span>
+                        </div>
+                    </div>
+                )}
+
+            </div>
+
+            {/* ------------------------- Плашка «Выкуп товаров» ------------------------ */}
+            <div className="mb-4">
+
+                {/* ── HEADER «Выкуп товаров» ── */}
+                <button
+                    onClick={() => togglePanel(Panel.PURCHASES)}
+                    style={{background: 'linear-gradient(90deg,#4872db 0%,#6e8ae2 50%,#4872db 100%)'}}
+                    className={
+                        `w-full flex justify-between items-center text-white px-5 py-2 shadow font-semibold uppercase tracking-wide
+    ${openPanel[Panel.PURCHASES] ? 'rounded-t-xl' : 'rounded-full'}`   // для Purchases то же, только Panel.PURCHASES
+                    }
+                >
+                    <span>Выкуп товаров</span>
+                    <span className="text-lg font-bold">{openPanel[Panel.PURCHASES] ? '−' : '+'}</span>
+                </button>
+
+                {openPanel[Panel.PURCHASES] && (
+ <div className="bg-white border border-t-0 border-indigo-200 rounded-b-xl p-4 -mt-px">
+                        <div className="flex justify-between">
+                            <span>Баланс раздач</span>
+                            <span className="font-semibold">{user?.free_balance}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Доступно в каталоге</span>
+                            <span className="font-semibold">{paidPlan}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Не оплачено раздач</span>
+                            <span className="font-semibold">{unpaidPlan}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold text-base pt-1 border-t">
+                            <span>Общий план раздач</span>
+                            <span>{totalPlan}</span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Поиск / фильтры */}
@@ -280,32 +402,32 @@ function MyProductsPage() {
                     </svg>
                 </div>
 
-                <div className="mb-4">
-                    <select
-                        value={filter}
-                        onChange={e =>
-                            setFilter(
-                                e.target.value as
-                                    | 'все'
-                                    | 'активные'
-                                    | 'созданные'
-                                    | 'ожидают редактирования'
-                                    | 'отклоненные'
-                                    | 'архивированные'
-                                    | 'не оплаченные'
-                            )
-                        }
-                        className="w-full border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
-                    >
-                        <option value="все">Все статусы</option>
-                        <option value="активные">Активные</option>
-                        <option value="созданные">Созданные</option>
-                        <option value="ожидают редактирования">Ожидают редактирования</option>
-                        <option value="отклоненные">Отклонённые</option>
-                        <option value="архивированные">Архивированные</option>
-                        <option value="не оплаченные">Не оплаченные</option>
-                    </select>
-                </div>
+                {/*<div className="mb-4">*/}
+                {/*    <select*/}
+                {/*        value={filter}*/}
+                {/*        onChange={e =>*/}
+                {/*            setFilter(*/}
+                {/*                e.target.value as*/}
+                {/*                    | 'все'*/}
+                {/*                    | 'активные'*/}
+                {/*                    | 'созданные'*/}
+                {/*                    | 'ожидают редактирования'*/}
+                {/*                    | 'отклоненные'*/}
+                {/*                    | 'архивированные'*/}
+                {/*                    | 'не оплаченные'*/}
+                {/*            )*/}
+                {/*        }*/}
+                {/*        className="w-full border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"*/}
+                {/*    >*/}
+                {/*        <option value="все">Все статусы</option>*/}
+                {/*        <option value="активные">Активные</option>*/}
+                {/*        <option value="созданные">Созданные</option>*/}
+                {/*        <option value="ожидают редактирования">Ожидают редактирования</option>*/}
+                {/*        <option value="отклоненные">Отклонённые</option>*/}
+                {/*        <option value="архивированные">Архивированные</option>*/}
+                {/*        <option value="не оплаченные">Не оплаченные</option>*/}
+                {/*    </select>*/}
+                {/*</div>*/}
             </div>
             {/* Состояния загрузки / ошибок */}
             {!loading && (error || filteredProducts.length === 0) && (

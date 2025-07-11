@@ -48,7 +48,7 @@ export interface UserWithBalance {
   is_banned: boolean
   is_seller: boolean
   created_at: string  // ISO-строка
-  updated_at: string  // ISO-строка
+  updated_at: string  // ISO-строкаf
 
   // Новые поля
   total_plan: number        // общий план (ACTIVE + NOT_PAID)

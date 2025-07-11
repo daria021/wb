@@ -71,6 +71,14 @@ function SellerReportsPage() {
         : OrderStatus.CASHBACK_NOT_PAID;
     const [activeTab, setActiveTab] = useState<OrderStatus>(initialTab);
 
+    const STATUS_RU: Record<OrderStatus, string> = {
+        [OrderStatus.CASHBACK_NOT_PAID]: 'Кешбэк не выплачен',
+        [OrderStatus.CASHBACK_PAID]: 'Кешбэк выплачен',
+        [OrderStatus.CANCELLED]: 'Отменён',
+        [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
+    };
+
+
     const fetchReports = async () => {
         if (!sellerId) return;
         try {
@@ -173,14 +181,14 @@ function SellerReportsPage() {
                                 <p className="text-sm text-gray-600">
                                     Покупатель: {order.user.nickname || "Не указан"}
                                 </p>
-                                <p className="text-sm text-gray-600">Статус: {order.status}</p>
+                                <p className="text-sm text-gray-600">Статус: {STATUS_RU[order.status] ?? order.status}</p>
                                 {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation(); // предотвращает переход по клику на карточку
                                             handleCashbackPaid(order.id);
                                         }}
-                                        className="mt-2 w-full py-2 rounded bg-green-500 text-white font-semibold text-base hover:opacity-90 transition"
+                                        className="mt-2 w-full py-2 rounded bg-brand text-white font-semibold text-base hover:opacity-90 transition"
                                     >
                                         Отметить как выплаченный
                                     </button>

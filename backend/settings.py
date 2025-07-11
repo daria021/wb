@@ -44,6 +44,8 @@ class BotTokenSettings(BaseSettings):
     username: str
     app_short_name: str
     channel_id: int
+    paid_topic_id: int
+    free_topic_id: int
 
 
 class BotSettings(BaseSettings):
