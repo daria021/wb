@@ -52,9 +52,9 @@ async def get_by_article(article: str) -> Product:
 
 @router.get("/seller")
 async def get_by_seller(
-    me: UserWithBalanceDTO = Depends(get_me_cached),
-    product_service=Depends(get_product_service),
-) -> dict:   # todo: убью
+        me: UserWithBalanceDTO = Depends(get_me_cached),
+        product_service=Depends(get_product_service),
+) -> dict:  # todo: убью
     """
     Ответ содержит:
       - free_balance: сколько ещё свободно
@@ -71,6 +71,7 @@ async def get_by_seller(
         "total_plan": me.total_plan,
         "products": prods,
     }
+
 
 @router.get("/{product_id}")
 async def get_product(
@@ -108,6 +109,7 @@ async def create_product(
         image: Optional[UploadFile] = File(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
+    logger.info(f"Create product: {name}")
     seller_id = get_user_id_from_request(request)
     image_path = None
 

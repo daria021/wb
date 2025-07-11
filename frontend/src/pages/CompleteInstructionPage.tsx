@@ -31,7 +31,7 @@ function InstructionsPage() {
           <>
             <h2 className="text-2xl font-bold mb-6 text-center">Инструкция выкупа для покупателя</h2>
             <p className="text-base mb-8 text-left">
-              ВБ КЕШБЭК — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
+              Premium Cash Back — это бот с пошаговой инструкцией для раздачи товаров за отзыв.&nbsp;
               <br/>
               <a
                 href="https://storage.googleapis.com/images_avocado/VideoCashback/1%20Getting%20to%20know%20the%20app.MP4"

@@ -100,9 +100,11 @@ class NotificationService(NotificationServiceInterface):
 
         photo_path = self.upload_service.get_file_path(product.image_path)
         input_file = FSInputFile(photo_path)
+        thread_id = settings.bot.free_topic_id if product.price == 0 else settings.bot.paid_topic_id
 
         await self.bot.send_photo(
             chat_id=settings.bot.channel_id,
+            message_thread_id=thread_id,
             photo=input_file,
             caption=caption,
             parse_mode="HTML",

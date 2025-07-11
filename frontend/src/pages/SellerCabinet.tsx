@@ -1,8 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {getProductsBySellerId} from "../services/api";
+// import {ProductStatus} from "../enums";
+import {getOrderBySellerId, getProductsBySellerId} from "../services/api";
 import {useUser} from "../contexts/user";
-import {ProductStatus} from "../enums";
+import {OrderStatus, ProductStatus} from '../enums';
 
 
 interface ModeratorReview {
@@ -24,6 +25,7 @@ interface Product {
     status: ProductStatus;
     moderator_reviews?: ModeratorReview[];
     remaining_products: number;
+    general_repurchases: number;
     created_at: string;
     updated_at: string;
 }
@@ -31,28 +33,81 @@ interface Product {
 function SellerCabinet() {
     const navigate = useNavigate();
 
-    const handleMyProductsClick = () => navigate('/my-products');
-    const [products, setProducts] = useState<{ status: ProductStatus; remaining_products: number }[]>([]);
+    const handleMyProductsClick = () => {
+        // сохраняем текущее время (ISO-строка) перед переходом
+        localStorage.setItem(LAST_VIEWED_PRODUCTS_KEY, new Date().toISOString());
+        navigate('/my-products');
+    };
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     const {user, loading: userLoading, refresh} = useUser();
     const location = useLocation();
 
+    const [unpaidCount, setUnpaidCount] = useState(0); // отчёты с невыплаченным кешбэком
+    const [flaggedCount, setFlaggedCount] = useState(0); // карточки, требующие внимания
+    const [autoPayCount,   setAutoPayCount]   = useState(0); // можно оплатить
+
+    const LAST_VIEWED_PRODUCTS_KEY = 'seller_last_products_view';
+
+    useEffect(() => {
+        if (!loading && !userLoading && user) {
+            // 1) заведём локальную копию баланса
+            let balance = user.free_balance;
+
+            // 2) отбираем товары, которые можно оплатить
+            const toAutoPay = products.filter(
+                p =>
+                    p.status === ProductStatus.NOT_PAID &&
+                    balance >= p.general_repurchases
+            );
+            setAutoPayCount(toAutoPay.length);
+
+        }
+    }, [user?.free_balance, products]);
+
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            await refresh(); // обновляем free_balance, unpaid_plan и т.д.
-            const response = await getProductsBySellerId();
-            setProducts(response.data.products);
+            await refresh();
+            const prodRes = await getProductsBySellerId();
+            const ordersRes = user ? await getOrderBySellerId(user.id) : {data: []};
+
+            const prods = prodRes.data.products as Product[];
+            setProducts(prods);
+
+            /* ---------- МОДЕРИРОВАННЫЕ ТОВАРЫ ---------- */
+            const lastSeenStr = localStorage.getItem(LAST_VIEWED_PRODUCTS_KEY);
+            const lastSeen = lastSeenStr ? new Date(lastSeenStr) : null;
+
+            const flagged = prods.filter(p =>
+                    //! Если нет отметки lastSeen — все изменения считаются «новыми»
+                    (!lastSeen || new Date(p.updated_at) > lastSeen)
+                //! new Date(p.created_at) < new Date(p.updated_at)
+            ).length;
+
+            setFlaggedCount(flagged);
+
+
+            setFlaggedCount(flagged);
+
+            /* ---------- НЕВЫПЛАЧЕННЫЙ КЕШБЭК ---------- */
+            const unpaid = ordersRes.data.filter(
+                (o: any) => o.status === OrderStatus.CASHBACK_NOT_PAID
+            ).length;
+            setUnpaidCount(unpaid);
+
             setError('');
         } catch (e) {
-            console.error('Ошибка при загрузке данных кабинета:', e);
+            console.error('Ошибка при загрузке кабинета:', e);
             setError('Не удалось загрузить данные');
         } finally {
             setLoading(false);
         }
-    }, [refresh]);
+    }, [refresh, user]);
+
 
     // 2) при монтировании и при каждом заходе на /seller-cabinet
     useEffect(() => {
@@ -163,16 +218,22 @@ function SellerCabinet() {
 
                 <div
                     onClick={handleMyProductsClick}
-                    className="bg-white border border-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer"
+                    className="bg-white border border-darkGray rounded-md p-4 mb-4 mt-4 cursor-pointer relative overflow-visible"
                 >
+                    {(flaggedCount > 0 || autoPayCount > 0) && (
+                        <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-red-600 rounded-full"/>
+                    )}
                     <p className="text-md font-semibold mb-1">Мои товары</p>
                     <p className="text-sm text-gray-500">Товары по раздачам</p>
                 </div>
 
                 <div
                     onClick={handleReportsClick}
-                    className="bg-white border border-darkGray rounded-md p-4 mb-4 cursor-pointer"
+                    className="bg-white border border-darkGray rounded-md p-4 mb-4 cursor-pointer relative overflow-visible"
                 >
+                    {unpaidCount > 0 && (
+                        <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-red-600 rounded-full"/>
+                    )}
                     <p className="text-md font-semibold mb-1">Отчеты по выкупам</p>
                     <p className="text-sm text-gray-500">
                         Просмотр отчетов по покупкам ваших товаров
