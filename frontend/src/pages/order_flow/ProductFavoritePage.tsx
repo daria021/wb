@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
-import {on} from "@telegram-apps/sdk";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 
@@ -53,6 +52,7 @@ function ProductFavoritePage() {
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
+    const handleHomeClick = () => navigate('/');
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -123,33 +123,33 @@ function ProductFavoritePage() {
             )}
 
             <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
-                 <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное</h1>
                 <p className="mb-2">• Добавьте товар в избранное</p>
                 <p className="mb-2">• Добавьте бренд в избранное</p>
             </div>
 
-        <div className="flex flex-col items-start mb-4 space-y-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={productFavorited}
-              onChange={e => setProductFavorited(e.target.checked)}
-              className="mr-2"
-            />
-            Добавил товар в избранное
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={brandFavorited}
-              onChange={e => setBrandFavorited(e.target.checked)}
-              className="mr-2"
-            />
-            Добавил бренд в избранное
-          </label>
-        </div>
+            <div className="flex flex-col items-start mb-4 space-y-4">
+                <label className="flex items-center">
+                    <input
+                        type="checkbox"
+                        checked={productFavorited}
+                        onChange={e => setProductFavorited(e.target.checked)}
+                        className="mr-2"
+                    />
+                    Добавил товар в избранное
+                </label>
+                <label className="flex items-center">
+                    <input
+                        type="checkbox"
+                        checked={brandFavorited}
+                        onChange={e => setBrandFavorited(e.target.checked)}
+                        className="mr-2"
+                    />
+                    Добавил бренд в избранное
+                </label>
+            </div>
 
             <button
                 onClick={handleContinue}
@@ -183,12 +183,12 @@ function ProductFavoritePage() {
             </div>
 
             <div className="bg-white rounded-lg shadow mb-4">
-                <p className="text-base font-medium mb-2">Добавление товара и бренда в избранное на вб.<br />
-Отметка галочек.<br />
-Скрин не нужен.
-</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
+                <p className="text-base font-medium mb-2">Добавление товара и бренда в избранное на вб.<br/>
+                    Отметка галочек.<br/>
+                    Скрин не нужен.
+                </p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
                         src="https://storage.googleapis.com/images_avocado/VideoCashback/7%20Buyer%20Step%203%20Adding%20a%20product%20and%20brand%20to%20your%20favorites%20on%20the%20WB%20website%20Checking%20the%20boxes%20You%20do%20not%20need%20a%20screenshot.%20Proceed%20to%20Step%204.MP4"
                         controls
@@ -201,7 +201,7 @@ function ProductFavoritePage() {
                 <button
                     onClick={() => setShowReport(prev => !prev)}
 
-                className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -311,12 +311,19 @@ function ProductFavoritePage() {
                     onClick={handleChannelClick}
                     className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
+                </button>
+
+                <button
+                    onClick={handleHomeClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
                 </button>
             </div>
 
-            </div>
+        </div>
     );
 }
 

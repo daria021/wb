@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {getBlackListUser, getOrderById, getOrderReport, getProductById, updateOrder} from '../../services/api';
-import {on} from "@telegram-apps/sdk";
-import {AxiosResponse} from "axios";
+import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import GetUploadLink from "../../components/GetUploadLink";
 
 
@@ -64,6 +62,7 @@ function PaymentDetailsPage() {
     const [error, setError] = useState('');
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
+    const handleHomeClick = () => navigate('/');
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -82,15 +81,15 @@ function PaymentDetailsPage() {
         agreed;
 
 
-useEffect(() => {
-  if (!orderId) return;
-  Promise.all([
-    getOrderById(orderId).then(res => setOrder(res.data)),
-    getOrderReport(orderId).then(res => setReportData(res.data))
-  ])
-  .catch(err => setError('Не удалось загрузить данные'))
-  .finally(() => setLoading(false));
-}, [orderId]);
+    useEffect(() => {
+        if (!orderId) return;
+        Promise.all([
+            getOrderById(orderId).then(res => setOrder(res.data)),
+            getOrderReport(orderId).then(res => setReportData(res.data))
+        ])
+            .catch(err => setError('Не удалось загрузить данные'))
+            .finally(() => setLoading(false));
+    }, [orderId]);
 
 
     const handleContinueClick = async () => {
@@ -135,7 +134,7 @@ useEffect(() => {
             )}
 
             <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
-<p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
                 <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Реквизиты для перевода кешбэка</h1>
 
@@ -250,12 +249,12 @@ useEffect(() => {
             </button>
 
             <div className="bg-white rounded-lg shadow p-4 mt-4">
-                <p className="text-base font-medium mb-2">Заполняем реквизиты.<br />
-Если вдруг указали не те реквизиты.<br />
-Как связаться с тех поддержкой.
-</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
+                <p className="text-base font-medium mb-2">Заполняем реквизиты.<br/>
+                    Если вдруг указали не те реквизиты.<br/>
+                    Как связаться с тех поддержкой.
+                </p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
                         src="https://storage.googleapis.com/images_avocado/VideoCashback/8%20Buyer%20Step%204%20Fill%20in%20the%20details%20If%20you%20have%20entered%20the%20wrong%20details%2C%20how%20to%20contact%20technical%20support%20Step%205.MP4"
                         controls
@@ -267,7 +266,7 @@ useEffect(() => {
             <div className="flex flex-col gap-3 mt-4">
                 <button
                     onClick={() => setShowReport(prev => !prev)}
-                className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
                     {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
                 </button>
@@ -400,17 +399,25 @@ useEffect(() => {
                     Нужна помощь с выполнением шага
                 </button>
 
-                 <button
+                <button
                     onClick={handleChannelClick}
                     className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                 >
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6" />
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
+                </button>
+
+                <button
+                    onClick={handleHomeClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
                 </button>
             </div>
 
 
         </div>
-)}
+    )
+}
 
 export default PaymentDetailsPage;

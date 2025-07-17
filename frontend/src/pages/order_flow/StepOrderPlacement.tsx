@@ -43,6 +43,7 @@ function StepOrderPlacement() {
     const orderImgPath = '/images/order.jpg';
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
+    const handleHomeClick = () => navigate('/');
 
 
     const openModal = (src: string) => {
@@ -353,23 +354,31 @@ function StepOrderPlacement() {
                             ) :
                             <p className="text-sm text-gray-500">Отчет пока пуст.</p>
                         }
-                        <button
-                            onClick={handleSupportClick}
-                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
-                        >
-                            Нужна помощь с выполнением шага
-                        </button>
-                        <button
-                            onClick={handleChannelClick}
-                            className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
-                        >
-                            <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                            <span>Подписаться на канал</span>
-                        </button>
 
                     </div>
-                )}
 
+
+                )}
+                <button
+                    onClick={handleSupportClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    Нужна помощь с выполнением шага
+                </button>
+                <button
+                    onClick={handleChannelClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
+                    <span>Подписаться на канал</span>
+                </button>
+
+                <button
+                    onClick={handleHomeClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
+                </button>
             </div>
             {modalContent && (
                 <>
@@ -379,7 +388,7 @@ function StepOrderPlacement() {
                         onClick={closeModal}
                     />
 
-                {/* Centered modal */}
+                    {/* Centered modal */}
                     <div
                         className="fixed inset-0 flex items-center justify-center z-50"
                         onClick={closeModal}
