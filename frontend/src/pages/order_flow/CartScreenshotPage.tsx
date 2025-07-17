@@ -29,6 +29,7 @@ function CartScreenshotPage() {
     const {user, loading: userLoading} = useUser();
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
+    const handleHomeClick = () => navigate('/');
 
 
     useEffect(() => {
@@ -225,6 +226,13 @@ function CartScreenshotPage() {
                     justify-center gap-2">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
+                </button>
+
+                <button
+                    onClick={handleHomeClick}
+                          className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
                 </button>
 
             </div>

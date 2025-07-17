@@ -60,7 +60,7 @@ function ProductFindPage() {
     const [flashInvalid, setFlashInvalid] = useState(false);
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
-
+    const handleHomeClick = () => navigate('/');
 
 
     useEffect(() => {
@@ -96,7 +96,6 @@ function ProductFindPage() {
             setFlashInvalid(true);
         }
     };
-
 
 
     const canContinue = articleStatus === 'Артикул правильный';
@@ -141,7 +140,7 @@ function ProductFindPage() {
                 </div>
             )}
             <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4">
-                 <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
+                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
                 <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите наш товар</h2>
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
@@ -202,10 +201,10 @@ function ProductFindPage() {
                 Продолжить
             </button>
             <button
-                    onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
+                onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
                 className="w-full flex-1 bg-white text-gray-700 mb-4 py-2 rounded-lg border border-brand text-center"
-                >
-                    Проверить продавца
+            >
+                Проверить продавца
             </button>
 
 
@@ -230,12 +229,12 @@ function ProductFindPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Пояснение условий.<br />
-Переход на вб, поиск товара, использование фильтра поиска, где находится артикул.<br />
-Переход в бота.<br />
-Проверка артикула (артикул верный).</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
+                <p className="text-base font-medium mb-2">Пояснение условий.<br/>
+                    Переход на вб, поиск товара, использование фильтра поиска, где находится артикул.<br/>
+                    Переход в бота.<br/>
+                    Проверка артикула (артикул верный).</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
                         src="https://storage.googleapis.com/images_avocado/VideoCashback/5%20Buyer%20Step%202%20Explanation%20of%20the%20conditions%20Go%20to%20the%20WB%2C%20search%20for%20a%20product%2C%20use%20the%20search%20filter%2C%20where%20the%20article%20number%20is%20located%20Go%20to%20the%20bot%20Check%20the%20article%20number%20(the%20article%20number%20is%20correct).MP4"
                         controls
@@ -245,10 +244,10 @@ function ProductFindPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Если артикул не верный.<br />
-Пояснение про ситуацию, когда товара нет в наличии на ВБ и про лимит на выкуп.</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
+                <p className="text-base font-medium mb-2">Если артикул не верный.<br/>
+                    Пояснение про ситуацию, когда товара нет в наличии на ВБ и про лимит на выкуп.</p>
+                <div className="bg-black" style={{aspectRatio: '16/9'}}>
+                    <video
                         title="Инструкция"
                         src="https://storage.googleapis.com/images_avocado/VideoCashback/6%20Buyer%20Step%202%20If%20the%20SKU%20is%20incorrect%20Explanation%20about%20the%20situation%20when%20the%20product%20is%20not%20available%20on%20the%20WB%20and%20the%20redemption%20limit%20Step%203.MP4"
                         controls
@@ -349,6 +348,13 @@ function ProductFindPage() {
                          ">
                     <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
                     <span>Подписаться на канал</span>
+                </button>
+
+                <button
+                    onClick={handleHomeClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
                 </button>
 
             </div>

@@ -62,6 +62,7 @@ function StepReviewReportPage() {
     const [file1, setFile1] = useState<File | null>(null);
     const [preview1, setPreview1] = useState<string | null>(null);
     const receiptVideoPath = '/images/electronic_receipt.mp4';
+    const handleHomeClick = () => navigate('/');
 
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
@@ -630,6 +631,13 @@ function StepReviewReportPage() {
                     Подписаться на канал
                 </button>
 
+                <button
+                    onClick={handleHomeClick}
+                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                >
+                    На главную
+                </button>
+
 
             </div>
 
@@ -650,8 +658,6 @@ function StepReviewReportPage() {
             {/*        )}*/}
             {/*    </Modal>*/}
             {/*)}*/}
-
-            {/* …весь остальной JSX страницы… */}
 
             {modalContent && (
                 <>
