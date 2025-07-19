@@ -11,6 +11,7 @@ interface Product {
     name: string;
     description?: string;
     price: number;
+    wb_price: number;
     article: string;
     category: string;
     seller_id: string;
@@ -55,6 +56,7 @@ function CatalogPage() {
     const location = useLocation();
     const isOnCatalog = location.pathname === ('/catalog');
     const searchRef = useRef<HTMLInputElement>(null);
+    const [filterCashback, setFilterCashback] = useState<number | ''>('');
 
     const handleOpenSellerProducts = (sellerId: string) => {
         navigate(`/catalog?seller=${sellerId}`, {state: {fromProductDetail: true}});
@@ -65,7 +67,9 @@ function CatalogPage() {
         searchQuery.trim() !== '' ||
         filterPrice !== '' ||
         filterCategory !== '' ||
-        filterSeller !== '';
+        filterSeller !== '' ||
+        filterCashback !== '';
+
 
     useEffect(() => {
         const sellerParam = searchParams.get('seller');
@@ -144,9 +148,14 @@ function CatalogPage() {
 
 
     const filtered = products
-        .filter(p => (filterPrice === '' || p.price <= filterPrice))
-        .filter(p => (filterCategory === '' || p.category === filterCategory))
-        .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
+  .filter(p => (filterPrice === '' || p.price <= filterPrice))
+  .filter(p =>
+    filterCashback === '' ||
+    (p.wb_price - p.price) <= filterCashback
+  )
+  .filter(p => (filterCategory === '' || p.category === filterCategory))
+  .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
+
 
     const categories = Array.from(new Set(products.map(p => p.category)));
 
@@ -230,12 +239,27 @@ function CatalogPage() {
             {showFilters && (
                 <div className="bg-white rounded-lg shadow p-4 mb-2 space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Максимальная цена</label>
+                        <label className="block text-sm font-medium mb-1">Цена до</label>
                         <input
                             type="number"
                             min={0}
                             value={filterPrice}
                             onChange={e => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                            className="w-full border border-darkGray rounded p-2 focus:outline-none focus:ring"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Кешбэк до</label>
+                        <input
+                            type="number"
+                            min={0}
+                            value={filterCashback}
+                            onChange={e =>
+                                setFilterCashback(
+                                    e.target.value === '' ? '' : Number(e.target.value)
+                                )
+                            }
                             className="w-full border border-darkGray rounded p-2 focus:outline-none focus:ring"
                         />
                     </div>

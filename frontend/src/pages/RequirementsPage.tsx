@@ -1,203 +1,248 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-
-type ModalContent = { src: string; isVideo: boolean };
-
-function RequirementsPage() {
+/**
+ * «Требования к отчёту» – копия текста со скринов без добавлений.
+ * 👉 Поп‑апы теперь открываются прямо из заголовков (синие ссылки на примеры).
+ */
+export default function RequirementsPage() {
     const navigate = useNavigate();
 
+    /* Путь к примерам */
+    const EXAMPLES = {
+        ORDER: '/images/examples/order_confirmation.jpg',
+        DELIVERY: '/images/examples/order_received.jpg',
+        BARCODE: '/images/examples/barcode_cut.jpg',
+        REVIEW: '/images/examples/review_posted.jpg',
+        RECEIPT: '/images/examples/receipt_example.mp4',
+    } as const;
 
-    // Пути к картинкам в public
-    const orderImgPath = '/images/order.jpg';
-    const receivingImgPath = '/images/receiving.jpg';
-    const feedbackImgPath = '/images/feedback.jpg';
-    const barcodeImgPath = '/images/barcode.jpg';
-    const receiptVideoPath = '/images/electronic_receipt.mp4';
+    /* Модалка */
+    type Modal = { src: string; isVideo: boolean } | null;
+    const [modal, setModal] = useState<Modal>(null);
+    const open = (src: string) => setModal({src, isVideo: src.endsWith('.mp4')});
+    const close = () => setModal(null);
 
-    // единственное состояние для модалки
-    const [modalContent, setModalContent] = useState<ModalContent | null>(null);
-
-    const openModal = (src: string) => {
-        setModalContent({src, isVideo: src.endsWith('.mp4')});
-    };
-    const closeModal = () => setModalContent(null);
-
-    const handleHomeClick = () => navigate('/');
-
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate('/about', { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
-
-    const handleSupportClick = () => {
-        if (window.Telegram?.WebApp?.close) {
-            window.Telegram.WebApp.close();
-        }
-        window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
-    };
-
+    /* Навигация */
+    const goHome = () => navigate('/');
+    const goInstruction = () => navigate('/instruction', {state: {backRoute: '/requirements'}});
+    const goAbout = () => navigate('/about');
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-            <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
-                <div className="space-y-8">
-                    <div className="mb-4">
-                        <h2 className="text-2xl font-bold mb-4 text-left">Требования к отчету</h2>
-                        <p className="text-base font-semibold text-left">
-                            Не закрашивайте и не обрезайте скрины — они должны быть без повреждений.<br/>
-                            За нарушение требований кешбэк не будет выплачиваться.
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 font-body">
+            <div
+                className="w-full max-w-screen-lg bg-white border border-brand rounded-xl shadow-lg p-6 sm:p-8 space-y-6">
+                {/* Заголовок */}
+                <h1 className="text-2xl sm:text-3xl font-semibold flex items-center gap-2">
+                    <span>✅ Требования к отчёту для получения кешбэка</span>
+                </h1>
+
+                {/* Важно */}
+                <section className="space-y-1">
+                    <p className="font-medium flex items-center gap-2">
+                        <strong>⚠️ Важно:</strong>
+                    </p>
+                    <p>Скриншоты должны быть чёткими, без обрезок и закрашенных участков.</p>
+                    <p>Все фото/скрины должны быть оригинальными — не скачанными, не смонтированными.</p>
+                    <p>Невыполнение одного из пунктов может привести к <strong>отказу в выплате кешбэка.</strong></p>
+                </section>
+
+                <hr className="border-darkGray"/>
+
+                {/* Требования */}
+                <ol className="space-y-8 list-decimal list-inside text-gray-800">
+                    {/* 1 */}
+                    <li className="space-y-2">
+                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+                            {/* Основной текст */}
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.ORDER)}>
+                📦 Скриншот подтверждения заказа
+              </span>
+                            {/* Ссылка‑пример */}
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.ORDER)}>
+              </span>
                         </p>
-                    </div>
 
-                    <hr className="border-darkGray"/>
+                        <strong>Что должно быть видно:</strong>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Название и цена товара</li>
+                            <li>Адрес ПВЗ (пункта выдачи заказов)</li>
+                        </ul>
+                        <p className="flex items-start gap-1">
+              <span>
+                📍 Где взять: раздел <strong>"Доставки"</strong> в личном кабинете WB
+              </span>
+                        </p>
+                    </li>
 
-                    <ol className="list-decimal list-inside space-y-6 text-gray-800">
-                        <li className="px-4">
-                            <p className="font-semibold mb-1 text-lg">Заказ оформлен</p>
-                            <p className="mt-1">
-                                На скрине должна быть указана цена покупки и адрес ПВЗ.{' '}
-                                <div
-                                    onClick={() => openModal(orderImgPath)}
-                                    className="underline text-blue-600 cursor-pointer"
-                                >
-                                    Пример скрина заказа
-                                </div>
-                            </p>
-                        </li>
-                        <li className="px-4">
-                            <p className="font-semibold mb-1 text-lg">Товар получен</p>
-                            <p className="mt-1">
-                                На скрине должен быть указан статус "Доставлено" и дата получения.{' '}
-                                <div
-                                    onClick={() => openModal(receivingImgPath)}
-                                    className="underline text-blue-600 cursor-pointer"
-                                >
-                                    Пример скрина получения товара
-                                </div>
-                            </p>
-                        </li>
-                        <li className="px-4">
-                            <p className="font-semibold mb-1 text-lg">Отзыв оставлен</p>
-                            <p className="mt-1">
-                                На скрине должен быть опубликованный отзыв из вашего личного кабинета.{' '}
-                                <div
-                                    onClick={() => openModal(feedbackImgPath)}
-                                    className="underline text-blue-600 cursor-pointer"
-                                >
-                                    Пример отзыва
-                                </div>
-                            </p>
-                        </li>
-                        <li className="px-4">
-                            <p className="font-semibold mb-1 text-lg">Разрезанный штрихкод</p>
-                            <p className="mt-1">
-                                Разрежьте штрихкод на мелкие кусочки и сделайте фото на фоне товара.{' '}
-                                <div
-                                    onClick={() => openModal(barcodeImgPath)}
-                                    className="underline text-blue-600 cursor-pointer"
-                                >
-                                    Пример разрезанного штрихкода
-                                </div>
-                            </p>
-                        </li>
-                        <li className="px-4">
-                            <p className="font-semibold mb-1 text-lg">Электронный чек</p>
-                            <p className="mt-1">
-                                Для того чтобы получить Электронный чек перейдите в Профиль &rarr;
-                                Финансы &rarr; вкладка "Эл. чеки" &rarr; Найдите ваш чек, откройте его &rarr;
-                                Скопируйте номер чека и сделайте скриншот.{' '}
-                                <div>
-                                    {/* Кнопка для открытия модального окна */}
-                                    <div
-                                        onClick={() => openModal(receiptVideoPath)}
-                                        className="underline text-blue-600 cursor-pointer"
-                                    >
-                                        Пример получения электронного чека
-                                    </div>
-                                </div>
-                            </p>
-                        </li>
-                    </ol>
+                    {/* 2 */}
+                    <li className="space-y-2">
+                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+              <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.DELIVERY)}>
+                📬 Скриншот получения товара
+              </span>
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.DELIVERY)}>
 
-                    <hr className="border-darkGray"/>
 
-                    <div className="flex flex-col gap-2">
-                        <button
-                            onClick={() => navigate('/about')}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                        >
-                            О сервисе
-                        </button>
-                        <button
-                            onClick={() => navigate('/instruction')}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                        >
-                            Инструкция
-                        </button>
-                        <button
-                            onClick={handleSupportClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                        >
-                            Нужна помощь
-                        </button>
-                        <button
-                            onClick={handleHomeClick}
-                            className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                        >
-                            На главную
-                        </button>
-                    </div>
+              </span>
+                        </p>
+
+                        <strong>Что обязательно:</strong>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Цена товара</li>
+                            <li>Статус: <strong>"Доставлено"</strong></li>
+                            <li>Дата получения</li>
+                        </ul>
+                        <p className="flex items-start gap-1">
+              <span>
+                📍 Где взять: раздел <strong>"Покупки"</strong> в личном кабинете WB
+              </span>
+                        </p>
+                    </li>
+
+                    {/* 3 */}
+                    <li className="space-y-2">
+                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+              <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.BARCODE)}>
+                ✂️ Фото разрезанного штрихкода
+              </span>
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.BARCODE)}>
+              </span>
+                        </p>
+
+                        <strong>Что сделать:</strong>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Разрежьте штрихкод на несколько частей</li>
+                            <li>Положите его рядом с самим товаром (без упаковки)</li>
+                            <li>Сделайте общее фото</li>
+                        </ul>
+                        <p className="flex items-start gap-1">
+                            <span>📍 Фото должно быть живым, без обработки</span>
+                        </p>
+                    </li>
+
+                    {/* 4 */}
+                    <li className="space-y-2">
+                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+              <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.REVIEW)}>
+                ⭐ Скриншот опубликованного отзыва
+              </span>
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.REVIEW)}>
+              </span>
+                        </p>
+
+                        <strong>Требования:</strong>
+                        <p>Отзыв уже должен быть размещён на WB</p>
+
+                        <p>Должно быть видно:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Фото товара без упаковки</li>
+                            <li>Текст отзыва от 2–3 предложений</li>
+                            <li>Оценка (5 звёзд)</li>
+                            <li>Видео, если прикладывали</li>
+                        </ul>
+
+                        <p className="flex items-start gap-1">
+              <span>
+                📍 Где взять: раздел <strong>"Отзывы и вопросы"</strong> или карточка товара
+              </span>
+                        </p>
+                    </li>
+
+                    {/* 5 */}
+                    <li className="space-y-2">
+                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+              <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.RECEIPT)}>
+                🧾 Электронный чек
+              </span>
+                            <span className="underline text-blue-600 cursor-pointer"
+                                  onClick={() => open(EXAMPLES.RECEIPT)}>
+
+              </span>
+                        </p>
+
+                        <strong>Что нужно:</strong>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Скопировать <strong>номер чека</strong></li>
+                            <li>Сделать <strong>скриншот самого чека</strong></li>
+                        </ul>
+
+                        <p className="font-medium">📍 Где взять:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Войдите в <strong>профиль WB</strong></li>
+                            <li>Раздел <strong>"Финансы"</strong> → вкладка <strong>"Эл. чеки"</strong></li>
+                            <li>Найдите чек по нужному заказу</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <hr className="border-darkGray"/>
+
+                <p className="flex items-start gap-2 text-sm italic">
+                    <span>💬 Все материалы нужно загрузить в отчёт внутри кешбэк-бота в течение дня, когда вы получили товар</span>
+                </p>
+
+                {/* Back to main button */}
+                <div className="flex flex-col gap-2">
+                    <button
+                        onClick={goAbout}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        О сервисе
+                    </button>
+                    <button
+                        onClick={goInstruction}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        Инструкция
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (window.Telegram?.WebApp?.close) window.Telegram.WebApp.close();
+                            window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
+                        }}
+                        className="px-4 py-2 border border-brand text-brand rounded-lg text-sm font-semibold hover:bg-brandlight transition"
+                    >
+                        Нужна помощь
+                    </button>
+                    <button
+                        onClick={goHome}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        На главную
+                    </button>
                 </div>
-
-                {modalContent && (
-                    <>
-                        {/* 1. Overlay */}
-                        <div
-                            className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 ease-out z-40"
-                            onClick={closeModal}
-                        />
-
-                        {/* 2. Окно модалки */}
-                        <div
-                            className="fixed inset-0 flex justify-center items-center z-50"
-                            onClick={closeModal}
-                        >
-                            <div
-                                className="relative bg-white p-4 rounded w-[90vw] h-[90vh]
-                            flex items-center justify-center"
-                                onClick={e => e.stopPropagation()}
-                            >
-                                {/* Кнопка «×» */}
-                                <button
-                                    onClick={closeModal}
-                                    className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900"
-                                >
-                                    &times;
-                                </button>
-
-                                {modalContent.isVideo ? (
-                                    <video
-                                        src={modalContent.src}
-                                        controls
-                                        className="w-[95%] h-[95%] object-contain"
-                                    />
-                                ) : (
-                                    <img
-                                        src={modalContent.src}
-                                        alt="Пример"
-                                        className="w-[95%] h-[95%] object-contain"
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    </>
-                )}
             </div>
+
+            {/* Modal */}
+            {modal && (
+                <>
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 ease-out z-40"
+                        onClick={close}/>
+                    <div className="fixed inset-0 flex justify-center items-center z-50" onClick={close}>
+                        <div
+                            className="relative bg-white p-4 rounded w-[90vw] h-[90vh] flex items-center justify-center"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button onClick={close}
+                                    className="absolute top-2 right-2 bg-white rounded-full p-1 text-2xl text-gray-700 hover:text-gray-900">
+                                &times;
+                            </button>
+                            {modal.isVideo ? (
+                                <video src={modal.src} controls className="w-[95%] h-[95%] object-contain"/>
+                            ) : (
+                                <img src={modal.src} alt="Пример" className="w-[95%] h-[95%] object-contain"/>
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
-
-export default RequirementsPage;

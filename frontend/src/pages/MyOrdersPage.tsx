@@ -2,6 +2,9 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {getUserOrders, updateOrderStatus} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
+import {useDebounce} from '../hooks/useDebounce';
+import {OrderStatus} from "../enums";
+
 
 export const STEP_NAMES: { [key: number]: string } = {
     1: 'Шаг 1: Поиск товара по ключевому слову',
@@ -64,11 +67,39 @@ function MyOrdersPage() {
     const location = useLocation();
     const isOnOrders = location.pathname === ('/user/orders');
     const [showCount, setShowCount] = useState(5);
+    const [filterStatus, setFilterStatus] = useState<string>('');
+    const [statusOptions, setStatusOptions] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearch = useDebounce(searchQuery, 600);
+
+    // вверху файла, рядом с STEP_NAMES
+    const STATUS_LABELS: { [key in OrderStatus]: string } = {
+        [OrderStatus.CASHBACK_PAID]: 'Кешбэк выплачен',
+        [OrderStatus.CASHBACK_NOT_PAID]: 'Кешбэк не выплачен',
+        [OrderStatus.CANCELLED]: 'Отменён',
+        [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
+    };
 
 
-    const filteredOrders = orders.filter(order => order.status !== 'cancelled');
+    useEffect(() => {
+        if (!orders.length) return;
+        setStatusOptions(Array.from(new Set(orders.map(o => o.status))));
+    }, [orders]);
 
-    //Берём один заказ на каждый продукт: с максимальным step, а при равном step — самый свежий
+
+    const filteredOrders = useMemo(() => {
+        return orders.filter(order =>
+            // 1) статус совпадает (или «все»)
+            (filterStatus === '' || order.status === filterStatus)
+            &&
+            // 2) в названии есть поисковая строка
+            order.product.name
+                .toLowerCase()
+                .includes(debouncedSearch.toLowerCase())
+        );
+    }, [orders, filterStatus, debouncedSearch]);
+
+
     const uniqueOrders = useMemo(() => {
         const map = new Map<string, Order>();
         filteredOrders.forEach(order => {
@@ -85,6 +116,7 @@ function MyOrdersPage() {
         return Array.from(map.values());
     }, [filteredOrders]);
 
+
     const displayOrders = useMemo(() => {
         const notPaid = uniqueOrders.filter(o => o.status !== 'payment_confirmed');
         const paid = uniqueOrders.filter(o => o.status === 'payment_confirmed');
@@ -94,14 +126,14 @@ function MyOrdersPage() {
     const stepPriority = [6, 5, 4, 3, 2, 1, 7];
 
     const visibleOrders = useMemo(() => {
-  return displayOrders
-    .sort((a, b) => {
-      const pa = stepPriority.indexOf(a.step);
-      const pb = stepPriority.indexOf(b.step);
-      return pa - pb;
-    })
-    .slice(0, showCount);
-}, [displayOrders, showCount]);
+        return displayOrders
+            .sort((a, b) => {
+                const pa = stepPriority.indexOf(a.step);
+                const pb = stepPriority.indexOf(b.step);
+                return pa - pb;
+            })
+            .slice(0, showCount);
+    }, [displayOrders, showCount]);
 
 
     const handleSupportClick = () => {
@@ -123,6 +155,12 @@ function MyOrdersPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!orders.length) return;
+        setStatusOptions(Array.from(new Set(orders.map(o => o.status))));
+    }, [orders]);
+
 
     useEffect(() => {
         fetchOrders();
@@ -170,7 +208,6 @@ function MyOrdersPage() {
         setShowCount(prev => prev + 5);
     };
 
-
     return (
         <div className="bg-gray-200 bg-fixed min-h-screen pb-6">
             {/* Навигация */}
@@ -196,11 +233,39 @@ function MyOrdersPage() {
             </div>
 
             {/* Заголовок */}
-            <div className="sticky top-0 z-10 mt-2 bg-inherit">
+            <div className="sticky top-0 z-10 mt-2 bg-inherit pb-2">
                 <h2 className="text-2xl font-bold text-center mb-1">Мои покупки</h2>
+                <input
+                    type="text"
+                    placeholder="Поиск по названию товара"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="block mx-auto w-4/5 border border-darkGray rounded-md p-2 px-4 text-sm mb-2"
+                />
+                <select
+                    value={filterStatus}
+                    onChange={e => setFilterStatus(e.target.value)}
+                    className="block mx-auto w-4/5 border border-darkGray rounded-md p-2"
+                >
+                    <option value="">Все статусы</option>
+                    {statusOptions.map(status => (
+                        <option key={status} value={status}>
+                            {STATUS_LABELS[status as OrderStatus]}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="px-4 mt-2">
+
                 <p className="text-sm text-gray-600 text-center">
                     Нажмите на карточку, чтобы открыть инструкцию
                 </p>
+            </div>
+
+            <div className="sticky top-0 z-20 bg-gray-200 mb-4">
+
+
             </div>
 
             {/* Контент */}
@@ -221,77 +286,80 @@ function MyOrdersPage() {
                     <div className="flex flex-col space-y-3">
                         {visibleOrders.map(order => {
                             const linkTo = getOrderStepLink(order);
+                            const isCancelled = order.status === OrderStatus.CANCELLED;
                             const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
-                            return (
-                                <Link to={linkTo} key={order.id} className="block">
+
+                            const card = (
                                     <div
-                                        className="relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition">
+      key={order.id}
+      className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
+    >
+                                    {isCancelled && (
+                                        <div className="absolute top-2 right-2 text-gray-500 text-xs">
+                                            Заказ отменён
+                                        </div>
+                                    )}
+                                    {!isCancelled && order.status !== OrderStatus.PAYMENT_CONFIRMED && (
                                         <button
                                             onClick={e => handleCancelOrder(order.id, e)}
                                             className="absolute top-2 right-2 text-red-500 border border-red-500 text-xs rounded hover:bg-red-50 transition"
                                         >
                                             Отменить
                                         </button>
-
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
-                                                {order.product.image_path ? (
-                                                    <img
-                                                        src={
-                                                            order.product.image_path.startsWith('http')
-                                                                ? order.product.image_path
-                                                                : GetUploadLink(order.product.image_path)
-                                                        }
-                                                        alt={order.product.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        className="flex items-center justify-center h-full text-gray-400 text-xs">
-                                                        Нет фото
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="font-semibold text-sm">
-                                                    {order.product.name}
+                                    )}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
+                                            {order.product.image_path ? (
+                                                <img
+                                                    src={
+                                                        order.product.image_path.startsWith('http')
+                                                            ? order.product.image_path
+                                                            : GetUploadLink(order.product.image_path)
+                                                    }
+                                                    alt={order.product.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="flex items-center justify-center h-full text-gray-400 text-xs">
+                                                    Нет фото
                                                 </div>
-                                                <div className="font-bold text-brand">
-                                                    {order.product.price} ₽
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="font-semibold text-sm pr-12 truncate">
+   {order.product.name}
+ </div>
+                                            <div className="font-bold text-brand">{order.product.price} ₽</div>
+                                            {order.step < 7 ? (
+                                                <div className="text-xs text-gray-500">Текущий {title}</div>
+                                            ) : (
+                                                <div
+    className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
+                                                        order.status === 'cashback_paid'
+                                                            ? 'border-green-500 text-green-500'
+                                                            : 'border-blue-500 text-blue-500'
+                                                    }`}
+                                                >
+                                                    {order.status === 'cashback_paid'
+                                                        ? 'Кешбэк выплачен'
+                                                        : 'Кешбэк не выплачен'}
                                                 </div>
-
-                                                {order.step < 7 ? (
-                                                    <div className="text-xs text-gray-500">
-                                                        Текущий шаг: {title}
-                                                    </div>
-                                                ) : (
-                                                    <button
-                                                        onClick={e =>
-                                                            handleToggleCashback(
-                                                                order.id,
-                                                                order.status === 'payment_confirmed'
-                                                                    ? 'cashback_not_paid'
-                                                                    : 'payment_confirmed',
-                                                                e
-                                                            )
-                                                        }
-                                                        className={`mt-1 px-3 py-1 text-xs rounded transition ${
-                                                            order.status === 'payment_confirmed'
-                                                                ? 'border border-green-500 text-green-500 hover:bg-green-50'
-                                                                : 'border border-blue-500 text-blue-500 hover:bg-blue-50'
-                                                        }`}
-                                                    >
-                                                        {order.status === 'payment_confirmed'
-                                                            ? 'Кешбэк выплачен'
-                                                            : 'Выплатить кешбэк'}
-                                                    </button>
-                                                )}
-                                            </div>
+                                            )}
                                         </div>
                                     </div>
+                                </div>
+                            );
+
+                            return isCancelled ? (
+                                card
+                            ) : (
+                                <Link to={linkTo} key={order.id}>
+                                    {card}
                                 </Link>
                             );
                         })}
+
 
                         {displayOrders.length > showCount && (
                             <div className="flex justify-center">

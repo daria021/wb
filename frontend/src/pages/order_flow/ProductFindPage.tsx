@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import {getOrderById, updateOrder} from "../../services/api";
+import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
 // import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
+import {VideoOverlay} from "../../App";
 
 interface Product {
     id: string;
@@ -54,14 +55,14 @@ function ProductFindPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [enteredArticle, setEnteredArticle] = useState('');
-    const [articleStatus, setArticleStatus] = useState('');
+    const [articleStatus, setArticleStatus] = useState<'correct' | 'wrong' | ''>('');
     const [showReport, setShowReport] = useState(false);
     const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
-    const [flashInvalid, setFlashInvalid] = useState(false);
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
     const handleHomeClick = () => navigate('/');
-
+    const [openSrc, setOpenSrc] = useState<string | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
         if (!orderId) return;
@@ -78,27 +79,33 @@ function ProductFindPage() {
 
     useEffect(() => {
         if (!order) return;
-        if (enteredArticle.trim() === order.product.article) {
-            setArticleStatus('Артикул правильный');
-        } else {
+        const val = enteredArticle.trim();
+        if (val === '') {
             setArticleStatus('');
+        } else if (val === order.product.article) {
+            setArticleStatus('correct');
+        } else {
+            setArticleStatus('wrong');
         }
     }, [enteredArticle, order]);
 
+    useEffect(() => {
+        if (!orderId) return;
+        getOrderReport(orderId)
+            .then((response: AxiosResponse<OrderReport>) => {
+                setReportData(response.data);
+            })
+            .catch((err) => {
+                console.error('Ошибка при загрузке отчета:', err);
+            });
+    }, [orderId]);
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
     };
 
-    const onArticleBlur = () => {
-        if (!order) return;
-        if (enteredArticle.trim() !== order.product.article) {
-            setFlashInvalid(true);
-        }
-    };
 
-
-    const canContinue = articleStatus === 'Артикул правильный';
+    const canContinue = articleStatus === 'correct';
 
     const handleContinue = async () => {
         if (!canContinue || !orderId) return;
@@ -129,6 +136,20 @@ function ProductFindPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+
+    const videos = [
+        {
+            id: 1,
+            title: '🎥 Как искать товар продавца и использовать фильтры поиска в WB, как искать и проверять артикул товара',
+            src: 'https://storage.googleapis.com/images_avocado/VideoCashback/5%20Buyer%20Step%202%20Explanation%20of%20the%20conditions%20Go%20to%20the%20WB%2C%20search%20for%20a%20product%2C%20use%20the%20search%20filter%2C%20where%20the%20article%20number%20is%20located%20Go%20to%20the%20bot%20Check%20the%20article%20number%20(the%20article%20number%20is%20correct).MP4',
+        },
+        {
+            id: 2,
+            title: '🎥 Пояснение про ситуацию, когда товара нет в наличии на WB',
+            src: 'https://storage.googleapis.com/images_avocado/VideoCashback/6%20Buyer%20Step%202%20If%20the%20SKU%20is%20incorrect%20Explanation%20about%20the%20situation%20when%20the%20product%20is%20not%20available%20on%20the%20WB%20and%20the%20redemption%20limit%20Step%203.MP4',
+        },
+    ];
+
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
             {cameFromOrders && (
@@ -139,58 +160,50 @@ function ProductFindPage() {
                     <p>Можете продолжить выкуп.</p>
                 </div>
             )}
-            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4">
-                <p className="text-xs text-gray-500">ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В РАЗДЕЛЕ "МОИ
-                    ПОКУПКИ"</p>
-                <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите наш товар</h2>
-                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                    <li>Найдите наш товар на сайте или в приложении WB</li>
-                    <li>
-                        Используйте ключевое слово{order.product!.key_word ? `: «${order.product!.key_word}»` : ''}
-                    </li>
-                    <li>Фото товара ниже</li>
-                    <li>
-                        <strong>Введите артикул товара для проверки</strong>
-                    </li>
-                    <p>
-                        Если артикул правильный, вы перейдёте на следующий шаг
-                    </p>
-
-                </ul>
+            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 space-y-2">
+                <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
+                    РАЗДЕЛЕ "МОИ ПОКУПКИ".</p>
+                <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите товар раздачи в WB</h2>
+                <p>1) Найдите товар для выкупа на сайте или в приложении WB, используя предоставленное изображение.
+                    Для вашего удобства можете использовать функцию поиска по фотографии.
+                </p>
+                <p>
+                    2) Скопируйте артикул товара продавца и вставьте его в поле для проверки.
+                    Если артикул неверный, система не пропустит вас дальше, вы нашли не тот товар продавца в WB.
+                    Используйте фильтры по цене, цвету, бренду и другим параметрам для ускорения поиска.
+                </p>
             </div>
 
             <div className="mb-4">
                 <label htmlFor="articleInput" className="block text-sm font-medium mb-1">
-                    Артикул товара
+                    Артикул товара продавца в WB
                 </label>
                 <input
                     id="articleInput"
                     type="text"
                     value={enteredArticle}
                     onChange={e => setEnteredArticle(e.target.value)}
-                    onBlur={onArticleBlur}
                     placeholder="Введите артикул..."
                     className={`
-      rounded-md p-2 w-full text-sm
-      border transition-colors duration-200
-      ${
-                        flashInvalid
-                            ? 'flash-border'
-                            : articleStatus === 'Артикул правильный'
-                                ? 'border-green-500'
+    rounded-md p-2 w-full text-sm border transition-colors duration-200
+    ${
+                        articleStatus === 'correct'
+                            ? 'border-green-500'
+                            : articleStatus === 'wrong'
+                                ? 'border-red-500'
                                 : 'border-gray-300'
                     }
-    `}
-                    onAnimationEnd={() => setFlashInvalid(false)}
+  `}
                 />
-                {articleStatus === 'Артикул правильный' && (
-                    <p className="mt-2 text-sm font-semibold text-green-600">
-                        Артикул правильный
+
+                {articleStatus && (
+                    <p className={`mt-2 text-sm font-semibold ${
+                        articleStatus === 'correct' ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                        {articleStatus === 'correct' ? 'Артикул правильный' : 'Артикул неверный'}
                     </p>
                 )}
             </div>
-
-
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
@@ -206,7 +219,6 @@ function ProductFindPage() {
             >
                 Проверить продавца
             </button>
-
 
             <div className="mb-4">
                 <div className="w-full aspect-[3/4] bg-gray-200-100 rounded overflow-hidden relative">
@@ -228,138 +240,154 @@ function ProductFindPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Пояснение условий.<br/>
-                    Переход на вб, поиск товара, использование фильтра поиска, где находится артикул.<br/>
-                    Переход в бота.<br/>
-                    Проверка артикула (артикул верный).</p>
-                <div className="bg-black" style={{aspectRatio: '16/9'}}>
-                    <video
-                        title="Инструкция"
-                        src="https://storage.googleapis.com/images_avocado/VideoCashback/5%20Buyer%20Step%202%20Explanation%20of%20the%20conditions%20Go%20to%20the%20WB%2C%20search%20for%20a%20product%2C%20use%20the%20search%20filter%2C%20where%20the%20article%20number%20is%20located%20Go%20to%20the%20bot%20Check%20the%20article%20number%20(the%20article%20number%20is%20correct).MP4"
-                        controls
-                        className="w-full h-full"
-                    />
-                </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Если артикул не верный.<br/>
-                    Пояснение про ситуацию, когда товара нет в наличии на ВБ и про лимит на выкуп.</p>
-                <div className="bg-black" style={{aspectRatio: '16/9'}}>
-                    <video
-                        title="Инструкция"
-                        src="https://storage.googleapis.com/images_avocado/VideoCashback/6%20Buyer%20Step%202%20If%20the%20SKU%20is%20incorrect%20Explanation%20about%20the%20situation%20when%20the%20product%20is%20not%20available%20on%20the%20WB%20and%20the%20redemption%20limit%20Step%203.MP4"
-                        controls
-                        className="w-full h-full"
-                    />
-                </div>
-            </div>
+            <div className="space-y-4">
 
-            <div className="flex flex-col gap-3 mt-4">
-                <button
-                    onClick={() => setShowReport(prev => !prev)}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
-                >
-                    {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
-                </button>
-
-                {showReport && (
-                    <div className="bg-white rounded-lg shadow p-4 mb-4">
-                        <h3 className="text-lg font-bold mb-2">Отчет</h3>
-                        {reportData ? (
-                            <div className="space-y-2">
-                                {/* Шаг 1 */}
-                                <div className="bg-white rounded-lg shadow">
-                                    <button
-                                        onClick={() => toggleStep(1)}
-                                        className="w-full flex justify-between items-center p-4 text-left"
-                                    >
-                                        <span className="font-semibold">Шаг 1. Скрины корзины</span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className={`w-5 h-5 transform transition-transform ${
-                                                expandedSteps[1] ? 'rotate-180' : ''
-                                            }`}
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                  d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </button>
-                                    {expandedSteps[1] && (
-                                        <div className="border-t p-4 space-y-3">
-                                            {reportData.search_screenshot_path && (
-                                                <div>
-                                                    <p className="text-sm font-semibold">Скрин поискового запроса</p>
-                                                    <img
-                                                        src={GetUploadLink(reportData.search_screenshot_path)}
-                                                        alt="Скрин поискового запроса"
-                                                        className="mt-1 w-full rounded"
-                                                    />
-                                                </div>
-                                            )}
-                                            {reportData.cart_screenshot_path && (
-                                                <div>
-                                                    <p className="text-sm font-semibold">Скрин корзины</p>
-                                                    <img
-                                                        src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                        alt="Скрин корзины"
-                                                        className="mt-1 w-full rounded"
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-
-                                <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                    <div className="font-semibold text-black">Шаг 2. Найдите наш товар
-                                    </div>
-                                    <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
-                                    </div>
-                                    <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кешбэка
-                                    </div>
-                                    <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                    <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
-                                    <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
-                                </div>
-
-
-                            </div>
-                        ) : (
-                            <p className="text-sm text-gray-500">Отчет пока пуст.</p>
-                        )}
-
+                {videos.map(({id, title, src}) => (
+                    <div key={id} className="bg-white rounded-lg shadow p-4">
+                        <button
+                            className="text-base font-medium mb-2 block text-blue-600 hover:underline"
+                            onClick={() => setOpenSrc(src)}
+                        >
+                            {title}
+                        </button>
                     </div>
-                )}
-                <button
-                    onClick={handleSupportClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                    Нужна помощь с выполнением шага
-                </button>
+                ))}
+                <div className="flex flex-col gap-3 mt-4">
+                    <button
+                        onClick={() => setShowReport(prev => !prev)}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    >
+                        {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
+                    </button>
 
-                <button
-                    onClick={handleChannelClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center
-                         ">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                    <span>Подписаться на канал</span>
-                </button>
+                    {showReport && (
+                        <div className="bg-white rounded-lg shadow p-4 mb-4">
+                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            {reportData ? (
+                                <div className="space-y-2">
+                                    {/* Шаг 1 */}
+                                    <div className="bg-white rounded-lg shadow">
+                                        <button
+                                            onClick={() => toggleStep(1)}
+                                            className="w-full flex justify-between items-center p-4 text-left"
+                                        >
+                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`w-5 h-5 transform transition-transform ${
+                                                    expandedSteps[1] ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        {expandedSteps[1] && (
+                                            <div className="border-t p-4 space-y-3">
+                                                {reportData.search_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин поискового
+                                                            запроса</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.search_screenshot_path)}
+                                                            alt="Скрин поискового запроса"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                                {reportData.cart_screenshot_path && (
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <img
+                                                            src={GetUploadLink(reportData.cart_screenshot_path)}
+                                                            alt="Скрин корзины"
+                                                            className="mt-1 w-full rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
 
-                <button
-                    onClick={handleHomeClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
-                >
-                    На главную
-                </button>
 
+                                    <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                        <div className="font-semibold text-black">Шаг 2. Найдите наш товар
+                                        </div>
+                                        <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
+                                        </div>
+                                        <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода
+                                            кешбэка
+                                        </div>
+                                        <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                    </div>
+
+
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-500">Отчет пока пуст.</p>
+                            )}
+
+                        </div>
+                    )}
+
+                    <button
+                        onClick={() => navigate('/instruction')}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                        <span>Полная инструкция выкупа товара</span>
+                    </button>
+                    <button
+                        onClick={handleSupportClick}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                        Нужна помощь с выполнением шага
+                    </button>
+
+                    <button
+                        onClick={handleHomeClick}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    >
+                        На главную
+                    </button>
+
+                </div>
             </div>
+            {openSrc && (
+                <VideoOverlay onClose={() => setOpenSrc(null)}>
+                    <div
+                        className="relative bg-black p-4 max-h-[100vh] max-w-[92vw] overflow-auto"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* Close */}
+                        <button
+                            className="absolute top-2 right-2 z-20 text-white text-2xl"
+                            onClick={() => setOpenSrc(null)}
+                            aria-label="Close"
+                        >
+                            &times;
+                        </button>
+
+                        <video
+                            ref={videoRef}
+                            src={openSrc}
+                            controls
+                            muted
+                            playsInline
+                            className="block mx-auto max-h-[88vh] max-w-[88vw] object-contain"
+                        />
+                    </div>
+                </VideoOverlay>
+
+            )}
+
         </div>
+
     );
+
 }
 
 export default ProductFindPage;

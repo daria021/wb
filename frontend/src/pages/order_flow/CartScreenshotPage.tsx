@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {createOrder, getProductById} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
 import FileUploader from "../../components/FileUploader";
+import {VideoOverlay} from '../../App';
 
 interface Product {
     id: string;
@@ -23,14 +24,15 @@ function CartScreenshotPage() {
     const [file1, setFile1] = useState<File | null>(null);
     const [preview1, setPreview1] = useState<string | null>(null);
 
-    // для второго скрина
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
     const {user, loading: userLoading} = useUser();
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
     const handleHomeClick = () => navigate('/');
-
+    const [showReport, setShowReport] = useState(false);
+    const [openSrc, setOpenSrc] = useState<string | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
         if (!file1) {
@@ -114,13 +116,28 @@ function CartScreenshotPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
-    const handleChannelClick = () => {
-        window.open('https://t.me/Premiumcash1', '_blank'); //todo
-    };
 
     if (userLoading) {
         return <div className="p-4">Загрузка профиля…</div>;
     }
+
+    const videos = [
+        {
+            id: 1,
+            title: '🎥 Пояснение, что нужно сделать на данном этапе.',
+            src: 'https://storage.googleapis.com/images_avocado/VideoCashback/2%20Buyer%20Step%201%20Explanation%20of%20what%20needs%20to%20be%20done%2C%20transition%20to%20the%20website.MP4',
+        },
+        {
+            id: 2,
+            title: '🎥 Как искать товар выкупа по ключевому слову на WB и сделать скриншоты. Важно! Не ищите товар продавца из кешбэк-бота на этом этапе.',
+            src: 'https://storage.googleapis.com/images_avocado/VideoCashback/3%20Buyer%20Step%201%20Search%20for%20a%20product%20by%20keyword%20in%20the%20WB%2C%20take%20screenshots%2C%20and%20return%20to%20the%20bot.MP4',
+        },
+        {
+            id: 3,
+            title: '🎥 Как загрузить скриншоты в кешбэк-бот',
+            src: 'https://storage.googleapis.com/images_avocado/VideoCashback/4%20Buyer%20Step%201%20Uploading%20screenshots%2C%20moving%20on%20to%20Step%202.MP4',
+        },
+    ];
 
     return (
         <div className="p-4 max-w-screen-md bg-gray-200 mx-auto space-y-4 relative">
@@ -134,33 +151,28 @@ function CartScreenshotPage() {
             )}
             <div className="bg-white border border-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
 
-                <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Загрузите скриншоты по поиску товара</h2>
+                <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Загрузите скриншоты поиска товара</h2>
+
+                <p>1) Найдите товар выкупа по ключевому слову в поиске на сайте или в приложении WB. Сделайте скриншот
+                    поискового запроса в WB.</p>
+                <p>2) Добавьте несколько товаров конкурентов (разных брендов) в корзину WB. Сделайте скриншот корзины в
+                    WB. <strong>Важно!</strong> Не ищите товар продавца из кешбэк-бота на этом этапе.</p>
+                <p>3) Прикрепите скриншоты в отчет для получения кешбэка.</p>
 
                 <p>
-                    <strong>ВАЖНО!</strong> Оформление заказа происходит только на 5-м шаге.
-                </p>
-                <p>
-                    Сначала выполните поиск нашего товара по ключевому слову, затем добавьте несколько товаров в
-                    корзину.
-                </p>
-                <p>
-                    <strong>Сделайте два скриншота</strong>: первый – скриншот поискового запроса, второй – скриншот
-                    корзины.
-                </p>
-                <p>
-                    Ключевое слово: <strong>{product.key_word}</strong>
+                    Ключевое слово для поиска: <strong>{product.key_word}</strong>
                 </p>
             </div>
 
 
             <FileUploader
-                label="1.Скриншот поискового запроса"
+                label="1.Скриншот поискового запроса в WB"
                 file={file1}
                 preview={preview1}
                 onFileChange={setFile1}
             />
             <FileUploader
-                label="2.Скриншот корзины"
+                label="2.Скриншот корзины в WB"
                 file={file2}
                 preview={preview2}
                 onFileChange={setFile2}
@@ -177,68 +189,104 @@ function CartScreenshotPage() {
                 Продолжить
             </button>
 
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Пояснение, что нужно сделать, переход на вб.</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
-                        title="Инструкция"
-                        src="https://storage.googleapis.com/images_avocado/VideoCashback/2%20Buyer%20Step%201%20Explanation%20of%20what%20needs%20to%20be%20done%2C%20transition%20to%20the%20website.MP4"
-                        controls
-                        className="w-full h-full"
-                    />
+            <div className="space-y-4">
+
+                {videos.map(({id, title, src}) => (
+                    <div key={id} className="bg-white rounded-lg shadow p-4">
+                        <button
+                            className="text-base font-medium mb-2 block text-blue-600 hover:underline"
+                            onClick={() => setOpenSrc(src)}
+                        >
+                            {title}
+                        </button>
+                    </div>
+                ))}
+
+                <div className="flex flex-col gap-3 mt-4">
+                    <button
+                        onClick={() => setShowReport(prev => !prev)}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    >
+                        {showReport ? 'Скрыть отчет' : 'Открыть отчет'}
+                    </button>
+
+                    {showReport && (
+                        <div className="bg-white rounded-lg shadow p-4 mb-4">
+                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+
+                            <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
+                                <div className="font-semibold text-gray-400">Шаг1. Скрины корзины
+                                </div>
+                                <div className="font-semibold text-gray-400">Шаг 2. Найдите наш товар
+                                </div>
+                                <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
+                                </div>
+                                <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кешбэка
+                                </div>
+                                <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
+                                <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
+                                <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                            </div>
+
+
+                        </div>
+
+
+                    )}
+                    <button
+                        onClick={() => navigate('/instruction')}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                        <span>Полная инструкция выкупа товара</span>
+                    </button>
+
+
+                    <button
+                        onClick={handleSupportClick}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
+                        Нужна помощь с выполнением шага
+                    </button>
+
+
+                    <button
+                        onClick={handleHomeClick}
+                        className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
+                    >
+                        На главную
+                    </button>
                 </div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Поиск товара по ключевому слову в вб, делаем скриншоты, возвращаемся в бота.</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
-                        title="Инструкция"
-                        src="https://storage.googleapis.com/images_avocado/VideoCashback/3%20Buyer%20Step%201%20Search%20for%20a%20product%20by%20keyword%20in%20the%20WB%2C%20take%20screenshots%2C%20and%20return%20to%20the%20bot.MP4"
-                        controls
-                        className="w-full h-full"
-                    />
-                </div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-base font-medium mb-2">Загрузка скриншотов.</p>
-                <div className="bg-black" style={{ aspectRatio: '16/9' }}>
-        <video
-                        title="Инструкция"
-                        src="https://storage.googleapis.com/images_avocado/VideoCashback/4%20Buyer%20Step%201%20Uploading%20screenshots%2C%20moving%20on%20to%20Step%202.MP4"
-                        controls
-                        className="w-full h-full"
-                    />
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-3 mt-4 text-center">
-
-                <button
-                    onClick={handleSupportClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold"
-                >
-                    Нужна помощь с выполнением шага
-                </button>
-
-                <button
-                    onClick={handleChannelClick}
-                    className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center
-                    justify-center gap-2">
-                    <img src="/icons/telegram.png" alt="Telegram" className="w-6 h-6"/>
-                    <span>Подписаться на канал</span>
-                </button>
-
-                <button
-                    onClick={handleHomeClick}
-                          className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
-                >
-                    На главную
-                </button>
 
             </div>
+            {openSrc && (
+                <VideoOverlay onClose={() => setOpenSrc(null)}>
+                    <div
+                        className="relative bg-black p-4 max-h-[100vh] max-w-[92vw] overflow-auto"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* Close */}
+                        <button
+                            className="absolute top-2 right-2 z-20 text-white text-2xl"
+                            onClick={() => setOpenSrc(null)}
+                            aria-label="Close"
+                        >
+                            &times;
+                        </button>
 
+                        <video
+                            ref={videoRef}
+                            src={openSrc}
+                            controls
+                            muted
+                            playsInline
+                            className="block mx-auto max-h-[88vh] max-w-[88vw] object-contain"
+                        />
+                    </div>
+                </VideoOverlay>
+
+            )}
         </div>
+
     );
+
 }
 
 export default CartScreenshotPage;

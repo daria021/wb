@@ -42,6 +42,25 @@ import {expandViewport, init, mountViewport} from '@telegram-apps/sdk';
 import BlacklistPage from "./pages/BlacklistPage";
 import {DeepLinkRouter} from "./components/DeepLinkRouter";
 import {UserProvider} from './contexts/user';
+// в корневом файле App.tsx
+import ReactDOM from 'react-dom';
+
+interface VideoOverlayProps {
+  children: React.ReactNode;
+  onClose: () => void;
+}
+
+export function VideoOverlay({ children, onClose }: VideoOverlayProps) {
+  return ReactDOM.createPortal(
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-80"
+      onClick={onClose}
+    >
+      {children}
+    </div>,
+    document.body
+  );
+}
 
 
 function App() {
@@ -121,5 +140,7 @@ function App() {
         </UserProvider>
     );
 }
+
+
 
 export default App;

@@ -16,6 +16,7 @@ interface Product {
     name: string;
     description?: string;
     price: number;
+    wb_price: number;
     article: string;
     category: string;
     seller_id: string;
