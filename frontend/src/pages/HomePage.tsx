@@ -70,7 +70,7 @@ function HomePage() {
                     className="bg-white border border-darkGray text-center rounded-md shadow-sm p-2 text-xs font-medium cursor-pointer flex flex-col items-center justify-center"
                 >
                     <img src="/icons/book.png" alt="Книга жалоб" className="w-4 h-4 mb-1"/>
-                    <span className="font-body">Чат предложений</span>
+                    <span className="font-body">Книга жалоб</span>
                 </div>
             </div>
 
