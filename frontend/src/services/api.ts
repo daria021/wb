@@ -177,6 +177,7 @@ export async function updateOrder(
     orderId: string,
     data: {
         step?: number;
+        search_query_screenshot?: File;
         search_screenshot_path?: File;
         cart_screenshot_path?: File;
         card_number?: string;
