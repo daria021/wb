@@ -1,6 +1,9 @@
+import random
+import string
 from dataclasses import dataclass
 from typing import List
 from uuid import UUID
+
 from fastapi import HTTPException, status
 
 from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface, UserRepositoryInterface
@@ -30,10 +33,13 @@ class OrderService(OrderServiceInterface):
                 detail="Товар закончился"
             )
 
-        # 2. Создаём заказ
+        # 2. Генерируем уникальный 6-значный код сделки
+        dto.transaction_code =  await self.generate_unique_code()
+
+        # 3. Создаём заказ (в базе сохранится и код)
         await self.order_repository.create(dto)
 
-        # 3. Списываем единицу со склада
+        # 4. Списываем единицу со склада
         new_remaining = product.remaining_products - 1
         await self.product_repository.update(
             product.id,
@@ -47,8 +53,15 @@ class OrderService(OrderServiceInterface):
             )
         )
 
-        # 4. Возвращаем id заказа
+        # 5. Возвращаем код для пользователя
         return dto.id
+
+    async def generate_unique_code(self) -> str:
+        while True:
+            code = ''.join(random.choices(string.digits + string.ascii_uppercase, k=6))
+            exists = await self.order_repository.exists_by_code(code)
+            if not exists:
+                return code
 
     async def get_order(self, order_id: UUID) -> Order:
         return await self.order_repository.get(order_id)

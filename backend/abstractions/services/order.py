@@ -57,3 +57,6 @@ class OrderServiceInterface(ABC):
     async def get_orders_by_seller(self, seller_id: UUID) -> list[Order]:
         ...
 
+    @abstractmethod
+    async def generate_unique_code(self) -> str:
+        ...

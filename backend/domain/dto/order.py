@@ -11,6 +11,7 @@ from infrastructure.enums.product_status import ProductStatus
 class CreateOrderDTO(CreateDTO):
     user_id: UUID
     product_id: UUID
+    transaction_code: Optional[str] = None
     seller_id: UUID
     step: int
     status: OrderStatus = None

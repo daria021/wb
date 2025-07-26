@@ -8,6 +8,7 @@ from fastapi.openapi.utils import get_openapi
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
+import migrations
 from dependencies.services.upload import get_upload_service
 from middlewares.auth_middleware import check_for_auth
 from routes import (
@@ -25,6 +26,14 @@ async def apply_migrations():
     migrations_is_ok = subprocess.call(["alembic", "upgrade", "head"]) == 0
     if not migrations_is_ok:
         logger.error("There is an error while upgrading database")
+        exit(1)
+
+    logger.info("Migrations applied, seeding...")
+
+    try:
+        await migrations.backfill()
+    except Exception as e:
+        logger.error("There is an error while seeding database", exc_info=e)
         exit(1)
 
 
