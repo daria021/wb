@@ -10,6 +10,7 @@ interface Product {
 }
 
 interface User {
+  id: string;
   nickname: string;
 }
 
@@ -18,6 +19,7 @@ interface Order {
   transaction_code: string;
   product: Product;
   user: User;
+  seller: User;
   status: OrderStatus;
   step: number;
   created_at: string;
@@ -128,37 +130,61 @@ export const ModeratorOrdersPage: React.FC = () => {
                 <th className="px-4 py-2">ID сделки</th>
                 <th className="px-4 py-2">Дата</th>
                 <th className="px-4 py-2">Покупатель</th>
+                <th className="px-4 py-2">Продавец</th>
                 <th className="px-4 py-2">Товар</th>
                 <th className="px-4 py-2">Статус</th>
                 <th className="px-4 py-2">Этап</th>
               </tr>
             </thead>
-            <tbody className="text-sm divide-y">
-              {displayList.length > 0 ? (
-                displayList.map(order => (
-                  <tr
-                    key={order.id}
-                    className="hover:bg-gray-100 cursor-pointer"
-                    onClick={() => navigate(`/moderator/orders/${order.id}`)}
-                  >
-                    <td className="px-4 py-2">{order.transaction_code}</td>
-                    <td className="px-4 py-2">
-                      {new Date(order.created_at).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2">{order.user.nickname}</td>
-                    <td className="px-4 py-2">{order.product.name}</td>
-                    <td className="px-4 py-2">{getStatusLabel(order.status)}</td>
-                    <td className="px-4 py-2">{order.step}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="text-center py-6 text-gray-500">
-                    Сделки не найдены
-                  </td>
-                </tr>
-              )}
-            </tbody>
+<tbody className="text-sm divide-y">
+  {displayList.length > 0 ? (
+    displayList.map(order => (
+      <tr
+        key={order.id}
+        className="hover:bg-gray-100 cursor-pointer"
+        onClick={() => navigate(`/moderator/orders/${order.id}`)}
+      >
+        <td className="px-4 py-2">{order.transaction_code}</td>
+        <td className="px-4 py-2">
+          {new Date(order.created_at).toLocaleString()}
+        </td>
+        {/* Покупатель */}
+        <td className="px-4 py-2">
+          <button
+            onClick={e => {
+              e.stopPropagation();                         // отменяем клик по строке
+              navigate(`/moderator/users/${order.user.id}`); // переходим в профиль покупателя
+            }}
+            className="text-blue-500 hover:underline"
+          >
+            {order.user.nickname}
+          </button>
+        </td>
+        {/* Продавец */}
+        <td className="px-4 py-2">
+          <button
+            onClick={e => {
+              e.stopPropagation();                         // отменяем клик по строке
+              navigate(`/moderator/users/${order.seller.id}`); // переходим в профиль продавца
+            }}
+            className="text-blue-500 hover:underline"
+          >
+            {order.seller.nickname}
+          </button>
+        </td>
+        <td className="px-4 py-2">{order.product.name}</td>
+        <td className="px-4 py-2">{getStatusLabel(order.status)}</td>
+        <td className="px-4 py-2">{order.step}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan={7} className="text-center py-6 text-gray-500">
+        Сделки не найдены
+      </td>
+    </tr>
+  )}
+</tbody>
           </table>
         </div>
       )}

@@ -80,13 +80,13 @@ export default function BackButtonManager() {
         return navigate('/moderator', { replace: true });
       }
       // ModeratorUserDetailPage "/moderator/users/:userId" → список юзеров
-      const userDetail = matchPath(
-        { path: '/moderator/users/:userId', end: true },
-        pathname
-      );
-      if (userDetail) {
-        return navigate('/moderator/users', { replace: true });
-      }
+      // const userDetail = matchPath(
+      //   { path: '/moderator/users/:userId', end: true },
+      //   pathname
+      // );
+      // if (userDetail) {
+      //   return navigate('/moderator/users', { replace: true });
+      // }
       // ModeratorProductsPage "/moderator/products" → дашборд
       if (matchPath({ path: '/moderator/products', end: true }, pathname)) {
         return navigate('/moderator', { replace: true });
