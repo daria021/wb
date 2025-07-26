@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {createOrder, getProductById, updateOrder} from '../../services/api';
+import { getProductById, updateOrder} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
 import FileUploader from "../../components/FileUploader";
@@ -88,8 +88,8 @@ const handleContinue = async () => {
 
         await updateOrder(orderId, {
             step: 1,
-            search_query_screenshot: file1,
-            cart_screenshot: file2,
+            search_query_screenshot: file1 ?? undefined,
+            cart_screenshot_path: file2 ?? undefined,
         });
 
         navigate(`/order/${orderId}/step-2`);
