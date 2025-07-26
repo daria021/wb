@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {getProductById} from '../../services/api';
+import {createOrder, getProductById} from '../../services/api';
 import {AxiosResponse} from 'axios';
 import {on} from "@telegram-apps/sdk";
+import {useUser} from "../../contexts/user";
 
 function translatePaymentTime(value: string): string {
     switch (value) {
@@ -20,6 +21,7 @@ function translatePaymentTime(value: string): string {
 interface Product {
     id: string;
     name: string;
+    seller_id: string;
     brand: string;
     article: string;
     price: number;
@@ -38,6 +40,7 @@ function InstructionPage() {
     const [error, setError] = useState('');
     const { search } = useLocation();
     const preview = new URLSearchParams(search).get('preview') === '1';
+    const {user, loading: userLoading} = useUser();
 
     const [agreeRules, setAgreeRules] = useState(false);
     const [agreePersonalData, setAgreePersonalData] = useState(false);
@@ -64,6 +67,15 @@ function InstructionPage() {
 
     const handleContinue = () => {
         if (!canContinue) return;
+            if (!user) return;              // если профиль ещё не загрузился или неавторизован
+            const formData = new FormData();
+            formData.append('user_id', user.id);
+
+            formData.append('step', '0');
+            formData.append('seller_id', product!.seller_id);
+            formData.append('product_id', productId || '');
+            createOrder(formData);
+
         navigate(`/product/${productId}/step-1`);
     };
     const handleHomeClick = () => {

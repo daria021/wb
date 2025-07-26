@@ -39,41 +39,16 @@ async def create_order(
         user_id: UUID = Form(...),
         product_id: UUID = Form(...),
         seller_id: UUID = Form(...),
-        search_query_screenshot: UploadFile = File(...),
-        cart_screenshot: UploadFile = File(...),
+        # search_query_screenshot: UploadFile = File(...),
+        # cart_screenshot: UploadFile = File(...),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> UUID:
-    """
-    Создаём заказ после шага 1:
-    - Сохраняем два скриншота (поискового запроса, корзины).
-    - Присваиваем step=1.
-    """
-    # Сохраняем search_query_screenshot
-    try:
-        search_filename = await upload_service.upload(search_query_screenshot)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail="Не удалось сохранить файл search_query_screenshot"
-        ) from e
-
-    # Сохраняем cart_screenshot
-    try:
-        cart_filename = await upload_service.upload(cart_screenshot)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail="Не удалось сохранить файл cart_screenshot"
-        ) from e
-
     # Создаём заказ (step=1)
     order_data = CreateOrderDTO(
         user_id=user_id,
         product_id=product_id,
         step=1,
         seller_id=seller_id,
-        search_screenshot_path=search_filename,
-        cart_screenshot_path=cart_filename,
         status=OrderStatus.CASHBACK_NOT_PAID,
     )
 
@@ -109,6 +84,10 @@ async def update_order(
         order_id: UUID,
         step: Optional[int] = Form(None),
 
+        # Шаг 1
+        search_query_screenshot: Optional[UploadFile] = File(None),
+        cart_screenshot: Optional[UploadFile] = File(None),
+
         # Шаг 4 (реквизиты)
         card_number: Optional[str] = Form(None),
         phone_number: Optional[str] = Form(None),
@@ -129,13 +108,17 @@ async def update_order(
 
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ):
-
-
     # Собираем данные для UpdateOrderDTO в словарь
     update_data = {}
 
     if step is not None:
         update_data["step"] = step
+
+    # Шаг 1
+    if search_query_screenshot is not None:
+        update_data["search_query_screenshot"] = search_query_screenshot
+    if cart_screenshot is not None:
+        update_data["cart_screenshot"] = cart_screenshot
 
     # Шаг 4: реквизиты
     if card_number is not None:

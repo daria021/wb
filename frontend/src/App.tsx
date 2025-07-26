@@ -21,6 +21,7 @@ import FinalDealPage from "./pages/order_flow/FinalDealPage";
 import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
+import eruda from 'eruda';
 import SellerBalancePage from "./pages/SellerBalance";
 import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
@@ -43,6 +44,7 @@ import {DeepLinkRouter} from "./components/DeepLinkRouter";
 import {UserProvider} from './contexts/user';
 // в корневом файле App.tsx
 import ReactDOM from 'react-dom';
+import ModeratorOrdersPage from "./pages/moderator/ModeratorOrdersPage.jsx";
 
 interface VideoOverlayProps {
   children: React.ReactNode;
@@ -65,7 +67,7 @@ export function VideoOverlay({ children, onClose }: VideoOverlayProps) {
 function App() {
     useEffect(() => {
         // 1) Локальная консоль ошибок
-        // eruda.init();
+        eruda.init();
 
         // 2) Инициализируем Telegram Mini App SDK
         init();
@@ -133,13 +135,15 @@ function App() {
                         <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
                         <Route path="/moderator/pushes/:pushId" element={<PushDetailsPage/>}/>
                         <Route path="/moderator/pushes/:pushId/edit" element={<PushFormPage/>}/>
+                        <Route path="/moderator/orders" element={<ModeratorOrdersPage/>}/>
+                        {/*<Route path="/moderator/orders/:orderId" element={<ModeratorOrderDetailPage/>}/>*/}
+
                     </Routes>
                 </BrowserRouter>
             </AuthProvider>
         </UserProvider>
     );
 }
-
 
 
 export default App;

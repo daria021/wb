@@ -83,7 +83,7 @@ class Order(AbstractBase):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id"))
     seller_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-
+    transaction_code: Mapped[str] = mapped_column(server_default="0")
     # Чтобы отслеживать, на каком шаге сейчас заказ
     step: Mapped[int] = mapped_column(default=1)
 

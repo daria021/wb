@@ -35,6 +35,7 @@ class OrderRepository(
             user_id=dto.user_id,
             product_id=dto.product_id,
             seller_id=dto.seller_id,
+            transaction_code=dto.transaction_code,
             step=dto.step,
             search_screenshot_path=dto.search_screenshot_path,
             cart_screenshot_path=dto.cart_screenshot_path,
@@ -110,11 +111,12 @@ class OrderRepository(
             receipt_number=entity.receipt_number,
             status=entity.status,
             seller_id=entity.seller_id,
-            created_at=entity.created_at,
-            updated_at=entity.updated_at,
             product=_map_product(entity.product),
             user=_map_user(entity.user),
-            seller=_map_user(entity.user)
+            seller=_map_user(entity.seller),
+            transaction_code=entity.transaction_code,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
         )
 
     async def get_orders_by_user(self, user_id: UUID) -> List[Order]:
@@ -149,3 +151,12 @@ class OrderRepository(
             logger.info(f"orders found {len(orders)} orders for seller {seller_id}")
             logger.info([x.__dict__ for x in orders])
             return [self.entity_to_model(order) for order in orders]
+
+    async def exists_by_code(self, transaction_code: str) -> bool:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.transaction_code == transaction_code)
+            )
+            order = result.scalars().one_or_none()
+            return order is not None

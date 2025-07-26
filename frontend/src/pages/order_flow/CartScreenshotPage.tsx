@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {createOrder, getProductById} from '../../services/api';
+import {createOrder, getProductById, updateOrder} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
 import FileUploader from "../../components/FileUploader";
@@ -23,6 +23,7 @@ function CartScreenshotPage() {
 
     const [file1, setFile1] = useState<File | null>(null);
     const [preview1, setPreview1] = useState<string | null>(null);
+    const {orderId} = useParams<{ orderId: string }>();
 
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
@@ -80,27 +81,23 @@ function CartScreenshotPage() {
             .finally(() => setLoading(false));
     }, [productId]);
 
-    const handleContinue = async () => {
-        if (!canContinue) return;
-        try {
-            if (!user) return;              // если профиль ещё не загрузился или неавторизован
-            const formData = new FormData();
-            formData.append('user_id', user.id);
+const handleContinue = async () => {
+    if (!canContinue) return;
+    try {
+        if (!user || !orderId) return; // если профиль ещё не загрузился или неавторизован
 
-            formData.append('step', '1');
-            formData.append('seller_id', product!.seller_id);
-            formData.append('product_id', productId || '');
-            formData.append('search_query_screenshot', file1 as File);
-            formData.append('cart_screenshot', file2 as File);
+        await updateOrder(orderId, {
+            step: 1,
+            search_query_screenshot: file1,
+            cart_screenshot: file2,
+        });
 
-            const response = await createOrder(formData);
-            const createdOrderId = response.data; // Ожидается, что backend вернет объект заказа с полем id
+        navigate(`/order/${orderId}/step-2`);
+    } catch (err) {
+        console.error('Ошибка при создании заказа', err);
+    }
+};
 
-            navigate(`/order/${createdOrderId}/step-2`);
-        } catch (err) {
-            console.error('Ошибка при создании заказа', err);
-        }
-    };
 
     if (loading) {
         return <div className="p-4">Загрузка...</div>;

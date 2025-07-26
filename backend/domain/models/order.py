@@ -11,6 +11,7 @@ from infrastructure.enums.product_status import ProductStatus
 
 class Order(BaseModel):
     id: UUID
+    transaction_code: str #номер сделки
     user_id: UUID
     product_id: UUID
     seller_id: UUID
@@ -32,6 +33,8 @@ class Order(BaseModel):
     product: Product
     user: User
     seller: User
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
