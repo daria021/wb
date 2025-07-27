@@ -27,7 +27,7 @@ class OrderRepository(
     joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
         'product': None,
         'user': None,
-        'self': None,
+        'seller': None,
     })
 
     def create_dto_to_entity(self, dto: CreateOrderDTO) -> Order:
