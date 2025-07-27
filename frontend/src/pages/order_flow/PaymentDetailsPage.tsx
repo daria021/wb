@@ -3,6 +3,7 @@ import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
+import OrderHeader from "../../components/OrderHeader";
 
 
 interface OrderReport {
@@ -26,6 +27,7 @@ interface Order {
     id: string;
     product: Product;
     seller: User
+    transaction_code: string;
 }
 
 interface User {
@@ -110,9 +112,6 @@ function PaymentDetailsPage() {
         }
     };
 
-    const handleChannelClick = () => {
-        window.open('https://t.me/Premiumcash1', '_blank'); //todo
-    };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
             window.Telegram.WebApp.close();
@@ -144,10 +143,13 @@ function PaymentDetailsPage() {
                 </div>
             )}
 
-            <div className="bg-white border border-brand rounded-lg shadow p-4 space-y-4 mb-4">
+            <div className="bg-white border border-brand rounded-lg shadow p-4">
                 <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
                     РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
+                {order && <OrderHeader transactionCode={order.transaction_code} />}
+            <div className="space-y-4">
+
                 <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Укажите реквизиты для получения кешбэка</h1>
                 <p>1) Укажите реквизиты для получения кешбэка:</p>
                 <ul className="list-disc list-inside pl-4 space-y-1">
@@ -257,11 +259,12 @@ function PaymentDetailsPage() {
                     </label>
                 </div>
             </div>
+            </div>
 
             <button
                 onClick={handleContinueClick}
                 disabled={!canContinue}
-                className={`w-full py-2 rounded text-brand mb-4 ${
+                className={`w-full py-2 rounded text-brand mb-4 mt-4 ${
                     canContinue
                         ? 'bg-brand text-white'
                         : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
@@ -301,16 +304,16 @@ function PaymentDetailsPage() {
 
                     {showReport && (
                         <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            <h3 className="text-lg font-bold mb-2">Отчёт по сделке выкупа товара</h3>
                             {reportData ? (
                                 <div className="space-y-2">
-                                    {/* Шаг 1 */}
+                                    {/* Шаг 1 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(1)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <span className="font-semibold">Шаг 1. Скриншоты поиска и корзины</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -328,21 +331,20 @@ function PaymentDetailsPage() {
                                             <div className="border-t p-4 space-y-3">
                                                 {reportData.search_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин поискового
-                                                            запроса</p>
+                                                        <p className="text-sm font-semibold">Скриншот поискового запроса в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.search_screenshot_path)}
-                                                            alt="Скрин поискового запроса"
+                                                            alt="Скриншот поискового запроса в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
                                                 )}
                                                 {reportData.cart_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                            alt="Скрин корзины"
+                                                            alt="Скриншот корзины в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
@@ -351,13 +353,13 @@ function PaymentDetailsPage() {
                                         )}
                                     </div>
 
-                                    {/* Шаг 2 */}
+                                    {/* Шаг 2 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(2)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                            <span className="font-semibold"> Шаг 2. Артикул товара продавца</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -378,13 +380,13 @@ function PaymentDetailsPage() {
                                         )}
                                     </div>
 
-                                    {/* Шаг 3 */}
+                                    {/* Шаг 3 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(3)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                            <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -406,11 +408,12 @@ function PaymentDetailsPage() {
                                         )}
                                     </div>
                                     <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                        <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода кешбэка
+                                        <div className="font-semibold text-black">Шаг 4. Реквизиты для перевода
+                                            кешбэка
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                        <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
-                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и штрихкода</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
                                     </div>
 
 

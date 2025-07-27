@@ -8,13 +8,12 @@ import {useNavigate} from 'react-router-dom';
 export default function RequirementsPage() {
     const navigate = useNavigate();
 
-    /* Путь к примерам */
     const EXAMPLES = {
-        ORDER: '/images/examples/order_confirmation.jpg',
-        DELIVERY: '/images/examples/order_received.jpg',
-        BARCODE: '/images/examples/barcode_cut.jpg',
-        REVIEW: '/images/examples/review_posted.jpg',
-        RECEIPT: '/images/examples/receipt_example.mp4',
+        ORDER: '/images/screanorder.jpg',
+        DELIVERY: '/images/order.jpg',
+        BARCODE: '/images/barcode.jpg',
+        REVIEW: '/images/feedback.jpg',
+        RECEIPT: '/images/electronic_receipt.mp4',
     } as const;
 
     /* Модалка */
@@ -208,7 +207,7 @@ export default function RequirementsPage() {
                         }}
                         className="px-4 py-2 border border-brand text-brand rounded-lg text-sm font-semibold hover:bg-brandlight transition"
                     >
-                        Нужна помощь
+                        Нужна помощь с отчётом
                     </button>
                     <button
                         onClick={goHome}

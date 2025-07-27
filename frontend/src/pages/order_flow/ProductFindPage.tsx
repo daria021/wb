@@ -5,6 +5,7 @@ import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
 // import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
+import OrderHeader from "../../components/OrderHeader";
 
 interface Product {
     id: string;
@@ -24,6 +25,7 @@ interface Order {
     id: string;
     product: Product;
     seller: User
+    transaction_code: string;
 }
 
 interface User {
@@ -160,9 +162,11 @@ function ProductFindPage() {
                     <p>Можете продолжить выкуп.</p>
                 </div>
             )}
-            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 space-y-2">
+            <div className="bg-white border border-brand p-4 rounded-lg shadow space-y-2">
                 <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
                     РАЗДЕЛЕ "МОИ ПОКУПКИ".</p>
+                {order && <OrderHeader transactionCode={order.transaction_code} />}
+
                 <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите товар раздачи в WB</h2>
                 <p>1) Найдите товар для выкупа на сайте или в приложении WB, используя предоставленное изображение.
                     Для вашего удобства можете использовать функцию поиска по фотографии.
@@ -175,7 +179,7 @@ function ProductFindPage() {
             </div>
 
             <div className="mb-4">
-                <label htmlFor="articleInput" className="block text-sm font-medium mb-1">
+                <label htmlFor="articleInput" className="block text-sm font-medium mb-1 mt-2">
                     Артикул товара продавца в WB
                 </label>
                 <input
@@ -263,16 +267,16 @@ function ProductFindPage() {
 
                     {showReport && (
                         <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            <h3 className="text-lg font-bold mb-2">Отчёт по сделке выкупа товара</h3>
                             {reportData ? (
                                 <div className="space-y-2">
-                                    {/* Шаг 1 */}
+                                    {/* Шаг 1 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(1)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <span className="font-semibold">Шаг 1. Скриншоты поиска и корзины</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -290,21 +294,20 @@ function ProductFindPage() {
                                             <div className="border-t p-4 space-y-3">
                                                 {reportData.search_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин поискового
-                                                            запроса</p>
+                                                        <p className="text-sm font-semibold">Скриншот поискового запроса в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.search_screenshot_path)}
-                                                            alt="Скрин поискового запроса"
+                                                            alt="Скриншот поискового запроса в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
                                                 )}
                                                 {reportData.cart_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                            alt="Скрин корзины"
+                                                            alt="Скриншот корзины в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
@@ -315,16 +318,15 @@ function ProductFindPage() {
 
 
                                     <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                        <div className="font-semibold text-black">Шаг 2. Найдите наш товар
+                                        <div className="font-semibold text-black"> Шаг 2. Артикул товара продавца продавца
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
                                         </div>
-                                        <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода
-                                            кешбэка
+                                        <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для получения кешбэка
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                        <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
-                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и штрихкода</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
                                     </div>
 
 

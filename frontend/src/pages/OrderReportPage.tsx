@@ -117,18 +117,18 @@ function OrderReportPage() {
 
                 {(report.search_screenshot_path || report.cart_screenshot_path) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                        <h2 className="text-xl font-semibold mb-2">Шаг 1. Скрины корзины</h2>
+                        <h2 className="text-xl font-semibold mb-2">Шаг 1. Скриншоты поиска и корзины</h2>
                         {report.search_screenshot_path && (
                             <img
                                 src={GetUploadLink(report.search_screenshot_path)}
-                                alt="Скрин поискового запроса"
+                                alt="Скриншот поискового запроса в WB"
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
                         {report.cart_screenshot_path && (
                             <img
                                 src={GetUploadLink(report.cart_screenshot_path)}
-                                alt="Скрин корзины"
+                                alt="Скриншот корзины в WB"
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
@@ -137,7 +137,7 @@ function OrderReportPage() {
 
                 {report.article && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                        <h2 className="text-xl font-semibold mb-2">Шаг 2. Артикул товара</h2>
+                        <h2 className="text-xl font-semibold mb-2"> Шаг 2. Артикул товара продавца</h2>
                         <p className="text-base">{report.article}</p>
                     </section>
                 )}
@@ -150,10 +150,10 @@ function OrderReportPage() {
 
                 {report.final_cart_screenshot_path && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                        <h2 className="text-xl font-semibold mb-2">Шаг 4. Финальный скрин корзины</h2>
+                        <h2 className="text-xl font-semibold mb-2">Шаг 4. Финальный Скриншот корзины в WB</h2>
                         <img
                             src={GetUploadLink(report.final_cart_screenshot_path)}
-                            alt="Финальный скрин корзины"
+                            alt="Финальный Скриншот корзины в WB"
                             className="mt-2 w-full rounded-md"
                         />
                     </section>
@@ -241,7 +241,7 @@ function OrderReportPage() {
                         )}
                         {report.phone_number && (
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Телефон: {report.phone_number}</span>
+                                <span className="text-base">Номер телефона: {report.phone_number}</span>
                                 <button
                                     onClick={() => copyToClipboard(report.phone_number!)}
                                     className="ml-2"
@@ -256,7 +256,7 @@ function OrderReportPage() {
                         )}
                         {report.name && (
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Имя: {report.name}</span>
+                                <span className="text-base">Получатель: {report.name}</span>
                                 <button
                                     onClick={() => copyToClipboard(report.name!)}
                                     className="ml-2"
