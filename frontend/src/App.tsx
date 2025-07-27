@@ -21,7 +21,7 @@ import FinalDealPage from "./pages/order_flow/FinalDealPage";
 import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
-import eruda from 'eruda';
+// import eruda from 'eruda';
 import SellerBalancePage from "./pages/SellerBalance";
 import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
@@ -67,7 +67,7 @@ export function VideoOverlay({ children, onClose }: VideoOverlayProps) {
 function App() {
     useEffect(() => {
         // 1) Локальная консоль ошибок
-        eruda.init();
+        // eruda.init();
 
         // 2) Инициализируем Telegram Mini App SDK
         init();
