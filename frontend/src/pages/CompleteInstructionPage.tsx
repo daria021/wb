@@ -385,7 +385,7 @@ return (
                     <hr className="my-6 border-darkGray"/>
 
                     <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Получение товара</h3>
+                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Скриншоты доставки и штрихкода</h3>
                         <p>1) Заберите товар как обычно.</p>
                         <p>2) Сделайте и загрузите скриншот информации о получении товара в разделе "Покупки" из личного
                             кабинета WB, где указаны стоимость товара, дата получения и статус "Доставлен".</p>
@@ -788,17 +788,18 @@ return (
             {/* Back to main button */}
             <div className="flex flex-col gap-2">
                                 <button
-                    onClick={handleRequirementsClick}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                >
-                    Требования к отчету
-                </button>
-                <button
                     onClick={handleAboutClick}
                     className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                 >
                     О сервисе
                 </button>
+                                <button
+                    onClick={handleRequirementsClick}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                >
+                    Требования к отчету
+                </button>
+
                 <button
                     onClick={handleHomeClick}
                     className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"

@@ -12,6 +12,8 @@ function QuestionPage() {
     };
 
     const handleAbout = () => navigate('/about');
+    const handleRequirements = () => navigate('/requirements');
+    const handleInstruction = () => navigate('/instruction');
     const handleHomeClick = () => navigate('/');
 
     return (
@@ -186,11 +188,17 @@ function QuestionPage() {
                 </section>
 
                 <div className="flex justify-center gap-4">
+                    <button onClick={handleInstruction} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                        Инструкция пользователя
+                    </button>
+                    <button onClick={handleRequirements} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                        Требования к отчёту
+                    </button>
                     <button onClick={handleAbout} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
                         О сервисе
                     </button>
                     <button onClick={handleSupportClick} className="py-2 px-2 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
-                        Остались вопросы?
+                        Нужна помощь с вопросом
                     </button>
                     <button onClick={handleHomeClick} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
                         На главную

@@ -40,7 +40,7 @@ function InstructionPage() {
     const [error, setError] = useState('');
     const { search } = useLocation();
     const preview = new URLSearchParams(search).get('preview') === '1';
-    const {user, loading: userLoading} = useUser();
+    const {user} = useUser();
 
     const [agreeRules, setAgreeRules] = useState(false);
     const [agreePersonalData, setAgreePersonalData] = useState(false);
@@ -65,18 +65,17 @@ function InstructionPage() {
         return `https://t.me/${username}`;
     };
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (!canContinue) return;
             if (!user) return;              // если профиль ещё не загрузился или неавторизован
             const formData = new FormData();
             formData.append('user_id', user.id);
-
             formData.append('step', '0');
             formData.append('seller_id', product!.seller_id);
             formData.append('product_id', productId || '');
-            createOrder(formData);
+            const orderId = (await createOrder(formData)).data as string;
 
-        navigate(`/product/${productId}/step-1`);
+        navigate(`/product/${orderId}/step-1`);
     };
     const handleHomeClick = () => {
         navigate(`/`);

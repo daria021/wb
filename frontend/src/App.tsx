@@ -21,7 +21,7 @@ import FinalDealPage from "./pages/order_flow/FinalDealPage";
 import BackButtonManager from "./components/BackButtonManager";
 import SellerReportsPage from "./pages/SellerReportsPage";
 import OrderReportPage from "./pages/OrderReportPage";
-// import eruda from 'eruda';
+import eruda from 'eruda';
 import SellerBalancePage from "./pages/SellerBalance";
 import AboutPage from "./pages/AboutPage";
 import CompleteInstructionPage from "./pages/CompleteInstructionPage";
@@ -67,7 +67,7 @@ export function VideoOverlay({ children, onClose }: VideoOverlayProps) {
 function App() {
     useEffect(() => {
         // 1) Локальная консоль ошибок
-        // eruda.init();
+        eruda.init();
 
         // 2) Инициализируем Telegram Mini App SDK
         init();
@@ -101,7 +101,7 @@ function App() {
                         <Route path="/catalog" element={<CatalogPage/>}/>
                         <Route path="/product/:productId" element={<ProductDetailPage/>}/>
                         <Route path="/product/:productId/instruction" element={<InstructionPage/>}/>
-                        <Route path="/product/:productId/step-1" element={<CartScreenshotPage/>}/>
+                        <Route path="/product/:orderId/step-1" element={<CartScreenshotPage/>}/>
                         <Route path="/order/:orderId/step-2" element={<ProductFindPage/>}/>
                         <Route path="/order/:orderId/step-3" element={<ProductFavoritePage/>}/>
                         <Route path="/order/:orderId/step-4" element={<PaymentDetailsPage/>}/>

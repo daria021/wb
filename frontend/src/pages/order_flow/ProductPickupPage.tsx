@@ -5,6 +5,7 @@ import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 import FileUploader from "../../components/FileUploader";
 import {VideoOverlay} from "../../App";
+import OrderHeader from "../../components/OrderHeader";
 
 interface Product {
     id: string;
@@ -19,6 +20,8 @@ interface Product {
 interface Order {
     id: string;
     product: Product;
+    seller: User
+    transaction_code: string;
 }
 
 interface OrderReport {
@@ -36,6 +39,11 @@ interface OrderReport {
     receipt_screenshot_path?: string;
     receipt_number?: string;
     article?: string;
+}
+
+
+interface User {
+    nickname: string
 }
 
 type ModalContent = { src: string; isVideo: boolean };
@@ -166,9 +174,6 @@ function ProductPickupPage() {
         }
     };
 
-    const handleChannelClick = () => {
-        window.open('https://t.me/Premiumcash1', '_blank');
-    };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
             window.Telegram.WebApp.close();
@@ -201,12 +206,15 @@ function ProductPickupPage() {
                 </div>
             )}
 
-
-            <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700 space-y-2 mb-4">
+            <div className="bg-white border border-brand p-3 rounded-md text-sm text-gray-700">
                 <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
                     РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
-                <h1 className="text-lg font-bold text-brand">Шаг 6. Получение товара и подготовка отчета</h1>
+                {order && <OrderHeader transactionCode={order.transaction_code} />}
+                                <div className="space-y-2">
+
+
+                <h1 className="text-lg font-bold text-brand">Шаг 6. Скриншоты доставки и штрихкода и подготовка отчета</h1>
                 <p>
                     1) Заберите товар как обычно.</p>
 
@@ -238,6 +246,7 @@ function ProductPickupPage() {
                     <strong> Ваш кешбэк:</strong> {cashback} руб.
                 </p>
             </div>
+            </div>
 
             <div className="flex items-center mb-4">
                 <input
@@ -247,7 +256,7 @@ function ProductPickupPage() {
                     checked={pickedUp}
                     onChange={handlePickedUpChange}
                 />
-                <label htmlFor="pickedUp" className="text-sm text-gray-700">
+                <label htmlFor="pickedUp" className="text-sm text-gray-700 mt-2">
                     Забрал(а) товар
                 </label>
             </div>
@@ -303,16 +312,16 @@ function ProductPickupPage() {
 
                     {showReport && (
                         <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            <h3 className="text-lg font-bold mb-2">Отчёт по сделке выкупа товара</h3>
                             {reportData ? (
                                     <div className="space-y-2">
-                                        {/* Шаг 1 */}
+                                        {/* Шаг 1 */}
                                         <div className="bg-white rounded-lg shadow">
                                             <button
                                                 onClick={() => toggleStep(1)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                                <span className="font-semibold">Шаг 1. Скриншоты поиска и корзины</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${
@@ -330,21 +339,20 @@ function ProductPickupPage() {
                                                 <div className="border-t p-4 space-y-3">
                                                     {reportData.search_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скрин поискового
-                                                                запроса</p>
+                                                            <p className="text-sm font-semibold">Скриншот поискового запроса в WB</p>
                                                             <img
                                                                 src={GetUploadLink(reportData.search_screenshot_path)}
-                                                                alt="Скрин поискового запроса"
+                                                                alt="Скриншот поискового запроса в WB"
                                                                 className="mt-1 w-full rounded"
                                                             />
                                                         </div>
                                                     )}
                                                     {reportData.cart_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скрин корзины</p>
+                                                            <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                             <img
                                                                 src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                                alt="Скрин корзины"
+                                                                alt="Скриншот корзины в WB"
                                                                 className="mt-1 w-full rounded"
                                                             />
                                                         </div>
@@ -353,13 +361,13 @@ function ProductPickupPage() {
                                             )}
                                         </div>
 
-                                        {/* Шаг 2 */}
+                                        {/* Шаг 2 */}
                                         <div className="bg-white rounded-lg shadow">
                                             <button
                                                 onClick={() => toggleStep(2)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                                <span className="font-semibold"> Шаг 2. Артикул товара продавца</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${
@@ -380,13 +388,13 @@ function ProductPickupPage() {
                                             )}
                                         </div>
 
-                                        {/* Шаг 3 */}
+                                        {/* Шаг 3 */}
                                         <div className="bg-white rounded-lg shadow">
                                             <button
                                                 onClick={() => toggleStep(3)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                                <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${
@@ -408,13 +416,14 @@ function ProductPickupPage() {
                                             )}
                                         </div>
 
-                                        {/* Шаг 4 */}
+                                        {/* Шаг 4 */}
                                         <div className="bg-white rounded-lg shadow">
                                             <button
                                                 onClick={() => toggleStep(4)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 4. Реквизиты</span>
+                                                <span className="font-semibold">Шаг 4. Реквизиты для перевода
+                                            кешбэка</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${
@@ -433,20 +442,20 @@ function ProductPickupPage() {
                                                     {reportData.card_number &&
                                                         <p className="text-sm">Номер карты: {reportData.card_number}</p>}
                                                     {reportData.phone_number &&
-                                                        <p className="text-sm">Телефон: {reportData.phone_number}</p>}
-                                                    {reportData.name && <p className="text-sm">Имя: {reportData.name}</p>}
+                                                        <p className="text-sm">Номер телефона: {reportData.phone_number}</p>}
+                                                    {reportData.name && <p className="text-sm">Получатель: {reportData.name}</p>}
                                                     {reportData.bank && <p className="text-sm">Банк: {reportData.bank}</p>}
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Шаг 5 */}
+                                        {/* Шаг 5 */}
                                         <div className="bg-white rounded-lg shadow">
                                             <button
                                                 onClick={() => toggleStep(5)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 5. Финальный скрин корзины</span>
+                                                <span className="font-semibold">Шаг 5. Скриншот оформления заказа</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${
@@ -462,10 +471,10 @@ function ProductPickupPage() {
                                             </button>
                                             {expandedSteps[5] && reportData.final_cart_screenshot_path && (
                                                 <div className="border-t p-4">
-                                                    <p className="text-sm font-semibold">Скрин корзины</p>
+                                                    <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                     <img
                                                         src={GetUploadLink(reportData.final_cart_screenshot_path)}
-                                                        alt="Финальный скрин корзины"
+                                                        alt="Финальный Скриншот корзины в WB"
                                                         className="w-full rounded"
                                                     />
                                                 </div>
@@ -473,8 +482,8 @@ function ProductPickupPage() {
                                         </div>
 
                                         <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                            <div className="font-semibold text-black">Шаг 6. Получение товара</div>
-                                            <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                            <div className="font-semibold text-black">Шаг 6. Скриншоты доставки и штрихкода</div>
+                                            <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
                                         </div>
                                     </div>
 

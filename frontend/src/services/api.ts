@@ -88,6 +88,7 @@ export async function getUserOrders() {
 }
 
 export async function getOrderById(orderId: string) {
+    console.log(`orderId ${orderId}`);
     return apiClient.get(`/orders/${orderId}`);
 }
 

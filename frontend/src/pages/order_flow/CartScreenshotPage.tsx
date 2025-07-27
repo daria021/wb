@@ -1,10 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import { getProductById, updateOrder} from '../../services/api';
+import {getOrderById, getProductById, updateOrder} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
 import FileUploader from "../../components/FileUploader";
 import {VideoOverlay} from '../../App';
+import {OrderStatus} from '../../enums';
+import OrderHeader from "../../components/OrderHeader";
 
 interface Product {
     id: string;
@@ -13,8 +15,26 @@ interface Product {
     seller_id: string;
 }
 
+interface User {
+    id: string;
+    nickname: string;
+}
+
+interface Order {
+    id: string;
+    transaction_code: string;
+    product: Product;
+    user: User;
+    seller: User;
+    status: OrderStatus;
+    step: number;
+    created_at: string;
+}
+
+
+
 function CartScreenshotPage() {
-    const {productId} = useParams<{ productId: string }>();
+    // const {productId} = useParams<{ productId: string }>();
     const navigate = useNavigate();
 
     const [product, setProduct] = useState<Product | null>(null);
@@ -34,6 +54,23 @@ function CartScreenshotPage() {
     const [showReport, setShowReport] = useState(false);
     const [openSrc, setOpenSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [order, setOrder] = useState<Order | null>(null);
+
+    useEffect(() => {
+        if (!orderId) {
+            console.log(`orderId ${orderId}`);
+            return;
+        }
+        getOrderById(orderId)
+            .then((response: AxiosResponse<Order>) => {
+                setOrder(response.data);
+            })
+            .catch((err) => {
+                console.error('Ошибка при загрузке заказа:', err);
+                setError('Не удалось загрузить заказ');
+            })
+            .finally(() => setLoading(false));
+    }, [orderId]);
 
     useEffect(() => {
         if (!file1) {
@@ -69,8 +106,8 @@ function CartScreenshotPage() {
 
 
     useEffect(() => {
-        if (!productId) return;
-        getProductById(productId)
+        if (!order?.product.id) return;
+        getProductById(order.product.id)
             .then((response: AxiosResponse<Product>) => {
                 setProduct(response.data);
             })
@@ -79,24 +116,24 @@ function CartScreenshotPage() {
                 setError('Не удалось загрузить данные о товаре');
             })
             .finally(() => setLoading(false));
-    }, [productId]);
+    }, [order]);
 
-const handleContinue = async () => {
-    if (!canContinue) return;
-    try {
-        if (!user || !orderId) return; // если профиль ещё не загрузился или неавторизован
+    const handleContinue = async () => {
+        if (!canContinue) return;
+        try {
+            if (!user || !orderId) return; // если профиль ещё не загрузился или неавторизован
 
-        await updateOrder(orderId, {
-            step: 1,
-            search_query_screenshot: file1 ?? undefined,
-            cart_screenshot_path: file2 ?? undefined,
-        });
+            await updateOrder(orderId, {
+                step: 1,
+                search_query_screenshot: file1 ?? undefined,
+                cart_screenshot_path: file2 ?? undefined,
+            });
 
-        navigate(`/order/${orderId}/step-2`);
-    } catch (err) {
-        console.error('Ошибка при создании заказа', err);
-    }
-};
+            navigate(`/order/${orderId}/step-2`);
+        } catch (err) {
+            console.error('Ошибка при создании заказа', err);
+        }
+    };
 
 
     if (loading) {
@@ -147,6 +184,8 @@ const handleContinue = async () => {
                 </div>
             )}
             <div className="bg-white border border-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
+
+{order && <OrderHeader transactionCode={order.transaction_code} />}
 
                 <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Загрузите скриншоты поиска товара</h2>
 
@@ -209,20 +248,20 @@ const handleContinue = async () => {
 
                     {showReport && (
                         <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            <h3 className="text-lg font-bold mb-2">Отчёт по сделке выкупа товара</h3>
 
                             <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                <div className="font-semibold text-gray-400">Шаг1. Скрины корзины
+                                <div className="font-semibold text-gray-400">Шаг 1. Скриншоты поиска и корзины
                                 </div>
-                                <div className="font-semibold text-gray-400">Шаг 2. Найдите наш товар
+                                <div className="font-semibold text-gray-400"> Шаг 2. Артикул товара продавца продавца
                                 </div>
                                 <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
                                 </div>
-                                <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода кешбэка
+                                <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для получения кешбэка
                                 </div>
                                 <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
-                                <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и штрихкода</div>
+                                <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
                             </div>
 
 

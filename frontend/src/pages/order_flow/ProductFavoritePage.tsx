@@ -4,6 +4,7 @@ import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
 import {AxiosResponse} from 'axios';
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
+import OrderHeader from "../../components/OrderHeader";
 
 
 interface Product {
@@ -24,6 +25,7 @@ interface Order {
     id: string;
     product: Product;
     seller: User
+    transaction_code: string;
 }
 
 interface User {
@@ -112,9 +114,9 @@ function ProductFavoritePage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-    const handleChannelClick = () => {
-        window.open('https://t.me/Premiumcash1', '_blank'); //todo
-    };
+    // const handleChannelClick = () => {
+    //     window.open('https://t.me/Premiumcash1', '_blank'); //todo
+    // };
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
             window.Telegram.WebApp.close();
@@ -143,15 +145,17 @@ function ProductFavoritePage() {
                 </div>
             )}
 
-            <div className="bg-white border border-brand p-4 rounded-lg shadow mb-4 text-sm text-gray-700">
+            <div className="bg-white border border-brand p-4 rounded-lg shadow text-sm text-gray-700">
                 <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
                     РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
+                {order && <OrderHeader transactionCode={order.transaction_code} />}
+
                 <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное WB</h1>
                 <p className="mb-2">Добавьте товар и бренд продавца в избранное на сайте или в приложении WB.</p>
             </div>
 
-            <div className="flex flex-col items-start mb-4 space-y-4">
+            <div className="flex flex-col items-start mb-4 mt-2 space-y-4">
                 <label className="flex items-center">
                     <input
                         type="checkbox"
@@ -232,16 +236,16 @@ function ProductFavoritePage() {
                     </button>
                     {showReport && (
                         <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h3 className="text-lg font-bold mb-2">Отчет</h3>
+                            <h3 className="text-lg font-bold mb-2">Отчёт по сделке выкупа товара</h3>
                             {reportData ? (
                                 <div className="space-y-2">
-                                    {/* Шаг 1 */}
+                                    {/* Шаг 1 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(1)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 1. Скрины корзины</span>
+                                            <span className="font-semibold">Шаг 1. Скриншоты поиска и корзины</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -259,21 +263,20 @@ function ProductFavoritePage() {
                                             <div className="border-t p-4 space-y-3">
                                                 {reportData.search_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин поискового
-                                                            запроса</p>
+                                                        <p className="text-sm font-semibold">Скриншот поискового запроса в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.search_screenshot_path)}
-                                                            alt="Скрин поискового запроса"
+                                                            alt="Скриншот поискового запроса в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
                                                 )}
                                                 {reportData.cart_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скрин корзины</p>
+                                                        <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                            alt="Скрин корзины"
+                                                            alt="Скриншот корзины в WB"
                                                             className="mt-1 w-full rounded"
                                                         />
                                                     </div>
@@ -282,13 +285,13 @@ function ProductFavoritePage() {
                                         )}
                                     </div>
 
-                                    {/* Шаг 2 */}
+                                    {/* Шаг 2 */}
                                     <div className="bg-white rounded-lg shadow">
                                         <button
                                             onClick={() => toggleStep(2)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 2. Артикул товара</span>
+                                            <span className="font-semibold"> Шаг 2. Артикул товара продавца</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -316,8 +319,8 @@ function ProductFavoritePage() {
                                             кешбэка
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                        <div className="font-semibold text-gray-400">Шаг 6. Получение товара</div>
-                                        <div className="font-semibold text-gray-400">Шаг 7. Отзыв</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и штрихкода</div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
                                     </div>
 
 
