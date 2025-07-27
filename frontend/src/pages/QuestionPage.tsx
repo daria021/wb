@@ -187,20 +187,30 @@ function QuestionPage() {
                     </div>
                 </section>
 
-                <div className="flex justify-center gap-4">
-                    <button onClick={handleInstruction} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+            <div className="flex flex-col gap-2">
+                    <button onClick={handleInstruction}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
                         Инструкция пользователя
                     </button>
-                    <button onClick={handleRequirements} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                    <button onClick={handleRequirements}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
                         Требования к отчёту
                     </button>
-                    <button onClick={handleAbout} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                    <button onClick={handleAbout}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
                         О сервисе
                     </button>
-                    <button onClick={handleSupportClick} className="py-2 px-2 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                    <button onClick={handleSupportClick}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
                         Нужна помощь с вопросом
                     </button>
-                    <button onClick={handleHomeClick} className="py-2 px-4 rounded-lg text-xs font-medium border border-brand text-brand bg-transparent">
+                    <button onClick={handleHomeClick}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
                         На главную
                     </button>
                 </div>
