@@ -104,7 +104,9 @@ function OrderReportPage() {
     };
 
     if (loading) {
-        return <div className="p-6 text-center text-xl">Загрузка отчета...</div>;
+        return <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>;
     }
     if (error || !report) {
         return <div className="p-6 text-center text-red-600 text-xl">{error || 'Отчет не найден'}</div>;

@@ -126,10 +126,6 @@ class UserService(UserServiceInterface):
                     )
                     await self.product_repository.update(product.id, update_product_dto)
 
-
-
-
-
         return res
 
     async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:

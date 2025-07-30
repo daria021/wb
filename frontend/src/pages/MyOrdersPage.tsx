@@ -271,8 +271,8 @@ function MyOrdersPage() {
             {/* Контент */}
             <div className="px-4 mt-4">
                 {loading ? (
-                    <div className="py-4 text-center text-gray-600">
-                        Загрузка покупок…
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
                     </div>
                 ) : error ? (
                     <div className="py-4 text-center text-red-600">
@@ -290,10 +290,10 @@ function MyOrdersPage() {
                             const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
 
                             const card = (
-                                    <div
-      key={order.id}
-      className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
-    >
+                                <div
+                                    key={order.id}
+                                    className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
+                                >
                                     {isCancelled && (
                                         <div className="absolute top-2 right-2 text-gray-500 text-xs">
                                             Заказ отменён
@@ -326,16 +326,16 @@ function MyOrdersPage() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex-1">
-                                            <div className="font-semibold text-sm pr-12 truncate">
-   {order.product.name}
- </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
+                                                {order.product.name}
+                                            </div>
                                             <div className="font-bold text-brand">{order.product.price} ₽</div>
                                             {order.step < 7 ? (
                                                 <div className="text-xs text-gray-500">Текущий {title}</div>
                                             ) : (
                                                 <div
-    className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
+                                                    className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
                                                         order.status === 'cashback_paid'
                                                             ? 'border-green-500 text-green-500'
                                                             : 'border-blue-500 text-blue-500'

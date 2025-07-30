@@ -54,7 +54,9 @@ function ModeratorProductReviewPage() {
         }
     };
 
-    if (loading || !product) return <p>Загрузка...</p>;
+    if (loading || !product) return <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>;
 
     return (
         <div className="min-h-screen bg-gray-200 p-6">

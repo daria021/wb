@@ -262,7 +262,9 @@ function ProductForm() {
 
 
     if (loading) {
-        return <div className="p-4">Загрузка...</div>;
+        return <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>;
     }
 
     if (error) {

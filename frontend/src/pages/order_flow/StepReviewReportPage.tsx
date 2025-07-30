@@ -197,7 +197,9 @@ function StepReviewReportPage() {
     };
 
 
-    if (loading) return <div className="p-4">Загрузка...</div>;
+    if (loading) return <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>;
     if (error || !order) return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
 
     const videos = [
@@ -339,7 +341,7 @@ function StepReviewReportPage() {
                         checked={leftReview}
                         onChange={handleLeftReviewChange}
                     />
-                    <label htmlFor="leftReview" className="text-sm text-gray-700">
+                    <label htmlFor="leftReview" className="text-sm text-gray-700 mt-2">
                         Написал(а) отзыв товара в WB
 
                     </label>

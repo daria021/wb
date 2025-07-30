@@ -158,7 +158,9 @@ const unpaidDistributions = products
             .finally(() => setProductsLoading(false));
     }, [user]);
 
-    if (loading || !user) return <div className="p-4">Загрузка...</div>;
+    if (loading || !user) return <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>;
 
     const toggleBan = async () => {
         try {
@@ -421,7 +423,9 @@ const unpaidDistributions = products
 
       </div>
   {ordersLoading ? (
-    <p>Загрузка заказов…</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>
   ) : filteredOrders.length === 0 ? (
     <p>Нет заказов</p>
   ) : (
@@ -483,7 +487,9 @@ const unpaidDistributions = products
   <div className="bg-white rounded-lg shadow p-4 space-y-2">
     <h2 className="text-xl font-bold mb-2">Товары продавца</h2>
     {productsLoading ? (
-      <p>Загрузка товаров…</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>
     ) : products.length === 0 ? (
       <p>Нет товаров</p>
     ) : (

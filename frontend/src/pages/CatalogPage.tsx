@@ -1,10 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
-import {getBlackListUser, getProducts} from '../services/api';
+import {getBlackListUser} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
-import {useDebounce} from "../hooks/useDebounce";
 import {Combobox} from '@headlessui/react';
 import {useAuth} from "../contexts/auth";
+import { BootstrapContext } from '../contexts/bootstrap';
 
 interface Product {
     id: string;
@@ -24,9 +24,7 @@ interface Seller {
 }
 
 function CatalogPage() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const { products } = useContext(BootstrapContext)!;
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filterPrice, setFilterPrice] = useState<number | ''>('');
@@ -39,8 +37,8 @@ function CatalogPage() {
     const [sellerOptions, setSellerOptions] = useState<Seller[]>([]);
 
     const [sellerQuery, setSellerQuery] = useState('');
-    const {loading: authLoading} = useAuth();
-    const retryCnt = useRef(0);
+    // const {loading: authLoading} = useAuth();
+    // const retryCnt = useRef(0);
 
     const abortRef = useRef<AbortController | null>(null);
     // отфильтрованный список продавцов под комбо
@@ -78,49 +76,6 @@ function CatalogPage() {
         }
     }, [searchParams]);
 
-    const debouncedSearch = useDebounce(searchQuery, 600);
-
-    const MAX_RETRIES = Number(process.env.REACT_APP_MAX_RETRIES ?? 5);
-    const RETRY_DELAY = Number(process.env.REACT_APP_RETRY_DELAY ?? 1000);
-
-    useEffect(() => {
-        console.log('getProducts called', {authLoading});
-        if (authLoading) return;
-        retryCnt.current = 0;
-        abortRef.current?.abort();
-        abortRef.current = new AbortController();
-
-        const fetchData = async () => {
-            setLoading(true);
-            setError('');                   // убираем текст ошибки, если был
-
-            try {
-                const res = await getProducts(
-                    {search: debouncedSearch, signal: abortRef.current!.signal}
-                );
-                setProducts(res.data);        // успех
-                setLoading(false);
-            } catch (err) {
-                if (abortRef.current?.signal.aborted) return; // размонтировали
-                retryCnt.current += 1;
-                if (retryCnt.current < MAX_RETRIES) {
-                    // ждём и повторяем
-                    setTimeout(fetchData, RETRY_DELAY);
-                } else {
-                    // исчерпали попытки – показываем сообщение
-                    setLoading(false);
-                    setError('Не удалось загрузить каталог товаров.');
-                    console.error('getProducts failed:', err);
-                }
-            }
-        };
-
-        fetchData();
-
-        return () => abortRef.current?.abort(); // уборка при размонтировании
-    }, [debouncedSearch, authLoading]);
-
-
     useEffect(() => {
         if (!products.length) return;
         const uniqueIds = Array.from(new Set(products.map(p => p.seller_id)));
@@ -138,7 +93,6 @@ function CatalogPage() {
             }
         })();
     }, [products]);
-
 
     useEffect(() => {
         if (searchIsActive) {
@@ -196,7 +150,7 @@ function CatalogPage() {
                         placeholder="Поиск по названию"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-
+                        onFocus={() => setSearchIsActive(true)}
                         className="flex-1 border border-darkGray rounded-md p-2"
                     />
                     <button
@@ -224,16 +178,6 @@ function CatalogPage() {
                         )}
                     </button>
                 </div>
-                {/* Показываем загрузку и ошибку под шапкой, но инпут не размонтируем */}
-                {loading && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center">
-                        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-                    </div>
-                )}
-            </div>
-            {error && (
-                <div className="p-4 text-center text-red-600">{error}</div>
-            )}
 
             {/* Inline filters panel */}
             {showFilters && (
@@ -403,7 +347,8 @@ function CatalogPage() {
                     })}
                 </div>
             </div>
-        </div>)
-}
+        </div>
+        </div>
+    )}
 
 export default CatalogPage;

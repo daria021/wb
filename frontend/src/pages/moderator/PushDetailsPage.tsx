@@ -156,7 +156,9 @@ const PushDetailsPage: React.FC = () => {
             <h1 className="text-2xl font-bold mb-4 text-brand">Детали рассылки Push</h1>
             {error && <div className="text-red-500 mb-4">{error}</div>}
             {loadingPush ? (
-                <div>Загрузка рассылки...</div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>
             ) : push ? (
                 <div className="bg-brandlight border border-darkGray p-6 rounded mb-6 shadow relative">
                     <div className="flex justify-between items-start mb-4">
