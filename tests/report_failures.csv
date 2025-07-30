@@ -1,0 +1,9 @@
+Method,Name,Error,Occurrences
+GET,GET /products/{id},HTTPError('500 Server Error: Internal Server Error for url: GET /products/{id}'),30
+GET,GET /products,HTTPError('401 Client Error: Unauthorized for url: GET /products'),111
+GET,GET /users/orders,HTTPError('500 Server Error: Internal Server Error for url: GET /users/orders'),29
+GET,GET /products,HTTPError('500 Server Error: Internal Server Error for url: GET /products'),67
+POST,POST /orders,HTTPError('401 Client Error: Unauthorized for url: POST /orders'),72
+GET,GET /users/orders,HTTPError('401 Client Error: Unauthorized for url: GET /users/orders'),43
+POST,POST /orders,HTTPError('500 Server Error: Internal Server Error for url: POST /orders'),190
+GET,GET /products/{id},HTTPError('401 Client Error: Unauthorized for url: GET /products/{id}'),47

@@ -3,5 +3,6 @@
     "@telegram-apps/react-router-integration": "^1.0.1",
     "@telegram-apps/sdk-react": "^3.3.6",
     "react-router-dom": "^7.6.3"
-  }
+  },
+  "devDependencies": {}
 }

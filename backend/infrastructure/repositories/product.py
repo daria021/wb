@@ -22,9 +22,9 @@ class ProductRepository(
     AbstractSQLAlchemyRepository[Product, ProductModel, CreateProductDTO, UpdateProductDTO],
     ProductRepositoryInterface,
 ):
-    joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
-        'moderator_reviews': None,
-    })
+    # joined_fields: dict[str, Optional[list[str]]] = field(default_factory=lambda: {
+    #     'moderator_reviews': None,
+    # })
 
     def __post_init__(self):
         super().__post_init__()

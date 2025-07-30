@@ -212,7 +212,9 @@ function MyProductsPage() {
     };
 
     if (userLoading) {
-        return <div className="p-4">Загрузка профиля…</div>;
+        return <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
 
     const totalPlan = products
@@ -287,10 +289,10 @@ function MyProductsPage() {
                 <button
                     onClick={() => togglePanel(Panel.CARDS)}
                     style={{background: 'linear-gradient(90deg,#4872db 0%,#6e8ae2 50%,#4872db 100%)'}}
- className={
-   `w-full flex justify-between items-center text-white px-5 py-2 shadow font-semibold uppercase tracking-wide
+                    className={
+                        `w-full flex justify-between items-center text-white px-5 py-2 shadow font-semibold uppercase tracking-wide
     ${openPanel[Panel.CARDS] ? 'rounded-t-xl' : 'rounded-full'}`   // для Purchases то же, только Panel.PURCHASES
- }                >
+                    }>
                     <span>Карточки товаров</span>
                     <span className="text-lg font-bold">{openPanel[Panel.CARDS] ? '−' : '+'}</span>
                 </button>
@@ -356,7 +358,7 @@ function MyProductsPage() {
                 </button>
 
                 {openPanel[Panel.PURCHASES] && (
- <div className="bg-white border border-t-0 border-indigo-200 rounded-b-xl p-4 -mt-px">
+                    <div className="bg-white border border-t-0 border-indigo-200 rounded-b-xl p-4 -mt-px">
                         <div className="flex justify-between">
                             <span>Баланс раздач</span>
                             <span className="font-semibold">{user?.free_balance}</span>

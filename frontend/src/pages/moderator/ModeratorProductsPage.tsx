@@ -144,7 +144,9 @@ function ModeratorProductsPage() {
             </div>
 
             {loading ? (
-                <p className="text-center">Загрузка...</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>
             ) : error ? (
                 <div className="p-4 bg-brandlight border border-darkGray rounded text-center">
                     <p className="text-sm text-gray-700">{error}</p>

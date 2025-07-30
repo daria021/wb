@@ -108,7 +108,9 @@ const PushFormPage: React.FC = () => {
             </h1>
             {error && <div className="text-red-500 mb-4">{error}</div>}
             {loading ? (
-                <div>Загрузка...</div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+            </div>
             ) : (
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
