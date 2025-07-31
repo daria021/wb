@@ -41,6 +41,7 @@ function SellerCabinet() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const handleQuestion = () => navigate('/question');
 
     const {user, loading: userLoading, refresh} = useUser();
     const location = useLocation();
@@ -164,7 +165,7 @@ function SellerCabinet() {
                 <h1 className="text-xl font-bold mb-4 text-center">Кабинет продавца</h1>
 
                 <p className="text-sm text-gray-700 mb-6 text-center">
-                    ВБКешбэк — сервис для управления раздачами товара за кешбэк
+                    Premium Cash Back — сервис для управления раздачами товара за кешбэк
                 </p>
 
                 <div className="bg-white border border-darkGray rounded-md p-4 mb-4 relative"
@@ -240,10 +241,26 @@ function SellerCabinet() {
                     </p>
                 </div>
 
+                    <section className="flex flex-col gap-2">
+                    <button
+                        onClick={handleQuestion}
+                        className="py-2 px-4 rounded-lg font-semibold border border-brand text-brand bg-transparent"
+                    >
+                        Ответы на частые вопросы
+                    </button>
+                    <button
+                        className="py-2 px-4 rounded-lg font-semibold border border-brand text-brand bg-transparent"
+                            onClick={() => navigate('/instruction', {state: {openTab: 'seller'}})}
+                        >
+                            Инструкция для продавца
+                        </button>
+                </section>
+
+
 
                 <div
                     onClick={handleSupportClick}
-                    className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3"
+                    className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3 mt-2"
                 >
                     <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                     <div className="flex flex-col">
