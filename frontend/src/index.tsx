@@ -4,15 +4,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BootstrapProvider} from "./contexts/bootstrap";
+import {AuthProvider} from "./contexts/auth";
+import {UserProvider} from "./contexts/user";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
     <React.StrictMode>
-        <BootstrapProvider>
-            <App/>
-        </BootstrapProvider>
+        <UserProvider>
+
+            <AuthProvider>
+                <BootstrapProvider>
+                    <App/>
+                </BootstrapProvider>
+            </AuthProvider>
+        </UserProvider>
+
     </React.StrictMode>
 );
 

@@ -4,7 +4,7 @@ from dependencies.services.order import get_order_service
 from dependencies.services.product import get_product_service
 from dependencies.services.user_context import get_me_cached
 
-router = APIRouter(prefix="/api", tags=["Init"])
+router = APIRouter(prefix="", tags=["Init"])
 
 @router.get("/init")
 async def init(

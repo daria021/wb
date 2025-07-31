@@ -2,10 +2,8 @@ import React, {lazy, Suspense, useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
 import {DeepLinkRouter} from "./components/DeepLinkRouter";
-import {UserProvider} from './contexts/user';
 import {expandViewport, init, mountViewport} from '@telegram-apps/sdk';
 import ReactDOM from 'react-dom';
-import {AuthProvider} from "./contexts/auth";
 import BackButtonManager from "./components/BackButtonManager";
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -68,9 +66,9 @@ export function VideoOverlay({children, onClose}: VideoOverlayProps) {
 function App() {
     useEffect(() => {
         // 1) Локальная консоль ошибок
-  if (process.env.NODE_ENV !== 'production') {
-    import('eruda').then(m => m.default.init());
-  }
+        if (process.env.NODE_ENV !== 'production') {
+            import('eruda').then(m => m.default.init());
+        }
         // 2) Инициализируем Telegram Mini App SDK
         init();
 
@@ -88,75 +86,76 @@ function App() {
     }, []);
 
     return (
-        <UserProvider>
-      <AuthProvider>
+        // <UserProvider>
+        // <AuthProvider>
         <BrowserRouter>
-          <Suspense
-            fallback={
-              <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin" />
-              </div>
-            }
-          >
-            <DeepLinkRouter />
-            <BackButtonManager />
-            <Routes>
-                                    <Route path="/" element={<HomePage/>}/>
-                                    <Route path="/invite" element={<InviteFriendsPage/>}/>
-                                    <Route path="/about" element={<AboutPage/>}/>
-                                    <Route path="/instruction" element={<CompleteInstructionPage/>}/>
-                                    <Route path="/requirements" element={<RequirementsPage/>}/>
-                                    <Route path="/question" element={<QuestionPage/>}/>
-                                    <Route path="/catalog" element={<CatalogPage/>}/>
-                                    <Route path="/product/:productId" element={<ProductDetailPage/>}/>
-                                    <Route path="/product/:productId/instruction" element={<InstructionPage/>}/>
-                                    <Route path="/product/:orderId/step-1" element={<CartScreenshotPage/>}/>
-                                    <Route path="/order/:orderId/step-2" element={<ProductFindPage/>}/>
-                                    <Route path="/order/:orderId/step-3" element={<ProductFavoritePage/>}/>
-                                    <Route path="/order/:orderId/step-4" element={<PaymentDetailsPage/>}/>
-                                    <Route path="/order/:orderId/step-5" element={<StepOrderPlacement/>}/>
-                                    <Route path="/order/:orderId/step-6" element={<ProductPickupPage/>}/>
-                                    <Route path="/order/:orderId/step-7" element={<StepReviewReportPage/>}/>
-                                    <Route path="/order/:orderId/order-info" element={<FinalDealPage/>}/>
-                                    <Route path="/black-list/:sellerNickname" element={<BlacklistPage/>}/>
+            <Suspense
+                fallback={
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        <div
+                            className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                    </div>
+                }
+            >
+                <DeepLinkRouter/>
+                <BackButtonManager/>
+                <Routes>
+                    <Route path="/" element={<HomePage/>}/>
+                    <Route path="/invite" element={<InviteFriendsPage/>}/>
+                    <Route path="/about" element={<AboutPage/>}/>
+                    <Route path="/instruction" element={<CompleteInstructionPage/>}/>
+                    <Route path="/requirements" element={<RequirementsPage/>}/>
+                    <Route path="/question" element={<QuestionPage/>}/>
+                    <Route path="/catalog" element={<CatalogPage/>}/>
+                    <Route path="/product/:productId" element={<ProductDetailPage/>}/>
+                    <Route path="/product/:productId/instruction" element={<InstructionPage/>}/>
+                    <Route path="/product/:orderId/step-1" element={<CartScreenshotPage/>}/>
+                    <Route path="/order/:orderId/step-2" element={<ProductFindPage/>}/>
+                    <Route path="/order/:orderId/step-3" element={<ProductFavoritePage/>}/>
+                    <Route path="/order/:orderId/step-4" element={<PaymentDetailsPage/>}/>
+                    <Route path="/order/:orderId/step-5" element={<StepOrderPlacement/>}/>
+                    <Route path="/order/:orderId/step-6" element={<ProductPickupPage/>}/>
+                    <Route path="/order/:orderId/step-7" element={<StepReviewReportPage/>}/>
+                    <Route path="/order/:orderId/order-info" element={<FinalDealPage/>}/>
+                    <Route path="/black-list/:sellerNickname" element={<BlacklistPage/>}/>
 
-                                    <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
-                                    <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>
-                                    <Route path="/seller-cabinet/reports/:orderId" element={<OrderReportPage/>}/>
-                                    <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
-                                    <Route path="/my-products" element={<MyProductsPage/>}/>
-                                    <Route path="/create-product/:productId?" element={<CreateProductForm/>}/>
-                                    <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
-                                    <Route path="/user/orders" element={<MyOrdersPage/>}/>
+                    <Route path="/seller-cabinet" element={<SellerCabinet/>}/>
+                    <Route path="/seller-cabinet/reports" element={<SellerReportsPage/>}/>
+                    <Route path="/seller-cabinet/reports/:orderId" element={<OrderReportPage/>}/>
+                    <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
+                    <Route path="/my-products" element={<MyProductsPage/>}/>
+                    <Route path="/create-product/:productId?" element={<CreateProductForm/>}/>
+                    <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
+                    <Route path="/user/orders" element={<MyOrdersPage/>}/>
 
-                                    <Route path="/moderator" element={<ModeratorDashboard/>}/>
-                                    <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
-                                    <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
-                                    <Route path="/moderator/products/:productId"
-                                           element={<ModeratorProductReviewPage/>}/>
-                                    <Route path="/" element={<HomePage/>}/>
-                                    <Route path="/moderator" element={<ModeratorDashboard/>}/>
-                                    <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
-                                    <Route path="/moderator/users/:userId" element={<ModeratorUserDetailPage/>}/>
-                                    <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
-                                    <Route path="/moderator/products/:productId"
-                                           element={<ModeratorProductReviewPage/>}/>
+                    <Route path="/moderator" element={<ModeratorDashboard/>}/>
+                    <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
+                    <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
+                    <Route path="/moderator/products/:productId"
+                           element={<ModeratorProductReviewPage/>}/>
+                    <Route path="/" element={<HomePage/>}/>
+                    <Route path="/moderator" element={<ModeratorDashboard/>}/>
+                    <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
+                    <Route path="/moderator/users/:userId" element={<ModeratorUserDetailPage/>}/>
+                    <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
+                    <Route path="/moderator/products/:productId"
+                           element={<ModeratorProductReviewPage/>}/>
 
-                                    <Route path="/moderator/pushes" element={<PushAdminPage/>}/>
-                                    <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
-                                    <Route path="/moderator/pushes/:pushId" element={<PushDetailsPage/>}/>
-                                    <Route path="/moderator/pushes/:pushId/edit" element={<PushFormPage/>}/>
-                                    <Route path="/moderator/orders" element={<ModeratorOrdersPage/>}/>
-                                    {/*<Route path="/moderator/orders/:orderId" element={<ModeratorOrderDetailPage/>}/>*/}
-                                </Routes>
-                            </Suspense>
-                        </BrowserRouter>
-                        </AuthProvider>
+                    <Route path="/moderator/pushes" element={<PushAdminPage/>}/>
+                    <Route path="/moderator/pushes/new" element={<PushFormPage/>}/>
+                    <Route path="/moderator/pushes/:pushId" element={<PushDetailsPage/>}/>
+                    <Route path="/moderator/pushes/:pushId/edit" element={<PushFormPage/>}/>
+                    <Route path="/moderator/orders" element={<ModeratorOrdersPage/>}/>
+                    {/*<Route path="/moderator/orders/:orderId" element={<ModeratorOrderDetailPage/>}/>*/}
+                </Routes>
+            </Suspense>
+        </BrowserRouter>
+        // </AuthProvider>
 
-                        </UserProvider>
+        // </UserProvider>
 
-                        );
-                    }
+    );
+}
 
 
-                        export default App;
+export default App;

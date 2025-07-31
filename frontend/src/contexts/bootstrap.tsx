@@ -67,7 +67,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<BootstrapData | null>(null);
 
   useEffect(() => {
-    apiClient.get<BootstrapData>('/api/init')
+    apiClient.get<BootstrapData>('/init')
       .then(res => setData(res.data))
       .catch(console.error);
   }, []);
