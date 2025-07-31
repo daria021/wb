@@ -8,11 +8,11 @@ import {useUser} from "../../contexts/user";
 function translatePaymentTime(value: string): string {
     switch (value) {
         case 'AFTER_REVIEW':
-            return 'После отзыва';
+            return 'После публикации отзыва на WB';
         case 'AFTER_DELIVERY':
             return 'После получения товара';
         case 'ON_15TH_DAY':
-            return 'На 15-й день';
+            return 'Через 15 дней получения товара';
         default:
             return value;
     }
@@ -92,12 +92,6 @@ function InstructionPage() {
 
     return (
         <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-
-            <div className="fixed top-6 left-6 z-50 bg-brandlight rounded-lg p-2 flex items-center justify-center">
-                <button onClick={handleHomeClick} aria-label="На главную">
-                    <img src="/icons/home.png" alt="Домой" className="w-6 h-6" />
-                </button>
-            </div>
             <div className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Правила и условия</h1>
                 <p className="text-base text-gray-800 mb-4">
@@ -196,7 +190,8 @@ function InstructionPage() {
                         </label>
                     </div>
 
-                <button
+                                <div className="flex flex-col gap-2">
+                    <button
                     onClick={handleContinue}
                     disabled={!canContinue}
                     className={`w-full py-2 rounded-lg text-base font-semibold mt-2 ${
@@ -206,7 +201,13 @@ function InstructionPage() {
                     } mb-2`}
                 >
                     Продолжить
-                </button>
+                             </button>
+                    <button onClick={handleHomeClick}
+                    className="py-2 rounded-lg text-base font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        На главную
+                    </button>
+                </div>
                 </div>
                 )}
 

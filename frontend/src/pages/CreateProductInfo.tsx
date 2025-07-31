@@ -72,6 +72,9 @@ function CreateProductInfo() {
     const handleMyBalanceClick = () => {
         navigate(`/seller-cabinet/balance`);
     };
+    const handleHomeClick = () => {
+        navigate(`/`);
+    };
 
     const handleEditClick = () => {
         if (product) {
@@ -248,6 +251,12 @@ function CreateProductInfo() {
                         Снять с публикации
                     </button>
                 )}
+                                    <button
+                        onClick={handleHomeClick}
+                        className="flex-1 border border-brand text-brand p-2 rounded"
+                    >
+                        На главную
+                    </button>
             </div>
         </div>
     );

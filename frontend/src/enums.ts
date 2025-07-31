@@ -1,7 +1,7 @@
 export enum PayoutTime {
-    AFTER_REVIEW = 'После отзыва',
+    AFTER_REVIEW = 'После публикации отзыва на WB',
     AFTER_DELIVERY = 'После получения товара',
-    ON_15TH_DAY = 'На 15й день',
+    ON_15TH_DAY = 'Через 15 дней получения товара',
 }
 
 export enum Category {

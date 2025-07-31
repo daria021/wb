@@ -169,14 +169,17 @@ function ProductFindPage() {
                     РАЗДЕЛЕ "МОИ ПОКУПКИ".</p>
                 {order && <OrderHeader transactionCode={order.transaction_code} />}
 
-                <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Найдите товар раздачи в WB</h2>
-                <p>1) Найдите товар для выкупа на сайте или в приложении WB, используя предоставленное изображение.
-                    Для вашего удобства можете использовать функцию поиска по фотографии.
+                <h2 className="text-lg font-bold mb-2 text-brand">Шаг 2. Поиск нужного товара</h2>
+                <p>📦 Найди нужный товар на WB по фото
                 </p>
                 <p>
-                    2) Скопируйте артикул товара продавца и вставьте его в поле для проверки.
-                    Если артикул неверный, система не пропустит вас дальше, вы нашли не тот товар продавца в WB.
-                    Используйте фильтры по цене, цвету, бренду и другим параметрам для ускорения поиска.
+                    📌 Убедись, что артикул совпадает
+                </p>
+                <p>
+                    ❌ Если не совпал — это не тот товар
+                </p>
+                <p>
+                    ✅ Используй фильтры: цена, бренд, цвет
                 </p>
             </div>
 
@@ -213,7 +216,7 @@ function ProductFindPage() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full py-2 mb-4 rounded-lg text-brand border border-brand font-semibold text-center ${
+                className={`w-full py-2 mb-2 rounded-lg text-brand border border-brand font-semibold text-center ${
                     canContinue ? 'bg-brand text-white hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
@@ -343,7 +346,7 @@ function ProductFindPage() {
                     <button
                         onClick={() => navigate('/instruction')}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        <span>Полная инструкция выкупа товара</span>
+                        <span>Полная инструкция по выкупу товара</span>
                     </button>
                     <button
                         onClick={handleSupportClick}

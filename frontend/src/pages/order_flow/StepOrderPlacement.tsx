@@ -183,17 +183,20 @@ function StepOrderPlacement() {
                     ПОКУПКИ"</p>
                 {order && <OrderHeader transactionCode={order.transaction_code} />}
                 <div className="space-y-2">
-                <h1 className="text-lg font-bold mb-4 text-brand">Шаг 5. Оформите заказ в WB</h1>
-                <p>1) Оформите заказ на товар продавца для выкупа в WB.</p>
-                <p>2) Сделайте скриншот заказа из раздела "Доставки" в личном кабинете WB и загрузите его в отчет.</p>
-                <p><strong>Внимание!</strong> На скриншоте обязательно должна быть указана цена товара.
+                <h1 className="text-lg font-bold mb-4 text-brand">Шаг 5. Оформление заказа</h1>
+                <p>📦 Закажи товар продавца на WB</p>
+                    <p>📸 Сделай{' '}
+      <span
+        onClick={() => openModal(orderImgPath)}
+        className="underline text-blue-600 cursor-pointer"
+      >
+        скриншот заказа
+      </span>{' '}
+                         с ЦЕНОЙ из раздела Доставки
+    </p>
+
+                <p>🧾 Загрузи скриншот в отчёт
                 </p>
-                <div
-                    onClick={() => openModal(orderImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                    📷 Пример скриншота заказа в WB
-                </div>
 </div>
             </div>
 
@@ -212,7 +215,7 @@ function StepOrderPlacement() {
 
             {isOrderPlaced && (
                 <FileUploader
-                    label="Скриншот заказа"
+                    label="Скриншот заказа на WB"
                     file={file}
                     preview={preview}
                     onFileChange={setFile}
@@ -223,7 +226,7 @@ function StepOrderPlacement() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`w-full py-2 rounded text-brand mb-4 mt-4 ${
+                className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
                     canContinue
                         ? 'bg-brand text-white'
                         : 'bg-gray-200-400 border border-brand cursor-not-allowed'
@@ -410,7 +413,7 @@ function StepOrderPlacement() {
                     <button
                         onClick={() => navigate('/instruction')}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        <span>Полная инструкция выкупа товара</span>
+                        <span>Полная инструкция по выкупу товара</span>
                     </button>
                     <button
                         onClick={handleSupportClick}

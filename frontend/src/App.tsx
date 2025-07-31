@@ -5,6 +5,7 @@ import {DeepLinkRouter} from "./components/DeepLinkRouter";
 import {expandViewport, init, mountViewport} from '@telegram-apps/sdk';
 import ReactDOM from 'react-dom';
 import BackButtonManager from "./components/BackButtonManager";
+import InstructionSellerPage from "./pages/InstructionSellerPage";
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CatalogPage = lazy(() => import('./pages/CatalogPage'));
@@ -125,6 +126,7 @@ function App() {
                     <Route path="/seller-cabinet/balance" element={<SellerBalancePage/>}/>
                     <Route path="/my-products" element={<MyProductsPage/>}/>
                     <Route path="/create-product/:productId?" element={<CreateProductForm/>}/>
+                    <Route path="/create-product/:productId?/instruction" element={<InstructionSellerPage/>}/>
                     <Route path="/product/:productId/seller" element={<CreateProductInfo/>}/>
                     <Route path="/user/orders" element={<MyOrdersPage/>}/>
 

@@ -14,9 +14,10 @@ interface Product {
     article: string;
     price: number;
     wb_price: number;
-    requirements_agree: boolean;
     tg: string;
     seller_id: string;
+    review_requirements: string;
+    requirements_agree: boolean;
 }
 
 interface Order {
@@ -270,41 +271,45 @@ function StepReviewReportPage() {
                 <div className="space-y-2">
 
                 <h1 className="text-lg font-bold">Шаг 7. Написание и публикация отзыва</h1>
-                <p>1) Напишите и согласуйте отзыв товара с продавцом в Telegram перед публикацией, если это
-                    предусмотрено условиями программы по получению кешбэка.
-                    Если согласование не требуется, вы можете оставить отзыв самостоятельно.
+                <p>📝 Напиши отзыв и согласуй с продавцом в Telegram перед публикацией (если нужно)
                 </p>
-                <p><strong>Важно!</strong> Не публикуйте согласованный отзыв без предварительного одобрения продавца,
-                    даже если он не отвечает более 5 дней. В таком случае, пожалуйста, напомните ему о себе.
+                <p><strong>Важно!</strong> Не публикуй согласованный отзыв без предварительного одобрения
+                    продавца, даже если он не отвечает более 5 дней, напомни ему о себе.
                 </p>
-                <p>2) Оставьте отзыв товара в WB и прикрепите его скриншот:</p>
-                <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Фото: качественное изображение товара в использовании и без упаковки.</li>
-                    <li>Видео, если возможно: демонстрация товара.</li>
-                    <li>Текст: подробное описание опыта использования товара.</li>
-                    <li>Оценка: 5 звезд.</li>
-                </ul>
+                <p>⭐ Состав отзыва: 5 звёзд, фото/видео, подробности опыта использования товара</p>
+                <p>📸 Прикрепи{' '}
+      <span
+        onClick={() => openModal(feedbackImgPath)}
+        className="underline text-blue-600 cursor-pointer"
+      >
+        скриншот отзыва
+      </span>{' '}
+                    на WB</p>
 
-
-                <div
-                    onClick={() => openModal(feedbackImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                    📷 Пример скриншота хорошего отзыва
-                </div>
-
-                <p>3) Скопируйте номер электронного чека заказа из раздела "Финансы" в личном кабинете WB и вставьте его
-                    в поле для ввода.
+                <p>🧾 Добавь электронный чек заказа из раздела "Финансы" (номер + скрин)
                 </p>
-                <p>4) Сделайте и загрузите скриншот электронного чека заказа.
-                </p>
+                    {order.product.review_requirements && (
+      <p>Требования к отзыву: {order.product.review_requirements}</p>
+    )}
+
+    <p>
+      Согласование отзыва с продавцом{' '}
+      <span
+        onClick={handleCheckSeller}
+        className="underline text-blue-600 cursor-pointer"
+      >
+        {order.seller.nickname}
+      </span>
+      : {order.product.requirements_agree ? 'Требуется' : 'Не требуется'}
+    </p>
+
 
             </div>
             </div>
 
             {order.product.requirements_agree ? (
                 <>
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-center mb-4 mt-2">
                         <input
                             type="checkbox"
                             id="agreedWithSeller"
@@ -377,23 +382,17 @@ function StepReviewReportPage() {
                     className="w-full border border-darkGray rounded-md p-2 text-sm"
                 />
             </div>
-            <div className="flex gap-2 mb-4 mt-4">
-                <button
-                    onClick={() => navigate(`/black-list/${order.seller.nickname}`)}
-                    className="flex-1 bg-white text-gray-700 text-sm py-2 rounded-lg border border-brand text-center"
-                >
-                    Проверить продавца
-                </button>
-                <button
+
+            <section className="flex flex-col gap-2 mt-2 mb-2">
+
+                    <button
                     onClick={handleContinue}
                     disabled={!canContinue}
-                    className={`flex-1 py-2 rounded text-brand text-sm ${
-                        canContinue ? 'bg-brand text-white hover:bg-brand-dark' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
-                    }`}
+                    className={`w-full py-2 rounded text-brand mb-4 ${canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'}`}
                 >
                     Продолжить
                 </button>
-            </div>
+                </section>
 
             <div className="space-y-4">
 
@@ -645,7 +644,7 @@ function StepReviewReportPage() {
                     <button
                         onClick={() => navigate('/instruction')}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        <span>Полная инструкция выкупа товара</span>
+                        <span>Полная инструкция по выкупу товара</span>
                     </button>
 
                     <button

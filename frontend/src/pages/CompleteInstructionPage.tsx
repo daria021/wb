@@ -16,7 +16,7 @@ function InstructionsPage() {
     const handleAboutClick = () => navigate('/about');
 
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
-        const barcodeImgPath = '/images/barcode.jpg';
+    const barcodeImgPath = '/images/barcode.jpg';
     const feedbackImgPath = '/images/feedback.jpg';
     const orderImgPath = '/images/order.jpg';
 
@@ -25,7 +25,7 @@ function InstructionsPage() {
     const openModal = (src: string) => {
         setModalContent({src, isVideo: src.endsWith('.mp4')});
     };
-        const receivingImgPath = '/images/receiving.jpg';
+    const receivingImgPath = '/images/receiving.jpg';
 
     const closeModal = () => setModalContent(null);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -62,7 +62,7 @@ function InstructionsPage() {
     },
         {
             id: 2,
-            title: '🎥 Пояснение про ситуацию, когда товара нет в наличии на WB',
+            title: '🎥 Что делать, если товара нет в наличии на WB',
             src: 'https://storage.googleapis.com/images_avocado/VideoCashback/6%20Buyer%20Step%202%20If%20the%20SKU%20is%20incorrect%20Explanation%20about%20the%20situation%20when%20the%20product%20is%20not%20available%20on%20the%20WB%20and%20the%20redemption%20limit%20Step%203.MP4',
         },
     ];
@@ -153,7 +153,7 @@ function InstructionsPage() {
         id: 1,
         title: '🎥 Как карточка товара получает статус ',
         src: 'https://storage.googleapis.com/images_avocado/VideoCashback/5%20Seller%20Working%20with%20Products%20Placing%20a%20product%20card%20and%20explaining%20its%20status.MP4',
-    },{
+    }, {
         id: 2,
         title: '🎥 Как проверить статус карточек товаров',
         src: 'https://storage.googleapis.com/images_avocado/VideoCashback/6%20Seller%20Card%20Statuses%20How%20to%20view%20statuses%2C%20how%20many%20there%20are%20in%20total.MP4',
@@ -164,7 +164,7 @@ function InstructionsPage() {
         id: 1,
         title: '🎥 Как обновить информацию о вашем товаре',
         src: 'https://storage.googleapis.com/images_avocado/VideoCashback/12%20Seller%20How%20to%20edit%20a%20product%20card.MP4',
-    },{
+    }, {
         id: 2,
         title: '🎥 Что происходит после сохранения изменений в карточке товара ',
         src: 'https://storage.googleapis.com/images_avocado/VideoCashback/13%20Seller%20How%20to%20edit%20a%20product%20card%20Continuation%20with%20an%20explanation%20of%20what%20happens%20to%20the%20card%20after%20editing.MP4',
@@ -198,42 +198,54 @@ function InstructionsPage() {
     },
     ];
 
-return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-        <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
-            {/* Tabs */}
-            <div className="flex mb-8 border-b">
-                <button
-                    onClick={() => setActiveTab('buyer')}
-                    className={`px-4 py-2 font-semibold ${activeTab === 'buyer' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
-                >
-                    Покупателю
-                </button>
-                <button
-                    onClick={() => setActiveTab('seller')}
-                    className={`px-4 py-2 font-semibold ${activeTab === 'seller' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
-                >
-                    Продавцу
-                </button>
-            </div>
+    return (
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+            <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
+                {/* Tabs */}
+                <div className="flex mb-8 border-b">
+                    <button
+                        onClick={() => setActiveTab('buyer')}
+                        className={`px-4 py-2 font-semibold ${activeTab === 'buyer' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+                    >
+                        Покупателю
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('seller')}
+                        className={`px-4 py-2 font-semibold ${activeTab === 'seller' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+                    >
+                        Продавцу
+                    </button>
+                </div>
 
-            {/* Buyer Instructions */}
-            {activeTab === 'buyer' && (
-                <>
-                    <h2 className="text-2xl font-bold mb-6 text-center">Инструкция выкупа товара для покупателя</h2>
-                    <p className="items-start gap-2 text-sm italic">
-                        Premium Cash Back WB — <strong>ваш помощник в получении товаров за отзыв!</strong> Следуйте этой пошаговой
-                        инструкции, чтобы получить кешбэк и приятный опыт покупок.
+                {/* Buyer Instructions */}
+                {activeTab === 'buyer' && (
+                    <>
+                        <h2 className="text-2xl font-bold mb-6 text-center">Инструкция выкупа товара для покупателя</h2>
+                        <p className="items-start gap-2 text-sm">
+                            <strong>⚠️ Перед покупкой — проверь продавца!</strong>
+                        </p>
                         <br/>
-                    </p>
-                                            <br/>
-                    <p className="text-sm mb-8 text-left">
-                        <strong>Важно!</strong> Прежде чем приступить к сделке по выкупу товара, убедитесь в надежности
-                        продавца. Это поможет избежать неприятных ситуаций. <strong>Рекомендуем посмотреть
-                        видео.</strong>
-                        {" "}
-                        <section className="mb-6 mt-4">
-                            {videos.map(({id, title, src}) => (
+                        <p className="text-sm mb-8 text-left">
+                                <strong>📺 Посмотри </strong>
+                                <span
+                                    onClick={() => setOpenSrc(videos[0].src)}
+                                    className="underline text-blue-600 cursor-pointer"
+                                >
+    видео-инструкцию
+                                </span>, <strong>чтобы избежать ошибок.</strong>
+                        </p>
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 1. Поиск товара по ключевому слову</h3>
+                            <p>🔍 Найди товары по ключевому слову на WB (НЕ товар кешбэк-продавца!)</p>
+
+                            <p>🛒 Добавь несколько конкурентов в корзину WB</p>
+
+                            <p>📸 Сделай скриншоты и прикрепи в отчёт</p>
+
+                        </section>
+                        <section className="mb-6">
+                            {videoStep1.map(({id, title, src}) => (
                                 <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
                                     <button
                                         className="text-sm font-medium text-blue-600 hover:underline"
@@ -244,587 +256,527 @@ return (
                                 </div>
                             ))}
                         </section>
-                    </p>
 
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 1. Ключевое слово</h3>
-                        <p>1) Найдите товар выкупа по ключевому слову в поиске на сайте или в приложении WB. Сделайте
-                            скриншот поискового запроса в WB.</p>
+                        <hr className="my-6 border-darkGray"/>
 
-                        <p>2) Добавьте несколько товаров конкурентов (разных брендов) в корзину WB. Сделайте скриншот
-                            корзины в WB.
-                            Важно! Не ищите товар продавца из кешбэк-бота на этом этапе.</p>
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Поиск товара</h3>
 
-                        <p>3) Прикрепите скриншоты в отчет для получения кешбэка.</p>
+                            <p>📦 Найди нужный товар на WB по фото</p>
+                            <p>📌 Убедись, что артикул совпадает</p>
+                            <p>❌ Если не совпал — это не тот товар</p>
+                            <p>✅ Используй фильтры: цена, бренд, цвет</p>
 
-                    </section>
-                    <section className="mb-6">
-                        {videoStep1.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
+                        </section>
 
-                    <hr className="my-6 border-darkGray"/>
+                        <section className="mb-6">
+                            {videoStep2.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
 
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Поиск товара</h3>
+                        <hr className="my-6 border-darkGray"/>
 
-                        <p>1) Найдите товар для выкупа на сайте или в приложении WB, используя предоставленное
-                            изображение. Для вашего удобства можете использовать функцию поиска по фотографии.
-                        </p>
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Добавление товара в избранное</h3>
+                            <p> ⭐ Добавь товар и бренд продавца в избранное на WB</p>
 
-                        <p>2) Скопируйте артикул товара продавца и вставьте его в поле для проверки.
-                            Если артикул неверный, система не пропустит вас дальше, вы нашли не тот товар продавца в WB.
-                            Используйте фильтры по цене, цвету, бренду и другим параметрам для ускорения поиска.</p>
+                        </section>
+                        <section className="mb-6">
+                            {videoStep3.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
 
-                    </section>
+                        <hr className="my-6 border-darkGray"/>
 
-                    <section className="mb-6">
-                        {videoStep2.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Реквизиты для получения кешбэка </h3>
 
-                    <hr className="my-6 border-darkGray"/>
+                            <p>💳 Укажи карту, телефон и имя и выбери банк из списка</p>
+                            <p>✅ Проверь данные</p>
+                            <p>💸 Кешбэк будет переведён на карту или через СБП</p>
+                        </section>
+                        <section className="mb-6">
+                            {videoStep4.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
 
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Товар и бренд в избранное</h3>
-                        <p> Добавьте товар и бренд продавца в избранное на сайте или в приложении WB.</p>
+                        <hr className="my-6 border-darkGray"/>
 
-                    </section>
-                    <section className="mb-6">
-                        {videoStep3.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Реквизиты для получения кешбэка</h3>
-                        <ul className="list-disc list-inside ml-6">
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Оформление заказа</h3>
+                            <p>📦 Закажи товар продавца на WB</p>
                             <p>
-                                1) Укажите реквизиты для получения кешбэка:
+  📸 Сделай{' '}
+  <span
+    onClick={() => openModal(orderImgPath)}
+    className="underline text-blue-600 cursor-pointer"
+  >
+    скриншот заказа
+  </span>{' '}
+  с ЦЕНОЙ из раздела Доставки
+</p>
+                                                        <p>🧾 Загрузи скриншот в отчёт</p>
+
+
+                        </section>
+                        <section className="mb-6">
+                            {videoStep5.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Получение товара и подготовка отчета</h3>
+                            <p>📦 Забери товар</p>
+                            <p>📸 Сделай{' '}
+                                  <span
+    onClick={() => openModal(receivingImgPath)}
+    className="underline text-blue-600 cursor-pointer"
+  >
+    скриншот
+  </span>{' '}
+                                с ценой товара, датой получения и статусом
+                                "Доставлен" из раздела Покупки и прикрепи в отчёт</p>
+
+                            <p>✂️ Разрежь штрихкод</p>
+                            <p>📸 Сфотографируй его на фоне товара и прикрепи{' '}
+                                  <span
+    onClick={() => openModal(barcodeImgPath)}
+    className="underline text-blue-600 cursor-pointer"
+  >
+    фото
+  </span>{' '}
+                                в отчёт</p>
+
+<p>⚠️ Важно: отправить отчет в день получения товара!</p>
+
+
+                        </section>
+                        <section className="mb-6">
+                            {videoStep6.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8 space-y-4">
+                            <h3 className="text-xl font-bold text-left">
+                                Шаг 7. Написание и публикация отзыва
+                            </h3>
+
+                            <div className="space-y-2">
+                                <p>
+                                    📝 Напиши отзыв и согласуй с продавцом в Telegram перед публикацией (если нужно)
+                                </p>
+
+                                <p>
+                                    <strong>Важно!</strong> Не публикуй согласованный отзыв без предварительного
+                                    одобрения продавца, даже если он не отвечает более 5 дней, напомни ему о себе.
+                                </p>
+
+                                <p>
+                                    ⭐ Состав отзыва: 5 звёзд, фото/видео, подробности опыта использования товара
+                                </p>
+                                <p>
+                                    📸 Прикрепи{' '}
+                                      <span
+    onClick={() => openModal(feedbackImgPath)}
+    className="underline text-blue-600 cursor-pointer"
+  >
+    скриншот отзыва
+  </span>{' '}
+                                    на WB
+                                </p>
+
+
+                                <p>
+                                    🧾 Добавь электронный чек заказа из раздела "Финансы" (номер + скрин)
+                                </p>
+
+                            </div>
+                        </section>
+
+                        <section className="mb-6">
+                            {videoStep7.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                    </>
+                )}
+
+                {/* Seller Instructions */}
+                {activeTab === 'seller' && (
+                    <>
+                        <h2 className="text-2xl font-bold mb-6 text-center">Инструкция для продавца</h2>
+                        {/*<p className="items-start gap-2 text-sm italic">*/}
+                        {/*    Premium Cash Back WB — <strong>ваш помощник в получении товаров за отзыв!</strong> Следуйте*/}
+                        {/*    этой пошаговой*/}
+                        {/*    инструкции, чтобы получить кешбэк и приятный опыт покупок.*/}
+                        {/*    <br/>*/}
+                        {/*</p>*/}
+                        {/*<br/>*/}
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 1. Вход в кабинет </h3>
+                            <p>🚀 Запусти кешбэк-бот</p>
+                            <p>🔐 Нажми "Старт" → "Кабинет продавца"</p>
+                            <p>🔄 Управляй своими товарами прямо из Telegram</p>
+
+                        </section>
+                        <section className="mb-6">
+                            {videoSellerStep1.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Пополнение баланса</h3>
+                            <p>💰 Перейди в "Баланс"</p>
+                            <p>➕ Нажми "Пополнить"</p>
+                            <p>📞 Свяжись с админом</p>
+                            <p>💵 Баланс нужен для раздачи товара покупателям</p>
+
+                        </section>
+
+                        <section className="mb-6">
+                            {videoSellerStep2.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Размещение товара (1/2)
+                            </h3>
+
+                            <p>🛍 Зайди в "Мои товары"
+
                             </p>
-                            <li>Номер карты.</li>
-                            <li>Номер телефона.</li>
-                            <li>Фамилия и имя.</li>
-                        </ul>
-                        <p><strong>Внимание!</strong> Вы можете выбрать только банки, представленные в списке.</p>
-                        <p>
-                            2) Убедитесь, что все данные указаны верно.
-                            Кешбэк может быть выплачен как на карту, так и через СБП на усмотрение продавца.
-                        </p>
-                    </section>
-                    <section className="mb-6">
-                        {videoStep4.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
+                            <p>
+                                ➕ Нажми "Разместить товар"
 
-                    <hr className="my-6 border-darkGray"/>
+                            </p>
+                            <p>📸 Загрузи фото
+</p>
+                            <p>📝 Укажи требования к отзыву</p>
+                            <p>📌 Не забудь написать свой Telegram-ник для связи с "@"</p>
+                        </section>
+                        <section className="mb-6">
+                            {videoSellerStep3.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
 
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Оформление заказа</h3>
-                        <p>1) Оформите заказ на товар продавца для выкупа в WB.</p>
-                        <p>2) Сделайте скриншот заказа из раздела "Доставки" в личном кабинете WB и загрузите его в
-                            отчет.
-                        <br/>
-                            <strong>Внимание!</strong> На скриншоте обязательно должна быть указана цена товара.
-                        </p>
+                        <hr className="my-6 border-darkGray"/>
 
-                                        <div
-                    onClick={() => openModal(orderImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                    📷 Пример скриншота заказа в WB
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Размещение товара (2/2)
+                            </h3>
+                            {/* Пункт 1 нумерованного списка */}
+                            <p>
+                                📆 Выбери тип выплаты кешбэка
+                            </p>
+
+                            <p>🛑 Нужно согласование отзыва? Включи эту опцию
+</p>
+                            <p>✅ Отправь на модерацию</p>
+                            <p>⚙️ При одобрении и наличии баланса — товар становится активным</p>
+
+                        </section>
+                        <section className="mb-6">
+                            {videoSellerStep4.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Проверка статуса карточки</h3>
+                            <p>📦 Зайди в "Мои товары"</p>
+                            <p>🔍 Используй фильтры: Активные, Созданные, Отклонённые, Архивные</p>
+                            <p>📌 Не оплаченные? Пополни баланс, и они станут активными</p>
+
+
+                        </section>
+
+                        <section className="mb-6">
+                            {videoSellerStep5.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Редактирование карточки
+                            </h3>
+                            <p>✏️ Выбери карточку в статусе "Активные"
+                            </p>
+                            <p>🛠 Нажми "Редактировать"
+                            </p>
+                            <p>📸 Обнови фото, цену, текст
+                            </p>
+                            <p>💡 После сохранения — карточка снова пройдёт модерацию
+                            </p>
+
+
+                        </section>
+
+                        <section className="mb-6">
+                            {videoSellerStep6.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 7. Снятие с публикации</h3>
+                            <p>
+                                👁 Хочешь временно скрыть товар?
+                            </p>
+                            <p>
+                                📦 Открой карточку → "Снять с публикации"
+                            </p>
+                            <p>
+                                📁 Она перейдёт в "Архивные"
+                            </p>
+                        </section>
+
+                        <section className="mb-6">
+                            {videoSellerStep7.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 8. Вернуть карточку из архива</h3>
+                            <p>🔁 Хочешь снова раздавать товар?
+
+                            </p>
+                            <p>
+                                📦 Найди в "Архивных"
+                            </p>
+                            <p>
+                                📤 Нажми "Опубликовать" — карточка снова активна
+                            </p>
+
+                        </section>
+                        <section className="mb-6">
+                            {videoSellerStep8.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 9. Отчёты по выкупам</h3>
+                            <p>📊 В разделе "Отчёты по выкупам" — всё прозрачно:</p>
+                            <p>📦 Кто выкупил
+💸 Актуальный статус выплаты кешбэка — в 1 клик</p>
+                            <p>💸 Актуальный статус выплаты кешбэка — в 1 клик</p>
+
+                        </section>
+                        <section className="mb-6">
+                            {videoSellerStep9.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+                        <hr className="my-6 border-darkGray"/>
+
+                        <section className="mb-8 space-y-2">
+                            <h3 className="text-xl font-bold mb-4 text-left">Шаг 10. Реферальная программа</h3>
+                            <p>🎁 Приглашай продавцов</p>
+                            <p>
+                                🔗 Получи ссылку в разделе "Реферальная программа"
+                            </p>
+                            <p>👥 Поделись в Telegram и получай бонусы
+                            </p>
+
+                        </section>
+
+                        <section className="mb-6">
+                            {videoSellerStep9.map(({id, title, src}) => (
+                                <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
+                                    <button
+                                        className="text-sm font-medium text-blue-600 hover:underline"
+                                        onClick={() => setOpenSrc(src)}
+                                    >
+                                        {title}
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+
+
+                    </>
+                )}
+
+                {/* Back to main button */}
+                <div className="flex flex-col gap-2">
+                    <button
+                        onClick={handleAboutClick}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        О сервисе
+                    </button>
+                    <button
+                        onClick={handleRequirementsClick}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        Требования к отчету
+                    </button>
+
+                    <button
+                        onClick={handleHomeClick}
+                        className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        На главную
+                    </button>
+
                 </div>
-                    </section>
-                    <section className="mb-6">
-                        {videoStep5.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Скриншоты доставки и штрихкода</h3>
-                        <p>1) Заберите товар как обычно.</p>
-                        <p>2) Сделайте и загрузите скриншот информации о получении товара в разделе "Покупки" из личного
-                            кабинета WB, где указаны стоимость товара, дата получения и статус "Доставлен".</p>
-                                        <div
-                    onClick={() => openModal(receivingImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                    📷 Пример скриншота получения товара в WB
-                </div>
-                        <p>3) Разрежьте штрихкод товара.</p>
-                        <p>4) Сделайте и загрузите фотографию разрезанного штрихкода на фоне товара (без упаковки).</p>
-                                        <div
-                    onClick={() => openModal(barcodeImgPath)}
-                    className="underline text-blue-600 cursor-pointer"
-                >
-                    📷 Пример разрезанного штрихкода товара
-                </div>
-                        <p>
-                            <strong>Внимание!</strong> Для выполнения условий по получению кешбэка за выкуп товара важно
-                            отправить отчет <u>в день</u> получения товара.
-                        </p>
-                    </section>
-                    <section className="mb-6">
-                        {videoStep6.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-4">
-  <h3 className="text-xl font-bold text-left">
-    Шаг 7. Публикация отзыва
-  </h3>
-
-  <div className="space-y-2">
-    <p>
-      1) Напишите и согласуйте отзыв товара с продавцом в Telegram перед публикацией, если это
-      предусмотрено условиями программы по получению кешбэка. Если согласование не требуется, вы можете
-      оставить отзыв самостоятельно.
-    </p>
-
-    <p>
-      <strong>Важно!</strong> Не публикуйте согласованный отзыв без предварительного одобрения
-      продавца, даже если он не отвечает более 5 дней. В таком случае, пожалуйста, напомните ему о себе.
-    </p>
-
-    <p>
-      2) Оставьте отзыв товара в WB и прикрепите его скриншот:
-    </p>
-
-    <ul className="list-disc pl-5 space-y-1">
-      <li>Фото: качественное изображение товара в использовании и без упаковки.</li>
-      <li>Видео (если возможно): демонстрация товара.</li>
-      <li>Текст: подробное описание опыта использования товара.</li>
-      <li>Оценка: 5 звёзд.</li>
-    </ul>
-
-    <div
-      onClick={() => openModal(feedbackImgPath)}
-      className="underline text-blue-600 cursor-pointer"
-    >
-      📷 Пример скриншота хорошего отзыва
-    </div>
-
-    <p>
-      3) Скопируйте номер электронного чека заказа из раздела "Финансы" в личном кабинете WB и вставьте
-      его в поле для ввода.
-    </p>
-
-    <p>
-      4) Сделайте и загрузите скриншот электронного чека заказа.
-    </p>
-  </div>
-</section>
-
-                    <section className="mb-6">
-                        {videoStep7.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-                </>
-            )}
-
-
-
-            {/* Seller Instructions */}
-            {activeTab === 'seller' && (
-                <>
-                    <h2 className="text-2xl font-bold mb-6 text-center">Инструкция для продавца</h2>
-                           <p className="items-start gap-2 text-sm italic">
-                        Premium Cash Back WB — <strong>ваш помощник в получении товаров за отзыв!</strong> Следуйте этой пошаговой
-                        инструкции, чтобы получить кешбэк и приятный опыт покупок.
-                        <br/>
-                    </p>
-                        <br/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 1. Доступ в кабинет продавца</h3>
-                        <p>1) Запустите бота, нажав кнопку "Старт", чтобы войти в кабинет продавца.</p>
-
-<p>2) Выберите "Открыть приложение" и перейдите в раздел "Кабинет продавца".
-</p>
-
-                    </section>
-                         <section className="mb-6">
-                        {videoSellerStep1.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 2. Пополнение баланса для раздачи товаров</h3>
-                        <p>
-1) Откройте "Кабинет продавца", перейдите в раздел "Баланс" и нажмите на кнопку "Пополнить".
-</p>
-                        <p>
-2) Свяжитесь с администратором для дальнейших действий, чтобы пополнить счет на необходимую сумму для раздачи товаров. Средства используются для выплаты кешбэка покупателям.
-</p>
-
-                    </section>
-
-                         <section className="mb-6">
-                        {videoSellerStep2.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 3. Размещение товаров или добавление новых позиций  (часть 1)
-</h3>
-
-                        <p>1) Войдите в кабинет продавца и выберите раздел "Мои товары".
-                        </p>
-                        <p>
-                            2) Нажмите на кнопку "Разместить товар".
-                        </p>
-                        <p>3) Заполните все необходимые поля, загрузите фотографии вашего товара и обязательно укажите требования к отзыву.
-Укажите, нужно ли добавлять фото или видео, ставить оценку и какие требования предъявляются к тексту отзыва. </p>
-                        <p>Важно! Не забудьте указать свой ник в Telegram с символом «@», чтобы покупатели могли легко связаться с вами для согласования отзыва.
-</p>
-                    </section>
-                         <section className="mb-6">
-                        {videoSellerStep3.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 4. Размещение товаров или добавление новых позиций (часть 2)
-</h3>
-                        {/* Пункт 1 нумерованного списка */}
-                          <p>
-    1) После заполнения всех необходимых полей и загрузки изображения товара выберите дату выплаты кешбэка покупателю:
-  </p>
-
-  <ul className="list-disc pl-5 space-y-1">
-    <li>После публикации отзыва товара в WB.</li>
-    <li>После получения товара.</li>
-    <li>На 15-й день после получения товара.</li>
-  </ul>
-
-                        <p>2) Нажмите на "Согласовать отзыв с продавцом", если требуется.</p>
-                        <p>3) Нажмите на "Отправить заявку". В ближайшее время ваша карточка товара будет рассмотрена модератором.
-При достаточном балансе раздач и одобрении модератором, карточка станет активной, и товар будет доступен для выкупа.
-</p>
-
-                    </section>
-                                             <section className="mb-6">
-                        {videoSellerStep4.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 5. Статусы карточки товаров</h3>
-                        <p>
-Войдите в кабинет продавца и выберите раздел "Мои товары", чтобы узнать текущий статус вашей карточки товара, используя кнопки фильтра для сортировки.
-</p>
-                        <ul className="list-disc pl-5 space-y-1">
-  <li>Активные — карточки товаров с оплаченным балансом раздач прошли модерацию и доступны для выкупа покупателям.</li>
-  <li>Созданные — карточки товаров после размещения ожидают проверки модератором, после которой будут в статусе «Активные».</li>
-  <li>Отклонённые — карточки товаров не прошли модерацию и не доступны для раздачи, но их можно отредактировать, после чего они будут в статусе «Созданные».</li>
-  <li>Архивные — карточки товаров сняты с публикации, а также вы можете переместить любую карточку товара в архив.</li>
-  <li>Не оплаченные — карточки товаров прошли модерацию, но после пополнения баланса раздачи будут в статусе «Активные».</li>
-</ul>
-
-                    </section>
-
-                                                                 <section className="mb-6">
-                        {videoSellerStep5.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 6. Редактирование опубликованной карточки товара
-</h3>
-                        <p>1) Войдите в кабинет продавца и выберите раздел "Мои товары".
-</p>
-                        <p>2) Найдите нужную карточку товара в статусе "Активные" и нажмите на неё, затем нажмите кнопку "Редактировать", чтобы внести любые необходимые изменения, например, цену, ключевые слова, изображение товара и другие данные.
-</p>
-                        <p>3) Убедитесь, что все изменения внесены корректно. Затем нажмите "Все верно. Применить" для сохранения изменений.
-</p>
-                        <p><strong>Важно!</strong> После редактирования карточка товара временно снимается с публикации и приобретает статус "Созданные", после успешной проверки модератором вернется в "Активные".
-</p>
-
-
-                    </section>
-
-                                                                 <section className="mb-6">
-                        {videoSellerStep6.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 7. Снятие карточки с публикации</h3>
-                        <p>
-1) Войдите в кабинет продавца и выберите раздел "Мои товары", чтобы временно скрыть карточку товара от раздачи для покупателей.
-</p>
-                        <p>
-2) Найдите и откройте необходимую карточку товара.
-</p>
-                         <p>
-3) В нижней части экрана нажмите кнопку "Снять с публикации".
-Карточка товара станет невидимой для покупателей и приобретет статус "Архивные".
-</p>
-                    </section>
-
-                                                                 <section className="mb-6">
-                        {videoSellerStep7.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 8. Возврат карточки из архива</h3>
-                        <p>1) Войдите в кабинет продавца и выберите раздел "Мои товары", чтобы вернуть карточку товара из архива и снова возобновить раздачу выкупа.
-</p>
-                        <p>
-2) Найдите и откройте необходимую карточку товара.
-</p>
-                        <p>
-3) В нижней части экрана нажмите кнопку "Опубликовать".
-Карточка товара станет видимой для покупателей и вернется в свой прежний статус "Активные".
-</p>
-
-                    </section>
-                                                                                     <section className="mb-6">
-                        {videoSellerStep8.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 9. Отчёты по выкупам</h3>
-                        <p>Войдите в кабинет продавца и выберите раздел "Отчеты по выкупам", чтобы получить полную информацию о выкупах ваших товаров и отследить статус начисления кэшбэка по каждому заказу: был ли он выплачен или еще нет.
-</p>
-
-                    </section>
-                                                                                                             <section className="mb-6">
-                        {videoSellerStep9.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-                    <hr className="my-6 border-darkGray"/>
-
-                    <section className="mb-8 space-y-2">
-                        <h3 className="text-xl font-bold mb-4 text-left">Шаг 10. Реферальная программа</h3>
-                        <p>Приглашайте новых продавцов в кешбэк-бот и получайте бонусы за их первые покупки. Вознаграждение начисляется согласно условиям реферальной программы.
-</p>
-                        <p>
-1) Нажмите на кнопку "Реферальная программа", чтобы начать.
-</p>
-                        <p>2) Скопируйте вашу ссылку и поделитесь ею с друзьями через кнопку "Поделиться в Telegram".
-</p>
-
-                    </section>
-
-                                                                                                             <section className="mb-6">
-                        {videoSellerStep9.map(({id, title, src}) => (
-                            <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                                <button
-                                    className="text-sm font-medium text-blue-600 hover:underline"
-                                    onClick={() => setOpenSrc(src)}
-                                >
-                                    {title}
-                                </button>
-                            </div>
-                        ))}
-                    </section>
-
-
-                </>
-            )}
-
-            {/* Back to main button */}
-            <div className="flex flex-col gap-2">
-                                <button
-                    onClick={handleAboutClick}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                >
-                    О сервисе
-                </button>
-                                <button
-                    onClick={handleRequirementsClick}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                >
-                    Требования к отчету
-                </button>
-
-                <button
-                    onClick={handleHomeClick}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                >
-                    На главную
-                </button>
-
             </div>
-        </div>
-        {modalContent && (
-            <>
-                {/* Overlay */}
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-40"
-                    onClick={closeModal}
-                />
-
-                {/* Centered modal */}
-                <div
-                    className="fixed inset-0 flex items-center justify-center z-50"
-                    onClick={closeModal}
-                >
+            {modalContent && (
+                <>
+                    {/* Overlay */}
                     <div
-                        onClick={e => e.stopPropagation()}
-                        className="
+                        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-40"
+                        onClick={closeModal}
+                    />
+
+                    {/* Centered modal */}
+                    <div
+                        className="fixed inset-0 flex items-center justify-center z-50"
+                        onClick={closeModal}
+                    >
+                        <div
+                            onClick={e => e.stopPropagation()}
+                            className="
             relative
             bg-white
             rounded-lg
@@ -836,58 +788,58 @@ return (
             max-w-4xl     /* optional cap on very large screens */
             max-h-[90vh]
           "
-                    >
-                        {/* Close button */}
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-2 right-2 text-2xl text-gray-700 z-10"
                         >
-                            &times;
-                        </button>
+                            {/* Close button */}
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-2 right-2 text-2xl text-gray-700 z-10"
+                            >
+                                &times;
+                            </button>
 
-                        {/* Content (95% of modal box) */}
-                        {modalContent.isVideo ? (
-                            <video
-                                src={modalContent.src}
-                                controls
-                                className="w-[95%] h-[95%] object-contain"
-                            />
-                        ) : (
-                            <img
-                                src={modalContent.src}
-                                alt="Пример"
-                                className="w-[95%] h-[95%] object-contain"
-                            />
-                        )}
+                            {/* Content (95% of modal box) */}
+                            {modalContent.isVideo ? (
+                                <video
+                                    src={modalContent.src}
+                                    controls
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            ) : (
+                                <img
+                                    src={modalContent.src}
+                                    alt="Пример"
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
-            </>
-        )}
+                </>
+            )}
 
-        {openSrc && (
-            <VideoOverlay onClose={() => setOpenSrc(null)}>
-                <div
-                    className="relative bg-black p-4 max-h-[100vh] max-w-[92vw] overflow-auto"
-                    onClick={e => e.stopPropagation()}
-                >
-                    <button
-                        className="absolute top-2 right-2 z-20 text-white text-2xl"
-                        onClick={() => setOpenSrc(null)}
-                        aria-label="Close"
-                    >&times;</button>
-                    <video
-                        ref={videoRef}
-                        src={openSrc!}
-                        controls
-                        muted
-                        playsInline
-                        className="block mx-auto max-h-[88vh] max-w-[88vw] object-contain"
-                    />
-                </div>
-            </VideoOverlay>
-        )}
-    </div>
-);
+            {openSrc && (
+                <VideoOverlay onClose={() => setOpenSrc(null)}>
+                    <div
+                        className="relative bg-black p-4 max-h-[100vh] max-w-[92vw] overflow-auto"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <button
+                            className="absolute top-2 right-2 z-20 text-white text-2xl"
+                            onClick={() => setOpenSrc(null)}
+                            aria-label="Close"
+                        >&times;</button>
+                        <video
+                            ref={videoRef}
+                            src={openSrc!}
+                            controls
+                            muted
+                            playsInline
+                            className="block mx-auto max-h-[88vh] max-w-[88vw] object-contain"
+                        />
+                    </div>
+                </VideoOverlay>
+            )}
+        </div>
+    );
 }
 
 export default InstructionsPage;
