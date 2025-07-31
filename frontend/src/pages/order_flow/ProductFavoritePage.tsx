@@ -153,8 +153,8 @@ function ProductFavoritePage() {
                     ПОКУПКИ"</p>
                 {order && <OrderHeader transactionCode={order.transaction_code} />}
 
-                <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавить товар в избранное WB</h1>
-                <p className="mb-2">Добавьте товар и бренд продавца в избранное на сайте или в приложении WB.</p>
+                <h1 className="text-lg font-bold mb-4 text-brand">Шаг 3. Добавление товара в избранное</h1>
+                <p className="mb-2">⭐ Добавь товар и бренд продавца в избранное на WB</p>
             </div>
 
             <div className="flex flex-col items-start mb-4 mt-2 space-y-4">
@@ -181,7 +181,7 @@ function ProductFavoritePage() {
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className={`block w-full py-2 mb-4 rounded-lg text-brand font-semibold text-center ${
+                className={`block w-full py-2 mb-2 rounded-lg text-brand font-semibold text-center ${
                     canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
                 }`}
             >
@@ -337,7 +337,7 @@ function ProductFavoritePage() {
                     <button
                         onClick={() => navigate('/instruction')}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        <span>Полная инструкция выкупа товара</span>
+                        <span>Полная инструкция по выкупу товара</span>
                     </button>
                     <button
                         onClick={handleSupportClick}

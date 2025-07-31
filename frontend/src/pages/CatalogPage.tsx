@@ -113,6 +113,8 @@ function CatalogPage() {
 
     const categories = Array.from(new Set(products.map(p => p.category)));
 
+const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
+  const rightColumn = filtered.filter((_, i) => i % 2 === 1);
 
     return (
         <div className="min-h-screen bg-gray-200">
@@ -291,62 +293,150 @@ function CatalogPage() {
                 </div>
             )}
 
-            {/* Products grid */}
-            <div className="p-4">
-                <div className="grid grid-cols-2 gap-4">
-                    {filtered.map(product => {
-                        const seller = sellerOptions.find(s => s.id === product.seller_id);
-
-                        return (
-                            <div
-                                key={product.id}
-                                onClick={() => navigate(`/product/${product.id}`)}
-                                className="border border-gray-200 rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                            >
-                                <div className="w-full aspect-square bg-gray-200-100 overflow-hidden">
-                                    {product.image_path ? (
-                                        <img
-                                            src={
-                                                product.image_path.startsWith('http')
-                                                    ? product.image_path
-                                                    : GetUploadLink(product.image_path)
-                                            }
-                                            alt={product.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex items-center justify-center h-full text-gray-400">
-                                            Нет фото
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="p-3 bg-white flex flex-col">
-                                    <h3 className="text-sm font-semibold mb-1 overflow-hidden line-clamp-2">
-                                        {product.name}
-                                    </h3>
-
-                                    {seller && (
-                                        <p
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                handleOpenSellerProducts(product.seller_id);
-                                            }}
-                                            className="text-sm text-blue-600 hover:underline cursor-pointer mt-1"
-                                        >
-                                            {seller.nickname}
-                                        </p>
-                                    )}
-
-                                    <p className="text-md font-bold mb-1 text-brand">
-                                        {product.price} ₽
-                                    </p>
-                                </div>
-                            </div>
-                        );
-                    })}
+{/* Products grid */}
+{/* Products grid */}
+<div className="p-4">
+  {/* две независимые колонки, между ними ровно 72 px */}
+  <div className="flex gap-[24px]">
+    {/* Левая колонка */}
+    <div className="flex flex-col gap-[24px] flex-[0_0_calc(50%-12px)] min-w-0">
+      {leftColumn.map(product => {
+        const seller = sellerOptions.find(s => s.id === product.seller_id);
+        return (
+          <div
+            key={product.id}
+            onClick={() => navigate(`/product/${product.id}`)}
+            className="w-full h-[300px] border border-gray-200 rounded-md shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer flex flex-col"
+          >
+            {/* Изображение */}
+            <div className="w-full h-[60%] bg-gray-100 overflow-hidden">
+              {product.image_path ? (
+                <img
+                  src={
+                    product.image_path.startsWith('http')
+                      ? product.image_path
+                      : GetUploadLink(product.image_path)
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  Нет фото
                 </div>
+              )}
             </div>
+            {/* Контент */}
+            <div className="p-3 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-semibold mb-1 overflow-hidden line-clamp-2">
+                  {product.name}
+                </h3>
+                {seller && (
+                  <p
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleOpenSellerProducts(product.seller_id);
+                    }}
+                    className="text-sm text-blue-600 hover:underline cursor-pointer mt-1"
+                  >
+                    {seller.nickname}
+                  </p>
+                )}
+              </div>
+              <div>
+                <div className="flex items-baseline space-x-2 mb-1">
+                  <span className="text-md font-bold text-brand">
+                    {product.price} ₽
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    {product.wb_price} ₽
+                  </span>
+                </div>
+                {product.wb_price != null && product.price != null && (
+                  <p className="text-sm text-green-600">
+                    Кэшбэк {product.wb_price - product.price} ₽
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Правая колонка (смещена на 72 px вниз) */}
+    <div className="flex flex-col gap-[24px] flex-[0_0_calc(50%-12px)] min-w-0 mt-[40px]">
+      {rightColumn.map(product => {
+        const seller = sellerOptions.find(s => s.id === product.seller_id);
+        return (
+          <div
+            key={product.id}
+            onClick={() => navigate(`/product/${product.id}`)}
+            className="w-full h-[300px] border border-gray-200 rounded-md shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer flex flex-col"
+          >
+            {/* Изображение */}
+            <div className="w-full h-[60%] bg-gray-100 overflow-hidden">
+              {product.image_path ? (
+                <img
+                  src={
+                    product.image_path.startsWith('http')
+                      ? product.image_path
+                      : GetUploadLink(product.image_path)
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  Нет фото
+                </div>
+              )}
+            </div>
+            {/* Контент */}
+            <div className="p-3 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-semibold mb-1 overflow-hidden line-clamp-2">
+                  {product.name}
+                </h3>
+                {seller && (
+                  <p
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleOpenSellerProducts(product.seller_id);
+                    }}
+                    className="text-sm text-blue-600 hover:underline cursor-pointer mt-1"
+                  >
+                    {seller.nickname}
+                  </p>
+                )}
+              </div>
+              <div>
+                <div className="flex items-baseline space-x-2 mb-1">
+                  <span className="text-md font-bold text-brand">
+                    {product.price} ₽
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    {product.wb_price} ₽
+                  </span>
+                </div>
+                {product.wb_price != null && product.price != null && (
+                  <p className="text-sm text-green-600">
+                    Кэшбэк {product.wb_price - product.price} ₽
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+
+
+
         </div>
         </div>
     )}

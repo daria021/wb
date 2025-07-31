@@ -19,13 +19,6 @@ export default function BackButtonManager() {
         return navigate('/', { replace: true });
       }
 
-      if (
-        matchPath({ path: '/seller-cabinet', end: true }, pathname) ||
-        matchPath({ path: '/my-products', end: true }, pathname) ||
-        matchPath({ path: '/seller-cabinet/balance', end: true }, pathname)
-      ) {
-        return navigate('/', { replace: true });
-      }
 
       // SellerReportsPage  "/seller-cabinet/reports"  → в кабинет
       if (matchPath({ path: '/seller-cabinet/reports', end: true }, pathname)) {

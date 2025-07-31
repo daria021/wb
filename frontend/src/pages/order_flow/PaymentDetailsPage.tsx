@@ -152,22 +152,13 @@ function PaymentDetailsPage() {
                 {order && <OrderHeader transactionCode={order.transaction_code} />}
             <div className="space-y-4">
 
-                <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Укажите реквизиты для получения кешбэка</h1>
-                <p>1) Укажите реквизиты для получения кешбэка:</p>
-                <ul className="list-disc list-inside pl-4 space-y-1">
-                    <li>Номер карты.</li>
-                    <li>Номер телефона.</li>
-                    <li>Фамилия и имя.</li>
-                </ul>
+                <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Реквизиты для получения кешбэка</h1>
+                <p>💳 Укажи карту, телефон и имя и выбери банк из списка</p>
                 <p>
-                    <strong>Внимание!</strong> Вы можете выбрать только банки, представленные в списке.
+                    ✅ Проверь данные
                 </p>
                 <p>
-                    2) Убедитесь, что{' '}
-                    <span className="underline">
-    все данные указаны верно
-  </span>.<br/>
-                    Кешбэк может быть выплачен как на карту, так и через СБП на усмотрение продавца.
+                    💸 Кешбэк будет переведён на карту или через СБП
                 </p>
 
                 <div>
@@ -257,7 +248,7 @@ function PaymentDetailsPage() {
                         className="w-4 h-4"
                     />
                     <label htmlFor="agreeCorrectness" className="text-sm text-gray-700">
-                        Подтверждаю правильность
+                        Я подтверждаю правильность введенных данных
                     </label>
                 </div>
             </div>
@@ -266,7 +257,7 @@ function PaymentDetailsPage() {
             <button
                 onClick={handleContinueClick}
                 disabled={!canContinue}
-                className={`w-full py-2 rounded text-brand mb-4 mt-4 ${
+                className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
                     canContinue
                         ? 'bg-brand text-white'
                         : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
@@ -429,7 +420,7 @@ function PaymentDetailsPage() {
                     <button
                         onClick={() => navigate('/instruction')}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold">
-                        <span>Полная инструкция выкупа товара</span>
+                        <span>Полная инструкция по выкупу товара</span>
                     </button>
 
                     <button

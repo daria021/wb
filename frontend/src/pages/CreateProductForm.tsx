@@ -2,7 +2,6 @@ import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom';
 import {createProduct, getProductById, updateProduct} from '../services/api';
 import {Category, PayoutTime} from '../enums';
-import {on} from "@telegram-apps/sdk";
 import FileUploader from "../components/FileUploader";
 import {NumericInput} from "../components/NumericInput";
 
@@ -252,7 +251,7 @@ function ProductForm() {
                 navigate(`/product/${productId}/seller`);
             } else {
                 const newId = await createProduct(fd);
-                navigate(`/product/${newId}/seller`);
+                navigate(`/create-product/${newId}/instruction`);
             }
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
@@ -277,7 +276,7 @@ function ProductForm() {
             <div className="sticky top-0 z-10 bg-gray-200">
                 <div className="flex justify-between items-center px-2 py-1">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/seller-cabinet')}
                         type="button"
                         className="inline-flex items-center justify-center whitespace-nowrap py-1 px-1 text-xs font-semibold border border-brand text-brand bg-transparent rounded appearance-none focus:outline-none"
                     >
@@ -433,7 +432,7 @@ function ProductForm() {
 
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Телеграм для связи</label>
+                    <label className="block text-sm font-medium mb-1">Telegram продавца для вопросов покупателя по товару</label>
                     <input
                         type="text"
                         ref={inputRefs[8]}
@@ -448,7 +447,7 @@ function ProductForm() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Когда выплата </label>
+                    <label className="block text-sm font-medium mb-1">Выбор выплаты кешбэка покупателю</label>
                     <select
                         name="payment_time"
                         value={formData.payment_time}
@@ -487,7 +486,7 @@ function ProductForm() {
                         className="h-4 w-4 text-brand border-darkGray rounded"
                     />
                     <label htmlFor="requirements_agree" className="text-sm">
-                        Согласовать отзыв
+                        Отзыв покупателя должен быть согласован с продавцом
                     </label>
                 </div>
                 <button
