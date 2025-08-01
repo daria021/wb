@@ -313,7 +313,7 @@ function StepReviewReportPage() {
                         <input
                             type="checkbox"
                             id="agreedWithSeller"
-                            className="mr-2"
+                            className="mr-2 h-8 w-8"
                             checked={agreedWithSeller}
                             onChange={e => setAgreedWithSeller(e.target.checked)}
                         />
@@ -326,7 +326,7 @@ function StepReviewReportPage() {
                         <input
                             type="checkbox"
                             id="wroteInWB"
-                            className="mr-2"
+                            className="mr-2 h-8 w-8"
                             checked={wroteInWB}
                             onChange={e => setWroteInWB(e.target.checked)}
                         />
@@ -342,7 +342,7 @@ function StepReviewReportPage() {
                     <input
                         type="checkbox"
                         id="leftReview"
-                        className="mr-2"
+                        className="mr-2 h-8 w-8"
                         checked={leftReview}
                         onChange={handleLeftReviewChange}
                     />

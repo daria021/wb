@@ -483,7 +483,7 @@ function ProductForm() {
                         checked={formData.requirements_agree}
                         onChange={handleInputChange}
                         ref={agreeRef}
-                        className="h-4 w-4 text-brand border-darkGray rounded"
+                        className="h-4 w-4 text-brand border-darkGray rounded h-8 w-8"
                     />
                     <label htmlFor="requirements_agree" className="text-sm">
                         Отзыв покупателя должен быть согласован с продавцом

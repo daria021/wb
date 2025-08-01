@@ -206,7 +206,7 @@ function StepOrderPlacement() {
                     id="orderPlaced"
                     checked={isOrderPlaced}
                     onChange={handleOrderPlacedChange}
-                    className="mr-2"
+                    className="mr-2 h-8 w-8"
                 />
                 <label htmlFor="orderPlaced" className="text-sm text-gray-700 mt-2">
                     Оформил(а) заказ

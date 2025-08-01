@@ -254,7 +254,7 @@ function ProductPickupPage() {
                 <input
                     type="checkbox"
                     id="pickedUp"
-                    className="mr-2"
+                    className="mr-2 h-8 w-8"
                     checked={pickedUp}
                     onChange={handlePickedUpChange}
                 />

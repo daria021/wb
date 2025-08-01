@@ -163,7 +163,7 @@ function ProductFavoritePage() {
                         type="checkbox"
                         checked={productFavorited}
                         onChange={e => setProductFavorited(e.target.checked)}
-                        className="mr-2"
+                        className="mr-2 h-8 w-8"
                     />
                     Добавил(a) товар в избранное WB
                 </label>
@@ -172,7 +172,7 @@ function ProductFavoritePage() {
                         type="checkbox"
                         checked={brandFavorited}
                         onChange={e => setBrandFavorited(e.target.checked)}
-                        className="mr-2"
+                        className="mr-2 h-8 w-8"
                     />
                     Добавил(a) бренд в избранное WB
                 </label>

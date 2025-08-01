@@ -265,7 +265,7 @@ const PushDetailsPage: React.FC = () => {
                                         type="checkbox"
                                         checked={selectedUserIds.includes(user.id)}
                                         onChange={() => handleUserSelect(user.id)}
-                                        className="cursor-pointer"
+                                        className="cursor-pointer h-8 w-8"
                                     />
                                 </td>
                                 <td className="p-2">{user.nickname}</td>
