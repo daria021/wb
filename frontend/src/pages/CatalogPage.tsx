@@ -355,7 +355,7 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
                 </div>
                 {product.wb_price != null && product.price != null && (
                   <p className="text-sm text-green-600">
-                    Кэшбэк {product.wb_price - product.price} ₽
+                    Кешбэк {product.wb_price - product.price} ₽
                   </p>
                 )}
               </div>
@@ -422,7 +422,7 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
                 </div>
                 {product.wb_price != null && product.price != null && (
                   <p className="text-sm text-green-600">
-                    Кэшбэк {product.wb_price - product.price} ₽
+                    Кешбэк {product.wb_price - product.price} ₽
                   </p>
                 )}
               </div>

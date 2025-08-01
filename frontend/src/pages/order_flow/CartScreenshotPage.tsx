@@ -32,7 +32,6 @@ interface Order {
 }
 
 
-
 function CartScreenshotPage() {
     // const {productId} = useParams<{ productId: string }>();
     const navigate = useNavigate();
@@ -74,8 +73,7 @@ function CartScreenshotPage() {
 
     useEffect(() => {
         if (!file1) {
-            setPreview1(null);
-            return;
+            return setPreview1(null);
         }
         const url = URL.createObjectURL(file1);
         setPreview1(url);
@@ -85,8 +83,7 @@ function CartScreenshotPage() {
     // создаём preview URL для file2
     useEffect(() => {
         if (!file2) {
-            setPreview2(null);
-            return;
+            return setPreview2(null);
         }
         const url = URL.createObjectURL(file2);
         setPreview2(url);
@@ -94,16 +91,6 @@ function CartScreenshotPage() {
     }, [file2]);
 
     const canContinue = Boolean(file1 && file2);
-
-    useEffect(() => {
-        if (file2) {
-            const url = URL.createObjectURL(file2);
-            setPreview2(url);
-            return () => URL.revokeObjectURL(url);
-        }
-        setPreview2(null);
-    }, [file2]);
-
 
     useEffect(() => {
         if (!order?.product.id) return;
@@ -119,10 +106,10 @@ function CartScreenshotPage() {
     }, [order]);
 
     const handleContinue = async () => {
-        if (!canContinue) return;
+        if (!canContinue || !orderId) return;
         try {
-            if (!user || !orderId) return; // если профиль ещё не загрузился или неавторизован
-
+            console.log('ФАЙЛЫ');
+            console.log(file1, file2);
             await updateOrder(orderId, {
                 step: 1,
                 search_query_screenshot: file1 ?? undefined,
@@ -202,7 +189,6 @@ function CartScreenshotPage() {
                 </p>
             </div>
 
-
             <FileUploader
                 label="1.Скриншот поискового запроса в WB"
                 file={file1}
@@ -215,7 +201,6 @@ function CartScreenshotPage() {
                 preview={preview2}
                 onFileChange={setFile2}
             />
-
 
             <button
                 onClick={handleContinue}

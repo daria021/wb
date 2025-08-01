@@ -116,9 +116,15 @@ async def update_order(
 
     # Шаг 1
     if search_query_screenshot is not None:
-        update_data["search_query_screenshot"] = search_query_screenshot
+        path = await upload_service.upload(search_query_screenshot)
+        update_data["search_query_screenshot"] = path
     if cart_screenshot is not None:
-        update_data["cart_screenshot"] = cart_screenshot
+        path = await upload_service.upload(cart_screenshot)
+        update_data["cart_screenshot"] = path
+
+    logger.info('ФАЙЛЫ')
+    logger.info(search_query_screenshot)
+    logger.info(cart_screenshot)
 
     # Шаг 4: реквизиты
     if card_number is not None:

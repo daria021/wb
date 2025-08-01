@@ -169,7 +169,7 @@ function InstructionPage() {
                         <input
                             type="checkbox"
                             id="agreeRules"
-                            className="mr-3"
+                            className="mr-3 h-8 w-8"
                             checked={agreeRules}
                             onChange={(e) => setAgreeRules(e.target.checked)}
                         />
@@ -181,7 +181,7 @@ function InstructionPage() {
                         <input
                             type="checkbox"
                             id="agreeData"
-                            className="mr-3"
+                            className="mr-3 h-8 w-8"
                             checked={agreePersonalData}
                             onChange={(e) => setAgreePersonalData(e.target.checked)}
                         />

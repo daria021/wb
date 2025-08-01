@@ -245,7 +245,7 @@ function PaymentDetailsPage() {
                         id="agreeCorrectness"
                         checked={agreed}
                         onChange={(e) => setAgreed(e.target.checked)}
-                        className="w-4 h-4"
+                        className="h-8 w-8"
                     />
                     <label htmlFor="agreeCorrectness" className="text-sm text-gray-700">
                         Я подтверждаю правильность введенных данных
