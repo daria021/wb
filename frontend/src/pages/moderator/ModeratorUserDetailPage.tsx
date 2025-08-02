@@ -39,8 +39,8 @@ interface Order {
     step: number;
     created_at: string;
     search_screenshot_path?: string;
-    cart_screenshot_path?: string;
-    final_cart_screenshot_path?: string;
+    cart_screenshot?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -232,8 +232,8 @@ const unpaidDistributions = products
 
     const screenshotLabels: Record<string,string> = {
   search_screenshot_path: 'Поиск',
-  cart_screenshot_path:   'Корзина',
-  final_cart_screenshot_path: 'Итоговая корзина',
+  cart_screenshot:   'Корзина',
+  final_cart_screenshot: 'Итоговая корзина',
   delivery_screenshot_path:    'Доставка',
   barcodes_screenshot_path:    'Штрихкоды',
   review_screenshot_path:      'Отзыв',

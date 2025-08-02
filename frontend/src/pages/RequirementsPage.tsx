@@ -198,7 +198,7 @@ export default function RequirementsPage() {
                         onClick={goInstruction}
                         className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                     >
-                        Инструкция
+                        Инструкция пользователя
                     </button>
                     <button
                         onClick={() => {

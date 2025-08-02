@@ -39,12 +39,12 @@ interface Order {
     product_id: string;
     step: number;
     search_screenshot_path?: string;
-    cart_screenshot_path?: string;
+    cart_screenshot?: string;
     card_number?: string;
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot_path?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;

@@ -14,7 +14,7 @@ interface OrderReport {
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot_path?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;

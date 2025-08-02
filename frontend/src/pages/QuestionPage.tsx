@@ -188,6 +188,11 @@ function QuestionPage() {
                 </section>
 
             <div className="flex flex-col gap-2">
+                    <button onClick={handleAbout}
+                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
+                    >
+                        О сервисе
+                    </button>
                     <button onClick={handleInstruction}
                     className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                     >
@@ -198,11 +203,7 @@ function QuestionPage() {
                     >
                         Требования к отчёту
                     </button>
-                    <button onClick={handleAbout}
-                    className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
-                    >
-                        О сервисе
-                    </button>
+
                     <button onClick={handleSupportClick}
                     className="py-2 px-4 rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent w-auto"
                     >

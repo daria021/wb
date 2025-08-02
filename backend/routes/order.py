@@ -33,7 +33,6 @@ async def get_order(order_id: UUID, request: Request):
     order = await order_service.get_order(order_id)
     return order
 
-
 @router.post("")
 async def create_order(
         user_id: UUID = Form(...),
@@ -85,8 +84,8 @@ async def update_order(
         step: Optional[int] = Form(None),
 
         # Шаг 1
-        search_query_screenshot: Optional[UploadFile] = File(None),
-        cart_screenshot: Optional[UploadFile] = File(None),
+        search_screenshot_path: Optional[UploadFile] = File(None),
+        cart_screenshot_path: Optional[UploadFile] = File(None),
 
         # Шаг 4 (реквизиты)
         card_number: Optional[str] = Form(None),
@@ -115,16 +114,16 @@ async def update_order(
         update_data["step"] = step
 
     # Шаг 1
-    if search_query_screenshot is not None:
-        path = await upload_service.upload(search_query_screenshot)
-        update_data["search_query_screenshot"] = path
-    if cart_screenshot is not None:
-        path = await upload_service.upload(cart_screenshot)
-        update_data["cart_screenshot"] = path
+    if search_screenshot_path is not None:
+        path = await upload_service.upload(search_screenshot_path)
+        update_data["search_screenshot_path"] = path
+    if cart_screenshot_path is not None:
+        path = await upload_service.upload(cart_screenshot_path)
+        update_data["cart_screenshot_path"] = path
 
     logger.info('ФАЙЛЫ')
-    logger.info(search_query_screenshot)
-    logger.info(cart_screenshot)
+    logger.info(search_screenshot_path)
+    logger.info(cart_screenshot_path)
 
     # Шаг 4: реквизиты
     if card_number is not None:
