@@ -112,7 +112,7 @@ function CartScreenshotPage() {
             console.log(file1, file2);
             await updateOrder(orderId, {
                 step: 1,
-                search_query_screenshot: file1 ?? undefined,
+                search_screenshot_path: file1 ?? undefined,
                 cart_screenshot_path: file2 ?? undefined,
             });
 

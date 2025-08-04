@@ -11,13 +11,6 @@ const videos = [
     },
 ];
 
-// Видео для обзора кабинета продавца (располагается в секции продавцов)
-const sellerVideo = {
-    id: 2,
-    title: '🎥 Обзор на кабинет продавца',
-    src: 'https://storage.googleapis.com/images_avocado/VideoCashback/1%20Seller%20Access%20to%20the%20seller%20is%20account.MP4',
-};
-
 function AboutPage() {
     const navigate = useNavigate();
     const [openSrc, setOpenSrc] = useState<string | null>(null);
@@ -30,7 +23,7 @@ function AboutPage() {
     const handleHomeClick = () => navigate('/');
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-start justify-center p-4 pt-8">
+        <div className="min-h-screen bg-gray-200 flex items-start justify-center p-4 pt-8 text-sm">
             <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-6">
 
                 {/* Заголовок вкладки */}
@@ -38,13 +31,13 @@ function AboutPage() {
 
                 {/* Основной текст */}
                 <section className="mb-6">
-                    <p className="text-base text-gray-800 mb-2">
+                    <p className="text-gray-800 mb-2">
                         <strong>Premium Cash Back</strong> — это Telegram-сервис, который помогает покупателям получать
                         кешбэк за покупки товаров на Wildberries от продавцов, а продавцам — продвигать свои товары
                         через честные отзывы и активность пользователей.
                     </p>
                     <h2 className="text-lg font-semibold mb-2">🔍 Как работает сервис?</h2>
-                    <p className="text-base text-gray-800 mb-4">
+                    <p className="text-sm text-gray-800 mb-4">
                         <strong>Покупатель выбирает товар из списка раздач.<br/>
 
                             Проходит пошаговую инструкцию:</strong> ищет товар → добавляет в избранное → оформляет заказ
@@ -66,7 +59,7 @@ function AboutPage() {
                     {videos.map(({id, title, src}) => (
                         <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
                             <button
-                                className="text-base font-medium text-blue-600 hover:underline"
+                                className="text-sm font-medium text-blue-600 hover:underline"
                                 onClick={() => setOpenSrc(src)}
                             >
                                 {title}
@@ -77,7 +70,7 @@ function AboutPage() {
 
                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">🛒 Для кого этот сервис?</h2>
-                    <p className="text-base text-gray-800 mb-4">
+                    <p className="text-sm text-gray-800 mb-4">
                         <strong>Покупателям</strong> — чтобы получить реальный товар почти бесплатно + вернуть деньги
                         через кешбэк.<br/>
 
@@ -87,7 +80,7 @@ function AboutPage() {
 
                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">⚠️ Риски и безопасность</h2>
-                    <p className="text-base text-gray-800 mb-4">
+                    <p className="text-sm text-gray-800 mb-4">
                         <strong>Бот не несёт финансовой ответственности.<br/>
 
                             Проверка продавцов ограничена.</strong> Мы рекомендуем использовать <a
@@ -98,7 +91,7 @@ function AboutPage() {
 
                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">📦 Как покупателю получить кешбэк?</h2>
-                    <p className="text-base text-gray-800 mb-4">
+                    <p className="text-sm text-gray-800 mb-4">
                         Выберите товар → Пройдите инструкцию<br/>
 
                         Получите товар → Соберите фото- и скриншоты<br/>
@@ -106,14 +99,15 @@ function AboutPage() {
                         Загрузите отчёт в боте<br/>
 
                         Дождитесь выплаты кешбэка от продавца</p>
-                                        <p className="text-base mb-2">
-                        <Link to="/instruction" className="underline italic">
+
+                                        <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
+                        <Link to="/instruction">
                             📁Подробная инструкция для покупателей по выкупу товара
                         </Link>
                     </p>
-                    <p className="text-base">
+                                        <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
                         <a href="https://t.me/Premiumcashb" target="_blank"
-                                                      rel="noopener noreferrer" className="underline">
+                                                      rel="noopener noreferrer">
                         📱Канал по раздачам товаров от продавцов
                     </a>
                     </p>
@@ -121,36 +115,32 @@ function AboutPage() {
 
                                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">🤝 Как продавцу разместить товар?</h2>
-                    <p className="text-base text-gray-800 mb-4">
+                    <p className="text-sm text-gray-800 mb-4">
                         Свяжитесь с техподдержкой <br/>
 
 Укажите артикул товара, сумму кешбэка, условия по отзыву <br/>
 
 Оплатите размещение и отслеживайте выкупы товара
                     </p>
-                                            <p className="text-base mb-4">
+                                            <p className="text-sm mb-4">
                         <button
-                            className="underline italic"
+                             className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline"
                             onClick={() => navigate('/instruction', {state: {openTab: 'seller'}})}
                         >
                             📁Подробная инструкция для продавцов по раздаче товара
                         </button>
                     </p>
                 </section>
-
                                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">📮 Есть вопросы?</h2>
-                    <p className="text-base text-gray-800 mb-4">
-                        Сначала загляните в наш
+                    <p className="text-sm text-gray-800 mb-4">
+                        Сначала загляните в наш{' '}
                                           <Link to="/question" className="underline italic">
-                            FAQ
+                                              FAQ
                         </Link>, он отвечает на 90% вопросов.
 Если не нашли нужной информации — обратитесь в <a href="https://t.me/wbcashmoney" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">техподдержку</a>
                     </p>
-
                 </section>
-
-
 
                 {/* Оверлей для видео */}
                 {openSrc && (

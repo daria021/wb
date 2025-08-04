@@ -8,12 +8,12 @@ import GetUploadLink from "../components/GetUploadLink";
 interface OrderReport {
     step: number;
     search_screenshot_path?: string;
-    cart_screenshot_path?: string;
+    cart_screenshot?: string;
     card_number?: string;
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot_path?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -117,7 +117,7 @@ function OrderReportPage() {
             <div className="max-w-screen-md mx-auto bg-white shadow-lg rounded-lg p-6">
                 <h1 className="text-2xl font-bold mb-6 text-center">Отчет по заказу</h1>
 
-                {(report.search_screenshot_path || report.cart_screenshot_path) && (
+                {(report.search_screenshot_path || report.cart_screenshot) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 1. Скриншоты поиска и корзины</h2>
                         {report.search_screenshot_path && (
@@ -127,9 +127,9 @@ function OrderReportPage() {
                                 className="mt-2 w-full rounded-md"
                             />
                         )}
-                        {report.cart_screenshot_path && (
+                        {report.cart_screenshot && (
                             <img
-                                src={GetUploadLink(report.cart_screenshot_path)}
+                                src={GetUploadLink(report.cart_screenshot)}
                                 alt="Скриншот корзины в WB"
                                 className="mt-2 w-full rounded-md"
                             />
@@ -150,11 +150,11 @@ function OrderReportPage() {
                 </section>
                 ё
 
-                {report.final_cart_screenshot_path && (
+                {report.final_cart_screenshot && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-xl font-semibold mb-2">Шаг 4. Финальный Скриншот корзины в WB</h2>
                         <img
-                            src={GetUploadLink(report.final_cart_screenshot_path)}
+                            src={GetUploadLink(report.final_cart_screenshot)}
                             alt="Финальный Скриншот корзины в WB"
                             className="mt-2 w-full rounded-md"
                         />

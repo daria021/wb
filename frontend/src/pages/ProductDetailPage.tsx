@@ -1,184 +1,170 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {getProductById, getBlackListUser} from '../services/api';
-import {AxiosResponse} from "axios";
-import {on} from "@telegram-apps/sdk";
-import GetUploadLink from "../components/GetUploadLink";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getProductById, getBlackListUser } from '../services/api';
+import { AxiosResponse } from 'axios';
+import GetUploadLink from '../components/GetUploadLink';
 
 interface Product {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    article: string;
-    image_path?: string;
-    wb_price: number;
-    payment_time: string;
-    shortDescription?: string;
-    seller_id: string;
+  id: string;
+  name: string;
+  shortDescription?: string;
+  description?: string;
+  image_path?: string;
+  wb_price: number;
+  price: number;
+  payment_time: string;
+  seller_id: string;
 }
 
-function ProductDetailPage() {
-    const {productId} = useParams();
-    const [product, setProduct] = useState<Product | null>(null);
-    const navigate = useNavigate();
-    const [sellerNickname, setSellerNickname] = useState('');
+const ProductDetailPage: React.FC = () => {
+  const { productId } = useParams<{ productId: string }>();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [sellerNickname, setSellerNickname] = useState<string>('');
+  const [showGuide, setShowGuide] = useState<boolean>(false);
 
-    const handleOpenInstructionClick = () => {
-        if (product) {
-            navigate(`/product/${product.id}/instruction`);
-        }
-    };
+  useEffect(() => {
+    if (!productId) return;
+    getProductById(productId)
+      .then((res: AxiosResponse<Product>) => setProduct(res.data))
+      .catch(err => console.error('Ошибка загрузки товара:', err));
+  }, [productId]);
 
-    useEffect(() => {
-        if (!product?.seller_id) return;
-        getBlackListUser(product.seller_id)
-            .then(res => setSellerNickname(res.data.nickname))
-            .catch(err => console.error('Ошибка загрузки данных продавца:', err));
-    }, [product]);
+  useEffect(() => {
+    if (!product?.seller_id) return;
+    getBlackListUser(product.seller_id)
+      .then(res => setSellerNickname(res.data.nickname))
+      .catch(err => console.error('Ошибка загрузки продавца:', err));
+  }, [product]);
 
-    const handleOpenSellerProducts = () => {
-        if (!product) return;
-        navigate(`/catalog?seller=${product.seller_id}`,
-            {state: {fromProductDetail: true}}
-        );
-    };
+  if (!product) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 animate-spin" />
+      </div>
+    );
+  }
 
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate('/catalog', { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
+  const discountPercent = product.wb_price
+    ? Math.round(((product.wb_price - product.price) / product.wb_price) * 100)
+    : 0;
+  const savedAmount = product.wb_price - product.price;
+  const imgUrl = product.image_path?.startsWith('http')
+    ? product.image_path
+    : GetUploadLink(product.image_path || '');
 
-    useEffect(() => {
-        if (!productId) return;
-        getProductById(productId)
-            .then((response: AxiosResponse<Product>) => {
-                setProduct(response.data);
-            })
-            .catch((error: unknown) => {
-                console.error('Ошибка загрузки товара:', error);
-            });
-    }, [productId]);
+  const openInstruction = () => navigate(`/product/${product.id}/instruction`);
+  const openInstructionPreview = () => navigate(`/instruction`);
+  const openSellerChat = () => window.open(`https://t.me/${sellerNickname}`, '_blank');
+  const openSellerProducts = () => navigate(`/catalog?seller=${product.seller_id}`, { state: { fromProductDetail: true } });
 
-    if (!product) {
-        return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>
-    };
-
-
-const discountPercent = product.wb_price
-    ? (((product.wb_price - product.price) / product.wb_price) * 100).toFixed(2)
-    : '0';
-
-const getLink = (path: string) => {
-    if (path.startsWith('http')) {
-        return path;
-    }
-
-    let url = GetUploadLink(path)
-    console.log(`url for photo is ${url}`)
-    return url;
-}
-
-const savedAmount = product.wb_price - product.price;
-
-
-
-return (
-    <div className="p-4 max-w-screen-md bg-gray-200 mx-auto">
-        <div className="relative w-full h-[60vh] overflow-hidden">
-            {product.image_path ? (
-                <img
-                    src={getLink(product.image_path)}
-                    alt={product.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                />
-            ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    Нет фото
-                </div>
-            )}
-        </div>
-
-
-        <h1 className="text-2xl font-bold mb-2 text-left">{product.name}</h1>
-        {product.shortDescription && (
-            <p className="text-gray-600 mb-4 text-center">{product.shortDescription}</p>
+  return (
+    <div className="p-4 max-w-screen-md mx-auto bg-gray-200 space-y-6">
+      {/* Image */}
+      <div className="relative w-full h-60 overflow-hidden rounded-lg">
+        {product.image_path ? (
+          <img src={imgUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="flex items-center justify-center w-full h-full text-gray-500">
+            Нет фото
+          </div>
         )}
+      </div>
 
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-            <p className="text-xl font-bold mb-1 text-brand">
-                {product.price} ₽
-            </p>
-            {product.description && (
-                <p className="text-sm text-gray-700 mb-2">{product.description}</p>
+      {/* Title Panel */}
+             <h1 className="text-2xl font-bold mb-2 text-left">{product.name}</h1>
+            {product.shortDescription && (
+                <p className="text-gray-600 mb-4 text-center">{product.shortDescription}</p>
             )}
-        </div>
 
-        <div className="flex gap-2 mb-4">
-            <button
-                onClick={() => navigate(`/black-list/${sellerNickname}`)}
-                className="flex-1 bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
-            >
-                Проверить продавца
-            </button>
+            <div className="bg-white rounded-lg shadow p-4 mb-4">
+                <p className="text-xl font-bold mb-1 text-brand">
+                    {product.price} ₽
+                </p>
+                {product.description && (
+                    <p className="text-sm text-gray-700 mb-2">{product.description}</p>
+                )}
+            </div>
 
-            <button
-                onClick={handleOpenInstructionClick}
-                className="flex-1 bg-brand text-white py-2 rounded-lg border  text-center"
-            >
-                Выкупить товар
-            </button>
-        </div>
-
-
-        <div
-            onClick={() =>
-                navigate(`/product/${product.id}/instruction?preview=1`)
-            }
-            className="flex items-center justify-start mt-2 mb-2 cursor-pointer select-none"
-        >
-            <img
-                src="/icons/question.png"
-                alt="Question"
-                className="w-7 h-7 mr-2"
-            />
-            <span className="block text-sm text-gray-600 hover:underline">
-                Узнать, как выкупить товар
-              </span>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-            <h2 className="font-semibold mb-2">Условия сделки</h2>
-            <p className="text-sm text-gray-700 mb-1">
-                Цена на сайте WB: {product.wb_price} руб
-            </p>
-            <p className="text-sm text-gray-700 mb-1">
-                Цена для вас: {product.price} руб
-            </p>
-            <p className="text-sm text-gray-700 mb-1">
-                Скидка: {discountPercent}% <span className="text-gray-600">(сэкономите {savedAmount} ₽)</span>
-            </p>
-            <p className="text-sm text-gray-700 mb-1">
-                Условия оплаты: {product.payment_time}
-            </p>
-            <p className="text-sm text-gray-700 mb-1">
-                Продавец: {sellerNickname}
-            </p>
-        </div>
-
+      {/* Actions */}
+      <div className="flex gap-2">
         <button
-            onClick={handleOpenSellerProducts}
-            className="block w-full bg-white text-gray-700 py-2 rounded-lg border border-brand text-center"
+          onClick={openSellerChat}
+          className="flex-1 bg-white border border-brand py-2 rounded-lg"
         >
-            Перейти к товарам продавца
+          Проверить продавца
         </button>
+        <button
+          onClick={openInstruction}
+          className="flex-1 bg-brand text-white py-2 rounded-lg"
+        >
+          Выкупить товар
+        </button>
+      </div>
 
+      {/* Instruction Link */}
+      <div
+        onClick={openInstructionPreview}
+        className="flex items-center cursor-pointer"
+      >
+        <span className="mr-2 text-lg">❓</span>
+        <span className="text-blue-600 hover:underline">
+          Узнать, как выкупить товар
+        </span>
+      </div>
 
+      {/* Deal Summary */}
+      <div className="bg-white p-4 rounded-lg shadow space-y-1">
+        <p>📦 Цена на WB: {product.wb_price} ₽</p>
+        <p>
+          <span className="text-green-600 ">💰 Скидка: <strong>{discountPercent}%</strong></span>{' '}
+          <span className="text-gray-800">(экономите {savedAmount} ₽)</span>
+        </p>        <p>💳 Условия выплаты кешбэка: {product.payment_time}</p>
+        <p>
+          👤 Продавец:{' '}
+          <button onClick={openSellerChat} className="text-blue-600 hover:underline">
+            @{sellerNickname}
+          </button>
+        </p>
+      </div>
+
+      {/* Warning */}
+      <p className="text-gray-800">
+        <strong>Важно!</strong> Бот — это инструкция, мы не гарантируем выплату кешбэка. Перед участием в выкупе товара, убедитесь в надежности продавца.
+      </p>
+
+      {/* Guide */}
+       <div className="bg-white p-4 rounded-lg shadow">
+        <div
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setShowGuide(!showGuide)}
+        >
+          <div className="flex items-center">
+            <span className="mr-2 text-xl">🛠</span>
+            <span className="font-semibold">Руководство</span>
+          </div>
+          <span className="text-xl">{showGuide ? '▲' : '▼'}</span>
+        </div>
+        {showGuide && (
+          <ol className="list-decimal list-inside mt-2 space-y-1 text-gray-800">
+            <li>Найти товар для выкупа в каталоге</li>
+            <li>Нажать на кнопку "Выкупить товар"</li>
+            <li>Внимательно ознакомиться с правилами и условиями сделки по выкупу товара</li>
+            <li>Выполнить все шаги инструкции, загрузить необходимые скриншоты и отправить отчёт продавцу на проверку в боте</li>
+            <li>После проверки отчёта дождаться выплаты кешбэка продавцом в срок, установленный условиями сделки по выкупу товара</li>
+          </ol>
+        )}
+      </div>
+
+      {/* Other products */}
+      <button
+        onClick={openSellerProducts}
+        className="w-full bg-white border border-brand py-2 rounded-lg"
+      >
+        Посмотреть другие товары продавца
+      </button>
     </div>
-);
-}
+  );
+};
 
 export default ProductDetailPage;

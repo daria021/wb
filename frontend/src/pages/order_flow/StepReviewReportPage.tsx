@@ -39,7 +39,7 @@ interface OrderReport {
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot_path?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -289,19 +289,22 @@ function StepReviewReportPage() {
                 <p>🧾 Добавь электронный чек заказа из раздела "Финансы" (номер + скрин)
                 </p>
                     {order.product.review_requirements && (
-      <p>Требования к отзыву: {order.product.review_requirements}</p>
+                        <p>Требования к отзыву: <strong>{order.product.review_requirements}</strong></p>
     )}
 
-    <p>
-      Согласование отзыва с продавцом{' '}
-      <span
-        onClick={handleCheckSeller}
-        className="underline text-blue-600 cursor-pointer"
-      >
-        {order.seller.nickname}
-      </span>
-      : {order.product.requirements_agree ? 'Требуется' : 'Не требуется'}
-    </p>
+<p>
+  Согласование отзыва с продавцом{' '}
+  <span
+    onClick={handleCheckSeller}
+    className="underline text-blue-600 cursor-pointer"
+  >
+    @{order.seller.nickname}
+  </span>
+  :{' '}
+  <span className="font-bold">
+    {order.product.requirements_agree ? 'Требуется' : 'Не требуется'}
+  </span>
+</p>
 
 
             </div>
@@ -356,13 +359,13 @@ function StepReviewReportPage() {
             {isReviewDone && (
                 <>
                     <FileUploader
-                        label="Скриншот отзыва товара в WB"
+                        label="1. Скриншот отзыва товара в WB"
                         file={file1}
                         preview={preview1}
                         onFileChange={setFile1}
                     />
                     <FileUploader
-                        label="Скриншот электронного чека заказа в WB"
+                        label="2. Скриншот электронного чека заказа в WB"
                         file={file2}
                         preview={preview2}
                         onFileChange={setFile2}
@@ -573,11 +576,11 @@ function StepReviewReportPage() {
                                                           d="M19 9l-7 7-7-7"/>
                                                 </svg>
                                             </button>
-                                            {expandedSteps[5] && reportData.final_cart_screenshot_path && (
+                                            {expandedSteps[5] && reportData.final_cart_screenshot && (
                                                 <div className="border-t p-4">
                                                     <p className="text-sm font-semibold">Скриншот заказа на WB</p>
                                                     <img
-                                                        src={GetUploadLink(reportData.final_cart_screenshot_path)}
+                                                        src={GetUploadLink(reportData.final_cart_screenshot)}
                                                         alt="Финальный Скриншот корзины в WB"
                                                         className="w-full rounded"
                                                     />

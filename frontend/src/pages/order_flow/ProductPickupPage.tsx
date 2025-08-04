@@ -32,7 +32,7 @@ interface OrderReport {
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot_path?: string;
+    final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -266,13 +266,13 @@ function ProductPickupPage() {
             {pickedUp && (
                 <>
                     <FileUploader
-                        label="Скриншот статуса заказа в разделе 'Доставки' на WB"
+                        label="1. Скриншот статуса заказа в разделе 'Доставки' на WB"
                         file={file1}
                         preview={preview1}
                         onFileChange={setFile1}
                     />
                     <FileUploader
-                        label="Фотография разрезанного штрихкода на фоне товара"
+                        label="2. Фотография разрезанного штрихкода на фоне товара"
                         file={file2}
                         preview={preview2}
                         onFileChange={setFile2}
@@ -471,11 +471,11 @@ function ProductPickupPage() {
                                                           d="M19 9l-7 7-7-7"/>
                                                 </svg>
                                             </button>
-                                            {expandedSteps[5] && reportData.final_cart_screenshot_path && (
+                                            {expandedSteps[5] && reportData.final_cart_screenshot && (
                                                 <div className="border-t p-4">
                                                     <p className="text-sm font-semibold">Скриншот корзины в WB</p>
                                                     <img
-                                                        src={GetUploadLink(reportData.final_cart_screenshot_path)}
+                                                        src={GetUploadLink(reportData.final_cart_screenshot)}
                                                         alt="Финальный Скриншот корзины в WB"
                                                         className="w-full rounded"
                                                     />

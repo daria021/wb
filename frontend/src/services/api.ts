@@ -178,9 +178,8 @@ export async function updateOrder(
     orderId: string,
     data: {
         step?: number;
-        search_query_screenshot?: File;
-        search_screenshot_path?: File;
         cart_screenshot_path?: File;
+        search_screenshot_path?: File;
         card_number?: string;
         phone_number?: string;
         name?: string;
@@ -217,7 +216,6 @@ export async function updateOrder(
     if (data.status) {
         formData.append('status', data.status);
     }
-
     if (data.search_screenshot_path) {
         formData.append('search_screenshot_path', data.search_screenshot_path);
     }
@@ -245,7 +243,6 @@ export async function updateOrder(
             'Content-Type': 'multipart/form-data',
         },
     });
-
     return response.data;
 }
 
