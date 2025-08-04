@@ -199,7 +199,7 @@ function InstructionsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 text-sm">
             <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-8 relative">
                 {/* Tabs */}
                 <div className="flex mb-8 border-b">

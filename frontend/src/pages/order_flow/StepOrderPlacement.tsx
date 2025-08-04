@@ -123,14 +123,6 @@ function StepOrderPlacement() {
             });
     }, [orderId]);
 
-    // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setScreenshotFile(e.target.files[0]);
-    //     } else {
-    //         setScreenshotFile(null);
-    //     }
-    // };
-
     const handleOrderPlacedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsOrderPlaced(e.target.checked);
         if (!e.target.checked) {
@@ -215,14 +207,12 @@ function StepOrderPlacement() {
 
             {isOrderPlaced && (
                 <FileUploader
-                    label="Скриншот заказа на WB"
+                    label="1. Скриншот заказа на WB"
                     file={file}
                     preview={preview}
                     onFileChange={setFile}
                 />
             )}
-
-
             <button
                 onClick={handleContinue}
                 disabled={!canContinue}

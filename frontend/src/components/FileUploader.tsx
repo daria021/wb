@@ -12,7 +12,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                                                        preview,
                                                        onFileChange
                                                    }) => (
-    <div className="flex flex-col gap-2 items-start px-4">
+    <div className="flex flex-col gap-2 items-start px-4 mt-1">
         <p className="uppercase text-xs text-gray-500">{label}</p>
         <label className="bg-brandlight text-brand py-2 px-4 rounded cursor-pointer hover:shadow-lg transition-shadow duration-200 text-sm inline-flex flex-col items-center gap-2">
             {preview ? (

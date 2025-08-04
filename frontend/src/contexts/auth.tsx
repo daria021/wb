@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect } from 'react'
 import { initData } from '@telegram-apps/sdk'
-import { apiClient } from '../services/apiClient'
-import { useUser } from '../contexts/user'
+import { apiClient, restoreClient } from '../services/apiClient'
+import { useUser } from './user'
 
 interface AuthContextType {
   userId: string | null
@@ -33,8 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res = await apiClient.post('/auth/telegram', payload)
         localStorage.setItem('authToken', res.data.access_token)
         localStorage.setItem('refreshToken', res.data.refresh_token)
-        // После сохранения токенов — обновляем контекст пользователя
-        // await refresh()
+        restoreClient();
       } catch (err) {
         console.error('Authentication failed', err)
       }

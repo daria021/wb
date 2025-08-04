@@ -9,8 +9,8 @@ export default function RequirementsPage() {
     const navigate = useNavigate();
 
     const EXAMPLES = {
-        ORDER: '/images/screanorder.jpg',
-        DELIVERY: '/images/order.jpg',
+        ORDER: '/images/order.jpg',
+        DELIVERY: '/images/receiving.jpg',
         BARCODE: '/images/barcode.jpg',
         REVIEW: '/images/feedback.jpg',
         RECEIPT: '/images/electronic_receipt.mp4',
@@ -28,7 +28,7 @@ export default function RequirementsPage() {
     const goAbout = () => navigate('/about');
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 font-body">
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 text-sm">
             <div
                 className="w-full max-w-screen-lg bg-white border border-brand rounded-xl shadow-lg p-6 sm:p-8 space-y-6">
                 {/* Заголовок */}
@@ -52,17 +52,23 @@ export default function RequirementsPage() {
                 <ol className="space-y-8 list-decimal list-inside text-gray-800">
                     {/* 1 */}
                     <li className="space-y-2">
-                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
-                            {/* Основной текст */}
-                            <span className="underline text-blue-600 cursor-pointer"
-                                  onClick={() => open(EXAMPLES.ORDER)}>
-                📦 Скриншот подтверждения заказа
-              </span>
-                            {/* Ссылка‑пример */}
-                            <span className="underline text-blue-600 cursor-pointer"
-                                  onClick={() => open(EXAMPLES.ORDER)}>
-              </span>
-                        </p>
+  <p className="text-lg font-medium">
+    {/* Эмодзи в inline-block, выровнено по верху текста */}
+    <span
+      onClick={() => open(EXAMPLES.ORDER)}
+      className="inline-block align-text-top mr-2 cursor-pointer"
+    >
+      📦
+    </span>
+    {/* Текст с подчёркиванием */}
+    <span
+      onClick={() => open(EXAMPLES.ORDER)}
+      className="underline text-blue-600 cursor-pointer"
+    >
+      Скриншот подтверждения заказа
+    </span>
+  </p>
+
 
                         <strong>Что должно быть видно:</strong>
                         <ul className="list-disc pl-5 space-y-1">
@@ -78,9 +84,15 @@ export default function RequirementsPage() {
 
                     {/* 2 */}
                     <li className="space-y-2">
-                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+                        <p className="text-lg font-medium items-center gap-2">
+                            <span
+      onClick={() => open(EXAMPLES.DELIVERY)}
+      className="inline-block align-text-top mr-2 cursor-pointer"
+    >
+      📬
+    </span>
               <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.DELIVERY)}>
-                📬 Скриншот получения товара
+                Скриншот получения товара
               </span>
                             <span className="underline text-blue-600 cursor-pointer"
                                   onClick={() => open(EXAMPLES.DELIVERY)}>
@@ -104,9 +116,15 @@ export default function RequirementsPage() {
 
                     {/* 3 */}
                     <li className="space-y-2">
-                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+                        <p className="text-lg font-medium items-center gap-2">
+                                          <span
+      onClick={() => open(EXAMPLES.BARCODE)}
+      className="inline-block align-text-top mr-2 cursor-pointer"
+    >
+      ✂️
+    </span>
               <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.BARCODE)}>
-                ✂️ Фото разрезанного штрихкода
+                Фото разрезанного штрихкода
               </span>
                             <span className="underline text-blue-600 cursor-pointer"
                                   onClick={() => open(EXAMPLES.BARCODE)}>
@@ -126,9 +144,15 @@ export default function RequirementsPage() {
 
                     {/* 4 */}
                     <li className="space-y-2">
-                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+                        <p className="text-lg font-medium items-center gap-2">
+                                          <span
+      onClick={() => open(EXAMPLES.REVIEW)}
+      className="inline-block align-text-top mr-2 cursor-pointer"
+    >
+      ⭐
+    </span>
               <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.REVIEW)}>
-                ⭐ Скриншот опубликованного отзыва
+                Скриншот опубликованного отзыва
               </span>
                             <span className="underline text-blue-600 cursor-pointer"
                                   onClick={() => open(EXAMPLES.REVIEW)}>
@@ -155,9 +179,15 @@ export default function RequirementsPage() {
 
                     {/* 5 */}
                     <li className="space-y-2">
-                        <p className="text-lg font-medium flex flex-wrap items-center gap-2">
+                        <p className="text-lg font-medium items-center gap-2">
+                                          <span
+      onClick={() => open(EXAMPLES.RECEIPT)}
+      className="inline-block align-text-top mr-2 cursor-pointer"
+    >
+      🧾
+    </span>
               <span className="underline text-blue-600 cursor-pointer" onClick={() => open(EXAMPLES.RECEIPT)}>
-                🧾 Электронный чек
+                Электронный чек
               </span>
                             <span className="underline text-blue-600 cursor-pointer"
                                   onClick={() => open(EXAMPLES.RECEIPT)}>

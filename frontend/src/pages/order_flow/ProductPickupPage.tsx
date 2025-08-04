@@ -266,13 +266,13 @@ function ProductPickupPage() {
             {pickedUp && (
                 <>
                     <FileUploader
-                        label="Скриншот статуса заказа в разделе 'Доставки' на WB"
+                        label="1. Скриншот статуса заказа в разделе 'Доставки' на WB"
                         file={file1}
                         preview={preview1}
                         onFileChange={setFile1}
                     />
                     <FileUploader
-                        label="Фотография разрезанного штрихкода на фоне товара"
+                        label="2. Фотография разрезанного штрихкода на фоне товара"
                         file={file2}
                         preview={preview2}
                         onFileChange={setFile2}
