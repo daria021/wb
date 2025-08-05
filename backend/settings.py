@@ -16,6 +16,7 @@ ENV = os.getenv("ENVIRONMENT", "local")
 class WebAppSettings(BaseSettings):
     url: str
 
+
 class DBSettings(BaseSettings):
     host: str
     port: int

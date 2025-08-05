@@ -21,6 +21,7 @@ interface Product {
     category: string;
     seller_id: string;
     image_path?: string;
+    status: ProductStatus;
 }
 
 export interface UserWithBalance {
