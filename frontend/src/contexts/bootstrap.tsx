@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import {apiClient} from "../services/apiClient";
-import {UserRole} from "../enums";
+import {ProductStatus, UserRole} from "../enums";
+import {useAuth} from "./auth";
 
 interface Product {
     id: string;
@@ -20,6 +21,7 @@ interface Product {
     seller_id: string;
     created_at: string;
     updated_at: string;
+    status: ProductStatus;
 }
 
 interface Order {
@@ -65,12 +67,16 @@ export const BootstrapContext = createContext<BootstrapData | null>(null);
 
 export function BootstrapProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<BootstrapData | null>(null);
+  const { loading: authLoading } = useAuth();   // ждём, когда AuthProvider получит токен
 
   useEffect(() => {
-    apiClient.get<BootstrapData>('/init')
+    if (authLoading) return;                    // токен ещё не установился – /init рано
+
+    apiClient
+      .get<BootstrapData>('/init')
       .then(res => setData(res.data))
       .catch(console.error);
-  }, []);
+  }, [authLoading]);                            // эффект перезапустится только когда authLoading=false
 
   if (!data) {
     return (

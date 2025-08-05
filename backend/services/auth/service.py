@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from dataclasses import dataclass
 from uuid import UUID
 
+import settings
 from abstractions.services import UserServiceInterface
 from abstractions.services.auth.service import AuthServiceInterface
 from abstractions.services.auth.tokens import TokenServiceInterface
@@ -23,8 +24,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AuthService(AuthServiceInterface):
     bot_token: str
-    token_service: TokenServiceInterface
+    jwt_secret: str
+
     user_service: UserServiceInterface
+    token_service: TokenServiceInterface
 
     async def get_user_id_from_jwt(self, token: str) -> UUID:
         try:
@@ -64,6 +67,10 @@ class AuthService(AuthServiceInterface):
         sorted_data_string = "\n".join(f"{k}={v}" for k, v in sorted(data_dict.items()))
 
         # Step 2: Create HMAC-SHA256 signature of the bot token using 'WebAppData' as key
+        # secret_key = hmac.new(b"WebAppData", self.bot_token.encode(), hashlib.sha256).digest()
+        if not self.bot_token:
+            raise RuntimeError("settings.bot.<env>.token is empty — заполни в settings.json")
+
         secret_key = hmac.new(b"WebAppData", self.bot_token.encode(), hashlib.sha256).digest()
 
         # Step 3: Create final HMAC-SHA256 signature using the previous step result as the key

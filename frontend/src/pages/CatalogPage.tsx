@@ -3,8 +3,8 @@ import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom'
 import {getBlackListUser} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
 import {Combobox} from '@headlessui/react';
-import {useAuth} from "../contexts/auth";
-import { BootstrapContext } from '../contexts/bootstrap';
+import {BootstrapContext} from '../contexts/bootstrap';
+import {ProductStatus} from "../enums";
 
 interface Product {
     id: string;
@@ -16,6 +16,7 @@ interface Product {
     category: string;
     seller_id: string;
     image_path?: string;
+    status: ProductStatus;
 }
 
 interface Seller {
@@ -100,15 +101,20 @@ function CatalogPage() {
         }
     })
 
-
     const filtered = products
-  .filter(p => (filterPrice === '' || p.price <= filterPrice))
+  .filter(p => p.status === ProductStatus.ACTIVE)
+  .filter(p =>
+    searchQuery.trim() === '' ||
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .filter(p => filterPrice === '' || p.price <= filterPrice)
   .filter(p =>
     filterCashback === '' ||
     (p.wb_price - p.price) <= filterCashback
   )
-  .filter(p => (filterCategory === '' || p.category === filterCategory))
-  .filter(p => (filterSeller === '' || p.seller_id === filterSeller));
+  .filter(p => filterCategory === '' || p.category === filterCategory)
+  .filter(p => filterSeller === '' || p.seller_id === filterSeller);
+
 
 
     const categories = Array.from(new Set(products.map(p => p.category)));
@@ -274,7 +280,9 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
                     <div className="flex justify-end space-x-2">
                         <button
                             onClick={() => {
+                                setSearchQuery('');
                                 setFilterPrice('');
+                                setFilterCashback('');
                                 setFilterCategory('');
                                 setFilterSeller('');
                                 setShowFilters(false);

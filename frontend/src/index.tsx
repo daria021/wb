@@ -24,4 +24,5 @@ root.render(
     </React.StrictMode>
 );
 
+(window as any).Telegram?.WebApp?.ready?.();
 reportWebVitals();

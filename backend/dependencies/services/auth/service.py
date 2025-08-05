@@ -8,6 +8,7 @@ from settings import settings
 def get_auth_service() -> AuthServiceInterface:
     return AuthService(
         bot_token=settings.bot.token,
+        jwt_secret=settings.jwt.secret_key.get_secret_value(),
         token_service=get_token_service(),
-        user_service=get_user_service()
+        user_service=get_user_service(),
     )
