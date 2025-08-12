@@ -11,7 +11,7 @@ interface Product {
     category: string;
     key_word: string;
     general_repurchases: number;
-    daily_repurchases: number;
+    // daily_repurchases: number;
     price: number;
     wb_price: number;
     tg: string;

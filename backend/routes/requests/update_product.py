@@ -15,7 +15,7 @@ class UpdateProductForm(BaseModel):
     category: Optional[Category] = None
     key_word: Optional[str] = None
     general_repurchases: Optional[int] = None
-    daily_repurchases: Optional[int] = None
+    # daily_repurchases: Optional[int] = None
     price: Optional[float] = None
     wb_price: Optional[float] = None
     tg: Optional[str] = None

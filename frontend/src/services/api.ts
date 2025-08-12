@@ -51,7 +51,7 @@ export interface UserWithBalance {
   is_seller: boolean
   created_at: string  // ISO-строка
   updated_at: string  // ISO-строкаf
-
+  referrer_bonus: number
   // Новые поля
   total_plan: number        // общий план (ACTIVE + NOT_PAID)
   reserved_active: number   // зарезервировано под ACTIVE
@@ -135,7 +135,7 @@ export async function getMe(): Promise<MeResponse> {
     return (await apiClient.get<MeResponse>(`users/me`)).data;
 }
 
-export async function createOrder(formData: FormData) {
+export async function createOrder({formData}: { formData: FormData }) {
     return apiClient.post('/orders', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -185,13 +185,14 @@ export async function updateOrder(
         phone_number?: string;
         name?: string;
         bank?: string;
-        final_cart_screenshot?: File;
+        final_cart_screenshot_path?: File;
         delivery_screenshot?: File;
         barcodes_screenshot?: File;
         review_screenshot?: File;
         receipt_screenshot?: File;
         receipt_number?: string;
         status?: string;
+order_date?: string | Date;
     }
 ) {
     const formData = new FormData();
@@ -223,8 +224,8 @@ export async function updateOrder(
     if (data.cart_screenshot_path) {
         formData.append('cart_screenshot_path', data.cart_screenshot_path);
     }
-    if (data.final_cart_screenshot) {
-        formData.append('final_cart_screenshot', data.final_cart_screenshot);
+    if (data.final_cart_screenshot_path) {
+        formData.append('final_cart_screenshot', data.final_cart_screenshot_path);
     }
     if (data.delivery_screenshot) {
         formData.append('delivery_screenshot', data.delivery_screenshot);
@@ -238,6 +239,17 @@ export async function updateOrder(
     if (data.receipt_screenshot) {
         formData.append('receipt_screenshot', data.receipt_screenshot);
     }
+    if (data.order_date) {
+  const dateStr =
+    typeof data.order_date === 'string'
+      ? data.order_date
+      : new Date(data.order_date.getTime() - data.order_date.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 10); // "2025-08-12"
+
+  formData.append('order_date', dateStr);
+}
+
 
     const response = await apiClient.patch(`/orders/${orderId}`, formData, {
         headers: {

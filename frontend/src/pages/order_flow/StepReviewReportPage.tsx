@@ -6,6 +6,7 @@ import GetUploadLink from "../../components/GetUploadLink";
 import FileUploader from "../../components/FileUploader";
 import {VideoOverlay} from "../../App";
 import OrderHeader from "../../components/OrderHeader";
+import {PayoutTime} from "../../enums";
 
 interface Product {
     id: string;
@@ -18,6 +19,7 @@ interface Product {
     seller_id: string;
     review_requirements: string;
     requirements_agree: boolean;
+    payment_time: PayoutTime;
 }
 
 interface Order {
@@ -77,8 +79,6 @@ function StepReviewReportPage() {
 
     const [agreedWithSeller, setAgreedWithSeller] = useState(false);
     const [wroteInWB, setWroteInWB] = useState(false);
-
-
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
     const isReviewDone = order?.product.requirements_agree
@@ -176,19 +176,28 @@ function StepReviewReportPage() {
 
 
     const handleContinue = async () => {
-        if (!canContinue || !orderId) return;
-        try {
-            await updateOrder(orderId, {
-                step: 7,
+  if (!canContinue || !orderId || !order) return;
+
+  const payload: any = {
+             step: 7,
                 review_screenshot: file1,
                 receipt_screenshot: file2,
                 receipt_number: checkNumber,
-            });
-            navigate(`/order/${orderId}/order-info`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+  };
+
+  if (order.product.payment_time === PayoutTime.AFTER_DELIVERY || order.product.payment_time === PayoutTime.ON_15TH_DAY)
+  {
+    // YYYY-MM-DD
+    payload.order_date = new Date().toISOString().slice(0, 10);
+  }
+
+  try {
+    await updateOrder(orderId, payload);
+    navigate(`/order/${orderId}/order-info`);
+  } catch (err) {
+    console.error('Ошибка при обновлении заказа:', err);
+  }
+};
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -446,7 +455,7 @@ function StepReviewReportPage() {
                                                 <div className="border-t p-4 space-y-3">
                                                     {reportData.search_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скриншот поискового запроса в WB
+                                                            <p className="text-sm font-semibold">1. Скриншот поискового запроса в WB
                                                             </p>
                                                             <img
                                                                 src={GetUploadLink(reportData.search_screenshot_path)}
@@ -457,7 +466,7 @@ function StepReviewReportPage() {
                                                     )}
                                                     {reportData.cart_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скриншот корзины в WB</p>
+                                                            <p className="text-sm font-semibold">2. Скриншот корзины в WB</p>
                                                             <img
                                                                 src={GetUploadLink(reportData.cart_screenshot_path)}
                                                                 alt="Скриншот корзины в WB"
@@ -578,7 +587,7 @@ function StepReviewReportPage() {
                                             </button>
                                             {expandedSteps[5] && reportData.final_cart_screenshot && (
                                                 <div className="border-t p-4">
-                                                    <p className="text-sm font-semibold">Скриншот заказа на WB</p>
+                                                    <p className="text-sm font-semibold">1. Скриншот заказа на WB</p>
                                                     <img
                                                         src={GetUploadLink(reportData.final_cart_screenshot)}
                                                         alt="Финальный Скриншот корзины в WB"

@@ -25,6 +25,7 @@ interface Order {
   transaction_code: string;
   created_at: string;
   seller: User
+  order_date: Date;
 }
 
 interface User {
@@ -40,7 +41,7 @@ interface OrderReport {
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot?: string;
+    final_cart_screenshot_path?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -184,12 +185,10 @@ export default function FinalDealPage() {
     </a>
   </p>
   <p>
-    Дата сделки по выкупу товара: <strong>{formatDate(order.created_at)}</strong>
+    Дата сделки по выкупу товара: <strong>{formatDate(String(order.order_date))}</strong>
   </p>
   <p>Код сделки: <strong>{order.transaction_code}</strong></p>
 </div>
-
-
       {/* 6. Отзыв */}
       <div className="bg-white border border-brand p-4 rounded-md text-sm space-y-2">
         <p className="font-bold">💬 Поделитесь отзывом:</p>
@@ -249,7 +248,7 @@ export default function FinalDealPage() {
                                                 <div className="border-t p-4 space-y-3">
                                                     {reportData.search_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скриншот поискового запроса в WB
+                                                            <p className="text-sm font-semibold">1. Скриншот поискового запроса в WB
                                                             </p>
                                                             <img
                                                                 src={GetUploadLink(reportData.search_screenshot_path)}
@@ -260,7 +259,7 @@ export default function FinalDealPage() {
                                                     )}
                                                     {reportData.cart_screenshot_path && (
                                                         <div>
-                                                            <p className="text-sm font-semibold">Скриншот корзины в WB</p>
+                                                            <p className="text-sm font-semibold">2. Скриншот корзины в WB</p>
                                                             <img
                                                                 src={GetUploadLink(reportData.cart_screenshot_path)}
                                                                 alt="Скриншот корзины в WB"
@@ -379,11 +378,11 @@ export default function FinalDealPage() {
                                                           d="M19 9l-7 7-7-7"/>
                                                 </svg>
                                             </button>
-                                            {expandedSteps[5] && reportData.final_cart_screenshot && (
+                                            {expandedSteps[5] && reportData.final_cart_screenshot_path && (
                                                 <div className="border-t p-4">
                                                     <p className="text-sm font-semibold">Скриншот заказа на WB</p>
                                                     <img
-                                                        src={GetUploadLink(reportData.final_cart_screenshot)}
+                                                        src={GetUploadLink(reportData.final_cart_screenshot_path)}
                                                         alt="Финальный Скриншот корзины в WB"
                                                         className="w-full rounded"
                                                     />

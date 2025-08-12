@@ -118,13 +118,14 @@ class ProductService(ProductServiceInterface):
         #         dto.daily_repurchases = dto.daily_repurchases
 
             # 6c. Дефолтный статус CREATED
-            if dto.status is None and old.status in (ProductStatus.DISABLED, ProductStatus.ACTIVE):
-                dto.status = ProductStatus.CREATED
+        if dto.status is None and old.status in (ProductStatus.DISABLED, ProductStatus.ACTIVE):
+            dto.status = ProductStatus.CREATED
+        if dto.status == ProductStatus.ACTIVE:
+            dto.status = ProductStatus.CREATED
 
         # 7. Сохраняем изменения и шлём пуш при активации
         await self.product_repository.update(product_id, dto)
-        if dto.status == ProductStatus.ACTIVE and old.status != ProductStatus.ACTIVE:
-            await self.notification_service.send_new_product(product_id=product_id)
+
 
     async def delete_product(self, product_id: UUID) -> None:
         await self.product_repository.delete(product_id)

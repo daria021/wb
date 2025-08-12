@@ -29,6 +29,7 @@ class Order(BaseModel):
     receipt_screenshot_path: Optional[str]
     receipt_number: Optional[str]
     status: OrderStatus
+    order_date: datetime
 
     product: Product
     user: User

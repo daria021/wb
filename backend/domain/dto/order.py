@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -27,6 +28,7 @@ class CreateOrderDTO(CreateDTO):
     review_screenshot_path: Optional[str] = None
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
+    order_date: Optional[datetime] = None
 
 
 
@@ -48,3 +50,4 @@ class UpdateOrderDTO(UpdateDTO):
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
     status: Optional[OrderStatus] = None
+    order_date: Optional[datetime] = None

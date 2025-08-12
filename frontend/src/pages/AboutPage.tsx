@@ -27,7 +27,9 @@ function AboutPage() {
             <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-6">
 
                 {/* Заголовок вкладки */}
-                <h1 className="text-xl font-bold mb-4">💬 О сервисе</h1>
+                <h1 className="relative text-2xl font-medium mb-4 text-center">
+                    <strong>О сервисе</strong>
+                </h1>
 
                 {/* Основной текст */}
                 <section className="mb-6">
@@ -36,7 +38,7 @@ function AboutPage() {
                         кешбэк за покупки товаров на Wildberries от продавцов, а продавцам — продвигать свои товары
                         через честные отзывы и активность пользователей.
                     </p>
-                    <h2 className="text-lg font-semibold mb-2">🔍 Как работает сервис?</h2>
+                    <h2 className="text-lg font-semibold mb-2 mt-4">🔍 Как работает сервис?</h2>
                     <p className="text-sm text-gray-800 mb-4">
                         <strong>Покупатель выбирает товар из списка раздач.<br/>
 
@@ -100,45 +102,47 @@ function AboutPage() {
 
                         Дождитесь выплаты кешбэка от продавца</p>
 
-                                        <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
+                    <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
                         <Link to="/instruction">
                             📁Подробная инструкция для покупателей по выкупу товара
                         </Link>
                     </p>
-                                        <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
+                    <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
                         <a href="https://t.me/Premiumcashb" target="_blank"
-                                                      rel="noopener noreferrer">
-                        📱Канал по раздачам товаров от продавцов
-                    </a>
+                           rel="noopener noreferrer">
+                            📱Канал по раздачам товаров от продавцов
+                        </a>
                     </p>
                 </section>
 
-                                <section className="mb-6">
+                <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">🤝 Как продавцу разместить товар?</h2>
                     <p className="text-sm text-gray-800 mb-4">
                         Свяжитесь с техподдержкой <br/>
 
-Укажите артикул товара, сумму кешбэка, условия по отзыву <br/>
+                        Укажите артикул товара, сумму кешбэка, условия по отзыву <br/>
 
-Оплатите размещение и отслеживайте выкупы товара
+                        Оплатите размещение и отслеживайте выкупы товара
                     </p>
-                                            <p className="text-sm mb-4">
+                    <p className="text-sm mb-4">
                         <button
-                             className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline"
+                            className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline"
                             onClick={() => navigate('/instruction', {state: {openTab: 'seller'}})}
                         >
                             📁Подробная инструкция для продавцов по раздаче товара
                         </button>
                     </p>
                 </section>
-                                <section className="mb-6">
+                <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">📮 Есть вопросы?</h2>
                     <p className="text-sm text-gray-800 mb-4">
                         Сначала загляните в наш{' '}
-                                          <Link to="/question" className="underline italic">
-                                              FAQ
+                        <Link to="/question" className="underline italic">
+                            FAQ
                         </Link>, он отвечает на 90% вопросов.
-Если не нашли нужной информации — обратитесь в <a href="https://t.me/wbcashmoney" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">техподдержку</a>
+                        Если не нашли нужной информации — обратитесь в <a href="https://t.me/wbcashmoney"
+                                                                          target="_blank" rel="noopener noreferrer"
+                                                                          className="text-blue-600 hover:underline">техподдержку</a>
                     </p>
                 </section>
 

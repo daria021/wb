@@ -51,6 +51,7 @@ class OrderRepository(
             receipt_screenshot_path=dto.receipt_screenshot_path,
             receipt_number=dto.receipt_number,
             status=dto.status,
+            order_date=dto.order_date,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
@@ -67,7 +68,7 @@ class OrderRepository(
                 key_word=product.key_word,
                 general_repurchases=product.general_repurchases,
                 remaining_products=product.remaining_products,
-                daily_repurchases=product.daily_repurchases,
+                # daily_repurchases=product.daily_repurchases,
                 price=product.price,
                 wb_price=product.wb_price,
                 tg=product.tg,
@@ -116,6 +117,7 @@ class OrderRepository(
             user=_map_user(entity.user),
             seller=_map_user(entity.seller),
             transaction_code=entity.transaction_code,
+            order_date=entity.order_date,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )

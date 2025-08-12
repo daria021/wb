@@ -81,7 +81,7 @@ function ModeratorProductReviewPage() {
                     <p><strong>Категория:</strong> {product.category}</p>
                     <p><strong>Ключевое слово:</strong> {product.key_word}</p>
                     <p><strong>Общее количество выкупов:</strong> {product.general_repurchases}</p>
-                    <p><strong>Ежедневные выкупы:</strong> {product.daily_repurchases}</p>
+                    {/*<p><strong>Ежедневные выкупы:</strong> {product.daily_repurchases}</p>*/}
                     <p><strong>Цена:</strong> {product.price}</p>
                     <p><strong>Цена WB:</strong> {product.wb_price}</p>
                     <p><strong>Телеграм:</strong> {product.tg}</p>

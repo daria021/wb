@@ -114,7 +114,7 @@ const ProductDetailPage: React.FC = () => {
       </div>
 
       {/* Deal Summary */}
-      <div className="bg-white p-4 rounded-lg shadow space-y-1">
+      <div className="bg-white p-4 rounded-lg shadow space-y-1 text-sm">
         <p>📦 Цена на WB: {product.wb_price} ₽</p>
         <p>
           <span className="text-green-600 ">💰 Скидка: <strong>{discountPercent}%</strong></span>{' '}
@@ -129,12 +129,12 @@ const ProductDetailPage: React.FC = () => {
       </div>
 
       {/* Warning */}
-      <p className="text-gray-800">
+      <p className="text-gray-800 text-sm">
         <strong>Важно!</strong> Бот — это инструкция, мы не гарантируем выплату кешбэка. Перед участием в выкупе товара, убедитесь в надежности продавца.
       </p>
 
       {/* Guide */}
-       <div className="bg-white p-4 rounded-lg shadow">
+       <div className="bg-white p-4 rounded-lg shadow text-sm">
         <div
           className="flex items-center justify-between cursor-pointer"
           onClick={() => setShowGuide(!showGuide)}

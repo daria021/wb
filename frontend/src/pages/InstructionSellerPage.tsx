@@ -60,13 +60,13 @@ export default function InstructionSellerPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 text-sm">
             <form onSubmit={handleSubmit} className="max-w-screen-md w-full bg-white rounded-lg shadow-lg p-6">
                 <h2 className="text-2xl font-bold mb-6 text-center">Ваша заявка на размещение товара принята!</h2>
 
                 <section className="mb-6">
                     <h3 className="text-xl font-semibold mb-2">🔍 Что дальше:</h3>
-                    <ul className="list-disc list-inside text-base text-gray-800 space-y-1">
+                    <ul className="list-disc list-inside text-gray-800 space-y-1">
                         <li>Ваша заявка передана на модерацию.</li>
                         <li>Проверка займет до <strong>24 часов</strong> (обычно быстрее).</li>
                         <li>После одобрения товар появится в списке доступных для выкупа.</li>
@@ -113,7 +113,7 @@ export default function InstructionSellerPage() {
                                 checked={agreeRules}
                                 onChange={(e) => setAgreeRules(e.target.checked)}
                             />
-                            <label htmlFor="agreeRules" className="text-base text-gray-800">
+                            <label htmlFor="agreeRules" className="text-gray-800">
                                 Я ознакомлен(а) с правилами и подтверждаю, что при размещении товара обязуюсь выплатить кешбэк при получении корректного отчёта.
                             </label>
                         </div>

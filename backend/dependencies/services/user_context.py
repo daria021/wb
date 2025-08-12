@@ -37,7 +37,6 @@ async def get_me_cached(
             f"reserved_active={reserved_active}, unpaid_plan={unpaid_plan}, "
             f"free_balance={free_balance}"
         )
-
         # 3. Нормализация баланса: гарантируем free_balance >= 0
         # Сортируем оплаченные товары (ACTIVE) по дате (или id) от самых свежих
         paid_prods = sorted(

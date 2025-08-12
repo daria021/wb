@@ -62,7 +62,15 @@ class NotificationService(NotificationServiceInterface):
         user = await self.users_repository.get(order.user_id)
         await self.bot.send_message(
             chat_id=user.telegram_id,
-            text="Ваш кешбэк выплачен! 💰",
+            text=f'Ваш кешбэк по заказу {order.name} выплачен! 💰',
+        )
+    # ---------- публичные методы ----------
+    async def send_cashback_rejected(self, order_id: UUID) -> None:
+        order = await self.orders_repository.get(order_id)
+        user = await self.users_repository.get(order.user_id)
+        await self.bot.send_message(
+            chat_id=user.telegram_id,
+            text=f"Кешбэк по заказу {order.name} отклонен.",
         )
 
     async def send_balance_increased(self, user_id: UUID, amount: int) -> None:

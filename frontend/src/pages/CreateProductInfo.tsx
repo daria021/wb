@@ -27,7 +27,7 @@ interface Product {
     category: Category;
     key_word: string;
     general_repurchases: number;
-    daily_repurchases: number;
+    // daily_repurchases: number;
     price: number;
     wb_price: number;
     tg: string;
@@ -91,7 +91,7 @@ function CreateProductInfo() {
             if (product) {
                 setProduct({...product, status: ProductStatus.ACTIVE});
             }
-            alert('Товар опубликован');
+            alert('Товар отправлен на модерацию!');
         } catch (err) {
             console.error('Ошибка при сохранении товара:', err);
             alert('Не удалось сохранить товар');
@@ -202,10 +202,10 @@ function CreateProductInfo() {
                             <span className="text-sm text-gray-600">Кол-во выкупов:</span>{' '}
                             <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
                         </div>
-                        <div>
-                            <span className="text-sm text-gray-600">План выкупов на сутки:</span>{' '}
-                            <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>
-                        </div>
+                        {/*<div>*/}
+                        {/*    <span className="text-sm text-gray-600">План выкупов на сутки:</span>{' '}*/}
+                        {/*    <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>

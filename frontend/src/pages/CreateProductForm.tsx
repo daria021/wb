@@ -10,10 +10,10 @@ interface ProductFormData {
     name: string;
     article: string;
     brand: string;
-    category: Category;
+    category: Category | '';
     key_word: string;
     general_repurchases: string;
-    daily_repurchases: string;
+    // daily_repurchases: string;
     price: string;
     wb_price: string;
     tg: string;
@@ -57,7 +57,7 @@ function ProductForm() {
         category: 'Категория',
         key_word: 'Ключевое слово',
         general_repurchases: 'Общий план выкупов',
-        daily_repurchases: 'План выкупов на сутки',
+        // daily_repurchases: 'План выкупов на сутки',
         price: 'Цена для покупателя',
         wb_price: 'Цена на сайте WB',
         tg: 'Телеграм для связи',
@@ -92,10 +92,10 @@ function ProductForm() {
         name: '',
         article: '',
         brand: '',
-        category: Category.WOMEN,
+        category: '',
         key_word: '',
         general_repurchases: '',
-        daily_repurchases: '',
+        // daily_repurchases: '',
         price: '',
         wb_price: '',
         tg: '',
@@ -140,7 +140,7 @@ function ProductForm() {
                     category: data.category,
                     key_word: data.key_word,
                     general_repurchases: String(data.general_repurchases),
-                    daily_repurchases: String(data.daily_repurchases),
+                    // daily_repurchases: String(data.daily_repurchases),
                     price: String(data.price),
                     wb_price: String(data.wb_price),
                     tg: data.tg,
@@ -180,13 +180,13 @@ function ProductForm() {
         }
 
         // Аналогично — оба поля выкупа
-        if (['daily_repurchases', 'general_repurchases'].includes(name)) {
-            if (newFormData.daily_repurchases > newFormData.general_repurchases) {
-                setRepurchasesError('Ежедневные выкупы не могут превышать общий план');
-            } else {
-                setRepurchasesError('');
-            }
-        }
+        // if (['daily_repurchases', 'general_repurchases'].includes(name)) {
+        //     if (newFormData.daily_repurchases > newFormData.general_repurchases) {
+        //         setRepurchasesError('Ежедневные выкупы не могут превышать общий план');
+        //     } else {
+        //         setRepurchasesError('');
+        //     }
+        // }
     };
 
 
@@ -204,6 +204,11 @@ function ProductForm() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+          if (formData.category === '') {
+    alert('Пожалуйста, выберите категорию');
+    return;
+  }
 
         if (isEditMode && originalFormData) {
             const changes: Record<string, { old: any, new: any }> = {};
@@ -234,7 +239,7 @@ function ProductForm() {
             fd.append('category', formData.category);
             fd.append('key_word', formData.key_word);
             fd.append('general_repurchases', String(formData.general_repurchases));
-            fd.append('daily_repurchases', String(formData.daily_repurchases));
+            // fd.append('daily_repurchases', String(formData.daily_repurchases));
             fd.append('price', String(Number(formData.price)));
             fd.append('wb_price', String(formData.wb_price));
             fd.append('tg', formData.tg);
@@ -284,12 +289,14 @@ function ProductForm() {
                     </button>
                 </div>
                 <div className="px-2">
-                    <h1 className="text-center text-base font-bold -mt-1">
-                        {isEditMode ? 'Редактировать товар' : 'Добавить товар'}
+                    <h1 className="text-center text-lg font-bold -mt-1">
+                        {isEditMode ? 'Редактировать товар' : 'Создание карточки товара'}
                     </h1>
+                    <div className="text-sm mb-2">
+                    Заполните информацию о товаре раздачи:
                 </div>
             </div>
-
+                </div>
 
             <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -303,12 +310,12 @@ function ProductForm() {
                         onChange={handleInputChange}
                         required
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
-                        placeholder="Название товара"
+                        placeholder="Например, 'Рубашка'"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Артикул</label>
+                    <label className="block text-sm font-medium mb-1">Артикул на WB</label>
                     <input
                         type="text"
                         ref={inputRefs[1]}
@@ -318,7 +325,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         required
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
-                        placeholder="Артикул"
+                        placeholder="123456789"
                     />
                 </div>
 
@@ -341,28 +348,29 @@ function ProductForm() {
                         onChange={handleInputChange}
                         required
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
+                        placeholder="Avocado.ceo"
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1">Категория</label>
-                    <select
+<div>
+  <label className="block text-sm font-medium mb-1">Категория</label>
+  <select
+    name="category"
+    value={formData.category}
+    onChange={handleInputChange}
+    required
+    className={`w-full border border-darkGray rounded-md p-2 text-sm ${formData.category === '' ? 'text-gray-400' : ''}`}
+  >
+    <option value="" disabled hidden>Выбрать категорию</option>
+    {Object.values(Category).map((cat) => (
+      <option key={cat} value={cat}>{cat}</option>
+    ))}
+  </select>
+</div>
 
-                        name="category"
-                        value={formData.category}
-                        onChange={handleInputChange}
-                        className="w-full border border-darkGray rounded-md p-2 text-sm"
-                    >
-                        {Object.values(Category).map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat}
-                            </option>
-                        ))}
-                    </select>
-                </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Ключевое слово</label>
+                    <label className="block text-sm font-medium mb-1">Ключевое слово для поиска</label>
                     <input
                         type="text"
                         ref={inputRefs[3]}
@@ -372,12 +380,12 @@ function ProductForm() {
                         onChange={handleInputChange}
                         required
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
-                        placeholder="Например, 'рубашка в клетку'"
+                        placeholder="Например, 'Рубашка в клетку'"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Общий план выкупов</label>
+                    <label className="block text-sm font-medium mb-1">Кол-во сделок по выкупу товара</label>
                     <NumericInput
                         name="general_repurchases"
                         ref={inputRefs[4]}
@@ -385,26 +393,27 @@ function ProductForm() {
                         value={formData.general_repurchases}
                         onValueChange={handleNumericFieldChange}
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
+                        placeholder="100"
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>
-                    <NumericInput
-                        name="daily_repurchases"
-                        ref={inputRefs[5]}
-                        onKeyDown={handleKeyDown(5)}
-                        value={formData.daily_repurchases}
-                        onValueChange={handleNumericFieldChange}
-                        className="w-full border border-darkGray rounded-md p-2 text-sm"
-                    />
-                    {repurchasesError && (
-                        <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>
-                    )}
-                </div>
+                {/*<div>*/}
+                {/*    <label className="block text-sm font-medium mb-1">План выкупов на сутки</label>*/}
+                {/*    <NumericInput*/}
+                {/*        name="daily_repurchases"*/}
+                {/*        ref={inputRefs[5]}*/}
+                {/*        onKeyDown={handleKeyDown(5)}*/}
+                {/*        value={formData.daily_repurchases}*/}
+                {/*        onValueChange={handleNumericFieldChange}*/}
+                {/*        className="w-full border border-darkGray rounded-md p-2 text-sm"*/}
+                {/*    />*/}
+                {/*    {repurchasesError && (*/}
+                {/*        <p className="text-red-500 text-xs mt-1">{repurchasesError}</p>*/}
+                {/*    )}*/}
+                {/*</div>*/}
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Цена на сайте WB (₽)</label>
+                    <label className="block text-sm font-medium mb-1">Цена на WB</label>
                     <NumericInput
                         name="wb_price"
                         ref={inputRefs[6]}
@@ -412,11 +421,12 @@ function ProductForm() {
                         value={formData.wb_price}
                         onValueChange={handleNumericFieldChange}
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
+                        placeholder="₽"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Цена для покупателя (₽)</label>
+                    <label className="block text-sm font-medium mb-1">Цена для покупателя</label>
                     <NumericInput
                         name="price"
                         ref={inputRefs[7]}
@@ -424,12 +434,28 @@ function ProductForm() {
                         value={formData.price}
                         onValueChange={handleNumericFieldChange}
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
+                        placeholder="₽"
                     />
                     {priceError && (
                         <p className="text-red-500 text-xs mt-1">{priceError}</p>
                     )}
                 </div>
 
+                <div>
+                    <label className="block text-sm font-medium mb-1">Выплата кешбэка покупателю</label>
+                    <select
+                        name="payment_time"
+                        value={formData.payment_time}
+                        onChange={handleInputChange}
+                        className="w-full border border-darkGray rounded-md p-2 text-sm"
+                    >
+                        {Object.values(PayoutTime).map((pt) => (
+                            <option key={pt} value={pt}>
+                                {pt}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Telegram продавца для вопросов покупателя по товару</label>
@@ -447,22 +473,6 @@ function ProductForm() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Выбор выплаты кешбэка покупателю</label>
-                    <select
-                        name="payment_time"
-                        value={formData.payment_time}
-                        onChange={handleInputChange}
-                        className="w-full border border-darkGray rounded-md p-2 text-sm"
-                    >
-                        {Object.values(PayoutTime).map((pt) => (
-                            <option key={pt} value={pt}>
-                                {pt}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
                     <label className="block text-sm font-medium mb-1">Требования к отзыву</label>
                     <textarea
                         name="review_requirements"
@@ -472,7 +482,7 @@ function ProductForm() {
                         onChange={handleInputChange}
                         rows={3}
                         className="w-full border border-darkGray rounded-md p-2 text-sm"
-                        placeholder="Опишите требования к отзыву..."
+                        placeholder="Например, 'Отзыв должен содержать фото/видео товара без упаковки, подробности опыта использования товара от 2–3 предложений, оценку 5 звёзд и т.д.'"
                     />
                 </div>
                 <div className="flex items-center space-x-2">
@@ -483,7 +493,7 @@ function ProductForm() {
                         checked={formData.requirements_agree}
                         onChange={handleInputChange}
                         ref={agreeRef}
-                        className="h-4 w-4 text-brand border-darkGray rounded h-8 w-8"
+                        className="text-brand border-darkGray rounded h-8 w-8"
                     />
                     <label htmlFor="requirements_agree" className="text-sm">
                         Отзыв покупателя должен быть согласован с продавцом
@@ -528,16 +538,13 @@ function ProductForm() {
                                 className="px-4 py-2 bg-white text-brand rounded border border-brand"
                             >
                                 Все верно. Применить
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-            )}
-
+            </button>
+          </div>
         </div>
-    )
-        ;
-}
+      </div>
+    )}
+  </div>
+);
+            }
 
 export default ProductForm;
