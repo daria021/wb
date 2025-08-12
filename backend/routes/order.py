@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -94,7 +95,7 @@ async def update_order(
         bank: Optional[str] = Form(None),
 
         # Шаг 5
-        final_cart_screenshot: Optional[UploadFile] = File(None),
+        final_cart_screenshot_path: Optional[UploadFile] = File(None),
 
         # Шаг 6
         delivery_screenshot: Optional[UploadFile] = File(None),
@@ -104,7 +105,7 @@ async def update_order(
         review_screenshot: Optional[UploadFile] = File(None),
         receipt_screenshot: Optional[UploadFile] = File(None),
         receipt_number: Optional[str] = Form(None),
-
+        order_date: Optional[datetime] = Form(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ):
     # Собираем данные для UpdateOrderDTO в словарь
@@ -136,8 +137,8 @@ async def update_order(
         update_data["bank"] = bank
 
     # Шаг 5
-    if final_cart_screenshot is not None:
-        path = await upload_service.upload(final_cart_screenshot)
+    if final_cart_screenshot_path is not None:
+        path = await upload_service.upload(final_cart_screenshot_path)
         update_data["final_cart_screenshot_path"] = path
 
     # Шаг 6
@@ -160,6 +161,9 @@ async def update_order(
 
     if receipt_number is not None:
         update_data["receipt_number"] = receipt_number
+
+    if order_date is not None:
+        update_data["order_date"] = order_date
 
     # Создаём DTO на основе собранных полей
     dto = UpdateOrderDTO.model_validate(update_data)

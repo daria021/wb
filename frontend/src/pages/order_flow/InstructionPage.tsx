@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { createOrder, getProductById } from '../../services/api';
+import {createOrder, getBlackListUser, getProductById} from '../../services/api';
 import { AxiosResponse } from 'axios';
 import { useUser } from '../../contexts/user';
 
@@ -20,6 +20,7 @@ interface Product {
   wb_price: number;
   tg: string;
   payment_time: string;
+  requirements_agree: boolean;
   review_requirements: string;
 }
 
@@ -52,7 +53,7 @@ const InstructionPage: React.FC = () => {
     formData.append('user_id', user.id);
     formData.append('seller_id', product.seller_id);
     formData.append('product_id', productId);
-    const orderId = (await createOrder(formData)).data as string;
+    const orderId = (await createOrder({formData: formData})).data as string;
     navigate(`/product/${orderId}/step-1`);
   };
 
@@ -69,10 +70,10 @@ const InstructionPage: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow p-6 space-y-6">
         {/* Header */}
-        <h1 className="text-left text-2xl font-bold">
+        <h1 className="text-2xl font-bold text-center">
           Перед началом — изучите правила сервиса и выкупа товара за кешбэк
         </h1>
-        <p className="text-gray-700">
+        <p className="text-gray-700 text-sm">
           Вы собираетесь начать сделку по выкупу товара с кешбэком.<br />
           Пожалуйста, внимательно ознакомьтесь с условиями и подтвердите согласие:
         </p>
@@ -81,10 +82,9 @@ const InstructionPage: React.FC = () => {
         {/* Terms Section */}
         <section className="space-y-4">
           <h2 className="text-xl font-semibold flex items-center space-x-2">
-            <span role="img" aria-label="book">📖</span>
             <span>Условия сделки по выкупу товара:</span>
           </h2>
-          <ul className="list-inside list-none space-y-2 text-gray-800 ">
+          <ul className="list-inside list-none space-y-2 text-gray-800 text-sm">
             <li className="flex items-start space-x-2">
               <span role="img" aria-label="cash">💸</span>
               <span>
@@ -112,7 +112,7 @@ const InstructionPage: React.FC = () => {
             <li className="flex items-start space-x-2">
               <span role="img" aria-label="clock">🕒</span>
               <span className="text-gray-700">
-                Выплата кешбэка — {translatePaymentTime(product.payment_time)}
+                Выплата кешбэка — <strong>{translatePaymentTime(product.payment_time)}</strong>
               </span>
             </li>
           </ul>
@@ -122,10 +122,9 @@ const InstructionPage: React.FC = () => {
         {/* Warnings */}
         <section className="space-y-2">
           <h2 className="text-xl font-semibold flex items-center space-x-2 ">
-            <span role="img" aria-label="warning">⚠️</span>
             <span>Предупреждения:</span>
           </h2>
-          <ul className="space-y-2 text-gray-800">
+          <ul className="space-y-2 text-gray-800 text-sm">
             <li className="flex space-x-2">
               <span role="img" aria-label="exclamation">❗</span>
               <span>
@@ -160,7 +159,7 @@ const InstructionPage: React.FC = () => {
         <hr />
 
         {/* Deal Details */}
-        <section className="space-y-3">
+        <section className="space-y-3 text-sm">
           <h2 className="text-xl font-semibold flex items-center space-x-2 ">
             <span>Детали сделки по выкупу товара:</span>
           </h2>
@@ -173,18 +172,31 @@ const InstructionPage: React.FC = () => {
 </p>
 
           <p>Цена на WB: {product.wb_price} ₽</p>
+<p>
+  Согласование отзыва с продавцом{' '}
+  {product.tg ? (
+    <a
+      href={`https://t.me/${product.tg.replace(/^@/, '')}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      {product.tg}
+    </a>
+  ) : '—'}
+  : <strong>{product.requirements_agree ? 'Требуется' : 'Не требуется'}</strong>
+</p>
+
           {product.review_requirements && (
   <p>Требования к отзыву: <em>{product.review_requirements}</em></p>
 )}
 
         </section>
 
-
-
         {/* Confirmation Form */}
         {!preview && (
           <div className="space-y-4">
-            <div className="flex items-start space-x-3">
+            <div className="flex items-start space-x-3 text-sm">
               <input
                 type="checkbox"
                 id="agreeRules"
@@ -201,7 +213,7 @@ const InstructionPage: React.FC = () => {
                 </ul>
               </label>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 text-sm">
               <input
                 type="checkbox"
                 id="agreeData"

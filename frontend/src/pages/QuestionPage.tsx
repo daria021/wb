@@ -21,7 +21,7 @@ function QuestionPage() {
             <div className="max-w-screen-md w-full bg-white border border-brand rounded-lg shadow-lg p-6">
 
                 <section className="mb-8">
-                    <h1 className="text-2xl font-medium mb-6 text-left">
+                    <h1 className="text-2xl font-medium mb-6 text-center">
                         <strong>Покупателям: Частые вопросы (FAQ)</strong>
                     </h1>
 
@@ -144,7 +144,7 @@ function QuestionPage() {
                 </section>
 
                 <section className="mb-8">
-                    <h1 className="text-2xl font-medium mb-6 text-left">
+                    <h1 className="text-2xl font-medium mb-6 text-center">
                         <strong>Продавцам: Частые вопросы (FAQ)</strong>
                     </h1>
 

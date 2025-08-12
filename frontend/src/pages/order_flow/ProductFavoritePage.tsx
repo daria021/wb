@@ -40,7 +40,7 @@ interface OrderReport {
     phone_number?: string;
     name?: string;
     bank?: string;
-    final_cart_screenshot?: string;
+    final_cart_screenshot_path?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
     review_screenshot_path?: string;
@@ -265,7 +265,7 @@ function ProductFavoritePage() {
                                             <div className="border-t p-4 space-y-3">
                                                 {reportData.search_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скриншот поискового запроса в WB</p>
+                                                        <p className="text-sm font-semibold">1. Скриншот поискового запроса в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.search_screenshot_path)}
                                                             alt="Скриншот поискового запроса в WB"
@@ -275,7 +275,7 @@ function ProductFavoritePage() {
                                                 )}
                                                 {reportData.cart_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">Скриншот корзины в WB</p>
+                                                        <p className="text-sm font-semibold">2. Скриншот корзины в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.cart_screenshot_path)}
                                                             alt="Скриншот корзины в WB"

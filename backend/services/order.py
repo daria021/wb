@@ -112,6 +112,12 @@ class OrderService(OrderServiceInterface):
                 order.user_id,
                 UpdateUserDTO(role=UserRole.CLIENT)
             )
+        if dto.status == OrderStatus.CASHBACK_REJECTED:
+            await self.notification_service.send_cashback_rejected(order_id)
+            await self.user_repository.update(
+                order.user_id,
+                UpdateUserDTO(role=UserRole.CLIENT)
+            )
 
     async def delete_order(self, order_id: UUID) -> None:
         await self.order_repository.delete(order_id)

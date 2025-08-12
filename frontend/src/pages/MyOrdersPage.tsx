@@ -32,7 +32,7 @@ interface Product {
     category: string;
     key_word: string;
     general_repurchases: number;
-    daily_repurchases: number;
+    // daily_repurchases: number;
     price: number;
     wb_price: number;
     tg: string;
@@ -78,6 +78,7 @@ function MyOrdersPage() {
         [OrderStatus.CASHBACK_NOT_PAID]: 'Кешбэк не выплачен',
         [OrderStatus.CANCELLED]: 'Отменён',
         [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
+        [OrderStatus.CASHBACK_REJECTED]: 'Кешбэк отклонен',
     };
 
 

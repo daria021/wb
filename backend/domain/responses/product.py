@@ -18,7 +18,7 @@ class ProductResponse(BaseModel):
     category: Category
     key_word: str
     general_repurchases: int
-    daily_repurchases: int
+    # daily_repurchases: int
     price: float
     wb_price: float
     tg: str

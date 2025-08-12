@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
-
-from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum
+from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum, text
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
@@ -34,7 +33,7 @@ class Product(AbstractBase):
     key_word: Mapped[str]
     general_repurchases: Mapped[int]
     remaining_products: Mapped[int]
-    daily_repurchases: Mapped[int]
+    # daily_repurchases: Mapped[int]
     price: Mapped[float]
     wb_price: Mapped[float]
     tg: Mapped[str]
@@ -109,6 +108,9 @@ class Order(AbstractBase):
     receipt_screenshot_path: Mapped[Optional[str]]
     receipt_number: Mapped[Optional[str]]
 
+    order_date: Mapped[Optional[datetime]] = mapped_column(
+        server_default=text("'1970-01-01 00:00:00'")
+    )
     status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), default="CASHBACK_NOT_PAID")
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="user_orders")

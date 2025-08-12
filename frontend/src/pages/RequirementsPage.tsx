@@ -32,8 +32,8 @@ export default function RequirementsPage() {
             <div
                 className="w-full max-w-screen-lg bg-white border border-brand rounded-xl shadow-lg p-6 sm:p-8 space-y-6">
                 {/* Заголовок */}
-                <h1 className="text-2xl sm:text-3xl font-semibold flex items-center gap-2">
-                    <span>✅ Требования к отчёту для получения кешбэка</span>
+                <h1 className="text-2xl font-medium flex items-center gap-2 text-center">
+                    <strong>Требования к отчёту для получения кешбэка</strong>
                 </h1>
 
                 {/* Важно */}

@@ -9,6 +9,9 @@ class NotificationServiceInterface(ABC):
     @abstractmethod
     async def send_cashback_paid(self, order_id: UUID) -> None:
         ...
+    @abstractmethod
+    async def send_cashback_rejected(self, order_id: UUID) -> None:
+        ...
 
     @abstractmethod
     async def send_balance_increased(self, user_id: UUID, amount: int) -> None:

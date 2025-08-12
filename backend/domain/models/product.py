@@ -19,7 +19,7 @@ class Product(BaseModel):
     key_word: str
     general_repurchases: int
     remaining_products: int
-    daily_repurchases: int
+    # daily_repurchases: int
     price: float
     wb_price: float
     tg: str

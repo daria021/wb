@@ -82,6 +82,8 @@ export default function ModeratorUserDetailPage() {
 
     const [balanceInput, setBalanceInput] = useState('');
     const [bonusInput, setBonusInput] = useState('');
+
+
 const totalPlan = products
   .filter(p =>
     p.status === ProductStatus.ACTIVE ||

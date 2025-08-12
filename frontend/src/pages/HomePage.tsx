@@ -171,7 +171,7 @@ function HomePage() {
                     <img src="/icons/telegram.png" alt="Telegram" className="w-7 h-7"/>
                     <div className="flex flex-col">
                         <span className="font-body">@Premiumcash1</span>
-                        <span className="text-xs text-gray-500">Подпишись на канал</span>
+                        <span className="text-xs text-gray-500">Подписаться на канал</span>
                     </div>
                     <img
                         src="/icons/small_arrow.png"
@@ -188,7 +188,7 @@ function HomePage() {
                     <div className="flex flex-col">
                         <span className="font-body">Техподдержка</span>
                         <span className="text-xs text-gray-500">
-                            Оперативно ответим на все вопросы
+                            Быстрые ответы на ваши вопросы
                         </span>
                     </div>
                     <img

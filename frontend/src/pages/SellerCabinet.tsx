@@ -173,7 +173,7 @@ function SellerCabinet() {
                     <button
                         onClick={handleMyBalanceClick}
                         className="
-                            absolute top-2 right-2
+                            absolute top-4 right-2
                             bg-brand
                             hover:bg-brand-dark
                             text-white
@@ -190,22 +190,19 @@ function SellerCabinet() {
                             <div
                                 className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
                         </div>
-                    ) : notPaidSum > 0 ? (
-
-                        <>
-                            <p>Доступно и не оплачено</p>
-                            <p className="text-2xl font-bold">{user?.unpaid_plan} раздач</p>
-                            <hr/>
-                            <p>Баланс</p>
-                            <p className="text-2xl font-bold">{user?.free_balance} раздач</p>
-                        </>
                     ) : (
                         <>
-                            <p>В каталоге доступно</p>
-                            <p className="text-2xl font-bold">{user?.reserved_active} раздач</p>
                             <hr/>
-                            <p>Баланс</p>
-                            <p className="text-2xl font-bold">{user?.free_balance} раздач</p>
+                            <p>Остаток баланса раздач</p>
+                            <p className="text-xl font-bold">{user?.free_balance ?? 0} раздач</p>
+
+                            <p>Активные раздачи</p>
+                            <p className="text-xl font-bold">{user?.reserved_active ?? 0} раздач</p>
+                            <hr/>
+                            <p>Требуется оплата раздач</p>
+                            <p className="text-xl font-bold">{user?.unpaid_plan ?? 0} раздач</p>
+                            <p>Общее кол-во раздач</p>
+                            <p className="text-xl font-bold">{(user?.reserved_active ?? 0) + (user?.free_balance ?? 0)} раздач</p>
                         </>
                     )}
                 </div>

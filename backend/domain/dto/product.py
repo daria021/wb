@@ -17,7 +17,7 @@ class CreateProductDTO(CreateDTO):
     key_word: str
     general_repurchases: int
     remaining_products: int
-    daily_repurchases: int
+    # daily_repurchases: int
     price: float
     wb_price: float
     tg: str
@@ -37,7 +37,7 @@ class UpdateProductDTO(UpdateDTO):
     key_word: Optional[str] = None
     general_repurchases: Optional[int] = None
     remaining_products: Optional[int] = None
-    daily_repurchases: Optional[int] = None
+    # daily_repurchases: Optional[int] = None
     price: Optional[float] = None
     wb_price: Optional[float] = None
     tg: Optional[str] = None

@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {getOrderBySellerId, updateOrderStatus} from '../services/api';
 import {AxiosResponse} from 'axios';
-import {OrderStatus} from '../enums';
+import {OrderStatus, PayoutTime} from '../enums';
 import {useUser} from "../contexts/user";
+import {findAll} from "styled-components/test-utils";
 
 interface Product {
     id: string;
@@ -13,11 +14,11 @@ interface Product {
     category: string;
     key_word: string;
     general_repurchases: number;
-    daily_repurchases: number;
+    // daily_repurchases: number;
     price: number;
     wb_price: number;
     tg: string;
-    payment_time: string;
+    payment_time: PayoutTime;
     review_requirements: string;
     image_path?: string;
     seller_id: string;
@@ -44,6 +45,9 @@ interface Order {
     phone_number?: string;
     name?: string;
     bank?: string;
+    price?: number;
+    wb_price?: number;
+    order_date?: Date;
     final_cart_screenshot?: string;
     delivery_screenshot_path?: string;
     barcodes_screenshot_path?: string;
@@ -55,14 +59,92 @@ interface Order {
     user: User;
 }
 
+const addDays = (date: Date, days: number) => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+};
+const getPayoutDue = (order: Order) => {
+  const base = order.order_date ? new Date(order.order_date as any) : null;
+  if (!base || isNaN(base.getTime())) return <>не указана</>;
+
+  let plusDays = 0;
+  switch (order.product.payment_time) {
+    case PayoutTime.AFTER_REVIEW:
+    case PayoutTime.AFTER_DELIVERY:
+      plusDays = 7;
+      break;
+    case PayoutTime.ON_15TH_DAY:
+      plusDays = 15;
+      break;
+    default:
+      return <>—</>;
+  }
+
+  const due = addDays(base, plusDays);
+  const today = new Date();
+  const daysLeft = Math.ceil(
+    (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  const daysText =
+    daysLeft > 0
+      ? `осталось ${daysLeft} ${pluralizeDays(daysLeft)}`
+      : `просрочено на ${Math.abs(daysLeft)} ${pluralizeDays(Math.abs(daysLeft))}`;
+
+  return (
+    <>
+      {due.toLocaleDateString('ru-RU')} <strong>{`(${daysText})`}</strong>
+    </>
+  );
+};
+
+const getDaysLeft = (order: Order): number | null => {
+  const base = order.order_date ? new Date(order.order_date as any) : null;
+  if (!base || isNaN(base.getTime())) return null;
+
+  let plusDays = 0;
+  switch (order.product.payment_time) {
+    case PayoutTime.AFTER_REVIEW:
+    case PayoutTime.AFTER_DELIVERY:
+      plusDays = 7; // как у тебя сейчас в getPayoutDue
+      break;
+    case PayoutTime.ON_15TH_DAY:
+      plusDays = 15;
+      break;
+    default:
+      return null;
+  }
+
+  const due = addDays(base, plusDays);
+  const today = new Date();
+  return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+};
+
+
+// утилита для правильного склонения слова "день"
+const pluralizeDays = (n: number) => {
+  const lastDigit = n % 10;
+  const lastTwo = n % 100;
+  if (lastTwo >= 11 && lastTwo <= 14) return 'дней';
+  if (lastDigit === 1) return 'день';
+  if (lastDigit >= 2 && lastDigit <= 4) return 'дня';
+  return 'дней';
+};
+
+
 function SellerReportsPage() {
     const navigate = useNavigate();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+
     const {user, loading: userLoading} = useUser();
     const sellerId = user?.id;
+
+    type DeadlineFilter = 'Все сроки' | 'В срок' | 'Скоро дедлайн' | 'Просрочено';
+    const [deadlineFilter, setDeadlineFilter] = useState<DeadlineFilter>('Все сроки');
 
     const {search} = useLocation();
     const params = new URLSearchParams(search);
@@ -76,8 +158,8 @@ function SellerReportsPage() {
         [OrderStatus.CASHBACK_PAID]: 'Кешбэк выплачен',
         [OrderStatus.CANCELLED]: 'Отменён',
         [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
+        [OrderStatus.CASHBACK_REJECTED]: 'Кешбэк отклонён',
     };
-
 
     const fetchReports = async () => {
         if (!sellerId) return;
@@ -119,20 +201,27 @@ function SellerReportsPage() {
     }, [sellerId]);
 
 
-    const filteredOrders = orders.filter(order => order.status === activeTab);
+    const filteredOrders = orders
+  .filter(o => o.status === activeTab)
+  .filter(o => {
+    if (activeTab !== OrderStatus.CASHBACK_NOT_PAID) return true;
+    if (deadlineFilter === 'Все сроки') return true;
 
-    const handleCashbackPaid = async (orderId: string) => {
-        try {
-            const formData = new FormData();
-            formData.append("status", OrderStatus.CASHBACK_PAID);
-            await updateOrderStatus(orderId, formData);
-            alert("Статус обновлен!");
-            fetchReports();
-        } catch (err) {
-            console.error("Ошибка обновления статуса:", err);
-            alert("Ошибка обновления статуса");
-        }
-    };
+    const dl = getDaysLeft(o); // может быть null, если нет даты
+    if (dl === null) return false; // без даты не учитываем в узких фильтрах
+
+    // В срок: осталось > 4 дней
+    if (deadlineFilter === 'В срок') return dl > 4;
+
+    // Скоро дедлайн: осталось 0–3 дней
+    if (deadlineFilter === 'Скоро дедлайн') return dl >= 0 && dl <= 3;
+
+    // Просрочено: осталось < 0 дней
+    if (deadlineFilter === 'Просрочено') return dl < 0;
+
+    return true;
+  });
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -169,6 +258,33 @@ function SellerReportsPage() {
                         </button>
 
                     </div>
+
+{activeTab === OrderStatus.CASHBACK_NOT_PAID && (
+  <div className="mb-4 max-w-xs">
+    <div className="relative">
+      <select
+        value={deadlineFilter}
+        onChange={(e) => setDeadlineFilter(e.target.value as DeadlineFilter)}
+        className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+      >
+        <option value="Все сроки">Все сроки</option>
+        <option value="В срок">В срок</option>
+        <option value="Скоро дедлайн">Скоро дедлайн</option>
+        <option value="Просрочено">Просрочено</option>
+      </select>
+
+      {/* стрелка справа */}
+      <svg
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
+        viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+      >
+        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+      </svg>
+    </div>
+  </div>
+)}
+
+
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -176,23 +292,24 @@ function SellerReportsPage() {
                         filteredOrders.map((order) => (
                             <div
                                 key={order.id}
-                                onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
                                 className="border border-gray-200 rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
                             >
                                 <h2 className="text-lg font-semibold">{order.product.name}</h2>
                                 <p className="text-sm text-gray-600">
-                                    Покупатель: {order.user.nickname || "Не указан"}
+  Выплатить до: {getPayoutDue(order)}
                                 </p>
-                                <p className="text-sm text-gray-600">Статус: {STATUS_RU[order.status] ?? order.status}</p>
+                                <p className="text-sm text-gray-600">
+Сумма кешбэка к выплате: {(order?.product.wb_price ?? 0) - (order?.product.price ?? 0)}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Покупатель: @{order.user.nickname || "Не указан"}
+                                </p>
                                 {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
                                     <button
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // предотвращает переход по клику на карточку
-                                            handleCashbackPaid(order.id);
-                                        }}
+                                        onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
                                         className="mt-2 w-full py-2 rounded bg-brand text-white font-semibold text-base hover:opacity-90 transition"
                                     >
-                                        Отметить как выплаченный
+                                        Открыть отчёт
                                     </button>
                                 )}
                             </div>

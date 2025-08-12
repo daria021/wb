@@ -15,6 +15,7 @@ class UserWithBalanceDTO(BaseModel):
     is_seller: bool
     created_at: datetime
     updated_at: datetime
+    referrer_bonus: int
 
     # новые поля
     total_plan: int        # общий план (ACTIVE + NOT_PAID)
