@@ -84,19 +84,19 @@ export default function ModeratorUserDetailPage() {
     const [bonusInput, setBonusInput] = useState('');
 
 
-const totalPlan = products
-  .filter(p =>
-    p.status === ProductStatus.ACTIVE ||
-    p.status === ProductStatus.NOT_PAID
-  )
-  .reduce((sum, p) => sum + p.general_repurchases, 0);
-const availableInCatalog = products
-  .filter(p => p.status === ProductStatus.ACTIVE)
-  .reduce((sum, p) => sum + p.general_repurchases, 0);
+    const totalPlan = products
+        .filter(p =>
+            p.status === ProductStatus.ACTIVE ||
+            p.status === ProductStatus.NOT_PAID
+        )
+        .reduce((sum, p) => sum + p.general_repurchases, 0);
+    const availableInCatalog = products
+        .filter(p => p.status === ProductStatus.ACTIVE)
+        .reduce((sum, p) => sum + p.general_repurchases, 0);
 
-const unpaidDistributions = products
-  .filter(p => p.status === ProductStatus.NOT_PAID)
-  .reduce((sum, p) => sum + p.general_repurchases, 0);
+    const unpaidDistributions = products
+        .filter(p => p.status === ProductStatus.NOT_PAID)
+        .reduce((sum, p) => sum + p.general_repurchases, 0);
 
     // подсчёт завершённых/начатых покупок
     const completedCount = orders.filter(o => o.status === OrderStatus.CASHBACK_PAID).length;
@@ -161,8 +161,8 @@ const unpaidDistributions = products
     }, [user]);
 
     if (loading || !user) return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+    </div>;
 
     const toggleBan = async () => {
         try {
@@ -230,22 +230,23 @@ const unpaidDistributions = products
             [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
             [OrderStatus.CASHBACK_PAID]: 'Кешбэк выплачен',
             [OrderStatus.CANCELLED]: 'Отменён',
+            [OrderStatus.CASHBACK_REJECTED]: 'Кешбэк отклонен'
         }[s] || s);
 
-    const screenshotLabels: Record<string,string> = {
-  search_screenshot_path: 'Поиск',
-  cart_screenshot:   'Корзина',
-  final_cart_screenshot: 'Итоговая корзина',
-  delivery_screenshot_path:    'Доставка',
-  barcodes_screenshot_path:    'Штрихкоды',
-  review_screenshot_path:      'Отзыв',
-  receipt_screenshot_path:     'Чек',
-  card_number:                 'Номер карты',
-  phone_number:                'Телефон',
-  name:                        'Имя',
-  bank:                        'Банк',
-  receipt_number:              'Номер чека',
-};
+    const screenshotLabels: Record<string, string> = {
+        search_screenshot_path: 'Поиск',
+        cart_screenshot: 'Корзина',
+        final_cart_screenshot: 'Итоговая корзина',
+        delivery_screenshot_path: 'Доставка',
+        barcodes_screenshot_path: 'Штрихкоды',
+        review_screenshot_path: 'Отзыв',
+        receipt_screenshot_path: 'Чек',
+        card_number: 'Номер карты',
+        phone_number: 'Телефон',
+        name: 'Имя',
+        bank: 'Банк',
+        receipt_number: 'Номер чека',
+    };
 
 
     return (
@@ -391,146 +392,151 @@ const unpaidDistributions = products
                 </div>
             )}
 
-           {/* …до этого был блок «Профиль», «Действия», «Баланс» и т.д.… */}
+            {/* …до этого был блок «Профиль», «Действия», «Баланс» и т.д.… */}
 
-{/* Покупки пользователя */}
-<div className="bg-white rounded-lg shadow p-4 space-y-2">
-  <h2 className="text-xl font-bold">Покупки пользователя</h2>
-  {/* Фильтры + поиск по коду */}
-  <div className="flex gap-2 mb-3">
-    <button
-      onClick={() => setPurchaseFilter('all')}
-      className={purchaseFilter === 'all' ? 'font-bold underline' : ''}
-    >Все</button>
-    <button
-      onClick={() => setPurchaseFilter('completed')}
-      className={purchaseFilter === 'completed' ? 'font-bold underline' : ''}
-    >Завершённые</button>
-    <button
-      onClick={() => setPurchaseFilter('started')}
-      className={purchaseFilter === 'started' ? 'font-bold underline' : ''}
-    >Начатые</button>
+            {/* Покупки пользователя */}
+            <div className="bg-white rounded-lg shadow p-4 space-y-2">
+                <h2 className="text-xl font-bold">Покупки пользователя</h2>
+                {/* Фильтры + поиск по коду */}
+                <div className="flex gap-2 mb-3">
+                    <button
+                        onClick={() => setPurchaseFilter('all')}
+                        className={purchaseFilter === 'all' ? 'font-bold underline' : ''}
+                    >Все
+                    </button>
+                    <button
+                        onClick={() => setPurchaseFilter('completed')}
+                        className={purchaseFilter === 'completed' ? 'font-bold underline' : ''}
+                    >Завершённые
+                    </button>
+                    <button
+                        onClick={() => setPurchaseFilter('started')}
+                        className={purchaseFilter === 'started' ? 'font-bold underline' : ''}
+                    >Начатые
+                    </button>
 
-  </div>
-      <div className="mt-3/4">
+                </div>
+                <div className="mt-3/4">
 
-<input
-  type="text"
-  placeholder="Поиск по коду"
-  value={ordersFilter}
-  maxLength={6}
-  onChange={e => setOrdersFilter(e.target.value.slice(0, 6))}
-  className="flex-1 border p-2 rounded"
-/>
+                    <input
+                        type="text"
+                        placeholder="Поиск по коду"
+                        value={ordersFilter}
+                        maxLength={6}
+                        onChange={e => setOrdersFilter(e.target.value.slice(0, 6))}
+                        className="flex-1 border p-2 rounded"
+                    />
 
-      </div>
-  {ordersLoading ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                </div>
+                {ordersLoading ? (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                    </div>
+                ) : filteredOrders.length === 0 ? (
+                    <p>Нет заказов</p>
+                ) : (
+                    <ul className="space-y-2">
+                        {filteredOrders.map(o => (
+                            <li key={o.id} className="border rounded-lg p-3 bg-gray-50">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <p className="font-medium">{o.transaction_code}</p>
+                                        <p className="text-sm">Товар: {o.product.name}</p>
+                                        <p className="text-sm">Продавец: {o.seller.nickname}</p>
+                                        <p className="text-sm">Текущий шаг: {o.step}</p>
+                                        <p className="text-xs text-gray-600">{getStatusLabel(o.status)}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => toggleScreenshots(o.id)}
+                                        className="text-brand underline text-sm"
+                                    >
+                                        {screenshotsVisible[o.id] ? 'Скрыть скрины' : 'Показать скрины'}
+                                    </button>
+                                </div>
+
+                                {/* Блок скриншотов */}
+                                {screenshotsVisible[o.id] && (
+                                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-1 gap-2">
+                                        {(Object.entries(o) as Array<[keyof Order, any]>)
+                                            .filter(([key, src]) => screenshotLabels[key as string] && src)
+                                            .map(([key, src]) => (
+                                                <figure key={key} className="flex flex-col items-center">
+                                                    {/* если путь к файлу */}
+                                                    {key.endsWith('_screenshot_path') ? (
+                                                        <img
+                                                            src={src}
+                                                            alt={screenshotLabels[key as string]}
+                                                            className="w-64 h-64 object-cover rounded border"
+                                                        />
+                                                    ) : (
+                                                        <figcaption className="text-xs text-gray-800 text-center">
+                                                            {screenshotLabels[key as string]}: {src}
+                                                        </figcaption>
+                                                    )}
+                                                    {key.endsWith('_screenshot_path') && (
+                                                        <figcaption className="mt-1 text-xs text-gray-600">
+                                                            {screenshotLabels[key as string]}
+                                                        </figcaption>
+                                                    )}
+                                                </figure>
+                                            ))}
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
-  ) : filteredOrders.length === 0 ? (
-    <p>Нет заказов</p>
-  ) : (
-    <ul className="space-y-2">
-      {filteredOrders.map(o => (
-        <li key={o.id} className="border rounded-lg p-3 bg-gray-50">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-medium">{o.transaction_code}</p>
-              <p className="text-sm">Товар: {o.product.name}</p>
-              <p className="text-sm">Продавец: {o.seller.nickname}</p>
-              <p className="text-sm">Текущий шаг: {o.step}</p>
-              <p className="text-xs text-gray-600">{getStatusLabel(o.status)}</p>
-            </div>
-            <button
-              onClick={() => toggleScreenshots(o.id)}
-              className="text-brand underline text-sm"
-            >
-              {screenshotsVisible[o.id] ? 'Скрыть скрины' : 'Показать скрины'}
-            </button>
-          </div>
 
-          {/* Блок скриншотов */}
-          {screenshotsVisible[o.id] && (
-            <div className="mt-2 grid grid-cols-1 sm:grid-cols-1 gap-2">
-              {(Object.entries(o) as Array<[keyof Order, any]>)
-                .filter(([key, src]) => screenshotLabels[key as string] && src)
-                .map(([key, src]) => (
-                  <figure key={key} className="flex flex-col items-center">
-                    {/* если путь к файлу */}
-                    {key.endsWith('_screenshot_path') ? (
-                      <img
-                        src={src}
-                        alt={screenshotLabels[key as string]}
-                        className="w-64 h-64 object-cover rounded border"
-                      />
+            {/* Блок «Товары продавца» вынесен ЗА пределы списка покупок */}
+            {user.is_seller && (
+                <div className="bg-white rounded-lg shadow p-4 space-y-2">
+                    <h2 className="text-xl font-bold mb-2">Товары продавца</h2>
+                    {productsLoading ? (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center">
+                            <div
+                                className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                        </div>
+                    ) : products.length === 0 ? (
+                        <p>Нет товаров</p>
                     ) : (
-                      <figcaption className="text-xs text-gray-800 text-center">
-                        {screenshotLabels[key as string]}: {src}
-                      </figcaption>
+                        <div className="overflow-x-auto bg-white rounded-lg shadow">
+                            <table className="w-full table-auto">
+                                <thead className="bg-gray-100 text-sm">
+                                <tr>
+                                    <th className="px-3 py-2">Название</th>
+                                    <th className="px-3 py-2">Артикул</th>
+                                    <th className="px-3 py-2">Цена WB</th>
+                                    <th className="px-3 py-2">Наша цена</th>
+                                    <th className="px-3 py-2">Категория</th>
+                                    <th className="px-3 py-2">Бренд</th>
+                                    <th className="px-3 py-2">Остаток</th>
+                                    <th className="px-3 py-2">Статус</th>
+                                    <th className="px-3 py-2">Фото</th>
+                                </tr>
+                                </thead>
+                                <tbody className="text-sm divide-y">
+                                {products.map(p => (
+                                    <tr key={p.id}>
+                                        <td className="px-3 py-2">{p.name}</td>
+                                        <td className="px-3 py-2">{p.article}</td>
+                                        <td className="px-3 py-2">{p.wb_price}</td>
+                                        <td className="px-3 py-2">{p.price}</td>
+                                        <td className="px-3 py-2">{p.category}</td>
+                                        <td className="px-3 py-2">{p.brand}</td>
+                                        <td className="px-3 py-2">{p.remaining_products}</td>
+                                        <td className="px-3 py-2">{p.status}</td>
+                                        <td className="px-3 py-2">
+                                            {p.image_path && <img src={p.image_path} className="w-16 h-auto rounded"/>}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
-                    {key.endsWith('_screenshot_path') && (
-                      <figcaption className="mt-1 text-xs text-gray-600">
-                        {screenshotLabels[key as string]}
-                      </figcaption>
-                    )}
-                  </figure>
-                ))}
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-{/* Блок «Товары продавца» вынесен ЗА пределы списка покупок */}
-{user.is_seller && (
-  <div className="bg-white rounded-lg shadow p-4 space-y-2">
-    <h2 className="text-xl font-bold mb-2">Товары продавца</h2>
-    {productsLoading ? (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>
-    ) : products.length === 0 ? (
-      <p>Нет товаров</p>
-    ) : (
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
-        <table className="w-full table-auto">
-          <thead className="bg-gray-100 text-sm">
-            <tr>
-              <th className="px-3 py-2">Название</th>
-              <th className="px-3 py-2">Артикул</th>
-              <th className="px-3 py-2">Цена WB</th>
-              <th className="px-3 py-2">Наша цена</th>
-              <th className="px-3 py-2">Категория</th>
-              <th className="px-3 py-2">Бренд</th>
-              <th className="px-3 py-2">Остаток</th>
-              <th className="px-3 py-2">Статус</th>
-              <th className="px-3 py-2">Фото</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm divide-y">
-            {products.map(p => (
-              <tr key={p.id}>
-                <td className="px-3 py-2">{p.name}</td>
-                <td className="px-3 py-2">{p.article}</td>
-                <td className="px-3 py-2">{p.wb_price}</td>
-                <td className="px-3 py-2">{p.price}</td>
-                <td className="px-3 py-2">{p.category}</td>
-                <td className="px-3 py-2">{p.brand}</td>
-                <td className="px-3 py-2">{p.remaining_products}</td>
-                <td className="px-3 py-2">{p.status}</td>
-                <td className="px-3 py-2">
-                  {p.image_path && <img src={p.image_path} className="w-16 h-auto rounded" />}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-)}
-  </div>
-    )}
+                </div>
+            )}
+        </div>
+    )
+}
