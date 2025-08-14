@@ -101,6 +101,10 @@ export async function getProductsBySellerId() {
     return apiClient.get(`/products/seller`);
 }
 
+export async function getProductsByUserId(userId: string) {
+    return apiClient.get(`/products/user/${userId}`);
+}
+
 
 export async function createProduct(formData: FormData): Promise<string> {
     const response = await apiClient.post('/products', formData, {
@@ -328,7 +332,6 @@ export async function reviewProduct(
             'Content-Type': 'application/json',
         },
     });
-
 }
 
 export const fetchPushes = async () => {

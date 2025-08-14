@@ -24,14 +24,6 @@ export default function BackButtonManager() {
       if (matchPath({ path: '/seller-cabinet/reports', end: true }, pathname)) {
         return navigate('/seller-cabinet', { replace: true });
       }
-      // OrderReportPage "/seller-cabinet/reports/:orderId" → список отчётов
-      const reportDetail = matchPath(
-        { path: '/seller-cabinet/reports/:orderId', end: true },
-        pathname
-      );
-      if (reportDetail) {
-        return navigate('/seller-cabinet/reports', { replace: true });
-      }
       if (
         matchPath({ path: '/catalog', end: true }, pathname) &&
         state?.fromProductDetail

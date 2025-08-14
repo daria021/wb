@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import {createOrder, getBlackListUser, getProductById} from '../../services/api';
+import {createOrder, getBlackListUser, getProductById, getUserOrders} from '../../services/api';
 import { AxiosResponse } from 'axios';
 import { useUser } from '../../contexts/user';
+import {OrderStatus} from "../../enums";
 
 function translatePaymentTime(value: string): string {
   switch (value) {
@@ -37,6 +38,23 @@ const InstructionPage: React.FC = () => {
   const [agreeRules, setAgreeRules] = useState(false);
   const [agreeData, setAgreeData] = useState(false);
 
+const isActiveStatus = (s: OrderStatus) =>
+  s !== OrderStatus.CANCELLED && s !== OrderStatus.CASHBACK_PAID;
+
+const getOrderRoute = (o: { id: string; step: number }) => {
+  const st = Number(o.step) || 0;
+  if (st <= 1) return `/product/${o.id}/step-1`;
+  if (st >= 7) return `/order/${o.id}/order-info`;
+  return `/order/${o.id}/step-${st}`;
+};
+
+const matchesProduct = (o: any, pid: string) => {
+  const p = String(pid);
+  const byField = o.product_id != null && String(o.product_id) === p;
+  const byObj   = o.product?.id != null && String(o.product.id) === p;
+  return byField || byObj;
+};
+
   useEffect(() => {
     if (!productId) return;
     getProductById(productId)
@@ -47,15 +65,31 @@ const InstructionPage: React.FC = () => {
 
   const canContinue = agreeRules && agreeData;
 
-  const handleContinue = async () => {
-    if (!canContinue || !user || !productId || !product) return;
-    const formData = new FormData();
-    formData.append('user_id', user.id);
-    formData.append('seller_id', product.seller_id);
-    formData.append('product_id', productId);
-    const orderId = (await createOrder({formData: formData})).data as string;
-    navigate(`/product/${orderId}/step-1`);
-  };
+const handleContinue = async () => {
+  if (!canContinue || !user || !productId || !product) return;
+
+  try {
+    const res = await getUserOrders();
+    const existing = res.data.find(
+      (o: any) => isActiveStatus(o.status) && matchesProduct(o, productId)
+    );
+    if (existing) {
+      navigate(getOrderRoute(existing));
+      return;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  const formData = new FormData();
+  formData.append('user_id', user.id);
+  formData.append('seller_id', product.seller_id);
+  formData.append('product_id', productId);
+
+  const orderId = (await createOrder({ formData })).data as string;
+  navigate(`/product/${orderId}/step-1`);
+};
+
 
   const handleBack = () => navigate(-1);
 

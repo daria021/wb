@@ -32,9 +32,11 @@ interface Product {
     wb_price: number;
     tg: string;
     payment_time: PayoutTime;
+    requirements_agree: boolean;
     review_requirements: string;
     image_path?: string;
     last_moderator_review?: ModeratorReview;
+    created_at: Date;
 }
 
 interface MeResponse {
@@ -185,29 +187,78 @@ function CreateProductInfo() {
                     )}
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-md p-4">
-                    <p className="text-lg font-bold mb-1">{product.article}</p>
-                    <h3 className="text-xl font-semibold mb-3">{product.name}</h3>
+<div className="bg-white border border-gray-200 rounded-md p-4">
+  <h3 className="text-xl font-semibold mb-3">
+    <span>{product.name}</span>
+  </h3>
 
-                    <div className="space-y-2">
-                        <div>
-                            <span className="text-sm text-gray-600">Цена на сайте:</span>{' '}
-                            <span className="text-sm font-semibold">{product.wb_price} руб</span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-gray-600">Цена для покупателя:</span>{' '}
-                            <span className="text-sm font-semibold">{product.price} руб</span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-gray-600">Кол-во выкупов:</span>{' '}
-                            <span className="text-sm font-semibold">{product.general_repurchases} шт</span>
-                        </div>
-                        {/*<div>*/}
-                        {/*    <span className="text-sm text-gray-600">План выкупов на сутки:</span>{' '}*/}
-                        {/*    <span className="text-sm font-semibold">{product.daily_repurchases} шт</span>*/}
-                        {/*</div>*/}
-                    </div>
-                </div>
+  <div className="space-y-2 text-sm">
+    <div>
+      Артикул на WB: <span className="font-bold">{product.article}</span>
+    </div>
+    <div>
+      Бренд: <span className="font-bold">{product.brand}</span>
+    </div>
+    <div>
+      Категория: <span className="font-bold">{product.category}</span>
+    </div>
+    <div>
+      Ключевое слово для поиска:{' '}
+      <span className="font-bold">{product.key_word}</span>
+    </div>
+    <div>
+      Кол-во сделок по выкупу товара:{' '}
+      <span className="font-bold">{product.general_repurchases} раздач</span>
+    </div>
+    <div>
+      Цена на WB:{' '}
+      <span className="font-bold">{product.wb_price} ₽</span>
+    </div>
+    <div>
+      Цена для покупателя:{' '}
+      <span className="font-bold">{product.price} ₽</span>
+    </div>
+    <div>
+      Кешбэк для покупателя:{' '}
+      <span className="font-bold">
+        {product.wb_price - product.price} ₽
+      </span>
+    </div>
+    <div>
+      Выплата кешбэка:{' '}
+      <span className="font-bold">{product.payment_time}</span>
+    </div>
+ <div>
+  Telegram продавца:{' '}
+  <a
+    href={`https://t.me/${product.tg}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="font-bold text-blue-600 hover:underline"
+  >
+    @{product.tg}
+  </a>
+</div>
+
+    <div>
+      Требования к отзыву:{' '}
+      <span className="italic">{product.review_requirements}</span>
+    </div>
+    <div>
+      Согласование отзыва:{' '}
+      <span className="font-bold">
+        {product.requirements_agree ? 'Требуется' : 'Не требуется'}
+      </span>
+    </div>
+    <div>
+      Дата создания карточки товара:{' '}
+      <span className="font-bold">
+        {new Date(product.created_at).toLocaleDateString()}
+      </span>
+    </div>
+  </div>
+</div>
+
             </div>
 
 

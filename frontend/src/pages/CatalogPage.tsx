@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
-import {getBlackListUser} from '../services/api';
+import {getBlackListUser, getUserOrders} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
 import {Combobox} from '@headlessui/react';
 import {BootstrapContext} from '../contexts/bootstrap';
-import {ProductStatus} from "../enums";
+import {OrderStatus, ProductStatus} from "../enums";
 
 interface Product {
     id: string;
@@ -61,6 +61,57 @@ function CatalogPage() {
         navigate(`/catalog?seller=${sellerId}`, {state: {fromProductDetail: true}});
     };
 
+const isActiveStatus = (s: OrderStatus) =>
+  s === OrderStatus.CASHBACK_NOT_PAID;
+
+
+const getOrderRoute = ({ id, step, status }: { id: string; step: number | string, status?: OrderStatus;}) => {
+  const s = Number(step);
+  const done = Number.isFinite(s) ? Math.trunc(s) : 0;
+  const next = Math.max(1, done + 1); // ← +1 здесь
+
+    console.log(done, next, status);
+  if (
+    done >= 7 &&
+    (status === OrderStatus.CASHBACK_NOT_PAID)
+  ) {
+    return `/order/${id}/order-info`;
+  }
+
+  if (next === 1) return `/product/${id}/step-1`;
+  if (next >= 2 && next <= 7) return `/order/${id}/step-${next}`;
+  return `/order/${id}/order-info`;
+};
+
+
+// Сопоставление именно по productId (не цепляем чужие заказы)
+const matchesProduct = (o: any, pid: string) => {
+  const p = String(pid);
+  const byField = o.product_id != null && String(o.product_id) === p;
+  const byObj   = o.product?.id != null && String(o.product.id) === p;
+  return byField || byObj;
+};
+
+const [navLock, setNavLock] = useState(false);
+
+const handleCardClick = async (productId: string) => {
+  if (navLock) return;
+  setNavLock(true);
+  try {
+    const res = await getUserOrders();
+    const existing = res.data.find(
+      (o: any) => isActiveStatus(o.status) && matchesProduct(o, productId)
+    );
+    if (existing) {
+navigate(getOrderRoute({ id: existing.id, step: existing.step, status: existing.status }));
+    } else {
+      navigate(`/product/${productId}`);
+    }
+  } finally {
+    setNavLock(false);
+  }
+};
+
 
     const hasActiveFilters =
         searchQuery.trim() !== '' ||
@@ -114,8 +165,6 @@ function CatalogPage() {
   )
   .filter(p => filterCategory === '' || p.category === filterCategory)
   .filter(p => filterSeller === '' || p.seller_id === filterSeller);
-
-
 
     const categories = Array.from(new Set(products.map(p => p.category)));
 
@@ -313,7 +362,7 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
         return (
           <div
             key={product.id}
-            onClick={() => navigate(`/product/${product.id}`)}
+            onClick={() => handleCardClick(product.id)}
             className="w-full h-[300px] border border-gray-200 rounded-md shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer flex flex-col"
           >
             {/* Изображение */}
@@ -380,7 +429,7 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
         return (
           <div
             key={product.id}
-            onClick={() => navigate(`/product/${product.id}`)}
+            onClick={() => handleCardClick(product.id)}
             className="w-full h-[300px] border border-gray-200 rounded-md shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer flex flex-col"
           >
             {/* Изображение */}

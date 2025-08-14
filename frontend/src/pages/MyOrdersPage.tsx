@@ -18,10 +18,10 @@ export const STEP_NAMES: { [key: number]: string } = {
 };
 
 const getOrderStepLink = (order: Order): string => {
-    if (order.step >= 0 && order.step <= 6) {
-        return `/order/${order.id}/step-${order.step + 1}`;
-    }
-    return `/order/${order.id}/order-info`;
+  const next = Math.max(1, (Number(order.step) || 0) + 1);
+  if (next === 1) return `/product/${order.id}/step-1`;
+  if (next >= 2 && next <= 7) return `/order/${order.id}/step-${next}`;
+  return `/order/${order.id}/order-info`;
 };
 
 interface Product {
@@ -101,28 +101,60 @@ function MyOrdersPage() {
     }, [orders, filterStatus, debouncedSearch]);
 
 
-    const uniqueOrders = useMemo(() => {
-        const map = new Map<string, Order>();
-        filteredOrders.forEach(order => {
-            const prev = map.get(order.product.id);
-            if (
-                !prev ||
-                order.step > prev.step ||
-                (order.step === prev.step &&
-                    new Date(order.created_at) > new Date(prev.created_at))
-            ) {
-                map.set(order.product.id, order);
-            }
-        });
-        return Array.from(map.values());
-    }, [filteredOrders]);
+    // считать активными всё, что не финал
+const isActive = (s: string) =>
+  s !== OrderStatus.CASHBACK_PAID &&
+  s !== OrderStatus.CANCELLED &&
+  s !== OrderStatus.CASHBACK_REJECTED;
+
+// 1) агрегируем: на каждый product.id берём лучший активный и лучший завершённый
+const aggregatedOrders = useMemo(() => {
+  const map = new Map<string, { active?: Order; finished?: Order; others: Order[] }>();
+
+  for (const o of filteredOrders) {
+    const key = o.product.id;
+    const bucket = map.get(key) ?? { others: [] };
+
+    if (o.status === OrderStatus.CASHBACK_PAID) {
+      // берем самый свежий выплаченный
+      if (!bucket.finished || new Date(o.created_at) > new Date(bucket.finished.created_at)) {
+        bucket.finished = o;
+      }
+    } else if (isActive(o.status)) {
+      // берем самый "дальний" по шагу активный (при равенстве — самый свежий)
+      if (
+        !bucket.active ||
+        o.step > bucket.active.step ||
+        (o.step === bucket.active.step && new Date(o.created_at) > new Date(bucket.active.created_at))
+      ) {
+        bucket.active = o;
+      }
+    } else {
+      // отменённые/отклонённые тоже показываем (по желанию)
+      bucket.others.push(o);
+    }
+
+    map.set(key, bucket);
+  }
+
+  // разворачиваем: активный → завершённый → остальные (если надо)
+  const res: Order[] = [];
+  map.forEach(({ active, finished, others }) => {
+    if (active) res.push(active);
+    if (finished) res.push(finished);
+    res.push(...others); // можно убрать, если не хотите показывать отменённые
+  });
+  return res;
+}, [filteredOrders]);
+
+// 2) упорядочим: незавершённые вперёд, затем выплаченные
+const displayOrders = useMemo(() => {
+  const notPaid = aggregatedOrders.filter(o => o.status !== OrderStatus.CASHBACK_PAID);
+  const paid    = aggregatedOrders.filter(o => o.status === OrderStatus.CASHBACK_PAID);
+  return [...notPaid, ...paid];
+}, [aggregatedOrders]);
 
 
-    const displayOrders = useMemo(() => {
-        const notPaid = uniqueOrders.filter(o => o.status !== 'payment_confirmed');
-        const paid = uniqueOrders.filter(o => o.status === 'payment_confirmed');
-        return [...notPaid, ...paid];
-    }, [uniqueOrders]);
 // порядок шагов: 6→5→4→3→2→1→7
     const stepPriority = [6, 5, 4, 3, 2, 1, 7];
 
@@ -285,81 +317,83 @@ function MyOrdersPage() {
                     </div>
                 ) : (
                     <div className="flex flex-col space-y-3">
-                        {visibleOrders.map(order => {
-                            const linkTo = getOrderStepLink(order);
-                            const isCancelled = order.status === OrderStatus.CANCELLED;
-                            const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
+{visibleOrders.map(order => {
+  const linkTo = getOrderStepLink(order);
+  const isCancelled = order.status === OrderStatus.CANCELLED;
+  const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
 
-                            const card = (
-                                <div
-                                    key={order.id}
-                                    className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
-                                >
-                                    {isCancelled && (
-                                        <div className="absolute top-2 right-2 text-gray-500 text-xs">
-                                            Заказ отменён
-                                        </div>
-                                    )}
-                                    {!isCancelled && order.status !== OrderStatus.PAYMENT_CONFIRMED && (
-                                        <button
-                                            onClick={e => handleCancelOrder(order.id, e)}
-                                            className="absolute top-2 right-2 text-red-500 border border-red-500 text-xs rounded hover:bg-red-50 transition"
-                                        >
-                                            Отменить
-                                        </button>
-                                    )}
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
-                                            {order.product.image_path ? (
-                                                <img
-                                                    src={
-                                                        order.product.image_path.startsWith('http')
-                                                            ? order.product.image_path
-                                                            : GetUploadLink(order.product.image_path)
-                                                    }
-                                                    alt={order.product.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div
-                                                    className="flex items-center justify-center h-full text-gray-400 text-xs">
-                                                    Нет фото
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
-                                                {order.product.name}
-                                            </div>
-                                            <div className="font-bold text-brand">{order.product.price} ₽</div>
-                                            {order.step < 7 ? (
-                                                <div className="text-xs text-gray-500">Текущий {title}</div>
-                                            ) : (
-                                                <div
-                                                    className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
-                                                        order.status === 'cashback_paid'
-                                                            ? 'border-green-500 text-green-500'
-                                                            : 'border-blue-500 text-blue-500'
-                                                    }`}
-                                                >
-                                                    {order.status === 'cashback_paid'
-                                                        ? 'Кешбэк выплачен'
-                                                        : 'Кешбэк не выплачен'}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
+  return (
+    <div key={order.id} className="relative">
+      {/* кнопка вынесена из ссылки */}
+      {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID && (
+        <button
+          onClick={e => {
+            e.preventDefault(); // на всякий случай
+            handleCancelOrder(order.id, e);
+          }}
+          className="absolute top-2 right-2 z-10 text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition"
+        >
+          Отменить
+        </button>
+      )}
 
-                            return isCancelled ? (
-                                card
-                            ) : (
-                                <Link to={linkTo} key={order.id}>
-                                    {card}
-                                </Link>
-                            );
-                        })}
+      {/* сама карточка — ссылка целиком */}
+      <Link
+        to={isCancelled ? '#' : linkTo}
+        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
+      >
+        {isCancelled && (
+          <div className="absolute top-2 right-2 text-gray-500 text-xs">
+            Заказ отменён
+          </div>
+        )}
+
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
+            {order.product.image_path ? (
+              <img
+                src={
+                  order.product.image_path.startsWith('http')
+                    ? order.product.image_path
+                    : GetUploadLink(order.product.image_path)
+                }
+                alt={order.product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400 text-xs">
+                Нет фото
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
+              {order.product.name}
+            </div>
+            <div className="font-bold text-brand">{order.product.price} ₽</div>
+
+            {order.step < 7 ? (
+              <div className="text-xs text-gray-500">Текущий {title}</div>
+            ) : (
+              <div
+                className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
+                  order.status === 'cashback_paid'
+                    ? 'border-green-500 text-green-500'
+                    : 'border-blue-500 text-blue-500'
+                }`}
+              >
+                {order.status === 'cashback_paid'
+                  ? 'Кешбэк выплачен'
+                  : 'Кешбэк не выплачен'}
+              </div>
+            )}
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+})}
 
 
                         {displayOrders.length > showCount && (
