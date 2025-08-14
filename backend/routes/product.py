@@ -41,6 +41,10 @@ async def get_by_article(article: str) -> Product:
     product_service = get_product_service()
     return await product_service.get_by_article(article)
 
+@router.get("/user/{user_id}")
+async def get_by_user(user_id: UUID) -> list[Product]:
+    product_service = get_product_service()
+    return await product_service.get_by_seller(user_id)
 
 # @router.get("/seller")
 # async def get_by_seller(
@@ -63,6 +67,9 @@ async def get_by_seller(
       - total_plan: reserved_active + unpaid_plan
       - products: список продуктов
       """
+
+    logger.info("me!!!")
+    logger.info(me)
     prods = await product_service.get_by_seller(me.id)
     return {
         "free_balance": me.free_balance,

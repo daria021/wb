@@ -50,7 +50,6 @@ function OrderReportPage() {
     const [error, setError] = useState('');
     const [order, setOrder] = useState<Order | null>(null);
 
-
     const copyToClipboard = useCallback((text: string) => {
         navigator.clipboard.writeText(text)
             .then(() => {
@@ -86,13 +85,6 @@ function OrderReportPage() {
             })
             .finally(() => setLoading(false));
     }, [orderId]);
-
-    // useEffect(() => {
-    //   const unsub = on('back_button_pressed', () => {
-    //     navigate('/seller-cabinet/reports', { replace: true });
-    //   });
-    //   return unsub;
-    // }, [navigate]);
 
     const handleCashbackPaid = async (orderId: string) => {
         try {
@@ -197,18 +189,21 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {report.article && (
+                {report.step > 1 && report.article && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-lg font-semibold mb-2"> Шаг 2. Артикул товара продавца</h2>
                         <p className="text-base">{report.article}</p>
                     </section>
                 )}
 
+                {report.step > 2 && (
                 <section className="mb-6 p-4 bg-gray-200 rounded-md">
                     <h2 className="text-lg font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
                     <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
                 </section>
+                )}
 
+                {report.step > 3 && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                     <h2 className="text-lg font-semibold mb-2">Шаг 4. Реквизиты для получения кешбэка</h2>
                                     {(report.card_number || report.phone_number || report.name || report.bank) && (
@@ -280,7 +275,7 @@ function OrderReportPage() {
                 )}
                 </section>
 
-
+)}
 
                 {report.final_cart_screenshot_path && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">

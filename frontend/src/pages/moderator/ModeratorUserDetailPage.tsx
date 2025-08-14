@@ -5,13 +5,13 @@ import {
     demoteUser,
     getProductsBySellerId,
     getUser,
-    getUserOrders,
+    getOrderBySellerId,
     increaseReferralBonus,
     increaseSellerBalance,
     promoteUser,
     unbanUser,
     /** Переименовали импорт, чтобы не начинать с "use" */
-        useDiscount as apiUseDiscount
+        useDiscount as apiUseDiscount, getProductsByUserId
 } from '../../services/api';
 import {OrderStatus, ProductStatus, UserRole} from '../../enums';
 
@@ -140,7 +140,7 @@ export default function ModeratorUserDetailPage() {
     // Загрузка заказов пользователя
     useEffect(() => {
         setOrdersLoading(true);
-        getUserOrders()
+        getOrderBySellerId(userId!)
             .then(res => setOrders(res.data))
             .catch(console.error)
             .finally(() => setOrdersLoading(false));
@@ -154,7 +154,7 @@ export default function ModeratorUserDetailPage() {
             return;
         }
         setProductsLoading(true);
-        getProductsBySellerId()
+        getProductsByUserId(user.id)
             .then(res => setProducts(res.data.products || res.data))
             .catch(console.error)
             .finally(() => setProductsLoading(false));
@@ -299,7 +299,6 @@ export default function ModeratorUserDetailPage() {
                     {user.role === UserRole.MODERATOR ? 'Разжаловать' : 'Назначить модератором'}
                 </button>
             </div>
-
 
             {/* Баланс продавца */}
             {user.is_seller && (
