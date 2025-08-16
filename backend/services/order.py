@@ -1,6 +1,8 @@
+import logging
 import random
 import string
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import List
 from uuid import UUID
 
@@ -9,13 +11,18 @@ from fastapi import HTTPException, status
 from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface, UserRepositoryInterface
 from abstractions.services import OrderServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
+from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO, UpdateProductDTO
+from domain.dto.user_history import CreateUserHistoryDTO
 from domain.models import Order
 from domain.responses.order_report import OrderReport
+from infrastructure.enums.action import Action
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
+from settings import settings
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class OrderService(OrderServiceInterface):
@@ -27,6 +34,12 @@ class OrderService(OrderServiceInterface):
     async def create_order(self, dto: CreateOrderDTO) -> UUID:
         # 1. Проверяем, что товар есть в наличии
         product = await self.product_repository.get(dto.product_id)
+        now = datetime.now()
+
+        # +++ снимок "до"
+        json_before = product.model_dump(mode="json")
+        old_status = product.status
+
         if product.remaining_products <= 0:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -52,6 +65,46 @@ class OrderService(OrderServiceInterface):
                 )
             )
         )
+        user_history_repository = get_user_history_repository()
+
+
+        if dto.step == 0:
+            await user_history_repository.create(CreateUserHistoryDTO(
+                user_id=dto.user_id,
+                creator_id=dto.user_id,
+                product_id=product.id,
+                action=Action.AGREE_TERMS,
+                date=now,
+                json_before=json_before,
+            ))
+        # +++ если товар закончился — логируем ENDED и STATUS_CHANGED от имени системы
+        if new_remaining == 0:
+            updated = await self.product_repository.get(product.id)
+            json_after = updated.model_dump(mode="json")
+
+
+            # 1) Товар закончился
+            await user_history_repository.create(CreateUserHistoryDTO(
+                user_id=dto.seller_id,
+                creator_id=None,
+                product_id=product.id,
+                action=Action.ENDED,
+                date=now,
+                json_before=json_before,
+                json_after=json_after,
+            ))
+
+            # 2) Статус поменялся на ARCHIVED — фиксируем смену статуса (проверяем факт изменения)
+            if updated.status != old_status:
+                await user_history_repository.create(CreateUserHistoryDTO(
+                    user_id=dto.seller_id,
+                    creator_id=None,
+                    product_id=product.id,
+                    action=Action.STATUS_CHANGED,
+                    date=now,
+                    json_before=json_before,
+                    json_after=json_after,
+                ))
 
         # 5. Возвращаем код для пользователя
         return dto.id
@@ -71,6 +124,8 @@ class OrderService(OrderServiceInterface):
         old_order = await self.order_repository.get(order_id)
         old_status = old_order.status
 
+        json_before_order = old_order.model_dump(mode="json")
+
         # 2. патчим заказ
         await self.order_repository.update(order_id, dto)
 
@@ -78,6 +133,37 @@ class OrderService(OrderServiceInterface):
         order = await self.order_repository.get(order_id)
         product = await self.product_repository.get(order.product_id)
         seller = await self.user_repository.get(product.seller_id)
+
+        json_after_order = order.model_dump(mode="json")
+        now = datetime.now()
+
+        user_history_repository = get_user_history_repository()
+        # +++ шаги 1–7
+        logger.info(f"debug: {dto.step} {dto.step is not None} {dto.step != old_order.step}")
+        if dto.step is not None and dto.step != old_order.step:
+            step_to_action = {
+                1: Action.FIRST_STEP_DONE,
+                2: Action.SECOND_STEP_DONE,
+                3: Action.THIRD_STEP_DONE,
+                4: Action.FOURTH_STEP_DONE,
+                5: Action.FIFTH_STEP_DONE,
+                6: Action.SIXTH_STEP_DONE,
+                7: Action.SEVENTH_STEP_DONE,
+            }
+            action = step_to_action.get(dto.step)
+            logger.info(f"action: {action}")
+            if action is not None:
+                await user_history_repository.create(
+                    CreateUserHistoryDTO(
+                        user_id=order.user_id,
+                        creator_id=order.user_id,
+                        product_id=order.product_id,
+                        action=action,
+                        date=now,
+                        json_before=json_before_order,
+                        json_after=json_after_order,
+                    )
+                )
 
         # ---------- переход в CANCELLED ----------
         if dto.status == OrderStatus.CANCELLED and old_status != OrderStatus.CANCELLED:
@@ -117,6 +203,37 @@ class OrderService(OrderServiceInterface):
             await self.user_repository.update(
                 order.user_id,
                 UpdateUserDTO(role=UserRole.CLIENT)
+            )
+
+        user_history_repository = get_user_history_repository()
+
+        # +++ кэшбэк выплачен
+        if dto.status == OrderStatus.CASHBACK_PAID and old_status != OrderStatus.CASHBACK_PAID:
+            await user_history_repository.create(
+                CreateUserHistoryDTO(
+                    user_id=order.user_id,
+                    creator_id=order.seller_id,  # системное событие
+                    product_id=order.product_id,
+                    action=Action.CASHBACK_DONE,
+                    date=now,
+                    json_before=json_before_order,
+                    json_after=json_after_order,
+                )
+            )
+
+        # +++ кэшбэк отклонён
+        if dto.status == OrderStatus.CASHBACK_REJECTED and old_status != OrderStatus.CASHBACK_REJECTED:
+
+            await user_history_repository.create(
+                CreateUserHistoryDTO(
+                    user_id=order.user_id,
+                    creator_id=order.seller_id,  # системное событие
+                    product_id=order.product_id,
+                    action=Action.CASHBACK_REJECTED,
+                    date=now,
+                    json_before=json_before_order,
+                    json_after=json_after_order,
+                )
             )
 
     async def delete_order(self, order_id: UUID) -> None:

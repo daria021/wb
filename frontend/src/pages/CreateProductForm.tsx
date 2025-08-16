@@ -56,7 +56,7 @@ function ProductForm() {
         brand: 'Бренд',
         category: 'Категория',
         key_word: 'Ключевое слово',
-        general_repurchases: 'Общий план выкупов',
+        general_repurchases: 'Кол-во сделок по выкупу товара',
         // daily_repurchases: 'План выкупов на сутки',
         price: 'Цена для покупателя',
         wb_price: 'Цена на сайте WB',

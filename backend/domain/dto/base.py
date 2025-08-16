@@ -10,5 +10,6 @@ class CreateDTO(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
+
 class UpdateDTO(BaseModel):
     updated_at: Optional[datetime] = Field(default_factory=datetime.now)

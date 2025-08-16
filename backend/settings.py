@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from typing import Type, Tuple
+from unittest import case
+from uuid import UUID
 
 from pydantic import SecretStr
 from pydantic_settings import (
@@ -15,6 +17,7 @@ ENV = os.getenv("ENVIRONMENT", "local")
 
 class WebAppSettings(BaseSettings):
     url: str
+    system_user_id: UUID
 
 
 class DBSettings(BaseSettings):
@@ -84,6 +87,22 @@ class BotSettings(BaseSettings):
                 return self.dev.app_short_name
             case "local":
                 return self.local.app_short_name
+
+    @property
+    def paid_topic_id(self) -> int:
+        match ENV:
+            case "dev":
+                return self.dev.paid_topic_id
+            case "local":
+                return self.local.paid_topic_id
+
+    @property
+    def free_topic_id(self) -> int:
+        match ENV:
+            case "dev":
+                return self.dev.free_topic_id
+            case "local":
+                return self.local.free_topic_id
 
 
 class Settings(BaseSettings):

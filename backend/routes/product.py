@@ -160,10 +160,13 @@ async def create_product(
 
 @router.patch("/{product_id}")
 async def update_product(
+        request: Request,
         product_id: UUID,
         data: Annotated[UpdateProductForm, Form()],
         upload_service: UploadServiceInterface = Depends(get_upload_service),
 ) -> dict:
+    user_id=get_user_id_from_request(request)
+
     update_dto = UpdateProductDTO.model_validate(data.model_dump(exclude_unset=True))
     # dto = UpdateProductDTO(
     #     name=data.name,
@@ -193,21 +196,23 @@ async def update_product(
             ) from e
 
     product_service = get_product_service()
-    await product_service.update_product(product_id, update_dto)
+    await product_service.update_product(product_id, update_dto, user_id)
     return {"message": "Product updated successfully"}
 
 
 @router.patch("/status/{product_id}")
 async def update_product_status(
+        request: Request,
         product_id: UUID,
         status: Optional[ProductStatus] = Form(...),
 ) -> dict:
     dto = UpdateProductDTO(
         status=status,
     )
+    user_id=get_user_id_from_request(request)
 
     product_service = get_product_service()
-    await product_service.update_product(product_id, dto)
+    await product_service.update_product(product_id, dto, user_id)
     return {"message": "Product updated successfully"}
 
 

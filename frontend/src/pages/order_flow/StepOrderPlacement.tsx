@@ -207,7 +207,7 @@ function StepOrderPlacement() {
 
             {isOrderPlaced && (
                 <FileUploader
-                    label="1. Скриншот заказа на WB"
+                    label="Скриншот заказа на WB"
                     file={file}
                     preview={preview}
                     onFileChange={setFile}

@@ -152,7 +152,7 @@ function CreateProductInfo() {
         <div className="p-4 min-h-screen bg-gray-200 mx-auto max-w-lg">
             {(product.status === ProductStatus.CREATED) && (
                 <div className="mb-4 p-3 bg-brandlight border-l-4 border-brand text-brand rounded">
-                    Новая карточка отправлена на модерацию. Проверьте всю информацию. Вы еще можете внести изменения.
+                    Новая карточка товара создана и отправлена на проверку модератору. Убедитесь, что вся информация указана верно. У вас ещё есть возможность внести изменения.
                 </div>
             )}
             {(lastReview && reviewComment && product.status === ProductStatus.DISABLED) && (
@@ -236,7 +236,7 @@ function CreateProductInfo() {
     rel="noopener noreferrer"
     className="font-bold text-blue-600 hover:underline"
   >
-    @{product.tg}
+    {product.tg}
   </a>
 </div>
 
@@ -294,14 +294,14 @@ function CreateProductInfo() {
                     >
                         Опубликовать
                     </button>
-                ) : (
+                ) : product.status === ProductStatus.ACTIVE ? (
                     <button
                         onClick={handleStop}
                         className="flex-1 border border-brand text-brand p-2 rounded"
                     >
                         Снять с публикации
                     </button>
-                )}
+                ) : null}
                                     <button
                         onClick={handleHomeClick}
                         className="flex-1 border border-brand text-brand p-2 rounded"

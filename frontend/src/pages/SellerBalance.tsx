@@ -66,6 +66,12 @@ function SellerBalancePage() {
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col gap-4 p-4">
+                  <h1 className="relative text-2xl font-medium mb-2 text-center">
+                    <strong>Пополнение баланса раздач</strong>
+                </h1>
+      <p className="text-center text-gray-700">
+        Для внесения средств на счёт раздач по выкупам товаров обратитесь к администратору
+      </p>
       <div className="bg-white border border-darkGray rounded-md p-4 relative">
         {notPaidSum > 0 ? (
           <>
@@ -85,10 +91,6 @@ function SellerBalancePage() {
           </>
         )}
       </div>
-
-      <p className="text-center text-gray-700">
-        Чтобы пополнить кабинет, свяжитесь с администратором.
-      </p>
       <button
         onClick={() => {
           if (window.Telegram?.WebApp?.close) window.Telegram.WebApp.close();

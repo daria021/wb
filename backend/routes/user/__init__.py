@@ -109,3 +109,15 @@ async def get_balance(request: Request):
     user_service = get_user_service()
     user = await user_service.get_user(get_user_id_from_request(request))
     return user.balance
+
+@router.get("/{user_id}/history")
+async def get_user_history(user_id: UUID, request: Request):
+    user_service = get_user_service()
+    user_history = await user_service.get_user_history(user_id=user_id)
+    return user_history
+
+@router.get("/{user_id}/balance_history")
+async def get_user_history_balance(user_id: UUID, request: Request):
+    user_service = get_user_service()
+    user_history = await user_service.get_user_history_balance(user_id=user_id)
+    return user_history

@@ -1,9 +1,11 @@
 import logging
+from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Request
 
 from domain.models import User
+from domain.models.moderator_review import ModeratorReview
 from routes.moderator.utils import moderator_pre_request
 
 router = APIRouter(
@@ -137,3 +139,14 @@ async def referral_purchase(
     await permission_service.is_moderator(moderator_id)
 
     return await moderator_service.increase_referrer_bonus(user_id, amount)
+
+
+@router.get('/reviews/{user_id}')
+async def get_reviews_by_user(
+        request: Request,
+        user_id: UUID) -> List[ModeratorReview]:
+    moderator_id, moderator_service, permission_service = await moderator_pre_request(request)
+
+    await permission_service.is_moderator(moderator_id)
+
+    return await moderator_service.get_moderator_reviews_by_user(user_id)

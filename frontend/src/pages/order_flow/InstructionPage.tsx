@@ -198,7 +198,7 @@ const handleContinue = async () => {
             <span>Детали сделки по выкупу товара:</span>
           </h2>
           <p className="text-green-600">
-  Кешбэк: {product.price - product.wb_price > 0 ? product.wb_price - product.price : product.price} ₽
+  Кешбэк: { product.wb_price - product.price} ₽
 </p>
 
 <p className="text-[#5C2D91] font-semibold">

@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
+
 from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum, text
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.dialects.postgresql import TSVECTOR, JSONB
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
+from infrastructure.enums.action import Action
 from infrastructure.enums.category import Category
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.payout_time import PayoutTime
@@ -12,6 +14,7 @@ from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
 
+from sqlalchemy.sql import func
 Base = declarative_base()
 
 
@@ -184,3 +187,24 @@ class Deeplink(AbstractBase):
     __tablename__ = 'deeplinks'
 
     url: Mapped[str]
+
+
+class IncreasingBalance(AbstractBase):
+    __tablename__ = 'increasing_balances'
+    user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    sum: Mapped[int]
+
+
+class UserHistory(AbstractBase):
+    __tablename__ = 'user_history'
+    user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
+    creator_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey('users.id'))
+    action: Mapped[Action]  # опубликовался в каталог, заархивирован, отредактирован
+    date: Mapped[datetime] = mapped_column(
+    DateTime,
+    nullable=False,
+    server_default=func.now()  # БД подставит текущее "локальное" время
+)
+    json_before: Mapped[Optional[dict]] = mapped_column(JSONB)
+    json_after: Mapped[Optional[dict]] = mapped_column(JSONB)

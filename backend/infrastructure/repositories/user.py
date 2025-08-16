@@ -24,6 +24,34 @@ class UserRepository(
         'inviter': None,
     })
 
+    async def update(self, obj_id: UUID, obj: UpdateUserDTO) -> None:
+        async with self.session_maker() as session:
+            async with session.begin():
+                user = await session.get(self.entity, obj_id, with_for_update=True)
+
+                payload = obj.model_dump(exclude_unset=True).copy()
+
+                # если в апдейте передана новая роль — проверим
+                if "role" in payload and payload["role"] is not None:
+                    new_role = payload["role"]
+                    # на случай если пришла строка
+                    if isinstance(new_role, str):
+                        new_role = UserRole(new_role)
+
+                    # запрещаем понижения MODERATOR/ADMIN -> CLIENT/SELLER
+                    if user.role in {UserRole.MODERATOR, UserRole.ADMIN} and \
+                            new_role in {UserRole.CLIENT, UserRole.SELLER}:
+                        # просто выбрасываем поле из апдейта
+                        logging.info(
+                            "Blocked role downgrade for %s: %s -> %s",
+                            obj_id, user.role, new_role
+                        )
+                        payload.pop("role")
+
+                # применяем оставшиеся поля
+                for key, value in payload.items():
+                    setattr(user, key, value)
+
     async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
         async with self.session_maker() as session:
             async with session.begin():

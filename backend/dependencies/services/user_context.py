@@ -1,6 +1,8 @@
 import logging
 
 from fastapi import Request, Depends
+
+from dependencies.services.order import get_order_service
 from dependencies.services.user import get_user_service
 from dependencies.services.product import get_product_service
 from domain.dto.user_with_balance import UserWithBalanceDTO
@@ -19,19 +21,23 @@ async def get_me_cached(
         prods = await prod_svc.get_by_seller(uid)
 
         reserved_active = sum(
-            p.general_repurchases for p in prods
+            p.remaining_products for p in prods
             if p.status == ProductStatus.ACTIVE
         )
         logger.info(f"Reserved products: {reserved_active}")
         unpaid_plan = sum(
-            p.general_repurchases for p in prods
+            p.remaining_products for p in prods
             if p.status == ProductStatus.NOT_PAID
         )
         logger.info(f"Unpaid products: {unpaid_plan}")
+
         total_plan = reserved_active + unpaid_plan
         logger.info(reserved_active)
         logger.info(unpaid_plan)
-        free_balance = user.balance - reserved_active
+        free_balance = user.balance - sum(
+            p.general_repurchases for p in prods
+            if p.status == ProductStatus.ACTIVE
+        )
         logger.debug(
             f"Before normalization: balance={user.balance}, "
             f"reserved_active={reserved_active}, unpaid_plan={unpaid_plan}, "
@@ -72,6 +78,7 @@ async def get_me_cached(
             f"unpaid_plan={unpaid_plan}, total_plan={total_plan}, "
             f"free_balance={free_balance}"
         )
+
 
         # 4. Сборка DTO
         request.state.me = UserWithBalanceDTO(
