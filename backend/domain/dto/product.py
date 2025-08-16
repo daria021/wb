@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Optional, Literal, Any
 from uuid import UUID
 
-from pydantic import Field, ConfigDict
+from pydantic import Field
+from pydantic.main import IncEx
 
 from domain.dto.base import CreateDTO, UpdateDTO
 from infrastructure.enums.category import Category

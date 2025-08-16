@@ -1,14 +1,19 @@
 import logging
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from abstractions.repositories import ProductRepositoryInterface
+from abstractions.repositories.increasing_balance import IncreasingBalanceRepositoryInterface
 from abstractions.repositories.user import UserRepositoryInterface
 from abstractions.services import UserServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
+from dependencies.repositories.increasing_balance import get_increasing_balance_repository
+from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import CreateUserDTO, UpdateUserDTO, UpdateProductDTO
+from domain.dto.increasing_balance import CreateIncreasingBalanceDTO
 from domain.models import User
+from infrastructure.entities import UserHistory, IncreasingBalance
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
 
@@ -20,6 +25,7 @@ class UserService(UserServiceInterface):
     user_repository: UserRepositoryInterface
     notification_service: NotificationServiceInterface
     product_repository: ProductRepositoryInterface
+    increasing_balance_repository: IncreasingBalanceRepositoryInterface
 
     bot_username: str
 
@@ -126,6 +132,13 @@ class UserService(UserServiceInterface):
                     )
                     await self.product_repository.update(product.id, update_product_dto)
 
+        create_increasing_balance_dto = CreateIncreasingBalanceDTO(
+            user_id=user_id,
+        sum=balance_sum,
+        )
+
+        await self.increasing_balance_repository.create(create_increasing_balance_dto)
+
         return res
 
     async def increase_referrer_bonus(self, user_id: UUID, bonus: int) -> None:
@@ -135,8 +148,15 @@ class UserService(UserServiceInterface):
         update_dto = UpdateUserDTO(
             has_discount=False,
         )
-
         await self.user_repository.update(user_id, update_dto)
 
     async def get_invite_link(self, user_id: UUID) -> str:
         return f'https://t.me/{self.bot_username}?start={user_id}'
+
+    async def get_user_history(self, user_id: UUID) -> list[UserHistory]:
+        user_history_repository = get_user_history_repository()
+        return await user_history_repository.get_by_user(user_id)
+
+    async def get_user_history_balance(self, user_id: UUID) -> Optional[list[IncreasingBalance]]:
+        increasing_balance_repository = get_increasing_balance_repository()
+        return await increasing_balance_repository.get_balance_history_by_user(user_id)

@@ -378,14 +378,23 @@ const displayOrders = useMemo(() => {
             ) : (
               <div
                 className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
-                  order.status === 'cashback_paid'
-                    ? 'border-green-500 text-green-500'
-                    : 'border-blue-500 text-blue-500'
-                }`}
+    order.status === OrderStatus.CASHBACK_PAID
+      ? 'border-green-500 text-green-500'
+      : order.status === OrderStatus.CASHBACK_REJECTED
+      ? 'border-red-500 text-red-500'
+      : 'border-blue-500 text-blue-500'
+  }`}
               >
-                {order.status === 'cashback_paid'
-                  ? 'Кешбэк выплачен'
-                  : 'Кешбэк не выплачен'}
+<span
+  className={order.status === 'cashback_rejected' ? 'text-red-500' : ''}
+>
+  {{
+    cashback_paid: 'Кешбэк выплачен',
+    cashback_not_paid: 'Кешбэк не выплачен',
+    cashback_rejected: 'Кешбэк отклонен'
+  }[order.status] || ''}
+</span>
+
               </div>
             )}
           </div>
@@ -394,8 +403,6 @@ const displayOrders = useMemo(() => {
     </div>
   );
 })}
-
-
                         {displayOrders.length > showCount && (
                             <div className="flex justify-center">
                                 <button

@@ -276,6 +276,10 @@ export async function getSellers() {
     return apiClient.get('/moderator/users/sellers');
 }
 
+export async function getReviewsByUser(userId: string) {
+    return apiClient.get(`/moderator/users/reviews/${userId}`);
+}
+
 export async function getSellersForBlackList() {
     return apiClient.get('/users/sellers');
 }
@@ -427,3 +431,13 @@ export async function resolveDeeplink(startParam: string) {
       },
   });
 }
+
+export function getUserHistory(userId: string) {
+  return apiClient.get(`/users/${userId}/history`);
+}
+
+export function getUserBalanceHistory(userId: string) {
+  return apiClient.get(`/users/${userId}/balance_history`);
+}
+
+

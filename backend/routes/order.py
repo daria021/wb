@@ -47,7 +47,7 @@ async def create_order(
     order_data = CreateOrderDTO(
         user_id=user_id,
         product_id=product_id,
-        step=1,
+        step=0,
         seller_id=seller_id,
         status=OrderStatus.CASHBACK_NOT_PAID,
     )

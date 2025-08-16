@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload, InstrumentedAttribute
 from sqlalchemy.orm.exc import DetachedInstanceError
 
 from abstractions.repositories import CRUDRepositoryInterface
+from infrastructure.entities import UserHistory
 from infrastructure.repositories.exceptions import NotFoundException
 
 logger = logging.getLogger(__name__)
@@ -157,3 +158,5 @@ class AbstractSQLAlchemyRepository[Entity, Model, CreateDTO, UpdateDTO](
         except DetachedInstanceError:
             logger.error(f"Could not get {relation} from {entity.id}")
             return [] if use_list else None
+
+

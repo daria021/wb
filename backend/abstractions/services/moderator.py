@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import List
 from uuid import UUID
 
 from domain.dto import CreatePushDTO, UpdatePushDTO
+from domain.dto.moderator_review import CreateModeratorReviewDTO
 from domain.models import Product, User, Push
+from infrastructure.entities import ModeratorReview
 from routes.requests.moderator import UpdateProductStatusRequest
 
 
@@ -26,6 +29,9 @@ class ModeratorServiceInterface(ABC):
             moderator_id: UUID,
             request: UpdateProductStatusRequest,
     ) -> None:
+        ...
+
+    async def get_moderator_reviews_by_user(self, user_id: UUID) -> List[ModeratorReview]:
         ...
 
     @abstractmethod

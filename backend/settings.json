@@ -17,9 +17,9 @@
     "local": {
       "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
       "username": "WBJarvisBot",
-      "channel_id": -1001206912181,
-      "paid_topic_id": 13,
-      "free_topic_id": 1151,
+      "channel_id": -3058867439,
+      "paid_topic_id": 4,
+      "free_topic_id": 1,
       "app_short_name": "cashback"
     },
     "dev": {
@@ -32,6 +32,7 @@
     }
   },
   "web": {
-    "url": "https://cashbackwb.ru/"
+    "url": "https://cashbackwb.ru/",
+    "system_user_id": "0e3df6b0-30a5-480e-bc3a-58996fefbf38"
   }
 }

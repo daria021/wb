@@ -76,14 +76,14 @@ export default function BackButtonManager() {
       if (matchPath({ path: '/moderator/products', end: true }, pathname)) {
         return navigate('/moderator', { replace: true });
       }
-      // ModeratorProductReviewPage "/moderator/products/:productId" → список продуктов
-      const modProd = matchPath(
-        { path: '/moderator/products/:productId', end: true },
-        pathname
-      );
-      if (modProd) {
-        return navigate('/moderator/products', { replace: true });
-      }
+      // // ModeratorProductReviewPage "/moderator/products/:productId" → список продуктов
+      // const modProd = matchPath(
+      //   { path: '/moderator/products/:productId', end: true },
+      //   pathname
+      // );
+      // if (modProd) {
+      //   return navigate('/moderator/products', { replace: true });
+      // }
 
       // PushAdminPage "/moderator/pushes" → дашборд модератора
       if (matchPath({ path: '/moderator/pushes', end: true }, pathname)) {

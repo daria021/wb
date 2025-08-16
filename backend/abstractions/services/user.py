@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from domain.dto.user import CreateUserDTO, UpdateUserDTO
 from domain.models.user import User
+from infrastructure.entities import UserHistory, IncreasingBalance
 
 
 class UserServiceInterface(ABC):
@@ -86,4 +87,12 @@ class UserServiceInterface(ABC):
 
     @abstractmethod
     async def get_invite_link(self, user_id: UUID) -> str:
+        ...
+
+    @abstractmethod
+    async def get_user_history(self, user_id: UUID) -> list[UserHistory]:
+        ...
+
+    @abstractmethod
+    async def get_user_history_balance(self, user_id: UUID) -> Optional[list[IncreasingBalance]]:
         ...

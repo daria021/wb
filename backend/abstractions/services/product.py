@@ -18,7 +18,7 @@ class ProductServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def update_product(self, product_id: UUID, dto: UpdateProductDTO) -> None:
+    async def update_product(self, product_id: UUID, dto: UpdateProductDTO, user_id: UUID) -> None:
         """Обновить данные товара."""
         ...
 

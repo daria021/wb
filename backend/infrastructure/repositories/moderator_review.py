@@ -1,14 +1,30 @@
+from typing import List, Optional
+from uuid import UUID
+
 from abstractions.repositories.moderator_review import ModeratorReviewRepositoryInterface
 from domain.dto.moderator_review import CreateModeratorReviewDTO, UpdateModeratorReviewDTO
-from infrastructure.entities import ModeratorReview
+from infrastructure.entities import ModeratorReview, Product
 from domain.models.moderator_review import ModeratorReview as ModeratorReviewModel
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
-
+from sqlalchemy import select
 
 class ModeratorReviewRepository(
     AbstractSQLAlchemyRepository[ModeratorReview, ModeratorReviewModel, CreateModeratorReviewDTO, UpdateModeratorReviewDTO],
     ModeratorReviewRepositoryInterface,
 ):
+
+    async def get_by_user(self, user_id: UUID) -> List[ModeratorReview]:
+        async with self.session_maker() as session:
+            stmt = (
+                select(self.entity)
+                .join(Product, Product.id == self.entity.product_id)
+                .where(Product.seller_id == user_id)
+            )
+            result = await session.execute(stmt)
+            entities = result.scalars().all()
+
+        return [self.entity_to_model(e) for e in entities]
+
     def create_dto_to_entity(self, dto: CreateModeratorReviewDTO) -> ModeratorReview:
         return ModeratorReview(
             id=dto.id,

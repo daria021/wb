@@ -1,16 +1,22 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import List, Optional
 from uuid import UUID
 
 from abstractions.repositories import ProductRepositoryInterface, UserRepositoryInterface
 from abstractions.repositories.push import PushRepositoryInterface
+from abstractions.repositories.user_history import UserHistoryRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
 from abstractions.services import ProductServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
+from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import CreateProductDTO, UpdateProductDTO, UpdateUserDTO
+from domain.dto.user_history import CreateUserHistoryDTO
 from domain.models import Product
+from infrastructure.enums.action import Action
 from infrastructure.enums.product_status import ProductStatus
+from sqlalchemy.inspection import inspect
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +28,21 @@ class ProductService(ProductServiceInterface):
     push_repository: PushRepositoryInterface
     user_push_repository: UserPushRepositoryInterface
     notification_service: NotificationServiceInterface
+    user_history_repository: UserHistoryRepositoryInterface
 
     async def create_product(self, dto: CreateProductDTO) -> UUID:
         await self.product_repository.create(dto)
+
+        await self.user_history_repository.create(CreateUserHistoryDTO(
+            user_id=dto.seller_id,
+            creator_id=dto.seller_id,
+            product_id=dto.id,
+            action=Action.PRODUCT_CREATE,
+            date=datetime.now(),
+            json_before=dto.model_dump(mode="json"),
+            json_after=None,
+        ))
+
         update_user = UpdateUserDTO(
             is_seller=True,
         )
@@ -38,11 +56,29 @@ class ProductService(ProductServiceInterface):
     async def get_product(self, product_id: UUID) -> Product:
         return await self.product_repository.get(product_id)
 
-    async def update_product(self, product_id: UUID, dto: UpdateProductDTO) -> None:
+    async def update_product(self, product_id: UUID, dto: UpdateProductDTO, user_id: UUID) -> None:
         # 1. Получаем старый продукт и данные по продавцу
         old = await self.product_repository.get(product_id)
         seller_id = old.seller_id
         user = await self.user_repository.get(seller_id)
+
+        json_before = old.model_dump(mode="json")
+        payload = dto.model_dump(exclude_unset=True)
+        old_status = old.status
+        new_status_candidate = payload.get("status", old_status)
+
+        NON_EDIT_FIELDS = {"status", "remaining_products"}
+
+        product_was_edited = any(
+            f not in NON_EDIT_FIELDS and (val is not None) and (val != getattr(old, f, None))
+            for f, val in payload.items()
+        )
+
+        status_changed_to_archived = (
+                "status" in payload
+                and new_status_candidate != old_status
+                and new_status_candidate == ProductStatus.ARCHIVED
+        )
 
         # 2. Рассчитываем уже зарезервированные раздачи (remaining_products для ACTIVE товаров)
         products = await self.product_repository.get_by_seller(seller_id)
@@ -126,6 +162,40 @@ class ProductService(ProductServiceInterface):
         # 7. Сохраняем изменения и шлём пуш при активации
         await self.product_repository.update(product_id, dto)
 
+        # +++ Получаем "после"
+        new = await self.product_repository.get(product_id)
+        json_after = new.model_dump(mode="json")
+
+        # +++ Доп.проверка фактической смены на ARCHIVED
+        status_changed_to_archived_real = (
+                new.status != old_status and new.status == ProductStatus.ARCHIVED
+        )
+
+        # +++ Пишем историю
+        user_history_repository = get_user_history_repository()
+        now = datetime.now()
+
+        if product_was_edited:
+            await user_history_repository.create(CreateUserHistoryDTO(
+                user_id=new.seller_id,
+                creator_id=user_id,
+                product_id=product_id,
+                action=Action.PRODUCT_CHANGED,
+                date=now,
+                json_before=json_before,
+                json_after=json_after,
+            ))
+
+        if status_changed_to_archived or status_changed_to_archived_real:
+            await user_history_repository.create(CreateUserHistoryDTO(
+                user_id=new.seller_id,
+                creator_id=user_id,
+                product_id=product_id,
+                action=Action.STATUS_CHANGED,
+                date=now,
+                json_before=json_before,
+                json_after=json_after,
+            ))
 
     async def delete_product(self, product_id: UUID) -> None:
         await self.product_repository.delete(product_id)
