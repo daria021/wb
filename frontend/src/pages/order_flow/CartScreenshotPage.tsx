@@ -242,7 +242,7 @@ function CartScreenshotPage() {
                                 </div>
                                 <div className="font-semibold text-gray-400"> Шаг 2. Артикул товара продавца продавца
                                 </div>
-                                <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
+                                <div className="font-semibold text-gray-400">Шаг 3. Товар и бренд добавлены в избранное
                                 </div>
                                 <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для получения кешбэка
                                 </div>

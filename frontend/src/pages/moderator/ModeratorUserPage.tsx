@@ -1,20 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    getUsers,
-    getModerators,
-    getSellers,
-    getBannedUsers, getUser,
-    // banUser,
-    // unbanUser,
-    // promoteUser,
-    // demoteUser,
-    // increaseSellerBalance
-} from '../../services/api';
-import { UserRole } from '../../enums';
-import { on } from '@telegram-apps/sdk';
-import { useAuth } from '../../contexts/auth';
-import CopyableUuid from '../../components/CopyableUuid';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {getBannedUsers, getModerators, getSellers, getUser, getUsers,} from '../../services/api';
+import {UserRole} from '../../enums';
+import {useAuth} from '../../contexts/auth';
 
 interface User {
     id: string;
@@ -26,6 +14,7 @@ interface User {
     balance: number;
     invited_by?: string;
     inviter_tg?: string;
+    phone_number?: string;
 }
 
 type FilterType = 'all' | 'moderators' | 'sellers' | 'banned';
@@ -34,7 +23,7 @@ function ModeratorUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState<FilterType>('all');
-    const { isAdmin } = useAuth();
+    const {isAdmin} = useAuth();
     const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -101,9 +90,62 @@ function ModeratorUsersPage() {
 
 
     // Фильтруем пользователей по нику
-    const filteredUsers = users.filter(user =>
-        user.nickname && user.nickname.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredUsers = users.filter((u) => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return true; // без запроса показываем всех
+        return (
+            (u.nickname ?? '').toLowerCase().includes(q) ||
+            String(u.telegram_id ?? '').includes(q) ||
+            (u.inviter_tg ?? '').toLowerCase().includes(q)
+        );
+    });
+
+    function maskPhone(p?: string) {
+        if (!p) return '—';
+        const d = p.replace(/\D/g, '');
+        if (d.length < 10) return p;
+        const last4 = d.slice(-4);
+        return `*** *** ${last4}`;
+    }
+
+function openChat(opts: { username?: string; id?: bigint | number | string; phone?: string }) {
+  const wa: any = (window as any)?.Telegram?.WebApp;
+  const idStr = opts.id ? opts.id.toString() : '';
+  const phoneDigits = opts.phone ? opts.phone.replace(/\D/g, '') : '';
+
+  // Составляем кандидаты в порядке надёжности
+  const candidates: string[] = [];
+  if (opts.username && opts.username.trim()) candidates.push(`https://t.me/${opts.username.trim()}`);
+  if (idStr) candidates.push(`tg://user?id=${idStr}`);
+  if (phoneDigits) candidates.push(`tg://resolve?phone=${phoneDigits}`);
+
+  // Внутри мини-аппа — используем API Telegram
+  if (wa && typeof wa.openTelegramLink === 'function') {
+    for (const url of candidates) {
+      try { wa.openTelegramLink(url); return; } catch {}
+    }
+  }
+  if (wa && typeof wa.openLink === 'function' && opts.username) {
+    wa.openLink(`https://t.me/${opts.username}`);
+    return;
+  }
+
+  // Вне Telegram — лучшая попытка
+  if (opts.username) {
+    window.open(`https://t.me/${opts.username}`, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  if (idStr) {
+    // tg:// может блокироваться в браузере — но пробуем
+    window.location.href = `tg://user?id=${idStr}`;
+    return;
+  }
+  if (phoneDigits) {
+    window.location.href = `tg://resolve?phone=${phoneDigits}`;
+  }
+}
+
+
 
     return (
         <div className="bg-gray-200 h-screen p-2">
@@ -145,16 +187,17 @@ function ModeratorUsersPage() {
 
             {loading ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>
+                    <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+                </div>
             ) : (
                 <div className="w-full overflow-x-auto">
                     <table className="w-full table-auto divide-y divide-gray-200 text-[8px]">
                         <thead className="bg-brand text-white text-center">
                         <tr>
-                            <th className="py-1 px-1">ID</th>
+                            {/*<th className="py-1 px-1">ID</th>*/}
                             <th className="py-1 px-1">Telegram ID</th>
                             <th className="py-1 px-1">Никнейм</th>
+                            <th className="py-1 px-1">Номер телефона</th>
                             <th className="py-1 px-1">Роль</th>
                             <th className="py-1 px-1">Забанен</th>
                             <th className="py-1 px-1">Продавец</th>
@@ -169,23 +212,46 @@ function ModeratorUsersPage() {
                                 className="hover:bg-gray-200-50 cursor-pointer"
                                 onClick={() => navigate(`/moderator/users/${user.id}`)}
                             >
-                                <td className="px-1 py-1 text-[5px]">
-                                    <CopyableUuid uuid={user.id} />
-                                </td>
+                                {/*<td className="px-1 py-1 text-[5px]">*/}
+                                {/*    <CopyableUuid uuid={user.id}/>*/}
+                                {/*</td>*/}
                                 <td className="px-1 py-1 text-[7px]">
-                                    {user.telegram_id.toString()}
-                                </td>
+  <button
+    className="text-blue-500 hover:underline"
+    onClick={(e) => {
+      e.stopPropagation();
+      openChat({ id: user.telegram_id, username: user.nickname, phone: user.phone_number });
+    }}
+    title="Открыть диалог в Telegram"
+  >
+    {user.telegram_id.toString()}
+  </button>
+</td>
+
+
+
                                 <td className="px-1 py-1">
-                                    <a
-                                        href={`https://t.me/${user.nickname}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:underline"
-                                        onClick={e => e.stopPropagation()}
-                                    >
-                                        {user.nickname}
-                                    </a>
+  {user.nickname ? (
+    <a
+      href={`https://t.me/${user.nickname}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 hover:underline"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {user.nickname}
+    </a>
+  ) : (
+    <span className="text-gray-400">—</span>
+  )}
+</td>
+
+
+                                <td className="px-1 py-1 text-[7px]">
+                                    {maskPhone(user.phone_number)}
                                 </td>
+
+
                                 <td className="px-1 py-1">{user.role}</td>
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
                                 <td className="px-1 py-1">{user.is_seller ? "Да" : "Нет"}</td>

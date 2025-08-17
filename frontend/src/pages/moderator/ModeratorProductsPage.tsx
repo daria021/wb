@@ -36,7 +36,7 @@ function ModeratorProductsPage() {
     | 'созданные'
     | 'ожидают редактирования'
     | 'отклонённые'
-    | 'архивированные'
+    | 'архивные'
     | 'не оплаченные'
   >('все');
 
@@ -87,7 +87,7 @@ function ModeratorProductsPage() {
         return list.filter(p => p.status === ProductStatus.DISABLED);
       case 'отклонённые':
         return list.filter(p => p.status === ProductStatus.REJECTED);
-      case 'архивированные':
+      case 'архивные':
         return list.filter(p => p.status === ProductStatus.ARCHIVED);
       case 'не оплаченные':
         return list.filter(p => p.status === ProductStatus.NOT_PAID);
@@ -117,7 +117,7 @@ function ModeratorProductsPage() {
           <option value="созданные">Созданные</option>
           <option value="ожидают редактирования">Ожидают редактирования</option>
           <option value="отклонённые">Отклонённые</option>
-          <option value="архивированные">Архивированные</option>
+          <option value="Архивные">Архивные</option>
           <option value="не оплаченные">Не оплаченные</option>
         </select>
             </div>
@@ -184,7 +184,7 @@ function ModeratorProductsPage() {
                           : product.status === ProductStatus.REJECTED
                             ? 'Отклонённые'
                             : product.status === ProductStatus.ARCHIVED
-                              ? 'Архивированные'
+                              ? 'Архивные'
                               : product.status === ProductStatus.CREATED
                                 ? 'Созданные'
                                 : product.status === ProductStatus.DISABLED
@@ -248,7 +248,7 @@ function ModeratorProductsPage() {
                           : product.status === ProductStatus.REJECTED
                             ? 'Отклонённые'
                             : product.status === ProductStatus.ARCHIVED
-                              ? 'Архивированные'
+                              ? 'Архивные'
                               : product.status === ProductStatus.CREATED
                                 ? 'Созданные'
                                 : product.status === ProductStatus.DISABLED

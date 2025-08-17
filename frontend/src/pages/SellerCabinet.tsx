@@ -253,15 +253,13 @@ function SellerCabinet() {
                         </button>
                 </section>
 
-
-
                 <div
                     onClick={handleSupportClick}
-                    className="bg-white border border-brand rounded-xl shadow-sm p-4 mb-4 font-semibold cursor-pointer flex items-center gap-3 mt-2"
+                    className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3 mt-3"
                 >
                     <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                     <div className="flex flex-col">
-                        <span>Техподдержка</span>
+<span className="font-body">Техподдержка</span>
                         <span className="text-xs text-gray-500">
                             Оперативно ответим на все вопросы
                         </span>

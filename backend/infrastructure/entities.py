@@ -65,6 +65,7 @@ class User(AbstractBase):
 
     telegram_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True)
     nickname: Mapped[Optional[str]]
+    phone_number: Mapped[Optional[str]]
     role: Mapped[UserRole] = mapped_column(Enum(UserRole))
     is_banned: Mapped[bool]
     is_seller: Mapped[bool]

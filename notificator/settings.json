@@ -3,7 +3,7 @@
     "host": "db",
     "port": 5432,
     "user": "wbuser",
-    "password": "wbpassword",
+    "password": "wbpostgres",
     "name": "postgres"
   },
   "bot": {

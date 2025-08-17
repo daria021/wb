@@ -86,6 +86,7 @@ class OrderRepository(
                 id=user.id,
                 telegram_id=user.telegram_id,
                 nickname=user.nickname,
+                phone_number=user.phone_number,
                 role=user.role,
                 is_banned=user.is_banned,
                 balance=user.balance,

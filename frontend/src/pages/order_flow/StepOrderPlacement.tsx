@@ -330,7 +330,7 @@ function StepOrderPlacement() {
                                                 onClick={() => toggleStep(3)}
                                                 className="w-full flex justify-between items-center p-4 text-left"
                                             >
-                                                <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                                <span className="font-semibold">Шаг 3. Товар и бренд добавлены в избранное</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className={`w-5 h-5 transform transition-transform ${

@@ -22,3 +22,4 @@ class UpdateUserDTO(UpdateDTO):
     is_seller: Optional[bool] = None
     balance: Optional[int] = None
     has_discount: Optional[bool] = None
+    phone_number: Optional[str] = None
