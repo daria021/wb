@@ -11,3 +11,4 @@ class UpdateUserRequest(BaseModel):
     nickname: Optional[str] = Field(None, description="Новое имя или ник пользователя")
     email: Optional[EmailStr] = Field(None, description="Новый email пользователя")
     password: Optional[str] = Field(None, min_length=6, description="Новый пароль пользователя")
+    phone_number: Optional[str] = Field(None, description="Новый номер телефона")

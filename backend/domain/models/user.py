@@ -18,6 +18,7 @@ class User(BaseModel):
     invited_by: Optional[UUID] = None
     has_discount: Optional[bool] = None
     referrer_bonus: Optional[int] = None
+    phone_number: Optional[str] = None
 
     inviter: Optional['User'] = None
     created_at: datetime

@@ -315,7 +315,7 @@ function ProductFavoritePage() {
                                     </div>
 
                                     <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
-                                        <div className="font-semibold text-black">Шаг 3. Добавить товар в избранное
+                                        <div className="font-semibold text-black">Шаг 3. Товар и бренд добавлены в избранное
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для перевода
                                             кешбэка

@@ -4,6 +4,13 @@ import {getModeratorProductById, reviewProduct} from '../../services/api';
 import {ProductStatus} from '../../enums';
 import GetUploadLink from "../../components/GetUploadLink";
 
+type ModeratorReview = {
+  id: string;
+  comment_to_moderator?: string | null;
+  comment_to_seller?: string | null;
+  created_at?: string;
+};
+
 function ModeratorProductReviewPage() {
     const {productId} = useParams<{ productId: string }>();
     const [product, setProduct] = useState<any>(null);
@@ -58,6 +65,10 @@ function ModeratorProductReviewPage() {
                 <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
             </div>;
 
+    const reviews: ModeratorReview[] = Array.isArray(product.moderator_reviews)
+  ? product.moderator_reviews as ModeratorReview[]
+  : [];
+
     return (
         <div className="min-h-screen bg-gray-200 p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">
@@ -94,32 +105,32 @@ function ModeratorProductReviewPage() {
                 </div>
             </div>
 
-            {product.moderator_reviews && product.moderator_reviews.length > 0 && (
-                <div className="bg-white shadow rounded p-6 mb-6">
-                    <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
-                    {product.moderator_reviews.map((review: any) => (
-                        <div key={review.id} className="border p-4 mb-4 rounded">
-                            {review.comment_to_moderator && (
-                                <div className="bg-brandlight p-2 rounded mb-2">
-                                    <p>
-                                        <strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}
-                                    </p>
-                                </div>
-                            )}
-                            {review.comment_to_seller && (
-                                <div className="bg-brandlight p-2 rounded mb-2">
-                                    <p>
-                                        <strong>Комментарий для продавца:</strong> {review.comment_to_seller}
-                                    </p>
-                                </div>
-                            )}
-                            <p className="text-xs text-gray-500">
-                                Дата: {new Date(review.created_at).toLocaleString()}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            )}
+{reviews.some(r => (r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())) && (
+  <div className="bg-white shadow rounded p-6 mb-6">
+    <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
+    {reviews
+      .filter(r => r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())
+      .map((review) => (
+        <div key={review.id} className="border p-4 mb-4 rounded">
+          {review.comment_to_moderator && (
+            <div className="bg-brandlight p-2 rounded mb-2">
+              <p><strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}</p>
+            </div>
+          )}
+          {review.comment_to_seller && (
+            <div className="bg-brandlight p-2 rounded mb-2">
+              <p><strong>Комментарий для продавца:</strong> {review.comment_to_seller}</p>
+            </div>
+          )}
+          <p className="text-xs text-gray-500">
+            Дата: {review.created_at ? new Date(review.created_at).toLocaleString() : '—'}
+          </p>
+        </div>
+      ))}
+  </div>
+)}
+
+
 
 
             <div className="border-l-4 border-blue-500 pl-4">
@@ -167,7 +178,6 @@ function ModeratorProductReviewPage() {
                     Отправить
                 </button>
             </div>
-            ¬
         </div>
     );
 }

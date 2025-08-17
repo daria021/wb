@@ -88,6 +88,22 @@ export async function getUserOrders() {
     return apiClient.get(`/users/orders`);
 }
 
+export async function updateUser(
+  userId: string,
+  payload: {
+    nickname?: string;
+    email?: string;
+    password?: string;
+    phone_number?: string;
+  }
+) {
+
+  const { data } = await apiClient.patch(`/users/${userId}`, payload, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return data as { message: string };
+}
+
 export async function getOrderById(orderId: string) {
     console.log(`orderId ${orderId}`);
     return apiClient.get(`/orders/${orderId}`);

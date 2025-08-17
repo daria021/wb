@@ -62,12 +62,12 @@ function MyProductsPage() {
     const rejectedCount = products.filter((p) => p.status === ProductStatus.REJECTED).length;
 
     const cardRows: CardRow[] = [
-        {label: 'Активные', value: publishedCount, status: ProductStatus.ACTIVE},
-        {label: 'Ожидает проверки модератора', value: moderationCount, status: ProductStatus.CREATED},
+        {label: 'На модерации', value: moderationCount, status: ProductStatus.CREATED},
+        {label: 'Опубликованы', value: publishedCount, status: ProductStatus.ACTIVE},
+        {label: 'Ожидают пополнения баланса раздач', value: notPaidCount, status: ProductStatus.NOT_PAID},
         {label: 'Необходимо исправить', value: disabledCount, status: ProductStatus.DISABLED},
-        {label: 'Отклонённые', value: rejectedCount, status: ProductStatus.REJECTED},
-        {label: 'Архив', value: archivedCount, status: ProductStatus.ARCHIVED},
-        {label: 'Карточки оформлены и не оплачены', value: notPaidCount, status: ProductStatus.NOT_PAID},
+        {label: 'Отклонены', value: rejectedCount, status: ProductStatus.REJECTED},
+        {label: 'В архиве', value: archivedCount, status: ProductStatus.ARCHIVED},
     ];
 
     /* ---------- state ---------- */
@@ -333,7 +333,7 @@ function MyProductsPage() {
 
                         <hr className="my-3"/>
                         <div className="flex justify-between font-semibold text-base">
-                            <span>Всего карточек</span>
+                            <span>Всего карточек товаров</span>
                             <span>{totalCount}</span>
                         </div>
                     </div>
@@ -415,7 +415,7 @@ function MyProductsPage() {
                 {/*                    | 'созданные'*/}
                 {/*                    | 'ожидают редактирования'*/}
                 {/*                    | 'отклоненные'*/}
-                {/*                    | 'архивированные'*/}
+                {/*                    | 'архивные'*/}
                 {/*                    | 'не оплаченные'*/}
                 {/*            )*/}
                 {/*        }*/}
@@ -426,7 +426,7 @@ function MyProductsPage() {
                 {/*        <option value="созданные">Созданные</option>*/}
                 {/*        <option value="ожидают редактирования">Ожидают редактирования</option>*/}
                 {/*        <option value="отклоненные">Отклонённые</option>*/}
-                {/*        <option value="архивированные">Архивированные</option>*/}
+                {/*        <option value="Архивные">Архивные</option>*/}
                 {/*        <option value="не оплаченные">Не оплаченные</option>*/}
                 {/*    </select>*/}
                 {/*</div>*/}
@@ -502,7 +502,7 @@ function MyProductsPage() {
                                         : product.status === ProductStatus.REJECTED
                                             ? 'Отклоненные'
                                             : product.status === ProductStatus.ARCHIVED
-                                                ? 'Архивированные'
+                                                ? 'Архивные'
                                                 : product.status === ProductStatus.CREATED
                                                     ? 'Созданные'
                                                     : product.status === ProductStatus.DISABLED

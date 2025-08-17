@@ -65,6 +65,7 @@ function ProductFindPage() {
     const handleHomeClick = () => navigate('/');
     const [openSrc, setOpenSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
 
     useEffect(() => {
         if (!orderId) return;
@@ -80,16 +81,14 @@ function ProductFindPage() {
     }, [orderId]);
 
     useEffect(() => {
-        if (!order) return;
-        const val = enteredArticle.trim();
-        if (val === '') {
-            setArticleStatus('');
-        } else if (val === order.product.article) {
-            setArticleStatus('correct');
-        } else {
-            setArticleStatus('wrong');
-        }
-    }, [enteredArticle, order]);
+  if (!order) return;
+  const val = normalizeArticle(enteredArticle);
+  const target = normalizeArticle(order.product.article || '');
+  if (val === '') setArticleStatus('');
+  else if (val === target) setArticleStatus('correct');
+  else setArticleStatus('wrong');
+}, [enteredArticle, order]);
+
 
     useEffect(() => {
         if (!orderId) return;
@@ -187,23 +186,22 @@ function ProductFindPage() {
                 <label htmlFor="articleInput" className="block text-sm font-medium mb-1 mt-2">
                     Артикул товара продавца в WB
                 </label>
-                <input
-                    id="articleInput"
-                    type="text"
-                    value={enteredArticle}
-                    onChange={e => setEnteredArticle(e.target.value)}
-                    placeholder="Введите артикул..."
-                    className={`
-    rounded-md p-2 w-full text-sm border transition-colors duration-200
-    ${
-                        articleStatus === 'correct'
-                            ? 'border-green-500'
-                            : articleStatus === 'wrong'
-                                ? 'border-red-500'
-                                : 'border-gray-300'
-                    }
-  `}
-                />
+<input
+  id="articleInput"
+  type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  value={enteredArticle}
+  onChange={e => setEnteredArticle(normalizeArticle(e.target.value))}
+  onPaste={e => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text') || '';
+    setEnteredArticle(normalizeArticle(text));
+  }}
+  placeholder="Введите артикул..."
+  className="rounded-md p-2 w-full text-sm border"
+/>
+
 
                 {articleStatus && (
                     <p className={`mt-2 text-sm font-semibold ${
@@ -325,7 +323,7 @@ function ProductFindPage() {
                                     <div className="bg-white rounded-lg shadow p-4 mt-4 space-y-2 text-sm">
                                         <div className="font-semibold text-black"> Шаг 2. Артикул товара продавца продавца
                                         </div>
-                                        <div className="font-semibold text-gray-400">Шаг 3. Добавить товар в избранное
+                                        <div className="font-semibold text-gray-400">Шаг 3. Товар и бренд добавлены в избранное
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 4. Реквизиты для получения кешбэка
                                         </div>

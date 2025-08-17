@@ -19,11 +19,11 @@ export default function BackButtonManager() {
         return navigate('/', { replace: true });
       }
 
-
       // SellerReportsPage  "/seller-cabinet/reports"  → в кабинет
       if (matchPath({ path: '/seller-cabinet/reports', end: true }, pathname)) {
         return navigate('/seller-cabinet', { replace: true });
       }
+
       if (
         matchPath({ path: '/catalog', end: true }, pathname) &&
         state?.fromProductDetail

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
+import {getOrderById, getOrderReport, updateOrder, updateUser} from '../../services/api';
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
 import OrderHeader from "../../components/OrderHeader";
@@ -27,11 +27,14 @@ interface Order {
     id: string;
     product: Product;
     seller: User
+    user: User
     transaction_code: string;
 }
 
 interface User {
+    id: string;
     nickname: string
+    phone_number: string
 }
 
 interface Product {
@@ -84,6 +87,27 @@ function PaymentDetailsPage() {
         selectedBank !== '' &&
         agreed;
 
+    const formatCardNumber = (value: string) => {
+        const digits = value.replace(/\D/g, '').slice(0, 19);          // только цифры, максимум 19
+        return digits.replace(/(.{4})/g, '$1 ').trim();                 // пробел после каждых 4 цифр
+    };
+
+    const normalizePhone = (value: string) => {
+        let v = value.replace(/[^\d+]/g, '');                           // разрешаем только цифры и +
+        if (v.startsWith('+')) {
+            v = '+' + v.slice(1).replace(/\D/g, '');                      // + только в начале, дальше только цифры
+        } else {
+            v = v.replace(/\D/g, '');                                     // без + — только цифры
+        }
+        return v.slice(0, 20);                                          // разумный предел длины
+    };
+
+    const normalizeName = (value: string) => {
+        let v = value.replace(/[^A-Za-zА-Яа-яЁё\s-]/g, '');             // только буквы (RU/EN), пробел и дефис
+        v = v.replace(/\s{2,}/g, ' ').trim();                           // схлопываем лишние пробелы
+        return v.slice(0, 120);
+    };
+
 
     useEffect(() => {
         if (!orderId) return;
@@ -98,19 +122,36 @@ function PaymentDetailsPage() {
 
     const handleContinueClick = async () => {
         if (!canContinue || !orderId) return;
+
+        // 1) Пытаемся обновить профиль пользователя — только если есть id
+        try {
+            if (order?.user?.id) {
+                await updateUser(order.user.id, {
+                    // undefined не уйдут в бэк
+                    phone_number: phoneNumber || undefined,
+                });
+            }
+        } catch (e) {
+            console.warn('Не удалось обновить профиль пользователя, продолжаю:', e);
+            // не выходим — даём оформить заказ дальше
+        }
+
+        // 2) Обновляем заказ
         try {
             await updateOrder(orderId, {
                 step: 4,
-                card_number: cardNumber,
-                phone_number: phoneNumber,
-                name: fullName,
-                bank: selectedBank,
+                card_number: cardNumber?.replace(/\s+/g, ''), // если нужно — уберём пробелы
+                phone_number: phoneNumber || undefined,
+                name: fullName?.trim(),
+                bank: selectedBank || undefined,
             });
+
             navigate(`/order/${orderId}/step-5`);
         } catch (err) {
             console.error('Ошибка при обновлении заказа:', err);
         }
     };
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -120,8 +161,8 @@ function PaymentDetailsPage() {
     };
 
     if (loading) return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+    </div>;
     if (error || !order) return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
 
 
@@ -149,109 +190,114 @@ function PaymentDetailsPage() {
                 <p className="text-xs text-gray-500"><strong>ВАЖНО!</strong> ВЫ ВСЕГДА МОЖЕТЕ ВЕРНУТЬСЯ К ЭТОМУ ШАГУ В
                     РАЗДЕЛЕ "МОИ
                     ПОКУПКИ"</p>
-                {order && <OrderHeader transactionCode={order.transaction_code} />}
-            <div className="space-y-4">
+                {order && <OrderHeader transactionCode={order.transaction_code}/>}
+                <div className="space-y-4">
 
-                <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Реквизиты для получения кешбэка</h1>
-                <p>💳 Укажи карту, телефон и имя и выбери банк из списка</p>
-                <p>
-                    ✅ Проверь данные
-                </p>
-                <p>
-                    💸 Кешбэк будет переведён на карту или через СБП
-                </p>
+                    <h1 className="text-lg font-bold mb-2 text-brand">Шаг 4. Реквизиты для получения кешбэка</h1>
+                    <p>💳 Укажи карту, телефон и имя и выбери банк из списка</p>
+                    <p>
+                        ✅ Проверь данные
+                    </p>
+                    <p>
+                        💸 Кешбэк будет переведён на карту или через СБП
+                    </p>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Номер карты
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Введите номер карты"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        className="w-full border border-darkGray rounded p-2 text-sm"
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Номер карты
+                        </label>
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="cc-number"
+                            placeholder="0000 0000 0000 0000"
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                            className="w-full border border-darkGray rounded p-2 text-sm"
+                        />
+                    </div>
+
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Номер телефона
+                        </label>
+                        <input
+                            type="tel"
+                            inputMode="tel"
+                            autoComplete="tel"
+                            placeholder="+7XXXXXXXXXX"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(normalizePhone(e.target.value))}
+                            className="w-full border border-darkGray rounded p-2 text-sm"
+                        />
+                    </div>
+
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Фамилия и имя
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Иванов Иван"
+                            value={fullName}
+                            onChange={(e) => setFullName(normalizeName(e.target.value))}
+                            className="w-full border border-darkGray rounded p-2 text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Выберите банк. <br/>
+                        </label>
+                        <select
+                            value={selectedBank}
+                            onChange={handleChange}
+                            className="w-full border border-darkGray rounded p-2 text-sm"
+                        >
+                            <option value="">Выберите...</option>
+                            <option value="Сбербанк">Сбербанк</option>
+                            <option value="Тинькофф">Тинькофф</option>
+                            <option value="Альфа-банк">Альфа-банк</option>
+                            <option value="ВТБ">ВТБ</option>
+                            <option value="Рнкб">Рнкб</option>
+                            <option value="Газпромбанк">Газпромбанк</option>
+                            <option value="Открытие">Открытие</option>
+                            <option value="Райффайзен банк">Райффайзен банк</option>
+                            <option value="Озон банк">Озон банк</option>
+                            <option value="УБРиР">УБРиР</option>
+                            <option value="Хоум кредит">Хоум кредит</option>
+                            <option value="Яндекс">Яндекс</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                        {selectedBank === 'Другое' && (
+                            <div className="mt-2">
+                                <label className="block text-sm font-medium text-gray-700">Введите банк</label>
+                                <input
+                                    type="text"
+                                    value={otherBank}
+                                    onChange={(e) => setOtherBank(e.target.value)}
+                                    className="w-full border border-darkGray rounded p-2 text-sm"
+                                    placeholder="Введите название банка"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="agreeCorrectness"
+                            checked={agreed}
+                            onChange={(e) => setAgreed(e.target.checked)}
+                            className="h-8 w-8"
+                        />
+                        <label htmlFor="agreeCorrectness" className="text-sm text-gray-700">
+                            Я подтверждаю правильность введенных данных
+                        </label>
+                    </div>
                 </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Номер телефона
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Введите номер телефона"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full border border-darkGray rounded p-2 text-sm"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Фамилия и имя
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Введите фамилию и имя"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="w-full border border-darkGray rounded p-2 text-sm"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Выберите банк. <br/>
-                        <strong>Внимание! Вы можете выбрать только банки, представленные в списке.</strong>
-                    </label>
-                    <select
-                        value={selectedBank}
-                        onChange={handleChange}
-                        className="w-full border border-darkGray rounded p-2 text-sm"
-                    >
-                        <option value="">Выберите...</option>
-                        <option value="Сбербанк">Сбербанк</option>
-                        <option value="Тинькофф">Тинькофф</option>
-                        <option value="Альфа-банк">Альфа-банк</option>
-                        <option value="ВТБ">ВТБ</option>
-                        <option value="Рнкб">Рнкб</option>
-                        <option value="Газпромбанк">Газпромбанк</option>
-                        <option value="Открытие">Открытие</option>
-                        <option value="Райффайзен банк">Райффайзен банк</option>
-                        <option value="Озон банк">Озон банк</option>
-                        <option value="УБРиР">УБРиР</option>
-                        <option value="Хоум кредит">Хоум кредит</option>
-                        <option value="Яндекс">Яндекс</option>
-                        <option value="Другое">Другое</option>
-                    </select>
-                    {selectedBank === 'Другое' && (
-                        <div className="mt-2">
-                            <label className="block text-sm font-medium text-gray-700">Введите банк</label>
-                            <input
-                                type="text"
-                                value={otherBank}
-                                onChange={(e) => setOtherBank(e.target.value)}
-                                className="w-full border border-darkGray rounded p-2 text-sm"
-                                placeholder="Введите название банка"
-                            />
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="agreeCorrectness"
-                        checked={agreed}
-                        onChange={(e) => setAgreed(e.target.checked)}
-                        className="h-8 w-8"
-                    />
-                    <label htmlFor="agreeCorrectness" className="text-sm text-gray-700">
-                        Я подтверждаю правильность введенных данных
-                    </label>
-                </div>
-            </div>
             </div>
 
             <button
@@ -324,7 +370,8 @@ function PaymentDetailsPage() {
                                             <div className="border-t p-4 space-y-3">
                                                 {reportData.search_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">1. Скриншот поискового запроса в WB</p>
+                                                        <p className="text-sm font-semibold">1. Скриншот поискового
+                                                            запроса в WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.search_screenshot_path)}
                                                             alt="Скриншот поискового запроса в WB"
@@ -334,7 +381,8 @@ function PaymentDetailsPage() {
                                                 )}
                                                 {reportData.cart_screenshot_path && (
                                                     <div>
-                                                        <p className="text-sm font-semibold">2. Скриншот корзины в WB</p>
+                                                        <p className="text-sm font-semibold">2. Скриншот корзины в
+                                                            WB</p>
                                                         <img
                                                             src={GetUploadLink(reportData.cart_screenshot_path)}
                                                             alt="Скриншот корзины в WB"
@@ -379,7 +427,7 @@ function PaymentDetailsPage() {
                                             onClick={() => toggleStep(3)}
                                             className="w-full flex justify-between items-center p-4 text-left"
                                         >
-                                            <span className="font-semibold">Шаг 3. Товар и бренд в избранное</span>
+                                            <span className="font-semibold">Шаг 3. Товар и бренд добавлены в избранное</span>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className={`w-5 h-5 transform transition-transform ${
@@ -405,8 +453,11 @@ function PaymentDetailsPage() {
                                             кешбэка
                                         </div>
                                         <div className="font-semibold text-gray-400">Шаг 5. Оформление заказа</div>
-                                        <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и штрихкода</div>
-                                        <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека</div>
+                                        <div className="font-semibold text-gray-400">Шаг 6. Скриншоты доставки и
+                                            штрихкода
+                                        </div>
+                                        <div className="font-semibold text-gray-400">Шаг 7. Скриншот отзыва и эл.чека
+                                        </div>
                                     </div>
 
 
