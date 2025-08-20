@@ -57,7 +57,6 @@ async def get_invite_link(request: Request):
     user_id = get_user_id_from_request(request)
 
     link = await user_service.get_invite_link(user_id)
-
     return link
 
 

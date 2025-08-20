@@ -4,7 +4,7 @@ import {getOrderBySellerId, updateOrderStatus} from '../services/api';
 import {AxiosResponse} from 'axios';
 import {OrderStatus, PayoutTime} from '../enums';
 import {useUser} from "../contexts/user";
-import {findAll} from "styled-components/test-utils";
+import GetUploadLink from "../components/GetUploadLink";
 
 interface Product {
     id: string;
@@ -222,6 +222,12 @@ function SellerReportsPage() {
     return true;
   });
 
+    const resolveImage = (p?: string | null) => {
+  if (!p) return null;
+  return GetUploadLink(p);
+};
+
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -290,29 +296,54 @@ function SellerReportsPage() {
                 <div className="flex flex-col gap-4">
                     {filteredOrders.length ? (
                         filteredOrders.map((order) => (
-                            <div
-                                key={order.id}
-                                className="border border-gray-200 rounded-md shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
-                            >
-                                <h2 className="text-lg font-semibold">{order.product.name}</h2>
-                                <p className="text-sm text-gray-600">
-  Выплатить до: {getPayoutDue(order)}
-                                </p>
-                                <p className="text-sm text-gray-600">
-Сумма кешбэка к выплате: {(order?.product.wb_price ?? 0) - (order?.product.price ?? 0)}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Покупатель: @{order.user.nickname || "Не указан"}
-                                </p>
-                                {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
-                                    <button
-                                        onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
-                                        className="mt-2 w-full py-2 rounded bg-brand text-white font-semibold text-base hover:opacity-90 transition"
-                                    >
-                                        Открыть отчёт
-                                    </button>
-                                )}
-                            </div>
+
+<div
+  key={order.id}
+  className="border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white p-2"
+>
+  {/* верхняя часть: фото + текст */}
+  <div className="flex gap-3 p-2">
+    {/* фото */}
+    <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+      {order.product.image_path ? (
+        <img
+          src={order.product.image_path.startsWith('http')
+            ? order.product.image_path
+            : GetUploadLink(order.product.image_path)}
+          alt={order.product.name}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="flex items-center justify-center h-full text-gray-400 text-xs">
+          Нет фото
+        </div>
+      )}
+    </div>
+
+    {/* текст */}
+    <div className="flex-1">
+      <h2 className="text-lg font-semibold">{order.product.name}</h2>
+      <p className="text-sm text-gray-600">Выплатить до: {getPayoutDue(order)}</p>
+      <p className="text-sm text-gray-600">
+        Сумма кешбэка: {(order?.product.wb_price ?? 0) - (order?.product.price ?? 0)}
+      </p>
+      <p className="text-sm text-gray-600">
+        Покупатель: @{order.user.nickname || "Не указан"}
+      </p>
+    </div>
+  </div>
+
+  {/* кнопка на всю ширину */}
+  {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
+    <button
+      onClick={() => navigate(`/seller-cabinet/reports/${order.id}`)}
+      className="mt-4 w-full py-2 rounded bg-brand text-white font-semibold text-base hover:opacity-90 transition"
+    >
+      Открыть отчёт
+    </button>
+  )}
+</div>
+
                         ))
                     ) : (
                         <p className="text-center text-gray-600">Заказов не найдено</p>

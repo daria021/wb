@@ -6,4 +6,4 @@ from pydantic import BaseModel
 
 class TelegramAuthRequest(BaseModel):
     initData: str
-    ref: Optional[UUID] = None
+    ref: Optional[str] = None

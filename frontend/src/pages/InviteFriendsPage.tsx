@@ -21,7 +21,6 @@ interface User {
 }
 
 const InviteFriendsPage: React.FC = () => {
-    const navigate = useNavigate();
     const [inviteLink, setInviteLink] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');

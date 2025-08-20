@@ -1,4 +1,5 @@
 from abstractions.services.moderator import ModeratorServiceInterface
+from dependencies.repositories.increasing_balance import get_increasing_balance_repository
 from dependencies.repositories.moderator_review import get_moderator_review_repository
 from dependencies.repositories.product import get_product_repository
 from dependencies.services.notification import get_notification_service
@@ -12,4 +13,5 @@ def get_moderator_service() -> ModeratorServiceInterface:
         user_service=get_user_service(),
         moderator_review_repository=get_moderator_review_repository(),
         notification_service=get_notification_service(),
+        increasing_balance_repository=get_increasing_balance_repository()
     )

@@ -16,6 +16,7 @@ from domain.models import User
 from infrastructure.entities import UserHistory, IncreasingBalance
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
+from utils.referral import uuid_to_b64url
 
 logger = logging.getLogger(__name__)
 
@@ -150,8 +151,13 @@ class UserService(UserServiceInterface):
         )
         await self.user_repository.update(user_id, update_dto)
 
+    # async def get_invite_link(self, user_id: UUID) -> str:
+    #     return f'https://t.me/{self.bot_username}?start={user_id}'
+
     async def get_invite_link(self, user_id: UUID) -> str:
-        return f'https://t.me/{self.bot_username}?start={user_id}'
+        token = uuid_to_b64url(user_id)  # 22 символа
+        # по желанию добавьте префикс для роутинга/совместимости: start=ref_<token>
+        return f'https://t.me/{self.bot_username}?start={token}'
 
     async def get_user_history(self, user_id: UUID) -> list[UserHistory]:
         user_history_repository = get_user_history_repository()

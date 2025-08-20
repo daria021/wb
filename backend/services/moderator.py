@@ -5,12 +5,14 @@ from typing import List
 from uuid import UUID
 
 from abstractions.repositories import ProductRepositoryInterface
+from abstractions.repositories.increasing_balance import IncreasingBalanceRepositoryInterface
 from abstractions.repositories.moderator_review import ModeratorReviewRepositoryInterface
 from abstractions.services import UserServiceInterface
 from abstractions.services.moderator import ModeratorServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
 from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import UpdateProductDTO, CreatePushDTO, UpdatePushDTO
+from domain.dto.increasing_balance import CreateIncreasingBalanceDTO
 from domain.dto.moderator_review import CreateModeratorReviewDTO
 from domain.dto.user_history import CreateUserHistoryDTO
 from domain.models import Product, User, Push
@@ -27,6 +29,7 @@ class ModeratorService(ModeratorServiceInterface):
     user_service: UserServiceInterface
     moderator_review_repository: ModeratorReviewRepositoryInterface
     notification_service: NotificationServiceInterface
+    increasing_balance_repository: IncreasingBalanceRepositoryInterface
 
     async def get_products(self) -> list[Product]:
         return await self.products_repository.get_all()
@@ -77,7 +80,6 @@ class ModeratorService(ModeratorServiceInterface):
                 final_status = ProductStatus.NOT_PAID
             else:
                 final_status = ProductStatus.ACTIVE
-
         else:
             # Любой другой статус просто применяем как есть
             final_status = request.status
@@ -106,7 +108,6 @@ class ModeratorService(ModeratorServiceInterface):
             status_before=original_status,
             status_after=final_status,
         )
-
 
         user_history_repository = get_user_history_repository()
 
@@ -146,14 +147,24 @@ class ModeratorService(ModeratorServiceInterface):
                 json_after=json_after,
             ))
 
-
         await self.moderator_review_repository.create(review_dto)
 
         # 5) Если товар только что стал активным — шлём нотификацию
         if final_status == ProductStatus.ACTIVE and original_status != ProductStatus.ACTIVE:
             await self.notification_service.send_new_product(product_id)
+
         if review_dto.status_after == ProductStatus.ACTIVE and review_dto.status_before != ProductStatus.ACTIVE:
             await self.notification_service.send_new_product(product_id)
+
+        if final_status == ProductStatus.ACTIVE:
+            logger.info(f"Второй: {product.general_repurchases}")
+            create_increasing_balance_dto = CreateIncreasingBalanceDTO(
+                user_id=product.seller_id,
+                sum=-product.remaining_products,
+            )
+
+            res = await self.increasing_balance_repository.create(create_increasing_balance_dto)
+            logger.info(f"результат: {res}")
 
     async def get_moderator_reviews_by_user(self, user_id: UUID) -> List[ModeratorReview]:
         return await self.moderator_review_repository.get_by_user(user_id)
