@@ -370,9 +370,9 @@ const leftColumn  = filtered.filter((_, i) => i % 2 === 0);
               {product.image_path ? (
                 <img
                   src={
-                    product.image_path.startsWith('http')
-                      ? product.image_path
-                      : GetUploadLink(product.image_path)
+                    // product.image_path.startsWith('http')
+                    //   ? product.image_path :
+                       GetUploadLink(product.image_path)
                   }
                   alt={product.name}
                   className="w-full h-full object-cover"

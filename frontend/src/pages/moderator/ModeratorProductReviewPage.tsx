@@ -130,9 +130,6 @@ function ModeratorProductReviewPage() {
   </div>
 )}
 
-
-
-
             <div className="border-l-4 border-blue-500 pl-4">
                 <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">

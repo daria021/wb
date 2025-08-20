@@ -1,14 +1,14 @@
 import hashlib
 import hmac
-import logging
-import time
 import json
+import logging
+import re
+import time
+from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import parse_qs
-from dataclasses import dataclass
 from uuid import UUID
 
-import settings
 from abstractions.services import UserServiceInterface
 from abstractions.services.auth.service import AuthServiceInterface
 from abstractions.services.auth.tokens import TokenServiceInterface
@@ -17,6 +17,7 @@ from domain.responses.auth import AuthTokens
 from infrastructure.repositories.exceptions import NotFoundException
 from services.auth.exceptions import ExpiredDataException, InvalidTokenException
 from services.exceptions import BannedUserException
+from utils.referral import b64url_to_uuid
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class AuthService(AuthServiceInterface):
 
     user_service: UserServiceInterface
     token_service: TokenServiceInterface
+    _B64URL_RE = re.compile(r'^[A-Za-z0-9_-]{20,24}$')  # обычный UUID→b64url даёт 22
 
     async def get_user_id_from_jwt(self, token: str) -> UUID:
         try:
@@ -48,7 +50,7 @@ class AuthService(AuthServiceInterface):
         except (InvalidTokenException, NotFoundException):
             raise
 
-    async def create_token(self, init_data: str, ref_user_id: Optional[UUID] = None) -> AuthTokens:
+    async def create_token(self, init_data: str, ref_user_id: Optional[str] = None) -> AuthTokens:
         """Verifies Telegram Mini App auth data properly."""
         # Parse initData properly (decode URL params)
         data_dict = {k: v[0] for k, v in parse_qs(init_data).items()}
@@ -87,8 +89,15 @@ class AuthService(AuthServiceInterface):
         telegram_user_id = int(user_data.get("id", 0))
         username = user_data.get("username", None)
 
+        inviter_uuid: Optional[UUID] = None
+        if ref_user_id:
+            try:
+                inviter_uuid = self.parse_ref_to_uuid(ref_user_id)
+            except Exception:
+                inviter_uuid = None
+
         # Ensure user exists
-        user_dto = CreateUserDTO(telegram_id=telegram_user_id, nickname=username, invited_by=ref_user_id)
+        user_dto = CreateUserDTO(telegram_id=telegram_user_id, nickname=username, invited_by=inviter_uuid)
         user = await self.user_service.ensure_user(user_dto)
 
         # Generate access & refresh tokens
@@ -103,3 +112,13 @@ class AuthService(AuthServiceInterface):
             return self.token_service.create_auth_token(user_id)
         except (InvalidTokenException, NotFoundException):
             raise
+
+
+    def parse_ref_to_uuid(self, ref: Optional[str]) -> Optional[UUID]:
+        if not ref:
+            return None
+        # принимаем только наш короткий формат
+        if not self._B64URL_RE.match(ref):
+            raise ValueError("Invalid ref token format")
+        return b64url_to_uuid(ref)
+

@@ -154,7 +154,6 @@ class UserRepository(
             id=dto.id,
             telegram_id=dto.telegram_id,
             nickname=dto.nickname,
-            phone_number=dto.phone_number,
             is_banned=False,
             is_seller=False,
             role=UserRole(dto.role),
