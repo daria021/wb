@@ -218,6 +218,7 @@ async def update_product_status(
 
 @router.delete("/{product_id}")
 async def delete_product(product_id: UUID):
+    logger.info(f"Delete product: {product_id}")
     product_service = get_product_service()
     await product_service.delete_product(product_id)
     return {"message": "Product deleted successfully"}

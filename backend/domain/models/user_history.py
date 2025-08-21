@@ -10,7 +10,7 @@ class UserHistory(BaseModel):
     id: UUID
     user_id: UUID
     creator_id: Optional[UUID]
-    product_id: UUID
+    product_id: Optional[UUID] = None
     action: Action # опубликовался в каталог, заархивирован, отредактирован
     date: datetime
     json_before: Optional[dict]

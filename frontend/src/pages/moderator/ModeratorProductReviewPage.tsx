@@ -135,17 +135,36 @@ function ModeratorProductReviewPage() {
                 <div className="mb-4">
                     <label className="block mb-2">Статус:</label>
 
-                    <select
-                        value={status}
+
+                                <div className="relative">
+      <select
+        value={status}
                         onChange={e => setStatus(e.target.value)}
-                        className="border p-2 rounded w-full"
-                    >
-                        {Object.values(ProductStatus).map(value => (
+        className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                   pl-3 pr-10 text-sm font-medium text-gray-800
+                   focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        aria-label="Фильтр по статусу"
+      >
+        {Object.values(ProductStatus).map(value => (
                             <option key={value} value={value}>
                                 {statusLabels[value]}
                             </option>
                         ))}
-                    </select>
+        ))
+      </select>
+
+      {/* Стрелка (иконка) */}
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+        <svg
+          className="h-4 w-4 text-brand"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
                 </div>
 
                 <div className="mb-4">

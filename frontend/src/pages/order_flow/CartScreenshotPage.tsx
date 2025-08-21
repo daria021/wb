@@ -190,13 +190,13 @@ function CartScreenshotPage() {
             </div>
 
             <FileUploader
-                label="1.Скриншот поискового запроса в WB"
+                label="1. Скриншот поискового запроса в WB"
                 file={file1}
                 preview={preview1}
                 onFileChange={setFile1}
             />
             <FileUploader
-                label="2.Скриншот корзины в WB"
+                label="2. Скриншот корзины в WB"
                 file={file2}
                 preview={preview2}
                 onFileChange={setFile2}

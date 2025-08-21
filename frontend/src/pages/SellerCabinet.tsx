@@ -222,7 +222,7 @@ function SellerCabinet() {
                         <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-red-600 rounded-full"/>
                     )}
                     <p className="text-md font-semibold mb-1">Мои товары</p>
-                    <p className="text-sm text-gray-500">Товары по раздачам</p>
+                    <p className="text-sm text-gray-500">Карточки для раздачи в каталоге</p>
                 </div>
 
                 <div
@@ -234,7 +234,7 @@ function SellerCabinet() {
                     )}
                     <p className="text-md font-semibold mb-1">Отчеты по выкупам</p>
                     <p className="text-sm text-gray-500">
-                        Просмотр отчетов по покупкам ваших товаров
+                        Просмотр отчётов по вашим товарам для выплаты кешбэка
                     </p>
                 </div>
 

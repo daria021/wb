@@ -171,6 +171,10 @@ export async function getOrderBySellerId(sellerId: string) {
     return apiClient.get(`/users/orders/reports/${sellerId}`);
 }
 
+export async function getAllOrderBySellerId(sellerId: string) {
+    return apiClient.get(`/users/orders/all/reports/${sellerId}`);
+}
+
 export async function getOrders() {
     return apiClient.get('/orders');
 }
@@ -456,4 +460,6 @@ export function getUserBalanceHistory(userId: string) {
   return apiClient.get(`/users/${userId}/balance_history`);
 }
 
-
+export function deleteProduct(productId: string) {
+    return apiClient.delete(`/products/${productId}`);
+}

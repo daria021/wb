@@ -13,7 +13,7 @@ class Order(BaseModel):
     id: UUID
     transaction_code: str #номер сделки
     user_id: UUID
-    product_id: UUID
+    product_id: Optional[UUID] = None
     seller_id: UUID
     step: int
     search_screenshot_path: Optional[str]
@@ -31,7 +31,7 @@ class Order(BaseModel):
     status: OrderStatus
     order_date: datetime
 
-    product: Product
+    product: Optional[Product] = None
     user: User
     seller: User
     created_at: datetime

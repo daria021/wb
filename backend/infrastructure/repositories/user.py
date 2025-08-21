@@ -128,7 +128,6 @@ class UserRepository(
 
         return None
 
-
     async def become_seller(self, user_id: UUID):
         async with self.session_maker() as session:
             user = await session.get(self.entity, user_id)

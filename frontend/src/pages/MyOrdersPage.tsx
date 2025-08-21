@@ -18,10 +18,10 @@ export const STEP_NAMES: { [key: number]: string } = {
 };
 
 const getOrderStepLink = (order: Order): string => {
-  const next = Math.max(1, (Number(order.step) || 0) + 1);
-  if (next === 1) return `/product/${order.id}/step-1`;
-  if (next >= 2 && next <= 7) return `/order/${order.id}/step-${next}`;
-  return `/order/${order.id}/order-info`;
+    const next = Math.max(1, (Number(order.step) || 0) + 1);
+    if (next === 1) return `/product/${order.id}/step-1`;
+    if (next >= 2 && next <= 7) return `/order/${order.id}/step-${next}`;
+    return `/order/${order.id}/order-info`;
 };
 
 interface Product {
@@ -102,57 +102,57 @@ function MyOrdersPage() {
 
 
     // считать активными всё, что не финал
-const isActive = (s: string) =>
-  s !== OrderStatus.CASHBACK_PAID &&
-  s !== OrderStatus.CANCELLED &&
-  s !== OrderStatus.CASHBACK_REJECTED;
+    const isActive = (s: string) =>
+        s !== OrderStatus.CASHBACK_PAID &&
+        s !== OrderStatus.CANCELLED &&
+        s !== OrderStatus.CASHBACK_REJECTED;
 
 // 1) агрегируем: на каждый product.id берём лучший активный и лучший завершённый
-const aggregatedOrders = useMemo(() => {
-  const map = new Map<string, { active?: Order; finished?: Order; others: Order[] }>();
+    const aggregatedOrders = useMemo(() => {
+        const map = new Map<string, { active?: Order; finished?: Order; others: Order[] }>();
 
-  for (const o of filteredOrders) {
-    const key = o.product.id;
-    const bucket = map.get(key) ?? { others: [] };
+        for (const o of filteredOrders) {
+            const key = o.product.id;
+            const bucket = map.get(key) ?? {others: []};
 
-    if (o.status === OrderStatus.CASHBACK_PAID) {
-      // берем самый свежий выплаченный
-      if (!bucket.finished || new Date(o.created_at) > new Date(bucket.finished.created_at)) {
-        bucket.finished = o;
-      }
-    } else if (isActive(o.status)) {
-      // берем самый "дальний" по шагу активный (при равенстве — самый свежий)
-      if (
-        !bucket.active ||
-        o.step > bucket.active.step ||
-        (o.step === bucket.active.step && new Date(o.created_at) > new Date(bucket.active.created_at))
-      ) {
-        bucket.active = o;
-      }
-    } else {
-      // отменённые/отклонённые тоже показываем (по желанию)
-      bucket.others.push(o);
-    }
+            if (o.status === OrderStatus.CASHBACK_PAID) {
+                // берем самый свежий выплаченный
+                if (!bucket.finished || new Date(o.created_at) > new Date(bucket.finished.created_at)) {
+                    bucket.finished = o;
+                }
+            } else if (isActive(o.status)) {
+                // берем самый "дальний" по шагу активный (при равенстве — самый свежий)
+                if (
+                    !bucket.active ||
+                    o.step > bucket.active.step ||
+                    (o.step === bucket.active.step && new Date(o.created_at) > new Date(bucket.active.created_at))
+                ) {
+                    bucket.active = o;
+                }
+            } else {
+                // отменённые/отклонённые тоже показываем (по желанию)
+                bucket.others.push(o);
+            }
 
-    map.set(key, bucket);
-  }
+            map.set(key, bucket);
+        }
 
-  // разворачиваем: активный → завершённый → остальные (если надо)
-  const res: Order[] = [];
-  map.forEach(({ active, finished, others }) => {
-    if (active) res.push(active);
-    if (finished) res.push(finished);
-    res.push(...others); // можно убрать, если не хотите показывать отменённые
-  });
-  return res;
-}, [filteredOrders]);
+        // разворачиваем: активный → завершённый → остальные (если надо)
+        const res: Order[] = [];
+        map.forEach(({active, finished, others}) => {
+            if (active) res.push(active);
+            if (finished) res.push(finished);
+            res.push(...others); // можно убрать, если не хотите показывать отменённые
+        });
+        return res;
+    }, [filteredOrders]);
 
 // 2) упорядочим: незавершённые вперёд, затем выплаченные
-const displayOrders = useMemo(() => {
-  const notPaid = aggregatedOrders.filter(o => o.status !== OrderStatus.CASHBACK_PAID);
-  const paid    = aggregatedOrders.filter(o => o.status === OrderStatus.CASHBACK_PAID);
-  return [...notPaid, ...paid];
-}, [aggregatedOrders]);
+    const displayOrders = useMemo(() => {
+        const notPaid = aggregatedOrders.filter(o => o.status !== OrderStatus.CASHBACK_PAID);
+        const paid = aggregatedOrders.filter(o => o.status === OrderStatus.CASHBACK_PAID);
+        return [...notPaid, ...paid];
+    }, [aggregatedOrders]);
 
 
 // порядок шагов: 6→5→4→3→2→1→7
@@ -266,28 +266,58 @@ const displayOrders = useMemo(() => {
             </div>
 
             {/* Заголовок */}
-            <div className="sticky top-0 z-10 mt-2 bg-inherit pb-2">
-                <h2 className="text-2xl font-bold text-center mb-1">Мои покупки</h2>
-                <input
-                    type="text"
-                    placeholder="Поиск по названию товара"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="block mx-auto w-4/5 border border-darkGray rounded-md p-2 px-4 text-sm mb-2"
-                />
-                <select
-                    value={filterStatus}
-                    onChange={e => setFilterStatus(e.target.value)}
-                    className="block mx-auto w-4/5 border border-darkGray rounded-md p-2"
-                >
-                    <option value="">Все статусы</option>
-                    {statusOptions.map(status => (
-                        <option key={status} value={status}>
-                            {STATUS_LABELS[status as OrderStatus]}
-                        </option>
-                    ))}
-                </select>
+            {/* Заголовок */}
+            <div className="sticky top-0 z-10 bg-inherit pb-2 pt-2">
+                {/* Полоса фильтров */}
+                <div className="mx-auto w-11/12 max-w-2xl grid grid-cols-1 gap-2 md:grid-cols-[1fr,220px]">
+                    {/* Поиск */}
+                    <input
+                        type="text"
+                        placeholder="Поиск по названию товара"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="h-10 rounded-md border border-darkGray px-4 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                    />
+
+                    {/* Селектор статуса с явной стрелкой */}
+                    <div className="relative">
+                        <select
+                            value={filterStatus}
+                            onChange={e => setFilterStatus(e.target.value)}
+                            className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                   pl-3 pr-10 text-sm font-medium text-gray-800
+                   focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                            aria-label="Фильтр по статусу"
+                        >
+                            <option value="">Все статусы</option>
+                            {statusOptions.map(status => (
+                                <option key={status} value={status}>
+                                    {STATUS_LABELS[status as OrderStatus]}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Стрелка (иконка) */}
+                        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                            <svg
+                                className="h-4 w-4 text-brand"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Подсказка */}
+                <p className="mt-2 text-center text-xs text-gray-600">
+                    Нажмите на карточку, чтобы открыть инструкцию
+                </p>
             </div>
+
 
             <div className="px-4 mt-2">
 
@@ -317,92 +347,93 @@ const displayOrders = useMemo(() => {
                     </div>
                 ) : (
                     <div className="flex flex-col space-y-3">
-{visibleOrders.map(order => {
-  const linkTo = getOrderStepLink(order);
-  const isCancelled = order.status === OrderStatus.CANCELLED;
-  const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
+                        {visibleOrders.map(order => {
+                            const linkTo = getOrderStepLink(order);
+                            const isCancelled = order.status === OrderStatus.CANCELLED;
+                            const title = STEP_NAMES[order.step + 1] || `Шаг ${order.step + 1}`;
 
-  return (
-    <div key={order.id} className="relative">
-      {/* кнопка вынесена из ссылки */}
-      {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID && (
-        <button
-          onClick={e => {
-            e.preventDefault(); // на всякий случай
-            handleCancelOrder(order.id, e);
-          }}
-          className="absolute top-2 right-2 z-10 text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition"
-        >
-          Отменить
-        </button>
-      )}
+                            return (
+                                <div key={order.id} className="relative">
+                                    {/* кнопка вынесена из ссылки */}
+                                    {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID && (
+                                        <button
+                                            onClick={e => {
+                                                e.preventDefault(); // на всякий случай
+                                                handleCancelOrder(order.id, e);
+                                            }}
+                                            className="absolute top-2 right-2 z-10 text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition"
+                                        >
+                                            Отменить
+                                        </button>
+                                    )}
 
-      {/* сама карточка — ссылка целиком */}
-      <Link
-        to={isCancelled ? '#' : linkTo}
-        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
-      >
-        {isCancelled && (
-          <div className="absolute top-2 right-2 text-gray-500 text-xs">
-            Заказ отменён
-          </div>
-        )}
+                                    {/* сама карточка — ссылка целиком */}
+                                    <Link
+                                        to={isCancelled ? '#' : linkTo}
+                                        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
+                                    >
+                                        {isCancelled && (
+                                            <div className="absolute top-2 right-2 text-gray-500 text-xs">
+                                                Заказ отменён
+                                            </div>
+                                        )}
 
-        <div className="flex items-center gap-3">
-          <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
-            {order.product.image_path ? (
-              <img
-                src={
-                  order.product.image_path.startsWith('http')
-                    ? order.product.image_path
-                    : GetUploadLink(order.product.image_path)
-                }
-                alt={order.product.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-400 text-xs">
-                Нет фото
-              </div>
-            )}
-          </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-16 h-16 bg-gray-100 flex-shrink-0">
+                                                {order.product.image_path ? (
+                                                    <img
+                                                        src={
+                                                            order.product.image_path.startsWith('http')
+                                                                ? order.product.image_path
+                                                                : GetUploadLink(order.product.image_path)
+                                                        }
+                                                        alt={order.product.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className="flex items-center justify-center h-full text-gray-400 text-xs">
+                                                        Нет фото
+                                                    </div>
+                                                )}
+                                            </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
-              {order.product.name}
-            </div>
-            <div className="font-bold text-brand">{order.product.price} ₽</div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
+                                                    {order.product.name}
+                                                </div>
+                                                <div className="font-bold text-brand">{order.product.price} ₽</div>
 
-            {order.step < 7 ? (
-              <div className="text-xs text-gray-500">Текущий {title}</div>
-            ) : (
-              <div
-                className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
-    order.status === OrderStatus.CASHBACK_PAID
-      ? 'border-green-500 text-green-500'
-      : order.status === OrderStatus.CASHBACK_REJECTED
-      ? 'border-red-500 text-red-500'
-      : 'border-blue-500 text-blue-500'
-  }`}
-              >
+                                                {order.step < 7 ? (
+                                                    <div className="text-xs text-gray-500">Текущий {title}</div>
+                                                ) : (
+                                                    <div
+                                                        className={`inline-block mt-1 px-3 py-1 text-xs rounded border transition ${
+                                                            order.status === OrderStatus.CASHBACK_PAID
+                                                                ? 'border-green-500 text-green-500'
+                                                                : order.status === OrderStatus.CASHBACK_REJECTED
+                                                                    ? 'border-red-500 text-red-500'
+                                                                    : 'border-blue-500 text-blue-500'
+                                                        }`}
+                                                    >
 <span
-  className={order.status === 'cashback_rejected' ? 'text-red-500' : ''}
+    className={order.status === 'cashback_rejected' ? 'text-red-500' : ''}
 >
   {{
-    cashback_paid: 'Кешбэк выплачен',
-    cashback_not_paid: 'Кешбэк не выплачен',
-    cashback_rejected: 'Кешбэк отклонен'
+      cashback_paid: 'Кешбэк выплачен',
+      cashback_not_paid: 'Кешбэк не выплачен',
+      cashback_rejected: 'Кешбэк отклонен'
   }[order.status] || ''}
 </span>
 
-              </div>
-            )}
-          </div>
-        </div>
-      </Link>
-    </div>
-  );
-})}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            );
+                        })}
                         {displayOrders.length > showCount && (
                             <div className="flex justify-center">
                                 <button
@@ -417,11 +448,11 @@ const displayOrders = useMemo(() => {
                         {/* Техподдержка */}
                         <div
                             onClick={handleSupportClick}
-                    className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
+                            className="bg-white border border-brand rounded-xl shadow-sm p-4 text-sm font-semibold cursor-pointer flex items-center gap-3"
                         >
                             <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
                             <div className="flex flex-col">
-<span className="font-body">Техподдержка</span>
+                                <span className="font-body">Техподдержка</span>
                                 <span className="text-xs text-gray-500">
       Оперативно ответим на все вопросы
     </span>
