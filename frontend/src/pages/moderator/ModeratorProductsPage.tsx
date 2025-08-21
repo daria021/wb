@@ -106,20 +106,37 @@ function ModeratorProductsPage() {
     return (
         <div className="min-h-screen bg-gray-200 p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Товары для проверки</h1>
-            <div className="mb-4 flex justify-end">
-               <select
-          value={statusFilter}
+            <div className="mb-4">
+
+                            <div className="relative mx-auto w-60">
+      <select
+        value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as any)}
-          className="border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"
-        >
-          <option value="все">Все статусы</option>
+              className="h-10 w-60 pl-3 pr-10 rounded-md border border-gray-300 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand appearance-none"
+        aria-label="Фильтр по статусу"
+      >
+        <option value="все">Все статусы</option>
           <option value="активные">Активные</option>
           <option value="созданные">Созданные</option>
           <option value="ожидают редактирования">Ожидают редактирования</option>
           <option value="отклонённые">Отклонённые</option>
           <option value="Архивные">Архивные</option>
           <option value="не оплаченные">Не оплаченные</option>
-        </select>
+        ))
+      </select>
+
+      {/* Стрелка (иконка) */}
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+        <svg
+          className="h-4 w-4 text-brand"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
             </div>
 
             <div className="flex border-b border-darkGray mb-6">

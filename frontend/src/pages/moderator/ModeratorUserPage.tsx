@@ -154,36 +154,51 @@ function openChat(opts: { username?: string; id?: bigint | number | string; phon
             </h1>
 
             {/* Блок с поиском и фильтром */}
-            <div className="mb-4 flex gap-2 bg-white p-4 rounded shadow">
-                <div className="flex-1">
-                    <input
-                        type="text"
-                        placeholder="Поиск по нику"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-darkGray rounded p-2 text-sm"
-                    />
-                </div>
-                <div className="flex-1 flex items-center">
-                    <label
-                        htmlFor="userFilter"
-                        className="mr-2 text-sm font-medium whitespace-nowrap"
-                    >
-                        Фильтр:
-                    </label>
-                    <select
-                        id="userFilter"
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value as FilterType)}
-                        className="w-full border p-2 rounded text-sm"
-                    >
-                        <option value="all">Все пользователи</option>
-                        <option value="moderators">Модераторы</option>
-                        <option value="sellers">Продавцы</option>
-                        <option value="banned">Забаненные</option>
-                    </select>
-                </div>
-            </div>
+<div className="mb-4 bg-white p-4 rounded shadow">
+  <div className="flex flex-wrap items-center gap-3">
+    {/* Поиск */}
+    <input
+      type="text"
+      placeholder="Поиск по нику"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="flex-[1_1_280px] min-w-[220px] border border-darkGray rounded p-2 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+    />
+
+    {/* Фильтр */}
+    <div className="flex items-center gap-2 flex-[0_0_auto]">
+      <label htmlFor="userFilter" className="text-sm font-medium whitespace-nowrap">
+        Фильтр:
+      </label>
+
+      <div className="relative">
+        <select
+          id="userFilter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as FilterType)}
+          className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
+                     text-sm font-medium text-gray-800 appearance-none
+                     focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        >
+          <option value="all">Все пользователи</option>
+          <option value="moderators">Модераторы</option>
+          <option value="sellers">Продавцы</option>
+          <option value="banned">Забаненные</option>
+        </select>
+
+        {/* стрелка */}
+        <svg
+          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
+          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+        >
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
 
             {loading ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">

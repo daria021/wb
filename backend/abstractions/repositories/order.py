@@ -24,5 +24,9 @@ class OrderRepositoryInterface(
         ...
 
     @abstractmethod
+    async def get_all_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        ...
+
+    @abstractmethod
     async def exists_by_code(self, transaction_code: str) -> bool:
         ...

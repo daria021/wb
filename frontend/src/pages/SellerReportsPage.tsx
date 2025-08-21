@@ -139,7 +139,6 @@ function SellerReportsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-
     const {user, loading: userLoading} = useUser();
     const sellerId = user?.id;
 
@@ -268,16 +267,36 @@ function SellerReportsPage() {
 {activeTab === OrderStatus.CASHBACK_NOT_PAID && (
   <div className="mb-4 max-w-xs">
     <div className="relative">
+
+            <div className="relative">
       <select
         value={deadlineFilter}
-        onChange={(e) => setDeadlineFilter(e.target.value as DeadlineFilter)}
-        className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        onChange={e => setDeadlineFilter(e.target.value as DeadlineFilter)}
+        className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                   pl-3 pr-10 text-sm font-medium text-gray-800
+                   focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        aria-label="Фильтр по статусу"
       >
         <option value="Все сроки">Все сроки</option>
         <option value="В срок">В срок</option>
         <option value="Скоро дедлайн">Скоро дедлайн</option>
         <option value="Просрочено">Просрочено</option>
+        ))
       </select>
+
+      {/* Стрелка (иконка) */}
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+        <svg
+          className="h-4 w-4 text-brand"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
+
 
       {/* стрелка справа */}
       <svg

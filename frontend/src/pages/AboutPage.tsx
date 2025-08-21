@@ -57,18 +57,18 @@ function AboutPage() {
 
 
                 {/* Видео "Знакомство с приложением" в "О сервисе" */}
-                <section className="mb-6">
-                    {videos.map(({id, title, src}) => (
-                        <div key={id} className="bg-white rounded-lg shadow p-4 mb-3">
-                            <button
-                                className="text-sm font-medium text-blue-600 hover:underline"
-                                onClick={() => setOpenSrc(src)}
-                            >
-                                {title}
-                            </button>
-                        </div>
-                    ))}
-                </section>
+             <section className="mb-6">
+  {videos.map(({ id, title, src }) => (
+    <div key={id} className="bg-white rounded-lg shadow p-4 mb-3 flex items-center justify-center min-h-14">
+      <button
+        className="w-full text-sm font-medium text-blue-600 hover:underline text-center bg-transparent shadow-none p-0"
+        onClick={() => setOpenSrc(src)}
+      >
+        {title}
+      </button>
+    </div>
+  ))}
+</section>
 
                 <section className="mb-6">
                     <h2 className="text-lg font-semibold mb-2">🛒 Для кого этот сервис?</h2>
@@ -102,17 +102,22 @@ function AboutPage() {
 
                         Дождитесь выплаты кешбэка от продавца</p>
 
-                    <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
+<div className="bg-white rounded-lg shadow p-4 mb-3 flex items-center justify-center min-h-14">
                         <Link to="/instruction">
-                            📁Подробная инструкция для покупателей по выкупу товара
+                            📁 Подробная инструкция для покупателей по выкупу товара
                         </Link>
-                    </p>
-                    <p className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline">
-                        <a href="https://t.me/Premiumcashb" target="_blank"
-                           rel="noopener noreferrer">
-                            📱Канал по раздачам товаров от продавцов
-                        </a>
-                    </p>
+</div>
+                    <div className="bg-white rounded-lg shadow p-4 mb-3 flex items-center justify-center min-h-14">
+  <a
+    href="https://t.me/Premiumcashb"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-sm font-medium text-blue-600 hover:underline text-center"
+  >
+    📱Канал по раздачам товаров от продавцов
+  </a>
+</div>
+
                 </section>
 
                 <section className="mb-6">
@@ -126,10 +131,10 @@ function AboutPage() {
                     </p>
                     <p className="text-sm mb-4">
                         <button
-                            className="bg-white rounded-lg shadow p-4 mb-3 text-sm font-medium text-blue-600 hover:underline"
+                            className="bg-white rounded-lg shadow p-4 mb-3 text-center text-sm font-medium text-blue-600 hover:underline"
                             onClick={() => navigate('/instruction', {state: {openTab: 'seller'}})}
                         >
-                            📁Подробная инструкция для продавцов по раздаче товара
+                            📁 Подробная инструкция для продавцов по раздаче товара
                         </button>
                     </p>
                 </section>

@@ -352,21 +352,33 @@ function ProductForm() {
                     />
                 </div>
 
-<div>
-  <label className="block text-sm font-medium mb-1">Категория</label>
-  <select
-    name="category"
+
+                    <div className="flex items-center gap-2 flex-[0_0_auto]">
+
+      <div className="relative">
+        <select
+          id="userFilter"
     value={formData.category}
     onChange={handleInputChange}
-    required
-    className={`w-full border border-darkGray rounded-md p-2 text-sm ${formData.category === '' ? 'text-gray-400' : ''}`}
-  >
-    <option value="" disabled hidden>Выбрать категорию</option>
+          className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
+                     text-sm font-medium text-gray-800 appearance-none
+                     focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        >
+          <option value="" disabled hidden>Выбрать категорию</option>
     {Object.values(Category).map((cat) => (
       <option key={cat} value={cat}>{cat}</option>
     ))}
-  </select>
-</div>
+        </select>
+
+        {/* стрелка */}
+        <svg
+          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
+          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+        >
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
 
 
                 <div>
@@ -447,7 +459,7 @@ function ProductForm() {
                         name="payment_time"
                         value={formData.payment_time}
                         onChange={handleInputChange}
-                        className="w-full border border-darkGray rounded-md p-2 text-sm"
+                        className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                     >
                         {Object.values(PayoutTime).map((pt) => (
                             <option key={pt} value={pt}>

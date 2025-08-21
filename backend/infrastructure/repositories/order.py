@@ -114,7 +114,7 @@ class OrderRepository(
             receipt_number=entity.receipt_number,
             status=entity.status,
             seller_id=entity.seller_id,
-            product=_map_product(entity.product),
+            product=_map_product(entity.product) if entity.product else None,
             user=_map_user(entity.user),
             seller=_map_user(entity.seller),
             transaction_code=entity.transaction_code,
@@ -153,6 +153,18 @@ class OrderRepository(
             )
             orders = result.scalars().all()
             logger.info(f"orders found {len(orders)} orders for seller {seller_id}")
+            logger.info([x.__dict__ for x in orders])
+            return [self.entity_to_model(order) for order in orders]
+
+    async def get_all_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.seller_id == seller_id)
+                .options(*self.options)
+            )
+            orders = result.scalars().all()
+            logger.info(f"orders found {len(orders)} orders(all) for seller {seller_id}")
             logger.info([x.__dict__ for x in orders])
             return [self.entity_to_model(order) for order in orders]
 

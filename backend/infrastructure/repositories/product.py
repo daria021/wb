@@ -26,6 +26,8 @@ class ProductRepository(
     #     'moderator_reviews': None,
     # })
 
+    _soft_delete: bool = field(default=True)
+
     def __post_init__(self):
         super().__post_init__()
         self.options = [

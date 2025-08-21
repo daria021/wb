@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {getProductsBySellerId, updateProductStatus} from '../services/api';
+import {deleteProduct, getAllOrderBySellerId, getProductsBySellerId, updateProductStatus} from '../services/api';
 
 import {ProductStatus} from '../enums';
 import {useUser} from "../contexts/user";
@@ -27,6 +27,8 @@ interface Product {
     general_repurchases: number;
     created_at: string;
     updated_at: string;
+    article?: string;
+    category?: string;
 }
 
 interface CardRow {
@@ -60,6 +62,28 @@ function MyProductsPage() {
     const archivedCount = products.filter((p) => p.status === ProductStatus.ARCHIVED).length;
     const notPaidCount = products.filter((p) => p.status === ProductStatus.NOT_PAID).length;
     const rejectedCount = products.filter((p) => p.status === ProductStatus.REJECTED).length;
+    const [filterCategory, setFilterCategory] = useState<string>('');
+
+
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const handleDeleteProduct = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation(); // чтобы не переходить на страницу товара
+        if (!window.confirm('Удалить товар навсегда? Это действие необратимо. ' +
+            '*При удалении оставшиеся раздачи товара добавятся на баланс')) return;
+
+        try {
+            setDeletingId(id);
+            await deleteProduct(id);
+            setProducts(prev => prev.filter(p => p.id !== id)); // убрать карточку из списка
+        } catch (err) {
+            console.error('Не удалось удалить товар', err);
+            alert('Не удалось удалить товар');
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
 
     const cardRows: CardRow[] = [
         {label: 'На модерации', value: moderationCount, status: ProductStatus.CREATED},
@@ -69,6 +93,43 @@ function MyProductsPage() {
         {label: 'Отклонены', value: rejectedCount, status: ProductStatus.REJECTED},
         {label: 'В архиве', value: archivedCount, status: ProductStatus.ARCHIVED},
     ];
+
+    type ProductOrderStats = Record<string, { paid: number; inProgress: number }>;
+    const [orderStats, setOrderStats] = useState<ProductOrderStats>({});
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        (async () => {
+            try {
+                const res = await getAllOrderBySellerId(user.id);
+
+                const list: any[] = Array.isArray(res.data) ? res.data : (res.data?.orders ?? []);
+
+                const stats: ProductOrderStats = {};
+
+                for (const o of list) {
+                    const pid = o?.product?.id ?? o?.product_id;
+                    if (!pid) continue;
+
+                    const s = String(o?.status || '').toLowerCase(); // <-- нормализация
+                    if (!stats[pid]) stats[pid] = {paid: 0, inProgress: 0};
+
+                    if (s === 'cashback_paid') {
+                        stats[pid].paid += 1;
+                    } else if (s === 'cashback_not_paid') {
+                        stats[pid].inProgress += 1;
+                    }
+                }
+
+                setOrderStats(stats);
+            } catch (e) {
+                console.error('Не удалось загрузить статистику заказов', e);
+                setOrderStats({});
+            }
+        })();
+    }, [user?.id]);
+
 
     /* ---------- state ---------- */
 // открытые панели
@@ -159,11 +220,34 @@ function MyProductsPage() {
         }
     }, [loading, userLoading, user?.free_balance, products, refresh]);
 
-    const filteredProducts = products.filter(p => {
-        if (activeStatuses.length && !activeStatuses.includes(p.status)) return false;
-        if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-        return true;
-    });
+    const categories = React.useMemo(
+  () => Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[],
+  [products]
+);
+
+
+const normalize = (v: unknown) =>
+  String(v ?? '').toLowerCase().replace(/\s+/g, '');
+
+const filteredProducts = products.filter(p => {
+  // статусные чекбоксы
+  if (activeStatuses.length && !activeStatuses.includes(p.status)) return false;
+
+  // поиск по названию/артикулу
+  if (searchQuery) {
+    const q = normalize(searchQuery);
+    const inName = normalize(p.name).includes(q);
+    const inArticle = normalize(p.article).includes(q);
+    if (!inName && !inArticle) return false;
+  }
+
+  // фильтр по категории
+  if (filterCategory && p.category !== filterCategory) return false;
+
+  return true;
+});
+
+
 
 
     useEffect(() => {
@@ -240,48 +324,7 @@ function MyProductsPage() {
 
     return (
         <div className="p-4 min-h-screen bg-gray-200 mx-auto">
-            {/*            <div className="mb-4 p-4 bg-brandlight rounded shadow">*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Всего карточек: <strong>{totalCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    На проверке: <strong>{moderationCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Опубликовано: <strong>{publishedCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Ожидают редактирования: <strong>{disabledCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    В архиве: <strong>{archivedCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Заявка оформлена и не оплачена: <strong>{unpaidPlan}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Отклоненные: <strong>{rejectedCount}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Общий план по раздачам: <strong>{totalPlan}</strong>*/}
-            {/*                </p>*/}
-            {/*                <p className="text-sm">*/}
-            {/*                    Оплачено: <strong>{paidPlan}</strong>*/}
-            {/*                </p>*/}
-            {/*                {user && !userLoading && unpaidPlan > 0 && user.free_balance < unpaidPlan ? (*/}
-            {/*  <p className="text-sm text-red-800">*/}
-            {/*    Баланс: <strong>{user.free_balance} раздач</strong>*/}
-            {/*    <br/>*/}
-            {/*    Для публикации всех неоплаченных товаров необходимо пополнить баланс на&nbsp;*/}
-            {/*    <strong>{unpaidPlan - user.free_balance}</strong>&nbsp;раздач*/}
-            {/*  </p>*/}
-            {/*) : (*/}
-            {/*  <p className="text-sm text-black">*/}
-            {/*    Баланс: <strong>{user!.free_balance} раздач</strong>*/}
-            {/*  </p>*/}
-            {/*)}*/}
-
-            {/*            </div>*/}
+            <h2 className="text-2xl font-bold text-center mb-2">Мои товары</h2>
 
             {/* --------------------------- Плашка «Карточки» -------------------------- */}
             <div className="mb-3">
@@ -339,98 +382,70 @@ function MyProductsPage() {
                     </div>
                 )}
 
+
             </div>
 
-            {/* ------------------------- Плашка «Выкуп товаров» ------------------------ */}
-            <div className="mb-4">
-
-                {/* ── HEADER «Выкуп товаров» ── */}
-                <button
-                    onClick={() => togglePanel(Panel.PURCHASES)}
-                    style={{background: 'linear-gradient(90deg,#4872db 0%,#6e8ae2 50%,#4872db 100%)'}}
-                    className={
-                        `w-full flex justify-between items-center text-white px-5 py-2 shadow font-semibold uppercase tracking-wide
-    ${openPanel[Panel.PURCHASES] ? 'rounded-t-xl' : 'rounded-full'}`   // для Purchases то же, только Panel.PURCHASES
-                    }
-                >
-                    <span>Выкуп товаров</span>
-                    <span className="text-lg font-bold">{openPanel[Panel.PURCHASES] ? '−' : '+'}</span>
-                </button>
-
-                {openPanel[Panel.PURCHASES] && (
-                    <div className="bg-white border border-t-0 border-indigo-200 rounded-b-xl p-4 -mt-px">
-                        <div className="flex justify-between">
-                            <span>Баланс раздач</span>
-                            <span className="font-semibold">{user?.free_balance}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Доступно в каталоге</span>
-                            <span className="font-semibold">{paidPlan}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Не оплачено раздач</span>
-                            <span className="font-semibold">{unpaidPlan}</span>
-                        </div>
-                        <div className="flex justify-between font-semibold text-base pt-1 border-t">
-                            <span>Общий план раздач</span>
-                            <span>{totalPlan}</span>
-                        </div>
-                    </div>
-                )}
-            </div>
+            {/* Добавить товар */}
+            <button
+                onClick={() => navigate('/create-product')}
+                className="w-full border border-brand rounded-md mb-2 px-4 py-2 text-base font-semibold hover:bg-gray-200-100"
+            >
+                Разместить товар
+            </button>
 
             {/* Поиск / фильтры */}
             <div className="sticky top-0 z-10 bg-gray-200">
-                <div className="relative mb-4">
-                    <input
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full border border-darkGray rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
-                    />
-                    <svg
-                        className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M21 21l-4.35-4.35m0 0A7.35 7.35 0 1010.3 4.65a7.35 7.35 0 006.35 11.65z"
-                        />
-                    </svg>
-                </div>
+  {/* Поиск */}
+  <div className="relative mb-2">
+    <input
+      type="text"
+      placeholder="Поиск по названию или артикулу"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full border border-darkGray rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
+    />
+    <svg
+      className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21 21l-4.35-4.35m0 0A7.35 7.35 0 1010.3 4.65a7.35 7.35 0 006.35 11.65z"
+      />
+    </svg>
+  </div>
 
-                {/*<div className="mb-4">*/}
-                {/*    <select*/}
-                {/*        value={filter}*/}
-                {/*        onChange={e =>*/}
-                {/*            setFilter(*/}
-                {/*                e.target.value as*/}
-                {/*                    | 'все'*/}
-                {/*                    | 'активные'*/}
-                {/*                    | 'созданные'*/}
-                {/*                    | 'ожидают редактирования'*/}
-                {/*                    | 'отклоненные'*/}
-                {/*                    | 'архивные'*/}
-                {/*                    | 'не оплаченные'*/}
-                {/*            )*/}
-                {/*        }*/}
-                {/*        className="w-full border border-darkGray rounded-md py-2 px-3 text-sm focus:outline-none"*/}
-                {/*    >*/}
-                {/*        <option value="все">Все статусы</option>*/}
-                {/*        <option value="активные">Активные</option>*/}
-                {/*        <option value="созданные">Созданные</option>*/}
-                {/*        <option value="ожидают редактирования">Ожидают редактирования</option>*/}
-                {/*        <option value="отклоненные">Отклонённые</option>*/}
-                {/*        <option value="Архивные">Архивные</option>*/}
-                {/*        <option value="не оплаченные">Не оплаченные</option>*/}
-                {/*    </select>*/}
-                {/*</div>*/}
-            </div>
+  {/* Фильтр по категории */}
+  <div className="mb-4">
+    <div className="relative">
+      <select
+        value={filterCategory}
+        onChange={e => setFilterCategory(e.target.value)}
+        className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                   pl-3 pr-10 text-sm font-medium text-gray-800
+                   focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+        aria-label="Фильтр по категории"
+      >
+        <option value="">Все категории</option>
+        {categories.map(cat => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+      </select>
+
+      {/* стрелка */}
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+        <svg className="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
             {/* Состояния загрузки / ошибок */}
             {!loading && (error || filteredProducts.length === 0) && (
                 <div className="p-4 bg-brandlight border border-darkGray rounded text-center">
@@ -438,13 +453,6 @@ function MyProductsPage() {
                 </div>
             )}
 
-            {/* Добавить товар */}
-            <button
-                onClick={() => navigate('/create-product')}
-                className="w-full border border-brand rounded-md mt-4 px-4 py-2 text-base font-semibold hover:bg-gray-200-100"
-            >
-                Разместить товар
-            </button>
 
             {loading && (
                 <div className="flex justify-center mt-4">
@@ -481,16 +489,59 @@ function MyProductsPage() {
                                                             : 'bg-white'
                                 }`}
                             >
-                                {showFlag && (
-                                    <img
-                                        src="/icons/flag.png"
-                                        alt="Комментарий"
-                                        className="absolute top-2 right-2 w-6 h-6"
-                                    />
-                                )}
+                                {/* Правый верхний угол: флажок и корзина */}
+                                <div className="absolute top-2 right-2 flex items-center gap-2">
+                                    {showFlag && (
+                                        <img
+                                            src="/icons/flag.png"
+                                            alt="Комментарий"
+                                            className="w-5 h-5 opacity-90"
+                                        />
+                                    )}
+
+                                    {product.status === ProductStatus.ARCHIVED && (
+                                        <button
+                                            onClick={(e) => handleDeleteProduct(e, product.id)}
+                                            disabled={deletingId === product.id}
+                                            aria-label="Удалить товар"
+                                            title="Удалить товар"
+                                            className={`group p-1 rounded-md transition
+                  ${deletingId === product.id
+                                                ? 'opacity-40 pointer-events-none'
+                                                : 'hover:bg-red-50 active:scale-95'}`}
+                                        >
+                                            <img
+                                                src="/icons/trash.png"
+                                                alt=""
+                                                className={`w-5 h-5 ${deletingId === product.id ? '' : 'opacity-80 group-hover:opacity-100'}`}
+                                            />
+                                        </button>
+                                    )}
+                                </div>
+
 
                                 <h3 className="text-md font-semibold">{product.name}</h3>
-                                <p className="text-sm text-gray-600">Цена: {product.price} ₽</p>
+
+                                {(() => {
+                                    const s = orderStats[product.id] ?? {paid: 0, inProgress: 0};
+                                    return (
+                                        <div className="mt-1 mb-1 flex flex-wrap gap-1 text-xs">
+      <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+        Доступно: <b>{product.remaining_products ?? 0}</b>
+      </span>
+                                            <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-700">
+        Завершено: <b>{s.paid}</b>
+      </span>
+                                            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+        В процессе: <b>{s.inProgress}</b>
+      </span>
+                                        </div>
+                                    );
+                                })()}
+
+
+                                <p className="text-sm text-gray-600">Цена для покупателя: {product.price} ₽</p>
+
                                 <p
                                     className={`text-xs ${
                                         product.status.toLowerCase() === 'archived' ? 'text-black' : 'text-gray-400'
@@ -517,26 +568,6 @@ function MyProductsPage() {
                 </div>
             )}
 
-            {/* Кнопка пополнения кабинета */}
-            <button
-                onClick={handleMyBalanceClick}
-                className="w-full bg-brand text-white rounded-full shadow-sm p-4 mt-4 mb-2 text-sm font-semibold text-center cursor-pointer"
-            >
-                Пополнить кабинет
-            </button>
-
-            {/* Техподдержка */}
-            <div
-                onClick={handleSupportClick}
-                className="bg-white border border-brand rounded-xl shadow-sm p-4 mt-2 text-sm font-semibold cursor-pointer flex items-center gap-3"
-            >
-                <img src="/icons/support.png" alt="Support" className="w-7 h-7"/>
-                <div className="flex flex-col">
-                    <span>Техподдержка</span>
-                    <span className="text-xs text-gray-500">Оперативно ответим на все вопросы</span>
-                </div>
-                <img src="/icons/small_arrow.png" alt="arrow" className="w-5 h-5 ml-auto"/>
-            </div>
         </div>
     );
 }

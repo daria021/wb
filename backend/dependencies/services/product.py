@@ -1,5 +1,6 @@
 from abstractions.services import ProductServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
+from dependencies.repositories.increasing_balance import get_increasing_balance_repository
 from dependencies.repositories.product import get_product_repository
 from dependencies.repositories.push import get_push_repository
 from dependencies.repositories.user import get_user_repository
@@ -16,6 +17,6 @@ def get_product_service() -> ProductServiceInterface:
         push_repository=get_push_repository(),
         user_push_repository=get_user_push_repository(),
         notification_service=get_notification_service(),
-        user_history_repository=get_user_history_repository()
-
+        user_history_repository=get_user_history_repository(),
+        increasing_balance_repository=get_increasing_balance_repository()
     )

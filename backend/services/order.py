@@ -257,3 +257,7 @@ class OrderService(OrderServiceInterface):
     async def get_orders_by_seller(self, seller_id: UUID) -> list[Order]:
         orders = await self.order_repository.get_orders_by_seller(seller_id)
         return orders
+
+    async def get_all_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        orders = await self.order_repository.get_all_orders_by_seller(seller_id)
+        return orders

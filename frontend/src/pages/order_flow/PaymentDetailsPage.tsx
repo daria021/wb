@@ -254,7 +254,7 @@ function PaymentDetailsPage() {
                         <select
                             value={selectedBank}
                             onChange={handleChange}
-                            className="w-full border border-darkGray rounded p-2 text-sm"
+                            className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                         >
                             <option value="">Выберите...</option>
                             <option value="Сбербанк">Сбербанк</option>

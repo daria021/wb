@@ -5,6 +5,7 @@ from uuid import UUID as pyUUID
 from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum, text
 from sqlalchemy.dialects.postgresql import TSVECTOR, JSONB
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
 from infrastructure.enums.action import Action
 from infrastructure.enums.category import Category
@@ -14,7 +15,6 @@ from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.push_status import PushStatus
 from infrastructure.enums.user_role import UserRole
 
-from sqlalchemy.sql import func
 Base = declarative_base()
 
 
@@ -47,17 +47,20 @@ class Product(AbstractBase):
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus), default=ProductStatus.CREATED)
 
-    reviews: Mapped[List['Review']] = relationship('Review', back_populates='product')
-    orders: Mapped[List['Order']] = relationship('Order', back_populates='product')
+    reviews: Mapped[List['Review']] = relationship('Review', back_populates='product', passive_deletes=True)
+    orders: Mapped[List['Order']] = relationship('Order', back_populates='product', passive_deletes=True)
     moderator_reviews: Mapped[list['ModeratorReview']] = relationship(
         'ModeratorReview',
         order_by="ModeratorReview.created_at",
         back_populates='product',
+        passive_deletes=True,
     )
     search_vector: Mapped[str] = mapped_column(
         TSVECTOR(),
         nullable=True,
     )
+
+    deleted_at: Mapped[Optional[datetime]]
 
 
 class User(AbstractBase):
@@ -84,7 +87,7 @@ class Order(AbstractBase):
     __tablename__ = 'orders'
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id"))
+    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("products.id", ondelete="SET NULL"))
     seller_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     transaction_code: Mapped[str] = mapped_column(server_default="0")
     # Чтобы отслеживать, на каком шаге сейчас заказ
@@ -119,14 +122,18 @@ class Order(AbstractBase):
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="user_orders")
     seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id], back_populates="seller_orders")
-    product: Mapped["Product"] = relationship("Product", foreign_keys=[product_id], back_populates="orders")
+    product: Mapped["Product"] = relationship(
+        "Product",
+        foreign_keys=[product_id],
+        back_populates="orders",
+    )
 
 
 class Review(AbstractBase):
     __tablename__ = 'reviews'
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
+    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id', ondelete="CASCADE"))
     rating: Mapped[int]
     comment: Mapped[str]
 
@@ -138,7 +145,7 @@ class ModeratorReview(AbstractBase):
     __tablename__ = 'moderator_reviews'
 
     moderator_id: Mapped[UUID] = mapped_column(ForeignKey('users.id'))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
+    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id', ondelete="CASCADE"))
     comment_to_seller: Mapped[Optional[str]]
     comment_to_moderator: Mapped[Optional[str]]
     status_before: Mapped[ProductStatus]
@@ -199,13 +206,13 @@ class IncreasingBalance(AbstractBase):
 class UserHistory(AbstractBase):
     __tablename__ = 'user_history'
     user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey('products.id'))
+    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey('products.id', ondelete="SET NULL"))
     creator_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey('users.id'))
     action: Mapped[Action]  # опубликовался в каталог, заархивирован, отредактирован
     date: Mapped[datetime] = mapped_column(
-    DateTime,
-    nullable=False,
-    server_default=func.now()  # БД подставит текущее "локальное" время
-)
+        DateTime,
+        nullable=False,
+        server_default=func.now()  # БД подставит текущее "локальное" время
+    )
     json_before: Mapped[Optional[dict]] = mapped_column(JSONB)
     json_after: Mapped[Optional[dict]] = mapped_column(JSONB)

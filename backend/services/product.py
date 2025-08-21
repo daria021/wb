@@ -5,6 +5,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from abstractions.repositories import ProductRepositoryInterface, UserRepositoryInterface
+from abstractions.repositories.increasing_balance import IncreasingBalanceRepositoryInterface
 from abstractions.repositories.push import PushRepositoryInterface
 from abstractions.repositories.user_history import UserHistoryRepositoryInterface
 from abstractions.repositories.user_push import UserPushRepositoryInterface
@@ -12,11 +13,14 @@ from abstractions.services import ProductServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
 from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import CreateProductDTO, UpdateProductDTO, UpdateUserDTO
+from domain.dto.increasing_balance import CreateIncreasingBalanceDTO
 from domain.dto.user_history import CreateUserHistoryDTO
 from domain.models import Product
 from infrastructure.enums.action import Action
 from infrastructure.enums.product_status import ProductStatus
 from sqlalchemy.inspection import inspect
+
+from services.exceptions import ProductNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +33,7 @@ class ProductService(ProductServiceInterface):
     user_push_repository: UserPushRepositoryInterface
     notification_service: NotificationServiceInterface
     user_history_repository: UserHistoryRepositoryInterface
+    increasing_balance_repository: IncreasingBalanceRepositoryInterface
 
     async def create_product(self, dto: CreateProductDTO) -> UUID:
         await self.product_repository.create(dto)
@@ -198,6 +203,33 @@ class ProductService(ProductServiceInterface):
             ))
 
     async def delete_product(self, product_id: UUID) -> None:
+        product = await self.product_repository.get(product_id)
+
+        logger.info(f"deleting product {product_id}")
+
+        if not product:
+            raise ProductNotFoundException(f"Product with id {product_id} not found")
+
+        logger.info(f"deleting product with status {product.status}")
+
+        if product.status == ProductStatus.ARCHIVED:
+            logger.info(f"deleting archive")
+            user = await self.user_repository.get(product.seller_id)
+            logger.info(f"user: {user.id}")
+            if product.remaining_products > 0:
+                update_dto = UpdateUserDTO(
+                    balance=user.balance + product.remaining_products,
+                )
+                await self.user_repository.update(product.seller_id, update_dto)
+                logger.info(f"user {user.id} updated")
+
+                create_increasing_balance_dto = CreateIncreasingBalanceDTO(
+                    user_id=product.seller_id,
+                    sum=product.remaining_products,
+                )
+
+                await self.increasing_balance_repository.create(create_increasing_balance_dto)
+
         await self.product_repository.delete(product_id)
 
     async def get_products(self, limit: int = 100, offset: int = 0) -> List[Product]:
