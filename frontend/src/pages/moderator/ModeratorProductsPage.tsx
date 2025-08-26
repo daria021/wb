@@ -22,6 +22,8 @@ interface Product {
     price: number;
     status: ProductStatus;
     moderator_reviews?: ModeratorReview[];
+    created_at?: string;
+    updated_at?: string;
 }
 
 function ModeratorProductsPage() {
@@ -34,7 +36,7 @@ function ModeratorProductsPage() {
     | 'все'
     | 'активные'
     | 'созданные'
-    | 'ожидают редактирования'
+    | 'необходимо отредактировать'
     | 'отклонённые'
     | 'архивные'
     | 'не оплаченные'
@@ -46,6 +48,47 @@ function ModeratorProductsPage() {
     //   });
     //   return unsub;
     // }, [navigate]);
+
+    const getLastReviewedTs = (p: Product) => {
+  const reviewDates = p.moderator_reviews?.map(r => r.updated_at || r.created_at).filter(Boolean) ?? [];
+  const maxReviewTs = reviewDates.length ? Math.max(...reviewDates.map(d => new Date(d!).getTime())) : 0;
+  const fallbackTs = p.updated_at ? new Date(p.updated_at).getTime() :
+                     p.created_at ? new Date(p.created_at).getTime() : 0;
+  return Math.max(maxReviewTs, fallbackTs);
+};
+
+    const pendingProducts   = products.filter(p => p.status === ProductStatus.CREATED);
+
+// reviewed — сначала фильтруем, затем сортируем по последней проверке (свежие сверху)
+const reviewedProductsRaw = products.filter(
+  p =>
+    p.status === ProductStatus.ACTIVE   ||
+    p.status === ProductStatus.DISABLED ||
+    p.status === ProductStatus.REJECTED ||
+    p.status === ProductStatus.ARCHIVED ||
+    p.status === ProductStatus.NOT_PAID
+);
+// важное: создаём копию перед sort, чтобы не портить исходный массив
+const reviewedProducts = [...reviewedProductsRaw].sort(
+  (a, b) => getLastReviewedTs(b) - getLastReviewedTs(a)
+);
+
+const filterByStatus = (list: Product[]) => {
+  switch (statusFilter) {
+    case 'все':                    return list;
+    case 'созданные':              return list.filter(p => p.status === ProductStatus.CREATED);
+    case 'активные':               return list.filter(p => p.status === ProductStatus.ACTIVE);
+    case 'необходимо отредактировать': return list.filter(p => p.status === ProductStatus.DISABLED);
+    case 'отклонённые':            return list.filter(p => p.status === ProductStatus.REJECTED);
+    case 'архивные':               return list.filter(p => p.status === ProductStatus.ARCHIVED);
+    case 'не оплаченные':          return list.filter(p => p.status === ProductStatus.NOT_PAID);
+    default:                       return list;
+  }
+};
+
+const filteredPending  = filterByStatus(pendingProducts);
+const filteredReviewed = filterByStatus(reviewedProducts);
+
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -65,43 +108,8 @@ function ModeratorProductsPage() {
         fetchProducts();
     }, []);
 
-      const pendingProducts = products.filter(p => p.status === ProductStatus.CREATED);
-  const reviewedProducts = products.filter(
-    p =>
-      p.status === ProductStatus.ACTIVE ||
-      p.status === ProductStatus.DISABLED ||
-      p.status === ProductStatus.REJECTED ||
-      p.status === ProductStatus.ARCHIVED ||
-      p.status === ProductStatus.NOT_PAID
-  );
+    const handleReview = (productId: string) => { navigate(`/moderator/products/${productId}`); };
 
-  const filterByStatus = (list: Product[]) => {
-    switch (statusFilter) {
-      case 'все':
-        return list;
-      case 'созданные':
-        return list.filter(p => p.status === ProductStatus.CREATED);
-      case 'активные':
-        return list.filter(p => p.status === ProductStatus.ACTIVE);
-      case 'ожидают редактирования':
-        return list.filter(p => p.status === ProductStatus.DISABLED);
-      case 'отклонённые':
-        return list.filter(p => p.status === ProductStatus.REJECTED);
-      case 'архивные':
-        return list.filter(p => p.status === ProductStatus.ARCHIVED);
-      case 'не оплаченные':
-        return list.filter(p => p.status === ProductStatus.NOT_PAID);
-      default:
-        return list;
-    }
-  };
-
-    const filteredPending = filterByStatus(pendingProducts);
-    const filteredReviewed = filterByStatus(reviewedProducts);
-
-    const handleReview = (productId: string) => {
-        navigate(`/moderator/products/${productId}`);
-    };
 
     return (
         <div className="min-h-screen bg-gray-200 p-6">
@@ -118,9 +126,9 @@ function ModeratorProductsPage() {
         <option value="все">Все статусы</option>
           <option value="активные">Активные</option>
           <option value="созданные">Созданные</option>
-          <option value="ожидают редактирования">Ожидают редактирования</option>
+          <option value="необходимо отредактировать">Необходимо отредактировать</option>
           <option value="отклонённые">Отклонённые</option>
-          <option value="Архивные">Архивные</option>
+          <option value="архивные">Архивные</option>
           <option value="не оплаченные">Не оплаченные</option>
         ))
       </select>
@@ -205,7 +213,7 @@ function ModeratorProductsPage() {
                               : product.status === ProductStatus.CREATED
                                 ? 'Созданные'
                                 : product.status === ProductStatus.DISABLED
-                                  ? 'Ожидают редактирования'
+                                  ? 'Необходимо отредактировать'
                                   : product.status === ProductStatus.NOT_PAID
                                     ? 'Не оплаченные'
                                     : product.status}
@@ -240,7 +248,7 @@ function ModeratorProductsPage() {
                               : product.status === ProductStatus.CREATED
                                 ? 'bg-white text-black'
                                 : product.status === ProductStatus.DISABLED
-                                  ? 'bg-red-100 text-red-800'
+                                  ? 'bg-yellow-100 text-yellow-700'
                                   : product.status === ProductStatus.NOT_PAID
                                     ? 'bg-orange-100 text-orange-800'
                                     : 'bg-white'
@@ -269,7 +277,7 @@ function ModeratorProductsPage() {
                               : product.status === ProductStatus.CREATED
                                 ? 'Созданные'
                                 : product.status === ProductStatus.DISABLED
-                                  ? 'Ожидают редактирования'
+                                  ? 'Необходимо отредактировать'
                                   : product.status === ProductStatus.NOT_PAID
                                     ? 'Не оплаченные'
                                     : product.status}

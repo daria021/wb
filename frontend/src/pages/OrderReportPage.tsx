@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
 import {getOrderById, getOrderReport, updateOrderStatus} from "../services/api";
 import {OrderStatus, PayoutTime} from "../enums";
@@ -49,6 +49,8 @@ function OrderReportPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [order, setOrder] = useState<Order | null>(null);
+    const location = useLocation();
+  const fromModerator = location.state?.from === "moderator";
 
     const copyToClipboard = useCallback((text: string) => {
         navigator.clipboard.writeText(text)
@@ -336,7 +338,7 @@ function OrderReportPage() {
                     </section>
                 )}
 
-                {report.status === OrderStatus.CASHBACK_NOT_PAID &&
+                {report.status === OrderStatus.CASHBACK_NOT_PAID && !fromModerator &&
                 <section className="flex flex-col gap-2">
                          <button
                         onClick={() => handleCashbackPaid(orderId!)}

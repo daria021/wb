@@ -21,23 +21,8 @@ interface Product {
     category: string;
     seller_id: string;
     image_path?: string;
+    requirements_agree: boolean;
     status: ProductStatus;
-}
-
-export interface UserWithBalance {
-  id: string
-  telegram_id?: number
-  nickname?: string
-  role: 'user' | 'client' | 'seller' | 'moderator' | 'admin'
-  balance: number
-  is_banned: boolean
-  is_seller: boolean
-  created_at: string  // ISO-строка
-  updated_at: string  // ISO-строка
-  total_plan: number        // общий план (ACTIVE + NOT_PAID)
-  reserved_active: number   // зарезервировано под ACTIVE
-  unpaid_plan: number       // план под NOT_PAID
-  free_balance: number      // сколько свободно (balance – reserved_active)
 }
 
 
@@ -52,11 +37,11 @@ export interface UserWithBalance {
   created_at: string  // ISO-строка
   updated_at: string  // ISO-строкаf
   referrer_bonus: number
-  // Новые поля
   total_plan: number        // общий план (ACTIVE + NOT_PAID)
   reserved_active: number   // зарезервировано под ACTIVE
   unpaid_plan: number       // план под NOT_PAID
   free_balance: number      // сколько свободно (balance – reserved_active)
+  in_progress: number
 }
 
 /**

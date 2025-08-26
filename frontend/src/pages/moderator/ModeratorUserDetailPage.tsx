@@ -2,9 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {
     banUser,
-    demoteUser,
+    demoteUser, getAllOrderBySellerId,
     getBlackListUser,
-    getOrderBySellerId,
     getProductsByUserId,
     getReviewsByUser,
     getUser,
@@ -216,7 +215,7 @@ export default function ModeratorUserDetailPage() {
             NOT_PAID: 'не оплачено',
             ARCHIVED: 'архив',
             CREATED: 'создан',
-            DISABLED: 'ожидает редактирования',
+            DISABLED: 'необходимо отредактировать',
             REJECTED: 'отклонен'
         } as Record<string, string>)[(s || '').toUpperCase()] || (s ?? '—');
 
@@ -256,7 +255,7 @@ export default function ModeratorUserDetailPage() {
         if (st === 'NOT_PAID') return 'не оплачено';
         if (st === 'ARCHIVED') return 'архив';
         if (st === 'CREATED') return 'создан';
-        if (st === 'DISABLED') return 'ожидает редактирования';
+        if (st === 'DISABLED') return 'необходимо отредактировать';
         if (st === 'REJECTED') return 'отклонено';
         return st ? st.toLowerCase() : '—';
     };
@@ -266,7 +265,7 @@ export default function ModeratorUserDetailPage() {
         not_paid: 'не оплачено',
         archived: 'архив',
         created: 'создан',
-        disabled: 'ожидает редактирования',
+        disabled: 'необходимо отредактировать',
         rejected: 'отклонено',
     };
 
@@ -570,7 +569,7 @@ export default function ModeratorUserDetailPage() {
 // затем применить фильтр completed/started
     const afterStatusFilter = sortedOrders.filter(o => {
         if (purchaseFilter === 'completed') return o.status === OrderStatus.CASHBACK_PAID;
-        if (purchaseFilter === 'started') return o.status !== OrderStatus.CASHBACK_PAID;
+        if (purchaseFilter === 'started') return o.status === OrderStatus.CASHBACK_NOT_PAID;
         return true;
     });
 
@@ -601,7 +600,7 @@ export default function ModeratorUserDetailPage() {
     // Загрузка заказов пользователя
     useEffect(() => {
         setOrdersLoading(true);
-        getOrderBySellerId(userId!)
+        getAllOrderBySellerId(userId!)
             .then(res => setOrders(res.data))
             .catch(console.error)
             .finally(() => setOrdersLoading(false));
@@ -706,7 +705,7 @@ export default function ModeratorUserDetailPage() {
             ARCHIVED: 'архив',
             CREATED: 'создан',
             REJECTED: 'отклонено',
-            DISABLED: 'ожидает редактирования',
+            DISABLED: 'необходимо отредактировать',
         } as Record<string, string>)[(s || '').toUpperCase()] || (s ?? '—');
 
     const cut = (t: string, n = 220) => t.length > n ? {

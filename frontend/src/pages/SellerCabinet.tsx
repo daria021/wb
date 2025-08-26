@@ -201,8 +201,8 @@ function SellerCabinet() {
                             <hr/>
                             <p>Требуется оплата раздач</p>
                             <p className="text-xl font-bold">{user?.unpaid_plan ?? 0} раздач</p>
-                            <p>Общее кол-во раздач</p>
-                            <p className="text-xl font-bold">{(user?.reserved_active ?? 0) + (user?.free_balance ?? 0)} раздач</p>
+                            <p>Кол-во сделок в процессе</p>
+                            <p className="text-xl font-bold">{user?.in_progress ?? 0} сделок</p>
                         </>
                     )}
                 </div>

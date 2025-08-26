@@ -107,50 +107,65 @@ function MyOrdersPage() {
         s !== OrderStatus.CANCELLED &&
         s !== OrderStatus.CASHBACK_REJECTED;
 
-// 1) агрегируем: на каждый product.id берём лучший активный и лучший завершённый
+// 1) агрегируем: на каждый product.id берём ОДИН лучший активный,
+//    а ВСЕ выплаченные складываем в массив finished[]
     const aggregatedOrders = useMemo(() => {
-        const map = new Map<string, { active?: Order; finished?: Order; others: Order[] }>();
+        type Bucket = {
+            active?: Order;
+            finished: Order[];  // 👈 массив
+            others: Order[];    // отменённые/отклонённые (если нужны)
+        };
+
+        const map = new Map<string, Bucket>();
 
         for (const o of filteredOrders) {
             const key = o.product.id;
-            const bucket = map.get(key) ?? {others: []};
+            const bucket = map.get(key) ?? {finished: [], others: []}; // 👈 инициализируем finished
 
             if (o.status === OrderStatus.CASHBACK_PAID) {
-                // берем самый свежий выплаченный
-                if (!bucket.finished || new Date(o.created_at) > new Date(bucket.finished.created_at)) {
-                    bucket.finished = o;
-                }
-            } else if (isActive(o.status)) {
-                // берем самый "дальний" по шагу активный (при равенстве — самый свежий)
+                bucket.finished.push(o); // 👈 теперь ок
+            } else if (
+                o.status !== OrderStatus.CANCELLED &&
+                o.status !== OrderStatus.CASHBACK_REJECTED
+            ) {
+                // активные: берём самый "дальний" по step, при равенстве — самый свежий
                 if (
                     !bucket.active ||
                     o.step > bucket.active.step ||
-                    (o.step === bucket.active.step && new Date(o.created_at) > new Date(bucket.active.created_at))
+                    (o.step === bucket.active.step &&
+                        new Date(o.created_at) > new Date(bucket.active.created_at))
                 ) {
                     bucket.active = o;
                 }
             } else {
-                // отменённые/отклонённые тоже показываем (по желанию)
                 bucket.others.push(o);
             }
 
             map.set(key, bucket);
         }
 
-        // разворачиваем: активный → завершённый → остальные (если надо)
+        // разворачиваем: активный → все выплаченные (по убыванию даты) → остальные (опционально)
         const res: Order[] = [];
         map.forEach(({active, finished, others}) => {
             if (active) res.push(active);
-            if (finished) res.push(finished);
-            res.push(...others); // можно убрать, если не хотите показывать отменённые
+            finished.sort(
+                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+            res.push(...finished);
+            // если не хочешь показывать отменённые/отклонённые — закомментируй следующую строку
+            res.push(...others);
         });
         return res;
     }, [filteredOrders]);
 
-// 2) упорядочим: незавершённые вперёд, затем выплаченные
+// 2) незавершённые вперёд, затем выплаченные
     const displayOrders = useMemo(() => {
-        const notPaid = aggregatedOrders.filter(o => o.status !== OrderStatus.CASHBACK_PAID);
-        const paid = aggregatedOrders.filter(o => o.status === OrderStatus.CASHBACK_PAID);
+        const notPaid = aggregatedOrders.filter(
+            o => o.status !== OrderStatus.CASHBACK_PAID
+        );
+        const paid = aggregatedOrders.filter(
+            o => o.status === OrderStatus.CASHBACK_PAID
+        );
         return [...notPaid, ...paid];
     }, [aggregatedOrders]);
 
@@ -354,23 +369,39 @@ function MyOrdersPage() {
 
                             return (
                                 <div key={order.id} className="relative">
-                                    {/* кнопка вынесена из ссылки */}
+                                    {/* КНОПКА вне <Link>, но выше по z-index + на тачах предотвращаем навигацию */}
                                     {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID && (
                                         <button
-                                            onClick={e => {
-                                                e.preventDefault(); // на всякий случай
+                                            className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition touch-manipulation"
+                                            onTouchStart={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                // вызовем сразу отмену — на iOS onTouchStart сработает быстрее onClick
+                                                handleCancelOrder(order.id, e as unknown as React.MouseEvent);
+                                            }}
+                                            onMouseDown={(e) => {
+                                                // для некоторых Android WebView onMouseDown надёжнее
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
                                                 handleCancelOrder(order.id, e);
                                             }}
-                                            className="absolute top-2 right-2 z-10 text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition"
                                         >
                                             Отменить
                                         </button>
                                     )}
 
-                                    {/* сама карточка — ссылка целиком */}
+                                    {/* ССЫЛКА-КАРТОЧКА: навигируем только если событие НЕ предотвращено */}
                                     <Link
                                         to={isCancelled ? '#' : linkTo}
-                                        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition"
+                                        onClick={(e) => {
+                                            if (e.defaultPrevented) return; // кнопку уже нажали
+                                            // иначе обычная навигация
+                                        }}
+                                        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition z-0"
                                     >
                                         {isCancelled && (
                                             <div className="absolute top-2 right-2 text-gray-500 text-xs">
@@ -416,16 +447,13 @@ function MyOrdersPage() {
                                                                     : 'border-blue-500 text-blue-500'
                                                         }`}
                                                     >
-<span
-    className={order.status === 'cashback_rejected' ? 'text-red-500' : ''}
->
-  {{
-      cashback_paid: 'Кешбэк выплачен',
-      cashback_not_paid: 'Кешбэк не выплачен',
-      cashback_rejected: 'Кешбэк отклонен'
-  }[order.status] || ''}
-</span>
-
+            <span className={order.status === 'cashback_rejected' ? 'text-red-500' : ''}>
+              {{
+                  cashback_paid: 'Кешбэк выплачен',
+                  cashback_not_paid: 'Кешбэк не выплачен',
+                  cashback_rejected: 'Кешбэк отклонен',
+              }[order.status] || ''}
+            </span>
                                                     </div>
                                                 )}
                                             </div>

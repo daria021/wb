@@ -29,8 +29,8 @@ async def get_all_orders_by_seller(request: Request, seller_id: UUID) -> list[Or
     order_service = get_order_service()
     return await order_service.get_all_orders_by_seller(seller_id)
 
-
 @router.get("/report/{order_id}")
 async def get_user_report(request: Request, order_id: UUID) -> OrderReport:
     order_service = get_order_service()
     return await order_service.get_user_report(order_id)
+

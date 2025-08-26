@@ -24,7 +24,7 @@ function ModeratorProductReviewPage() {
         [ProductStatus.CREATED]: 'Создано',
         [ProductStatus.ACTIVE]: 'Активно',
         [ProductStatus.NOT_PAID]: 'Не оплачено',
-        [ProductStatus.DISABLED]: 'Ожидает редактирования',
+        [ProductStatus.DISABLED]: 'Необходимо отредактировать',
         [ProductStatus.REJECTED]: 'Отклонено',
         [ProductStatus.ARCHIVED]: 'В архиве',
     };

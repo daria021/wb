@@ -19,6 +19,7 @@ export interface UserWithBalance {
   reserved_active: number   // зарезервировано под ACTIVE
   unpaid_plan: number       // план под NOT_PAID
   free_balance: number
+  in_progress: number
 }
 
 interface UserContextValue {

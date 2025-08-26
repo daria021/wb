@@ -64,3 +64,7 @@ class OrderServiceInterface(ABC):
     @abstractmethod
     async def generate_unique_code(self) -> str:
         ...
+
+    @abstractmethod
+    async def get_in_progress_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        ...

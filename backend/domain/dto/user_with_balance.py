@@ -22,5 +22,6 @@ class UserWithBalanceDTO(BaseModel):
     reserved_active: int   # зарезервировано под ACTIVE
     unpaid_plan: int       # план под NOT_PAID
     free_balance: int      # balance – reserved_active
+    in_progress: int
 
     model_config = ConfigDict(from_attributes=True)

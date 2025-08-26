@@ -18,6 +18,7 @@ interface Product {
     image_path?: string;
     status: ProductStatus;
     payment_time?: PayoutTime | string;
+    updated_at: Date;
 }
 
 interface Seller {
@@ -174,8 +175,9 @@ function CatalogPage() {
         .filter(p => filterSeller === '' || p.seller_id === filterSeller)
       .filter(p =>
     filterPayoutTime === '' ||
-    (String(p.payment_time)) === (String(filterPayoutTime))
-  );
+    (String(p.payment_time)) === (String(filterPayoutTime)))
+                .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+;
 
 
 const categories = React.useMemo(

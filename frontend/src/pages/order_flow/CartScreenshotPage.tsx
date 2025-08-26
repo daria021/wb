@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {getOrderById, getProductById, updateOrder} from '../../services/api';
+import {matchPath, useLocation, useNavigate, useParams} from 'react-router-dom';
+import {getOrderById, getProductById, updateOrder, updateOrderStatus} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
 import FileUploader from "../../components/FileUploader";
@@ -54,6 +54,9 @@ function CartScreenshotPage() {
     const [openSrc, setOpenSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const [order, setOrder] = useState<Order | null>(null);
+
+  const { pathname } = useLocation();
+
 
     useEffect(() => {
         if (!orderId) {
@@ -122,6 +125,39 @@ function CartScreenshotPage() {
         }
     };
 
+      // Шаг 1 (CartScreenshotPage): при нажатии "Назад" — отменяем заказ и уходим в каталог
+useEffect(() => {
+  // Если ты оставил маршрут как /order/:orderId/step-1 — оставь этот шаблон
+  const match = matchPath({ path: '/order/:orderId/step-1', end: true }, pathname);
+  if (!match) return;
+
+  const { orderId: mOrderId } = (match.params ?? {}) as { orderId?: string };
+
+  if (!mOrderId) {
+    navigate('/catalog', { replace: true });
+    return;
+  }
+
+  // Важно: подтверждение/навигация/запросы — внутри эффекта, не в рендере
+  (async () => {
+    const ok = window.confirm('Вы уверены, что хотите отменить заказ?');
+    if (!ok) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('status', 'cancelled');
+      await updateOrderStatus(mOrderId, formData);
+      alert('Заказ отменён');
+    } catch (err) {
+      console.error('Ошибка отмены заказа:', err);
+      alert('Ошибка отмены заказа');
+    } finally {
+      navigate('/catalog', { replace: true });
+    }
+  })();
+}, [pathname, navigate]);
+
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -131,6 +167,20 @@ function CartScreenshotPage() {
     if (error || !product) {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
+
+            const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+        try {
+            const formData = new FormData();
+            formData.append("status", "cancelled");
+            await updateOrderStatus(orderId, formData);
+            alert("Заказ отменён");
+        } catch (err) {
+            console.error("Ошибка отмены заказа:", err);
+            alert("Ошибка отмены заказа");
+        }
+    };
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -211,6 +261,14 @@ function CartScreenshotPage() {
             >
                 Продолжить
             </button>
+  {orderId ? (
+  <button
+    onClick={() => handleCancelOrder(orderId)}
+    className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
+  >
+    Отменить выкуп товара
+  </button>
+) : null}
 
             <div className="space-y-4">
 

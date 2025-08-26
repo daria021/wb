@@ -79,8 +79,8 @@ class ProductRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
-                # .where(self.entity.status == ProductStatus.CREATED)
                 .options(*self.options)
+                .order_by(self.entity.updated_at.asc())  # ← сортировка по возрастанию
             )
             result = result.unique().scalars().all()
         return [self.entity_to_model(x) for x in result]

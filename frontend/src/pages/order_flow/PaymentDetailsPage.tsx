@@ -1,6 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {getOrderById, getOrderReport, updateOrder, updateUser} from '../../services/api';
+import {
+    getOrderById,
+    getOrderReport,
+    getUserOrders,
+    updateOrder,
+    updateOrderStatus,
+    updateUser
+} from '../../services/api';
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
 import OrderHeader from "../../components/OrderHeader";
@@ -160,6 +167,20 @@ function PaymentDetailsPage() {
         window.open(process.env.REACT_APP_SUPPORT_URL, '_blank');
     };
 
+
+        const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+        try {
+            const formData = new FormData();
+            formData.append("status", "cancelled");
+            await updateOrderStatus(orderId, formData);
+            alert("Заказ отменён");
+        } catch (err) {
+            console.error("Ошибка отмены заказа:", err);
+            alert("Ошибка отмены заказа");
+        }
+    };
+
     if (loading) return <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
     </div>;
@@ -310,6 +331,13 @@ function PaymentDetailsPage() {
                 }`}
             >
                 Продолжить
+            </button>
+            <button
+  onClick={() => handleCancelOrder(order.id)}
+                className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
+
+            >
+                Отменить выкуп товара
             </button>
 
             <button

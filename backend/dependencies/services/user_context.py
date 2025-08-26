@@ -14,6 +14,7 @@ async def get_me_cached(
     request: Request,
     user_svc=Depends(get_user_service),
     prod_svc=Depends(get_product_service),
+    ords_svc=Depends(get_order_service),
 ) -> UserWithBalanceDTO:
     if not hasattr(request.state, "me"):
         uid = get_user_id_from_request(request)
@@ -79,7 +80,7 @@ async def get_me_cached(
             f"free_balance={free_balance}"
         )
 
-
+        in_progress = len(await ords_svc.get_in_progress_orders_by_seller(uid))
         # 4. Сборка DTO
         request.state.me = UserWithBalanceDTO(
             **user.model_dump(),
@@ -87,6 +88,7 @@ async def get_me_cached(
             reserved_active=reserved_active,
             unpaid_plan=unpaid_plan,
             free_balance=free_balance,
+            in_progress=in_progress
         )
 
     return request.state.me
