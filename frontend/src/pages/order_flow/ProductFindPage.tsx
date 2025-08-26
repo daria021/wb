@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
-import {getOrderById, getOrderReport, updateOrder} from "../../services/api";
+import {getOrderById, getOrderReport, updateOrder, updateOrderStatus} from "../../services/api";
 // import {on} from "@telegram-apps/sdk";
 import GetUploadLink from "../../components/GetUploadLink";
 import {VideoOverlay} from "../../App";
@@ -128,9 +128,19 @@ const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
     }
 
 
-    const handleChannelClick = () => {
-        window.open('https://t.me/Premiumcash1', '_blank'); //todo
+            const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+        try {
+            const formData = new FormData();
+            formData.append("status", "cancelled");
+            await updateOrderStatus(orderId, formData);
+            alert("Заказ отменён");
+        } catch (err) {
+            console.error("Ошибка отмены заказа:", err);
+            alert("Ошибка отмены заказа");
+        }
     };
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -219,6 +229,13 @@ const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
                 }`}
             >
                 Продолжить
+            </button>
+                  <button
+  onClick={() => handleCancelOrder(order.id)}
+                className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
+
+            >
+                Отменить выкуп товара
             </button>
             <button
                 onClick={() => navigate(`/black-list/${order.seller.nickname}`)}

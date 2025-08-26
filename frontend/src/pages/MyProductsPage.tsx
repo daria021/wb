@@ -483,7 +483,7 @@ const filteredProducts = products.filter(p => {
                                                 : product.status.toLowerCase() === 'created'
                                                     ? 'bg-white text-black'
                                                     : product.status.toLowerCase() === 'disabled'
-                                                        ? 'bg-red-100 text-red-800'
+                                                        ? 'bg-yellow-100 text-yellow-700'
                                                         : product.status.toLowerCase() === 'not_paid'
                                                             ? 'bg-orange-100 text-orange-800'
                                                             : 'bg-white'
@@ -557,7 +557,7 @@ const filteredProducts = products.filter(p => {
                                                 : product.status === ProductStatus.CREATED
                                                     ? 'Созданные'
                                                     : product.status === ProductStatus.DISABLED
-                                                        ? 'Ожидают редактирования'
+                                                        ? 'Необходимо отредактировать'
                                                         : product.status === ProductStatus.NOT_PAID
                                                             ? 'Не оплаченные'
                                                             : product.status}

@@ -147,7 +147,7 @@ export const ModeratorOrdersPage: React.FC = () => {
         <tr
           key={order.id}
           className="hover:bg-gray-100 cursor-pointer"
-          onClick={() => navigate(reportLink)}             // ← переход в отчёт
+    onClick={() => navigate(reportLink, { state: { from: "moderator" } })}
         >
           <td className="px-4 py-2">{order.transaction_code}</td>
           <td className="px-4 py-2">

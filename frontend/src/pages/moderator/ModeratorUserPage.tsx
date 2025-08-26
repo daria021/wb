@@ -212,7 +212,6 @@ function openChat(opts: { username?: string; id?: bigint | number | string; phon
                             {/*<th className="py-1 px-1">ID</th>*/}
                             <th className="py-1 px-1">Telegram ID</th>
                             <th className="py-1 px-1">Никнейм</th>
-                            <th className="py-1 px-1">Номер телефона</th>
                             <th className="py-1 px-1">Роль</th>
                             <th className="py-1 px-1">Забанен</th>
                             <th className="py-1 px-1">Продавец</th>
@@ -257,15 +256,9 @@ function openChat(opts: { username?: string; id?: bigint | number | string; phon
       {user.nickname}
     </a>
   ) : (
-    <span className="text-gray-400">—</span>
+          <span className="text-gray-600">{maskPhone(user.phone_number)}</span>
   )}
 </td>
-
-
-                                <td className="px-1 py-1 text-[7px]">
-                                    {maskPhone(user.phone_number)}
-                                </td>
-
 
                                 <td className="px-1 py-1">{user.role}</td>
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>

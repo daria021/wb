@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { on, postEvent } from '@telegram-apps/sdk';
+import {updateOrderStatus} from "../services/api";
 
 export default function BackButtonManager() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function BackButtonManager() {
   }, [pathname]);
 
   useEffect(() => {
-    const unsub = on('back_button_pressed', () => {
+    const unsub = on('back_button_pressed', async () => {
 
       if (matchPath({ path: '/user/orders', end: true }, pathname)) {
         return navigate('/', { replace: true });
@@ -23,6 +24,31 @@ export default function BackButtonManager() {
       if (matchPath({ path: '/seller-cabinet/reports', end: true }, pathname)) {
         return navigate('/seller-cabinet', { replace: true });
       }
+
+// отмена заказа только на шаге 1
+const step1Match = matchPath(
+  { path: '/product/:orderId/step-1', end: true },
+  pathname
+);
+
+if (step1Match) {
+  const { orderId } = step1Match.params as { orderId?: string };
+  if (!orderId) return navigate('/catalog', { replace: true });
+
+  if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+
+  try {
+    const formData = new FormData();
+    formData.append('status', 'cancelled');
+    updateOrderStatus(orderId, formData);
+    alert('Заказ отменён');
+  } catch (err) {
+    console.error('Ошибка отмены заказа:', err);
+    alert('Ошибка отмены заказа');
+  }
+
+  return navigate('/catalog', { replace: true });
+}
 
       if (
         matchPath({ path: '/catalog', end: true }, pathname) &&

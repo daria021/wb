@@ -148,23 +148,18 @@ useEffect(() => {
         Для внесения средств на счёт раздач по выкупам товаров обратитесь к администратору
       </p>
       <div className="bg-white border border-darkGray rounded-md p-4 relative">
-        {notPaidSum > 0 ? (
           <>
-            <p>Доступно и не оплачено</p>
-            <p className="text-2xl font-bold">{user.unpaid_plan} раздач</p>
-            <hr className="my-2"/>
-            <p>Баланс</p>
+            <p>Остаток баланса раздач</p>
             <p className="text-2xl font-bold">{user.free_balance} раздач</p>
-          </>
-        ) : (
-          <>
-            <p>В каталоге доступно</p>
+            <hr className="my-2"/>
+            <p>Активные раздачи</p>
             <p className="text-2xl font-bold">{user.reserved_active} раздач</p>
-            <hr className="my-2"/>
-            <p>Баланс</p>
-            <p className="text-2xl font-bold">{user.free_balance} раздач</p>
+                        <hr className="my-2"/>
+             <p>Требуется оплата раздач </p>
+            <p className="text-2xl font-bold">{user.unpaid_plan} раздач</p>
+
           </>
-        )}
+
       </div>
 
 {/* История операций (collapsible) */}

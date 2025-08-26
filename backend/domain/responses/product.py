@@ -23,6 +23,7 @@ class ProductResponse(BaseModel):
     wb_price: float
     tg: str
     payment_time: PayoutTime
+    requirements_agree: bool
     review_requirements: str
     image_path: str | None = None
     seller_id: UUID

@@ -168,6 +168,19 @@ class OrderRepository(
             logger.info([x.__dict__ for x in orders])
             return [self.entity_to_model(order) for order in orders]
 
+    async def get_in_progress_orders_by_seller(self, seller_id: UUID) -> list[Order]:
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(self.entity.seller_id == seller_id, self.entity.status == OrderStatus.CASHBACK_NOT_PAID)
+                .options(*self.options)
+            )
+            orders = result.scalars().all()
+            logger.info(f"orders found {len(orders)} orders(all) for seller {seller_id}")
+            logger.info([x.__dict__ for x in orders])
+            return [self.entity_to_model(order) for order in orders]
+
+
     async def exists_by_code(self, transaction_code: str) -> bool:
         async with self.session_maker() as session:
             result = await session.execute(

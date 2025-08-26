@@ -205,10 +205,10 @@ function ProductForm() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-          if (formData.category === '') {
-    alert('Пожалуйста, выберите категорию');
-    return;
-  }
+        if (formData.category === '') {
+            alert('Пожалуйста, выберите категорию');
+            return;
+        }
 
         if (isEditMode && originalFormData) {
             const changes: Record<string, { old: any, new: any }> = {};
@@ -267,8 +267,8 @@ function ProductForm() {
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
 
     if (error) {
@@ -293,10 +293,10 @@ function ProductForm() {
                         {isEditMode ? 'Редактировать товар' : 'Создание карточки товара'}
                     </h1>
                     <div className="text-sm mb-2">
-                    Заполните информацию о товаре раздачи:
+                        Заполните информацию о товаре раздачи:
+                    </div>
                 </div>
             </div>
-                </div>
 
             <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -353,32 +353,33 @@ function ProductForm() {
                 </div>
 
 
-                    <div className="flex items-center gap-2 flex-[0_0_auto]">
+                <div className="flex items-center gap-2 flex-[0_0_auto]">
 
-      <div className="relative">
-        <select
-          id="userFilter"
-    value={formData.category}
-    onChange={handleInputChange}
-          className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
+                    <div className="relative">
+                        <select
+                            id="userFilter"
+                             name="category"
+                            value={formData.category}
+                            onChange={handleInputChange}
+                            className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
                      text-sm font-medium text-gray-800 appearance-none
                      focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-        >
-          <option value="" disabled hidden>Выбрать категорию</option>
-    {Object.values(Category).map((cat) => (
-      <option key={cat} value={cat}>{cat}</option>
-    ))}
-        </select>
+                        >
+                            <option value="" disabled hidden>Выбрать категорию</option>
+                            {Object.values(Category).map((cat) => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
 
-        {/* стрелка */}
-        <svg
-          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
-          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-        >
-          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
-        </svg>
-      </div>
-    </div>
+                        {/* стрелка */}
+                        <svg
+                            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                        >
+                            <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                        </svg>
+                    </div>
+                </div>
 
 
                 <div>
@@ -470,7 +471,8 @@ function ProductForm() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Telegram продавца для вопросов покупателя по товару</label>
+                    <label className="block text-sm font-medium mb-1">Telegram продавца для вопросов покупателя по
+                        товару</label>
                     <input
                         type="text"
                         ref={inputRefs[8]}
@@ -550,13 +552,13 @@ function ProductForm() {
                                 className="px-4 py-2 bg-white text-brand rounded border border-brand"
                             >
                                 Все верно. Применить
-            </button>
-          </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      </div>
-    )}
-  </div>
-);
-            }
+    );
+}
 
 export default ProductForm;
