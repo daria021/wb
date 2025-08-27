@@ -67,18 +67,60 @@ function MyProductsPage() {
 
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
-    const handleDeleteProduct = async (e: React.MouseEvent, id: string) => {
-        e.stopPropagation(); // чтобы не переходить на страницу товара
-        if (!window.confirm('Удалить товар навсегда? Это действие необратимо. ' +
-            '*При удалении оставшиеся раздачи товара добавятся на баланс')) return;
+    const tg = (window as any)?.Telegram?.WebApp;
+
+    async function confirmTG(message: string): Promise<boolean> {
+        if (tg?.showConfirm) return await tg.showConfirm(message);
+        if (tg?.showPopup) {
+            const id = await tg.showPopup({
+                title: 'Подтверждение',
+                message,
+                buttons: [
+                    {id: 'yes', text: 'Удалить', type: 'destructive'},
+                    {id: 'no', text: 'Отмена', type: 'default'},
+                ],
+            });
+            return id === 'yes';
+        }
+        // локальная разработка вне Telegram
+        return window.confirm(message);
+    }
+
+    async function alertTG(message: string): Promise<void> {
+        if (tg?.showAlert) return tg.showAlert(message);
+        if (tg?.showPopup) {
+            await tg.showPopup({
+                title: '',
+                message,
+                buttons: [{id: 'ok', text: 'ОК', type: 'default'}],
+            });
+            return;
+        }
+        // локальная разработка
+        window.alert(message);
+    }
+
+
+    const handleDeleteProduct = async (
+        e: React.MouseEvent,
+        id: string
+    ) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const confirmed = await confirmTG(
+            'Удалить товар навсегда? Это действие необратимо. Оставшиеся раздачи вернутся на баланс.'
+        );
+        if (!confirmed) return;
 
         try {
             setDeletingId(id);
             await deleteProduct(id);
-            setProducts(prev => prev.filter(p => p.id !== id)); // убрать карточку из списка
+            setProducts(prev => prev.filter(p => p.id !== id));
+            await alertTG('Товар удалён');
         } catch (err) {
             console.error('Не удалось удалить товар', err);
-            alert('Не удалось удалить товар');
+            await alertTG('Не удалось удалить товар');
         } finally {
             setDeletingId(null);
         }
@@ -221,33 +263,31 @@ function MyProductsPage() {
     }, [loading, userLoading, user?.free_balance, products, refresh]);
 
     const categories = React.useMemo(
-  () => Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[],
-  [products]
-);
+        () => Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[],
+        [products]
+    );
 
 
-const normalize = (v: unknown) =>
-  String(v ?? '').toLowerCase().replace(/\s+/g, '');
+    const normalize = (v: unknown) =>
+        String(v ?? '').toLowerCase().replace(/\s+/g, '');
 
-const filteredProducts = products.filter(p => {
-  // статусные чекбоксы
-  if (activeStatuses.length && !activeStatuses.includes(p.status)) return false;
+    const filteredProducts = products.filter(p => {
+        // статусные чекбоксы
+        if (activeStatuses.length && !activeStatuses.includes(p.status)) return false;
 
-  // поиск по названию/артикулу
-  if (searchQuery) {
-    const q = normalize(searchQuery);
-    const inName = normalize(p.name).includes(q);
-    const inArticle = normalize(p.article).includes(q);
-    if (!inName && !inArticle) return false;
-  }
+        // поиск по названию/артикулу
+        if (searchQuery) {
+            const q = normalize(searchQuery);
+            const inName = normalize(p.name).includes(q);
+            const inArticle = normalize(p.article).includes(q);
+            if (!inName && !inArticle) return false;
+        }
 
-  // фильтр по категории
-  if (filterCategory && p.category !== filterCategory) return false;
+        // фильтр по категории
+        if (filterCategory && p.category !== filterCategory) return false;
 
-  return true;
-});
-
-
+        return true;
+    });
 
 
     useEffect(() => {
@@ -395,56 +435,57 @@ const filteredProducts = products.filter(p => {
 
             {/* Поиск / фильтры */}
             <div className="sticky top-0 z-10 bg-gray-200">
-  {/* Поиск */}
-  <div className="relative mb-2">
-    <input
-      type="text"
-      placeholder="Поиск по названию или артикулу"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="w-full border border-darkGray rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
-    />
-    <svg
-      className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M21 21l-4.35-4.35m0 0A7.35 7.35 0 1010.3 4.65a7.35 7.35 0 006.35 11.65z"
-      />
-    </svg>
-  </div>
+                {/* Поиск */}
+                <div className="relative mb-2">
+                    <input
+                        type="text"
+                        placeholder="Поиск по названию или артикулу"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full border border-darkGray rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none"
+                    />
+                    <svg
+                        className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M21 21l-4.35-4.35m0 0A7.35 7.35 0 1010.3 4.65a7.35 7.35 0 006.35 11.65z"
+                        />
+                    </svg>
+                </div>
 
-  {/* Фильтр по категории */}
-  <div className="mb-4">
-    <div className="relative">
-      <select
-        value={filterCategory}
-        onChange={e => setFilterCategory(e.target.value)}
-        className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                {/* Фильтр по категории */}
+                <div className="mb-4">
+                    <div className="relative">
+                        <select
+                            value={filterCategory}
+                            onChange={e => setFilterCategory(e.target.value)}
+                            className="h-10 w-full appearance-none rounded-md border border-brand bg-white
                    pl-3 pr-10 text-sm font-medium text-gray-800
                    focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-        aria-label="Фильтр по категории"
-      >
-        <option value="">Все категории</option>
-        {categories.map(cat => (
-          <option key={cat} value={cat}>{cat}</option>
-        ))}
-      </select>
+                            aria-label="Фильтр по категории"
+                        >
+                            <option value="">Все категории</option>
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
 
-      {/* стрелка */}
-      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-        <svg className="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
-        </svg>
-      </div>
-    </div>
-  </div>
-</div>
+                        {/* стрелка */}
+                        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                            <svg className="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor"
+                                 aria-hidden="true">
+                                <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Состояния загрузки / ошибок */}
             {!loading && (error || filteredProducts.length === 0) && (

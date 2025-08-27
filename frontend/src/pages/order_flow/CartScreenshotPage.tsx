@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {matchPath, useLocation, useNavigate, useParams} from 'react-router-dom';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getProductById, updateOrder, updateOrderStatus} from '../../services/api';
 import {useUser} from '../../contexts/user';
 import {AxiosResponse} from 'axios';
@@ -44,6 +44,12 @@ function CartScreenshotPage() {
     const [preview1, setPreview1] = useState<string | null>(null);
     const {orderId} = useParams<{ orderId: string }>();
 
+    const [, startT] = useTransition();
+
+
+    const lastClickRef = useRef(0);
+    const [sending, setSending] = useState(false); // без визуального дизейбла
+
     const [file2, setFile2] = useState<File | null>(null);
     const [preview2, setPreview2] = useState<string | null>(null);
     const {user, loading: userLoading} = useUser();
@@ -55,7 +61,13 @@ function CartScreenshotPage() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [order, setOrder] = useState<Order | null>(null);
 
-  const { pathname } = useLocation();
+
+    useEffect(() => {
+        if (file1 && file2) {
+            // префетч следующей страницы
+            import(/* webpackPrefetch: true */ './ProductFindPage');
+        }
+    }, [file1, file2]);
 
 
     useEffect(() => {
@@ -108,76 +120,55 @@ function CartScreenshotPage() {
             .finally(() => setLoading(false));
     }, [order]);
 
-    const handleContinue = async () => {
+    const handleContinue = () => {
         if (!canContinue || !orderId) return;
-        try {
-            console.log('ФАЙЛЫ');
-            console.log(file1, file2);
-            await updateOrder(orderId, {
-                step: 1,
-                search_screenshot_path: file1 ?? undefined,
-                cart_screenshot_path: file2 ?? undefined,
-            });
 
-            navigate(`/order/${orderId}/step-2`);
-        } catch (err) {
-            console.error('Ошибка при создании заказа', err);
-        }
+        // мягкая защита от «дребезга» / двойных тапов
+        const now = performance.now();
+        if (now - lastClickRef.current < 250 || sending) return;
+        lastClickRef.current = now;
+        setSending(true);
+
+        // 1) мгновенно уходим на следующий экран
+        const nextUrl = `/order/${orderId}/step-2`;
+        startT(() => navigate(nextUrl));
+
+        // 2) отправку делаем в фоне — без await
+        queueMicrotask(async () => {
+            try {
+                const fd = new FormData();
+                fd.append('step', String(1));
+                if (file1) fd.append('search_screenshot_path', file1);
+                if (file2) fd.append('cart_screenshot_path', file2);
+                await updateOrder(orderId, fd);
+            } catch (e) {
+                // необязательно, но можно показать тост и предложить ретрай из шапки Step-2
+                console.error('Фоновая отправка шага 1 упала', e);
+            } finally {
+                setSending(false);
+            }
+        });
     };
-
-      // Шаг 1 (CartScreenshotPage): при нажатии "Назад" — отменяем заказ и уходим в каталог
-useEffect(() => {
-  // Если ты оставил маршрут как /order/:orderId/step-1 — оставь этот шаблон
-  const match = matchPath({ path: '/order/:orderId/step-1', end: true }, pathname);
-  if (!match) return;
-
-  const { orderId: mOrderId } = (match.params ?? {}) as { orderId?: string };
-
-  if (!mOrderId) {
-    navigate('/catalog', { replace: true });
-    return;
-  }
-
-  // Важно: подтверждение/навигация/запросы — внутри эффекта, не в рендере
-  (async () => {
-    const ok = window.confirm('Вы уверены, что хотите отменить заказ?');
-    if (!ok) return;
-
-    try {
-      const formData = new FormData();
-      formData.append('status', 'cancelled');
-      await updateOrderStatus(mOrderId, formData);
-      alert('Заказ отменён');
-    } catch (err) {
-      console.error('Ошибка отмены заказа:', err);
-      alert('Ошибка отмены заказа');
-    } finally {
-      navigate('/catalog', { replace: true });
-    }
-  })();
-}, [pathname, navigate]);
-
 
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
     if (error || !product) {
         return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
     }
 
-            const handleCancelOrder = async (orderId: string) => {
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+    const handleCancelOrder = async (orderId: string) => {
         try {
-            const formData = new FormData();
-            formData.append("status", "cancelled");
-            await updateOrderStatus(orderId, formData);
-            alert("Заказ отменён");
+            const fd = new FormData();
+            fd.append('status', 'cancelled');
+            await updateOrderStatus(orderId, fd);
         } catch (err) {
-            console.error("Ошибка отмены заказа:", err);
-            alert("Ошибка отмены заказа");
+            console.error('Ошибка отмены заказа:', err);
+        } finally {
+            navigate('/catalog', {replace: true});
         }
     };
 
@@ -192,8 +183,8 @@ useEffect(() => {
 
     if (userLoading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
 
     const videos = [
@@ -226,7 +217,7 @@ useEffect(() => {
             )}
             <div className="bg-white border border-brand rounded-lg shadow p-4 text-sm text-gray-700 space-y-2">
 
-{order && <OrderHeader transactionCode={order.transaction_code} />}
+                {order && <OrderHeader transactionCode={order.transaction_code}/>}
 
                 <h2 className="text-lg font-semibold top-10 text-brand">Шаг 1. Поиск товара по ключевому слову</h2>
 
@@ -253,22 +244,23 @@ useEffect(() => {
             />
 
             <button
-                onClick={handleContinue}
+                onPointerUp={handleContinue}
                 disabled={!canContinue}
                 className={`w-full py-2 rounded-lg text-brand font-semibold ${
                     canContinue ? 'bg-brand hover:bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
-                }`}
+                } ${sending ? 'opacity-90' : ''}`} // лёгкая подсказка, без блокировки
             >
-                Продолжить
+                {sending ? 'Продолжаем…' : 'Продолжить'}
             </button>
-  {orderId ? (
-  <button
-    onClick={() => handleCancelOrder(orderId)}
-    className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
-  >
-    Отменить выкуп товара
-  </button>
-) : null}
+
+            {orderId ? (
+                <button
+                    onClick={() => handleCancelOrder(orderId)}
+                    className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
+                >
+                    Отменить выкуп товара
+                </button>
+            ) : null}
 
             <div className="space-y-4">
 

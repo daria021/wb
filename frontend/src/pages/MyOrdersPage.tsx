@@ -81,6 +81,34 @@ function MyOrdersPage() {
         [OrderStatus.CASHBACK_REJECTED]: 'Кешбэк отклонен',
     };
 
+    // сверху файла (после импортов)
+const tg = (window as any).Telegram?.WebApp;
+
+async function confirmTG(message: string): Promise<boolean> {
+  // 1) нативный API Telegram
+  if (tg?.showConfirm) return await tg.showConfirm(message);
+  if (tg?.showPopup) {
+    const id = await tg.showPopup({
+      title: 'Подтверждение',
+      message,
+      buttons: [
+        { id: 'yes', type: 'destructive', text: 'Отменить' },
+        { id: 'no',  type: 'default',    text: 'Нет' },
+      ],
+    });
+    return id === 'yes';
+  }
+  // 2) фолбэк (локальная среда вне Telegram)
+  return window.confirm(message);
+}
+
+async function alertTG(message: string): Promise<void> {
+  if (tg?.showAlert) return tg.showAlert(message);
+  // фолбэк для локалки
+  alert(message);
+}
+
+
 
     useEffect(() => {
         if (!orders.length) return;
@@ -215,41 +243,27 @@ function MyOrdersPage() {
     }, []);
 
 
-    const handleCancelOrder = async (orderId: string, e: React.MouseEvent) => {
-        e.stopPropagation(); // Предотвращаем переход по карточке
-        e.preventDefault();
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
-        try {
-            const formData = new FormData();
-            formData.append("status", "cancelled");
-            await updateOrderStatus(orderId, formData);
-            alert("Заказ отменён");
-            fetchOrders();
-        } catch (err) {
-            console.error("Ошибка отмены заказа:", err);
-            alert("Ошибка отмены заказа");
-        }
-    };
+    const handleCancelOrder = async (
+  orderId: string,
+  e: React.MouseEvent | React.TouchEvent
+) => {
+  e.stopPropagation();
+  e.preventDefault();
 
-    const handleToggleCashback = async (orderId: string, newStatus: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        try {
-            const formData = new FormData();
-            formData.append("status", newStatus);
-            await updateOrderStatus(orderId, formData);
-            setOrders(prev =>
-                prev.map(o =>
-                    o.id === orderId
-                        ? {...o, status: newStatus}
-                        : o
-                )
-            );
-        } catch (err) {
-            console.error("Ошибка при смене статуса кешбэка:", err);
-            alert("Не удалось сменить статус кешбэка");
-        }
-    };
+  const ok = await confirmTG('Вы уверены, что хотите отменить заказ?');
+  if (!ok) return;
+
+  try {
+    const formData = new FormData();
+    formData.append('status', 'cancelled');
+    await updateOrderStatus(orderId, formData);
+    await alertTG('Заказ отменён');
+    fetchOrders();
+  } catch (err) {
+    console.error('Ошибка отмены заказа:', err);
+    await alertTG('Ошибка отмены заказа');
+  }
+};
 
 
     const handleShowMore = () => {
@@ -333,14 +347,6 @@ function MyOrdersPage() {
                 </p>
             </div>
 
-
-            <div className="px-4 mt-2">
-
-                <p className="text-sm text-gray-600 text-center">
-                    Нажмите на карточку, чтобы открыть инструкцию
-                </p>
-            </div>
-
             <div className="sticky top-0 z-20 bg-gray-200 mb-4">
 
 
@@ -370,7 +376,8 @@ function MyOrdersPage() {
                             return (
                                 <div key={order.id} className="relative">
                                     {/* КНОПКА вне <Link>, но выше по z-index + на тачах предотвращаем навигацию */}
-                                    {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID && (
+                                    {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID &&
+                                        order.status !== OrderStatus.CASHBACK_REJECTED &&(
                                         <button
                                             className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition touch-manipulation"
                                             onTouchStart={(e) => {

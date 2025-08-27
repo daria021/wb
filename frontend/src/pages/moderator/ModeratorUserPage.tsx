@@ -100,51 +100,46 @@ function ModeratorUsersPage() {
         );
     });
 
-    function maskPhone(p?: string) {
-        if (!p) return '—';
-        const d = p.replace(/\D/g, '');
-        if (d.length < 10) return p;
-        const last4 = d.slice(-4);
-        return `*** *** ${last4}`;
+    function openChat(opts: { username?: string; id?: bigint | number | string; phone?: string }) {
+        const wa: any = (window as any)?.Telegram?.WebApp;
+        const idStr = opts.id ? opts.id.toString() : '';
+        const phoneDigits = opts.phone ? opts.phone.replace(/\D/g, '') : '';
+
+        // Составляем кандидаты в порядке надёжности
+        const candidates: string[] = [];
+        if (opts.username && opts.username.trim()) candidates.push(`https://t.me/${opts.username.trim()}`);
+        if (idStr) candidates.push(`tg://user?id=${idStr}`);
+        if (phoneDigits) candidates.push(`tg://resolve?phone=${phoneDigits}`);
+
+        // Внутри мини-аппа — используем API Telegram
+        if (wa && typeof wa.openTelegramLink === 'function') {
+            for (const url of candidates) {
+                try {
+                    wa.openTelegramLink(url);
+                    return;
+                } catch {
+                }
+            }
+        }
+        if (wa && typeof wa.openLink === 'function' && opts.username) {
+            wa.openLink(`https://t.me/${opts.username}`);
+            return;
+        }
+
+        // Вне Telegram — лучшая попытка
+        if (opts.username) {
+            window.open(`https://t.me/${opts.username}`, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        if (idStr) {
+            // tg:// может блокироваться в браузере — но пробуем
+            window.location.href = `tg://user?id=${idStr}`;
+            return;
+        }
+        if (phoneDigits) {
+            window.location.href = `tg://resolve?phone=${phoneDigits}`;
+        }
     }
-
-function openChat(opts: { username?: string; id?: bigint | number | string; phone?: string }) {
-  const wa: any = (window as any)?.Telegram?.WebApp;
-  const idStr = opts.id ? opts.id.toString() : '';
-  const phoneDigits = opts.phone ? opts.phone.replace(/\D/g, '') : '';
-
-  // Составляем кандидаты в порядке надёжности
-  const candidates: string[] = [];
-  if (opts.username && opts.username.trim()) candidates.push(`https://t.me/${opts.username.trim()}`);
-  if (idStr) candidates.push(`tg://user?id=${idStr}`);
-  if (phoneDigits) candidates.push(`tg://resolve?phone=${phoneDigits}`);
-
-  // Внутри мини-аппа — используем API Telegram
-  if (wa && typeof wa.openTelegramLink === 'function') {
-    for (const url of candidates) {
-      try { wa.openTelegramLink(url); return; } catch {}
-    }
-  }
-  if (wa && typeof wa.openLink === 'function' && opts.username) {
-    wa.openLink(`https://t.me/${opts.username}`);
-    return;
-  }
-
-  // Вне Telegram — лучшая попытка
-  if (opts.username) {
-    window.open(`https://t.me/${opts.username}`, '_blank', 'noopener,noreferrer');
-    return;
-  }
-  if (idStr) {
-    // tg:// может блокироваться в браузере — но пробуем
-    window.location.href = `tg://user?id=${idStr}`;
-    return;
-  }
-  if (phoneDigits) {
-    window.location.href = `tg://resolve?phone=${phoneDigits}`;
-  }
-}
-
 
 
     return (
@@ -154,50 +149,50 @@ function openChat(opts: { username?: string; id?: bigint | number | string; phon
             </h1>
 
             {/* Блок с поиском и фильтром */}
-<div className="mb-4 bg-white p-4 rounded shadow">
-  <div className="flex flex-wrap items-center gap-3">
-    {/* Поиск */}
-    <input
-      type="text"
-      placeholder="Поиск по нику"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="flex-[1_1_280px] min-w-[220px] border border-darkGray rounded p-2 text-sm
+            <div className="mb-4 bg-white p-4 rounded shadow">
+                <div className="flex flex-wrap items-center gap-3">
+                    {/* Поиск */}
+                    <input
+                        type="text"
+                        placeholder="Поиск по нику"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-[1_1_280px] min-w-[220px] border border-darkGray rounded p-2 text-sm
                  focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-    />
+                    />
 
-    {/* Фильтр */}
-    <div className="flex items-center gap-2 flex-[0_0_auto]">
-      <label htmlFor="userFilter" className="text-sm font-medium whitespace-nowrap">
-        Фильтр:
-      </label>
+                    {/* Фильтр */}
+                    <div className="flex items-center gap-2 flex-[0_0_auto]">
+                        <label htmlFor="userFilter" className="text-sm font-medium whitespace-nowrap">
+                            Фильтр:
+                        </label>
 
-      <div className="relative">
-        <select
-          id="userFilter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value as FilterType)}
-          className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
+                        <div className="relative">
+                            <select
+                                id="userFilter"
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value as FilterType)}
+                                className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
                      text-sm font-medium text-gray-800 appearance-none
                      focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-        >
-          <option value="all">Все пользователи</option>
-          <option value="moderators">Модераторы</option>
-          <option value="sellers">Продавцы</option>
-          <option value="banned">Забаненные</option>
-        </select>
+                            >
+                                <option value="all">Все пользователи</option>
+                                <option value="moderators">Модераторы</option>
+                                <option value="sellers">Продавцы</option>
+                                <option value="banned">Забаненные</option>
+                            </select>
 
-        {/* стрелка */}
-        <svg
-          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
-          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-        >
-          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
-        </svg>
-      </div>
-    </div>
-  </div>
-</div>
+                            {/* стрелка */}
+                            <svg
+                                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                            >
+                                <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             {loading ? (
@@ -230,36 +225,37 @@ function openChat(opts: { username?: string; id?: bigint | number | string; phon
                                 {/*    <CopyableUuid uuid={user.id}/>*/}
                                 {/*</td>*/}
                                 <td className="px-1 py-1 text-[7px]">
-  <button
-    className="text-blue-500 hover:underline"
-    onClick={(e) => {
-      e.stopPropagation();
-      openChat({ id: user.telegram_id, username: user.nickname, phone: user.phone_number });
-    }}
-    title="Открыть диалог в Telegram"
-  >
-    {user.telegram_id.toString()}
-  </button>
-</td>
-
-
+                                    <button
+                                        className="text-blue-500 hover:underline"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openChat({
+                                                id: user.telegram_id,
+                                                username: user.nickname,
+                                                phone: user.phone_number
+                                            });
+                                        }}
+                                        title="Открыть диалог в Telegram"
+                                    >
+                                        {user.telegram_id.toString()}
+                                    </button>
+                                </td>
 
                                 <td className="px-1 py-1">
-  {user.nickname ? (
-    <a
-      href={`https://t.me/${user.nickname}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-500 hover:underline"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {user.nickname}
-    </a>
-  ) : (
-          <span className="text-gray-600">{maskPhone(user.phone_number)}</span>
-  )}
-</td>
-
+                                    {user.nickname ? (
+                                        <a
+                                            href={`https://t.me/${user.nickname}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 hover:underline"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {user.nickname}
+                                        </a>
+                                    ) : (
+                                        <span className="text-gray-600">{user.phone_number}</span>
+                                    )}
+                                </td>
                                 <td className="px-1 py-1">{user.role}</td>
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
                                 <td className="px-1 py-1">{user.is_seller ? "Да" : "Нет"}</td>

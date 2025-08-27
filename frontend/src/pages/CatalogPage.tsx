@@ -226,11 +226,12 @@ const normalize = (v: unknown) =>
                     <input
                         ref={searchRef}
                         type="text"
-                        placeholder="Поиск по названию"
+                        placeholder="Поиск по названию товара"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         onFocus={() => setSearchIsActive(true)}
-                        className="flex-1 border border-darkGray rounded-md p-2"
+                        className="flex-1 border border-darkGray rounded-md p-2 px-4 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                     />
                     <button
                         onClick={() => setShowFilters(prev => !prev)}

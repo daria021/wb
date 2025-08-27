@@ -201,6 +201,8 @@ function SellerReportsPage() {
             return true;
         });
 
+    const isPaidTab = activeTab === OrderStatus.CASHBACK_PAID;
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -284,8 +286,6 @@ function SellerReportsPage() {
                             </div>
                         </div>
                     )}
-
-
                 </div>
 
 <div className="flex flex-col gap-4">
@@ -295,10 +295,12 @@ function SellerReportsPage() {
 
       return (
         <div
-          key={order.id}
-          className={`border rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer p-2
-            ${isRejected ? "bg-red-50 border-red-400" : "bg-white border-gray-200"}`}
-        >
+  key={order.id}
+  onClick={isPaidTab ? () => navigate(`/seller-cabinet/reports/${order.id}`) : undefined}
+  className={`border rounded-md shadow-sm transition-shadow p-2
+    ${isRejected ? "bg-red-50 border-red-400" : "bg-white border-gray-200"}
+    ${isPaidTab ? "hover:shadow-md cursor-pointer" : ""}`}
+>
           {/* верхняя часть: фото + текст */}
           <div className="flex gap-3 p-2">
             {/* фото */}

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {AxiosResponse} from 'axios';
@@ -53,6 +53,11 @@ type ModalContent = { src: string; isVideo: boolean };
 
 function ProductPickupPage() {
     const {orderId} = useParams<{ orderId: string }>();
+
+    const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false);
+
     const navigate = useNavigate();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -78,6 +83,8 @@ function ProductPickupPage() {
     const cameFromOrders = Boolean(location.state?.fromOrders);
     const [openSrc, setOpenSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const canContinue = pickedUp && !!file1 && !!file2;
+
     // единственное состояние для модалки
     const [modalContent, setModalContent] = useState<ModalContent | null>(null);
 
@@ -128,6 +135,12 @@ function ProductPickupPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
+        useEffect(() => {
+  if (canContinue) {
+    import(/* webpackPrefetch: true */ './StepReviewReportPage').catch(() => {});
+  }
+}, [canContinue]);
+
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
                 <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
@@ -137,25 +150,6 @@ function ProductPickupPage() {
         return <div className="p-4 text-red-600">{error || 'Заказ не найден'}</div>;
     }
 
-    const cashback = order.product.wb_price - order.product.price;
-    const canContinue = pickedUp && file1 && file2;
-
-    // const handleDeliveryScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setDeliveryScreenshot(e.target.files[0]);
-    //     } else {
-    //         setDeliveryScreenshot(null);
-    //     }
-    // };
-    //
-    // const handleBarcodeScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setBarcodeScreenshot(e.target.files[0]);
-    //     } else {
-    //         setBarcodeScreenshot(null);
-    //     }
-    // };
-
     const handlePickedUpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPickedUp(e.target.checked);
         if (!e.target.checked) {
@@ -164,25 +158,35 @@ function ProductPickupPage() {
         }
     };
 
-const handleContinue = async () => {
+const handleContinue = () => {
   if (!canContinue || !orderId || !order) return;
 
-  const payload: any = {
-    step: 6,
-    delivery_screenshot: file1,
-    barcodes_screenshot: file2,
-  };
+  // анти-дребезг
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
 
-  if (order.product.payment_time === PayoutTime.AFTER_REVIEW) {
-    payload.order_date = new Date().toISOString().slice(0, 10);
-  }
+  // мгновенный переход
+  startT(() => navigate(`/order/${orderId}/step-7`));
 
+  // фоновой аплоад с FormData
+queueMicrotask(async () => {
   try {
-    await updateOrder(orderId, payload);
-    navigate(`/order/${orderId}/step-7`);
+    await updateOrder(orderId, {
+      step: 6,
+      delivery_screenshot: file1!,
+      barcodes_screenshot: file2!,
+      ...(order.product.payment_time === PayoutTime.AFTER_REVIEW
+        ? { order_date: new Date().toISOString().slice(0, 10) }
+        : {}),
+    });
   } catch (err) {
-    console.error('Ошибка при обновлении заказа:', err);
+    console.error('Фоновое обновление шага 6 упало:', err);
+  } finally {
+    setSending(false);
   }
+});
 };
 
     const handleSupportClick = () => {
@@ -290,13 +294,16 @@ const handleContinue = async () => {
             )}
 
             <div className="flex flex-col gap-2 mb-2 mt-2">
-                <button
-                    onClick={handleContinue}
-                    disabled={!canContinue}
-                    className={`w-full py-2 rounded text-brand mb-4 ${canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'}`}
-                >
-                    Продолжить
-                </button>
+               <button
+  onPointerUp={handleContinue}
+  disabled={!canContinue}
+  className={`w-full py-2 rounded text-brand mb-4 ${
+    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
             </div>
 
             <div className="space-y-4">
@@ -514,7 +521,7 @@ const handleContinue = async () => {
                         onClick={handleSupportClick}
                         className="bg-white border border-darkGray rounded-lg p-3 text-sm font-semibold flex items-center justify-center"
                     >
-                        Нужна помощь
+                        Нужна помощь с выполнением шага
                     </button>
                     <button
                         onClick={handleHomeClick}

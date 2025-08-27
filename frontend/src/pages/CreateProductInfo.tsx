@@ -39,17 +39,6 @@ interface Product {
     created_at: Date;
 }
 
-interface MeResponse {
-    id: string;
-    telegram_id?: number;
-    nickname?: string;
-    role: "user" | "client" | "seller" | "moderator" | "admin";
-    is_banned: boolean;
-    balance?: number;
-    created_at: string;
-    updated_at: string;
-}
-
 function CreateProductInfo() {
     const navigate = useNavigate();
     const {productId} = useParams<{ productId: string }>();
@@ -163,9 +152,11 @@ function CreateProductInfo() {
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-medium">Карточка товара</h1>
-                <button onClick={handleEditClick} className="border border-brand text-brand px-2 py-1 text-sm rounded">
+                {product.status !== ProductStatus.REJECTED && (
+                    <button onClick={handleEditClick} className="border border-brand text-brand px-2 py-1 text-sm rounded">
                     Редактировать
                 </button>
+                )}
             </div>
 
             <div className="flex flex-col gap-4 mb-4">

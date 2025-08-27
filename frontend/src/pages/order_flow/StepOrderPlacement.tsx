@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {AxiosResponse} from 'axios';
@@ -78,6 +78,12 @@ function StepOrderPlacement() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+
+const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false);
+
+
     const openModal = (src: string) => {
         setModalContent({src, isVideo: src.endsWith('.mp4')});
     };
@@ -110,7 +116,13 @@ function StepOrderPlacement() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    const canContinue = isOrderPlaced && file;
+const canContinue = isOrderPlaced && !!file;
+useEffect(() => {
+  if (canContinue) {
+    import(/* webpackPrefetch: true */ './ProductPickupPage').catch(() => {});
+  }
+}, [canContinue]);
+
 
     useEffect(() => {
         if (!orderId) return;
@@ -130,18 +142,33 @@ function StepOrderPlacement() {
         }
     };
 
-    const handleContinue = async () => {
-        if (!canContinue || !orderId) return;
-        try {
-            await updateOrder(orderId, {
-                step: 5,
-                final_cart_screenshot_path: file,
-            });
-            navigate(`/order/${orderId}/step-6`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+    const handleContinue = () => {
+  if (!canContinue || !orderId || !file) return;
+
+  // анти-дребезг
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
+
+  // мгновенная навигация
+  startT(() => navigate(`/order/${orderId}/step-6`));
+
+  // фоновой апдейт (обычный объект, без FormData)
+  queueMicrotask(async () => {
+    try {
+      await updateOrder(orderId, {
+        step: 5,
+        final_cart_screenshot_path: file,
+      });
+    } catch (err) {
+      console.error('Фоновое обновление шага 5 упало:', err);
+    } finally {
+      setSending(false);
+    }
+  });
+};
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -214,16 +241,15 @@ function StepOrderPlacement() {
                 />
             )}
             <button
-                onClick={handleContinue}
-                disabled={!canContinue}
-                className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
-                    canContinue
-                        ? 'bg-brand text-white'
-                        : 'bg-gray-200-400 border border-brand cursor-not-allowed'
-                }`}
-            >
-                Продолжить
-            </button>
+  onPointerUp={handleContinue}
+  disabled={!canContinue}
+  className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
+    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
 
 
             <div className="space-y-4">

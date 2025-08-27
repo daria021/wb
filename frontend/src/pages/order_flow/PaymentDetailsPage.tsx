@@ -1,9 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {
     getOrderById,
     getOrderReport,
-    getUserOrders,
     updateOrder,
     updateOrderStatus,
     updateUser
@@ -61,6 +60,11 @@ function PaymentDetailsPage() {
     const navigate = useNavigate();
     const {orderId} = useParams<{ orderId: string }>();
 
+    const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false); // не блокируем кнопку визуально
+
+
     const [cardNumber, setCardNumber] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [fullName, setFullName] = useState('');
@@ -87,12 +91,25 @@ function PaymentDetailsPage() {
             setOtherBank('');
         }
     };
-    const canContinue =
-        cardNumber.trim() !== '' &&
-        phoneNumber.trim() !== '' &&
-        fullName.trim() !== '' &&
-        selectedBank !== '' &&
-        agreed;
+
+
+    const bankName = selectedBank === 'Другое' ? otherBank.trim() : selectedBank;
+
+const canContinue =
+  cardNumber.trim() !== '' &&
+  phoneNumber.trim() !== '' &&
+  fullName.trim() !== '' &&
+  bankName !== '' &&
+  agreed;
+
+useEffect(() => {
+  if (canContinue) {
+    import(/* webpackPrefetch: true */ './StepOrderPlacement') // ← поправь путь на реальный компонент step-5
+      .catch(() => {});
+  }
+}, [canContinue]);
+
+
 
     const formatCardNumber = (value: string) => {
         const digits = value.replace(/\D/g, '').slice(0, 19);          // только цифры, максимум 19
@@ -127,37 +144,47 @@ function PaymentDetailsPage() {
     }, [orderId]);
 
 
-    const handleContinueClick = async () => {
-        if (!canContinue || !orderId) return;
+const handleContinueClick = () => {
+  if (!canContinue || !orderId) return;
 
-        // 1) Пытаемся обновить профиль пользователя — только если есть id
-        try {
-            if (order?.user?.id) {
-                await updateUser(order.user.id, {
-                    // undefined не уйдут в бэк
-                    phone_number: phoneNumber || undefined,
-                });
-            }
-        } catch (e) {
-            console.warn('Не удалось обновить профиль пользователя, продолжаю:', e);
-            // не выходим — даём оформить заказ дальше
-        }
+  // анти-дребезг
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
 
-        // 2) Обновляем заказ
-        try {
-            await updateOrder(orderId, {
-                step: 4,
-                card_number: cardNumber?.replace(/\s+/g, ''), // если нужно — уберём пробелы
-                phone_number: phoneNumber || undefined,
-                name: fullName?.trim(),
-                bank: selectedBank || undefined,
-            });
+  const nextUrl = `/order/${orderId}/step-5`;
 
-            navigate(`/order/${orderId}/step-5`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+  // 1) мгновенная навигация
+  startT(() => navigate(nextUrl));
+
+  // 2) фоновые запросы
+  queueMicrotask(async () => {
+    try {
+      // обновление пользователя (не критично — делаем best-effort)
+      if (order?.user?.id) {
+        await updateUser(order.user.id, {
+          phone_number: phoneNumber || undefined,
+        });
+      }
+
+      // обновляем заказ (без файлов — можно JSON)
+      await updateOrder(orderId, {
+        step: 4,
+        card_number: cardNumber.replace(/\s+/g, ''),
+        phone_number: phoneNumber || undefined,
+        name: fullName.trim(),
+        bank: bankName || undefined,
+      });
+    } catch (e) {
+      console.error('Фоновое обновление шага 4 упало', e);
+      // опционально: можно пометить локально и ретраить на step-5
+    } finally {
+      setSending(false);
+    }
+  });
+};
+
 
 
     const handleSupportClick = () => {
@@ -168,18 +195,18 @@ function PaymentDetailsPage() {
     };
 
 
-        const handleCancelOrder = async (orderId: string) => {
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
-        try {
-            const formData = new FormData();
-            formData.append("status", "cancelled");
-            await updateOrderStatus(orderId, formData);
-            alert("Заказ отменён");
-        } catch (err) {
-            console.error("Ошибка отмены заказа:", err);
-            alert("Ошибка отмены заказа");
-        }
-    };
+const handleCancelOrder = async (id: string) => {
+  try {
+    const fd = new FormData();
+    fd.append('status', 'cancelled');
+    await updateOrderStatus(id, fd);
+  } catch (err) {
+    console.error('Ошибка отмены заказа:', err);
+  } finally {
+    navigate('/catalog', { replace: true });
+  }
+};
+
 
     if (loading) return <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
@@ -322,16 +349,17 @@ function PaymentDetailsPage() {
             </div>
 
             <button
-                onClick={handleContinueClick}
-                disabled={!canContinue}
-                className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
-                    canContinue
-                        ? 'bg-brand text-white'
-                        : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
-                }`}
-            >
-                Продолжить
-            </button>
+  onPointerUp={handleContinueClick}
+  disabled={!canContinue}
+  className={`w-full py-2 rounded text-brand mb-2 mt-2 ${
+    canContinue
+      ? 'bg-brand text-white'
+      : 'bg-gray-200-400 border border-brand text-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
             <button
   onClick={() => handleCancelOrder(order.id)}
                 className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"

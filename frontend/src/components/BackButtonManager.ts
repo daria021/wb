@@ -20,6 +20,10 @@ export default function BackButtonManager() {
         return navigate('/', { replace: true });
       }
 
+      if (matchPath({ path: '/my-products', end: true }, pathname)) {
+        return navigate('/seller-cabinet', { replace: true });
+      }
+
       // SellerReportsPage  "/seller-cabinet/reports"  → в кабинет
       if (matchPath({ path: '/seller-cabinet/reports', end: true }, pathname)) {
         return navigate('/seller-cabinet', { replace: true });
@@ -143,6 +147,7 @@ if (step1Match) {
       if (onCreateInfo) {
         return navigate('/my-products', { replace: true });
       }
+
 
       // всё остальное — просто назад
       navigate(-1);

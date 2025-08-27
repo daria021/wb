@@ -17,7 +17,7 @@ interface ProductFormData {
     price: string;
     wb_price: string;
     tg: string;
-    payment_time: PayoutTime;
+    payment_time: PayoutTime | '';
     review_requirements: string;
     requirements_agree: boolean;
     image_path?: string;
@@ -99,7 +99,7 @@ function ProductForm() {
         price: '',
         wb_price: '',
         tg: '',
-        payment_time: PayoutTime.AFTER_REVIEW,
+        payment_time: '',
         review_requirements: '',
         requirements_agree: false,
         image_path: '',
@@ -191,22 +191,34 @@ function ProductForm() {
 
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const {name, value, type, checked} = e.target as HTMLInputElement;
-        const newValue = type === 'checkbox'
-            ? checked
-            : value;
-        setFormData(prev => {
-            const updated = {...prev, [name]: newValue};
-            validateField(name, newValue, updated);
-            return updated;
-        });
-    }
+  const target = e.target as HTMLInputElement;
+  const { name, type, checked, value } = target;
+
+  const cleanedValue =
+    type === 'checkbox'
+      ? checked
+      : name === 'article'
+        ? value.replace(/\D/g, '') // ⬅ только цифры
+        : value;
+
+  setFormData(prev => {
+    const updated = { ...prev, [name]: cleanedValue } as ProductFormData;
+    validateField(name, cleanedValue, updated);
+    return updated;
+  });
+};
+
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         if (formData.category === '') {
             alert('Пожалуйста, выберите категорию');
+            return;
+        }
+
+        if (formData.payment_time === '') {
+            alert('Пожалуйста, выберите время выплаты');
             return;
         }
 
@@ -318,6 +330,8 @@ function ProductForm() {
                     <label className="block text-sm font-medium mb-1">Артикул на WB</label>
                     <input
                         type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
                         ref={inputRefs[1]}
                         onKeyDown={handleKeyDown(1)}
                         name="article"
@@ -353,15 +367,15 @@ function ProductForm() {
                 </div>
 
 
-                <div className="flex items-center gap-2 flex-[0_0_auto]">
-
+                <div>
+                    <label className="block text-sm font-medium mb-1">Категория</label>
                     <div className="relative">
                         <select
                             id="userFilter"
-                             name="category"
+                            name="category"
                             value={formData.category}
                             onChange={handleInputChange}
-                            className="h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
+                            className="w-full h-10 pl-3 pr-8 min-w-[220px] max-w-full rounded-md border border-gray-300 bg-white
                      text-sm font-medium text-gray-800 appearance-none
                      focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                         >
@@ -455,20 +469,34 @@ function ProductForm() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Выплата кешбэка покупателю</label>
-                    <select
-                        name="payment_time"
-                        value={formData.payment_time}
-                        onChange={handleInputChange}
-                        className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-                    >
-                        {Object.values(PayoutTime).map((pt) => (
-                            <option key={pt} value={pt}>
-                                {pt}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+  <label className="block text-sm font-medium mb-1">Выплата кешбэка покупателю</label>
+  <div className="relative">
+    <select
+      name="payment_time"
+      value={formData.payment_time}
+      onChange={handleInputChange}
+      className="h-10 w-full pl-3 pr-10 rounded-md border border-gray-300 bg-white
+                 text-sm font-medium text-gray-800 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+      style={{ WebkitAppearance: 'none' }}  // на всякий случай для iOS/Safari
+    >
+      <option value="" disabled hidden>Выбрать выплату</option>
+      {Object.values(PayoutTime).map((pt) => (
+        <option key={pt} value={pt}>{pt}</option>
+      ))}
+    </select>
+
+    {/* стрелка */}
+    <svg
+      className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-brand"
+      viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+    >
+      <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
+    </svg>
+  </div>
+</div>
+
+
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Telegram продавца для вопросов покупателя по

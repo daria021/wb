@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {AxiosResponse} from 'axios';
 import {getOrderById, getOrderReport, updateOrder, updateOrderStatus} from "../../services/api";
@@ -50,6 +50,11 @@ interface OrderReport {
 
 function ProductFindPage() {
     const {orderId} = useParams<{ orderId: string }>();
+
+    const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false);
+
     const navigate = useNavigate();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -108,15 +113,38 @@ const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
 
     const canContinue = articleStatus === 'correct';
 
-    const handleContinue = async () => {
-        if (!canContinue || !orderId) return;
-        try {
-            await updateOrder(orderId, {step: 2});
-            navigate(`/order/${orderId}/step-3`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+    useEffect(() => {
+  if (articleStatus === 'correct') {
+    import(/* webpackPrefetch: true */ './ProductFavoritePage').catch(() => {});
+  }
+}, [articleStatus]);
+
+
+
+    const handleContinue = () => {
+  if (!canContinue || !orderId) return;
+
+  // защита от дребезга/двойных тапов
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
+
+  // мгновенная навигация
+  startT(() => navigate(`/order/${orderId}/step-3`));
+
+  // фоновой запрос без блокировки UI
+  queueMicrotask(async () => {
+    try {
+      await updateOrder(orderId, { step: 2 });
+    } catch (err) {
+      console.error('Фоновое обновление шага 2 упало:', err);
+    } finally {
+      setSending(false);
+    }
+  });
+};
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -128,18 +156,18 @@ const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
     }
 
 
-            const handleCancelOrder = async (orderId: string) => {
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
-        try {
-            const formData = new FormData();
-            formData.append("status", "cancelled");
-            await updateOrderStatus(orderId, formData);
-            alert("Заказ отменён");
-        } catch (err) {
-            console.error("Ошибка отмены заказа:", err);
-            alert("Ошибка отмены заказа");
-        }
-    };
+ const handleCancelOrder = async (orderId: string) => {
+  try {
+    const fd = new FormData();
+    fd.append('status', 'cancelled');
+    await updateOrderStatus(orderId, fd);
+  } catch (err) {
+    console.error('Ошибка отмены заказа:', err);
+  } finally {
+    navigate('/catalog', { replace: true });
+  }
+};
+
 
 
     const handleSupportClick = () => {
@@ -221,15 +249,16 @@ const normalizeArticle = (v: string) => v.replace(/\D/g, '').slice(0, 20);
                     </p>
                 )}
             </div>
-            <button
-                onClick={handleContinue}
-                disabled={!canContinue}
-                className={`w-full py-2 mb-2 rounded-lg text-brand border border-brand font-semibold text-center ${
-                    canContinue ? 'bg-brand text-white hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
-                }`}
-            >
-                Продолжить
-            </button>
+       <button
+  onPointerUp={handleContinue}
+  disabled={!canContinue}
+  className={`w-full py-2 mb-2 rounded-lg text-brand border border-brand font-semibold text-center ${
+    canContinue ? 'bg-brand text-white hover:bg-brand' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
                   <button
   onClick={() => handleCancelOrder(order.id)}
                 className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"
