@@ -1,6 +1,6 @@
 import {apiClient} from "./apiClient";
 import {MeResponse} from "../types/MeResponse";
-import {AxiosRequestConfig, AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import {ProductStatus} from "../enums";
 
 
@@ -27,21 +27,21 @@ interface Product {
 
 
 export interface UserWithBalance {
-  id: string
-  telegram_id?: number
-  nickname?: string
-  role: 'user' | 'client' | 'seller' | 'moderator' | 'admin'
-  balance: number
-  is_banned: boolean
-  is_seller: boolean
-  created_at: string  // ISO-строка
-  updated_at: string  // ISO-строкаf
-  referrer_bonus: number
-  total_plan: number        // общий план (ACTIVE + NOT_PAID)
-  reserved_active: number   // зарезервировано под ACTIVE
-  unpaid_plan: number       // план под NOT_PAID
-  free_balance: number      // сколько свободно (balance – reserved_active)
-  in_progress: number
+    id: string
+    telegram_id?: number
+    nickname?: string
+    role: 'user' | 'client' | 'seller' | 'moderator' | 'admin'
+    balance: number
+    is_banned: boolean
+    is_seller: boolean
+    created_at: string  // ISO-строка
+    updated_at: string  // ISO-строкаf
+    referrer_bonus: number
+    total_plan: number        // общий план (ACTIVE + NOT_PAID)
+    reserved_active: number   // зарезервировано под ACTIVE
+    unpaid_plan: number       // план под NOT_PAID
+    free_balance: number      // сколько свободно (balance – reserved_active)
+    in_progress: number
 }
 
 /**
@@ -49,10 +49,10 @@ export interface UserWithBalance {
  * Бросает ошибку, если получен не-2xx ответ.
  */
 export async function fetchMe(): Promise<UserWithBalance> {
-  const response = await apiClient.get<UserWithBalance>('/users/me', {
-    withCredentials: true, // если используете куки
-  })
-  return response.data
+    const response = await apiClient.get<UserWithBalance>('/users/me', {
+        withCredentials: true, // если используете куки
+    })
+    return response.data
 }
 
 
@@ -74,19 +74,19 @@ export async function getUserOrders() {
 }
 
 export async function updateUser(
-  userId: string,
-  payload: {
-    nickname?: string;
-    email?: string;
-    password?: string;
-    phone_number?: string;
-  }
+    userId: string,
+    payload: {
+        nickname?: string;
+        email?: string;
+        password?: string;
+        phone_number?: string;
+    }
 ) {
 
-  const { data } = await apiClient.patch(`/users/${userId}`, payload, {
-    headers: { 'Content-Type': 'application/json' },
-  });
-  return data as { message: string };
+    const {data} = await apiClient.patch(`/users/${userId}`, payload, {
+        headers: {'Content-Type': 'application/json'},
+    });
+    return data as { message: string };
 }
 
 export async function getOrderById(orderId: string) {
@@ -201,7 +201,7 @@ export async function updateOrder(
         receipt_screenshot?: File;
         receipt_number?: string;
         status?: string;
-order_date?: string | Date;
+        order_date?: string | Date;
     }
 ) {
     const formData = new FormData();
@@ -249,15 +249,15 @@ order_date?: string | Date;
         formData.append('receipt_screenshot', data.receipt_screenshot);
     }
     if (data.order_date) {
-  const dateStr =
-    typeof data.order_date === 'string'
-      ? data.order_date
-      : new Date(data.order_date.getTime() - data.order_date.getTimezoneOffset() * 60000)
-          .toISOString()
-          .slice(0, 10); // "2025-08-12"
+        const dateStr =
+            typeof data.order_date === 'string'
+                ? data.order_date
+                : new Date(data.order_date.getTime() - data.order_date.getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .slice(0, 10); // "2025-08-12"
 
-  formData.append('order_date', dateStr);
-}
+        formData.append('order_date', dateStr);
+    }
 
 
     const response = await apiClient.patch(`/orders/${orderId}`, formData, {
@@ -411,38 +411,38 @@ export async function getInviteLink() {
 }
 
 export async function getSellerReviews(sellerNickname: string) {
-  return apiClient.get(`/seller_review/seller`,
-      {
-          params: {
-              seller_nickname: sellerNickname,
-          }
-      });
+    return apiClient.get(`/seller_review/seller`,
+        {
+            params: {
+                seller_nickname: sellerNickname,
+            }
+        });
 }
 
 export async function createSellerReview(
-  sellerNickname: string,
-  review: string,
+    sellerNickname: string,
+    review: string,
 ) {
-  return apiClient.post(`/seller_review`, {
-    seller_nickname: sellerNickname,
-    review,
-  });
+    return apiClient.post(`/seller_review`, {
+        seller_nickname: sellerNickname,
+        review,
+    });
 }
 
 export async function resolveDeeplink(startParam: string) {
-  return apiClient.get("/deeplink/resolve", {
-      params: {
-          key: startParam,
-      },
-  });
+    return apiClient.get("/deeplink/resolve", {
+        params: {
+            key: startParam,
+        },
+    });
 }
 
 export function getUserHistory(userId: string) {
-  return apiClient.get(`/users/${userId}/history`);
+    return apiClient.get(`/users/${userId}/history`);
 }
 
 export function getUserBalanceHistory(userId: string) {
-  return apiClient.get(`/users/${userId}/balance_history`);
+    return apiClient.get(`/users/${userId}/balance_history`);
 }
 
 export function deleteProduct(productId: string) {
