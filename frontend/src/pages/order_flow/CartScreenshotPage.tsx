@@ -136,11 +136,11 @@ function CartScreenshotPage() {
         // 2) отправку делаем в фоне — без await
         queueMicrotask(async () => {
             try {
-                const fd = new FormData();
-                fd.append('step', String(1));
-                if (file1) fd.append('search_screenshot_path', file1);
-                if (file2) fd.append('cart_screenshot_path', file2);
-                await updateOrder(orderId, fd);
+                await updateOrder(orderId, {
+                    step: 1,
+                    search_screenshot_path: file1!,
+                    cart_screenshot_path: file2!,
+                });
             } catch (e) {
                 // необязательно, но можно показать тост и предложить ретрай из шапки Step-2
                 console.error('Фоновая отправка шага 1 упала', e);
