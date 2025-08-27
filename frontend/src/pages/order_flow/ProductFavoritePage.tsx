@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder, updateOrderStatus} from "../../services/api";
 import {AxiosResponse} from 'axios';
@@ -68,23 +68,34 @@ function ProductFavoritePage() {
     const handleHomeClick = () => navigate('/');
     const [openSrc, setOpenSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false);
+
 
     const toggleStep = (step: number) => {
         setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
     };
 
-            const handleCancelOrder = async (orderId: string) => {
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
-        try {
-            const formData = new FormData();
-            formData.append("status", "cancelled");
-            await updateOrderStatus(orderId, formData);
-            alert("Заказ отменён");
-        } catch (err) {
-            console.error("Ошибка отмены заказа:", err);
-            alert("Ошибка отмены заказа");
-        }
-    };
+ const handleCancelOrder = async (orderId: string) => {
+  try {
+    const formData = new FormData();
+    formData.append("status", "cancelled");
+    await updateOrderStatus(orderId, formData);
+  } catch (err) {
+    console.error("Ошибка отмены заказа:", err);
+  } finally {
+    navigate('/catalog', { replace: true });
+  }
+};
+
+
+            useEffect(() => {
+  if (productFavorited && brandFavorited) {
+    import(/* webpackPrefetch: true */ './PaymentDetailsPage').catch(() => {});
+  }
+}, [productFavorited, brandFavorited]);
+
 
 
     useEffect(() => {
@@ -111,15 +122,27 @@ function ProductFavoritePage() {
             });
     }, [orderId]);
 
-    const handleContinue = async () => {
-        if (!canContinue || !orderId) return;
-        try {
-            await updateOrder(orderId, {step: 3});
-            navigate(`/order/${orderId}/step-4`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+    const handleContinue = () => {
+  if (!canContinue || !orderId) return;
+
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
+
+  startT(() => navigate(`/order/${orderId}/step-4`)); // мгновенно уходим
+
+  queueMicrotask(async () => {
+    try {
+      await updateOrder(orderId, { step: 3 });
+    } catch (err) {
+      console.error('Фоновое обновление шага 3 упало:', err);
+    } finally {
+      setSending(false);
+    }
+  });
+};
+
 
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -193,14 +216,15 @@ function ProductFavoritePage() {
             </div>
 
             <button
-                onClick={handleContinue}
-                disabled={!canContinue}
-                className={`block w-full py-2 mb-2 rounded-lg text-brand font-semibold text-center ${
-                    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
-                }`}
-            >
-                Продолжить
-            </button>
+  onPointerUp={handleContinue}
+  disabled={!canContinue}
+  className={`block w-full py-2 mb-2 rounded-lg text-brand font-semibold text-center ${
+    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
                   <button
   onClick={() => handleCancelOrder(order.id)}
                 className="w-full flex-1 bg-white text-gray-700 mb-2 mt-2 py-2 rounded-lg border border-brand text-center"

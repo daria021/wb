@@ -36,8 +36,7 @@ class ProductRepository(
 
     async def get_active_products(self, limit=100, offset=0, search: Optional[str] = None):
         async with self.session_maker() as session:
-            stmt = select(self.entity).where(self.entity.status == ProductStatus.ACTIVE)
-
+            stmt = select(self.entity).where(self.entity.status == ProductStatus.ACTIVE, self.entity.deleted_at == None)
             if search:
                 # разбиваем запрос на слова и делаем префиксный поиск по каждому
                 tokens = [tok for tok in search.strip().split() if tok]
@@ -64,7 +63,7 @@ class ProductRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(Product)
-                .where(Product.seller_id == user_id)
+                .where(Product.seller_id == user_id, Product.deleted_at == None)
                 .order_by(
                     priority_case.asc(),
                     Product.created_at.asc(),
@@ -79,6 +78,7 @@ class ProductRepository(
         async with self.session_maker() as session:
             result = await session.execute(
                 select(self.entity)
+                .where(self.entity.deleted_at == None)
                 .options(*self.options)
                 .order_by(self.entity.updated_at.asc())  # ← сортировка по возрастанию
             )

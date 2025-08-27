@@ -5,10 +5,10 @@ import {ProductStatus} from '../../enums';
 import GetUploadLink from "../../components/GetUploadLink";
 
 type ModeratorReview = {
-  id: string;
-  comment_to_moderator?: string | null;
-  comment_to_seller?: string | null;
-  created_at?: string;
+    id: string;
+    comment_to_moderator?: string | null;
+    comment_to_seller?: string | null;
+    created_at?: string;
 };
 
 function ModeratorProductReviewPage() {
@@ -20,13 +20,11 @@ function ModeratorProductReviewPage() {
     const [commentSeller, setCommentSeller] = useState('');
     const navigate = useNavigate();
 
-    const statusLabels: Record<ProductStatus, string> = {
+    const statusLabels: Partial<Record<ProductStatus, string>> = {
         [ProductStatus.CREATED]: 'Создано',
         [ProductStatus.ACTIVE]: 'Активно',
-        [ProductStatus.NOT_PAID]: 'Не оплачено',
         [ProductStatus.DISABLED]: 'Необходимо отредактировать',
         [ProductStatus.REJECTED]: 'Отклонено',
-        [ProductStatus.ARCHIVED]: 'В архиве',
     };
 
     const fetchProduct = async () => {
@@ -62,12 +60,12 @@ function ModeratorProductReviewPage() {
     };
 
     if (loading || !product) return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+        <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+    </div>;
 
     const reviews: ModeratorReview[] = Array.isArray(product.moderator_reviews)
-  ? product.moderator_reviews as ModeratorReview[]
-  : [];
+        ? product.moderator_reviews as ModeratorReview[]
+        : [];
 
     return (
         <div className="min-h-screen bg-gray-200 p-6">
@@ -105,66 +103,65 @@ function ModeratorProductReviewPage() {
                 </div>
             </div>
 
-{reviews.some(r => (r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())) && (
-  <div className="bg-white shadow rounded p-6 mb-6">
-    <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
-    {reviews
-      .filter(r => r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())
-      .map((review) => (
-        <div key={review.id} className="border p-4 mb-4 rounded">
-          {review.comment_to_moderator && (
-            <div className="bg-brandlight p-2 rounded mb-2">
-              <p><strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}</p>
-            </div>
-          )}
-          {review.comment_to_seller && (
-            <div className="bg-brandlight p-2 rounded mb-2">
-              <p><strong>Комментарий для продавца:</strong> {review.comment_to_seller}</p>
-            </div>
-          )}
-          <p className="text-xs text-gray-500">
-            Дата: {review.created_at ? new Date(review.created_at).toLocaleString() : '—'}
-          </p>
-        </div>
-      ))}
-  </div>
-)}
+            {reviews.some(r => (r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())) && (
+                <div className="bg-white shadow rounded p-6 mb-6">
+                    <h3 className="text-xl font-bold mb-4">Комментарии модераторов</h3>
+                    {reviews
+                        .filter(r => r.comment_to_moderator?.trim() || r.comment_to_seller?.trim())
+                        .map((review) => (
+                            <div key={review.id} className="border p-4 mb-4 rounded">
+                                {review.comment_to_moderator && (
+                                    <div className="bg-brandlight p-2 rounded mb-2">
+                                        <p><strong>Комментарий для модераторов:</strong> {review.comment_to_moderator}
+                                        </p>
+                                    </div>
+                                )}
+                                {review.comment_to_seller && (
+                                    <div className="bg-brandlight p-2 rounded mb-2">
+                                        <p><strong>Комментарий для продавца:</strong> {review.comment_to_seller}</p>
+                                    </div>
+                                )}
+                                <p className="text-xs text-gray-500">
+                                    Дата: {review.created_at ? new Date(review.created_at).toLocaleString() : '—'}
+                                </p>
+                            </div>
+                        ))}
+                </div>
+            )}
 
             <div className="border-l-4 border-blue-500 pl-4">
                 <h3 className="text-lg font-semibold mb-4">Детали проверки</h3>
                 <div className="mb-4">
                     <label className="block mb-2">Статус:</label>
-
-
-                                <div className="relative">
-      <select
-        value={status}
-                        onChange={e => setStatus(e.target.value)}
-        className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                    <div className="relative">
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            className="h-10 w-full appearance-none rounded-md border border-brand bg-white
                    pl-3 pr-10 text-sm font-medium text-gray-800
                    focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-        aria-label="Фильтр по статусу"
-      >
-        {Object.values(ProductStatus).map(value => (
-                            <option key={value} value={value}>
-                                {statusLabels[value]}
-                            </option>
-                        ))}
-        ))
-      </select>
+                            aria-label="Фильтр по статусу"
+                        >
+                            {Object.entries(statusLabels).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                    {label}
+                                </option>
+                            ))}
+                            ))
+                        </select>
 
-      {/* Стрелка (иконка) */}
-      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-        <svg
-          className="h-4 w-4 text-brand"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z" />
-        </svg>
-      </div>
-    </div>
+                        {/* Стрелка (иконка) */}
+                        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                            <svg
+                                className="h-4 w-4 text-brand"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mb-4">

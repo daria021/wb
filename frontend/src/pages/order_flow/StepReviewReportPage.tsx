@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useTransition} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {getOrderById, getOrderReport, updateOrder} from '../../services/api';
 import {AxiosResponse} from 'axios';
@@ -81,6 +81,11 @@ function StepReviewReportPage() {
     const [wroteInWB, setWroteInWB] = useState(false);
     const location = useLocation();
     const cameFromOrders = Boolean(location.state?.fromOrders);
+
+    const [, startT] = useTransition();
+const lastClickRef = useRef(0);
+const [sending, setSending] = useState(false);
+
     const isReviewDone = order?.product.requirements_agree
         ? wroteInWB    // если договорились с продавцом — смотрим на wroteInWB
         : leftReview;
@@ -124,10 +129,17 @@ function StepReviewReportPage() {
     }, [file2]);
 
     const canContinue =
-        isReviewDone &&
-        file1 !== null &&
-        file2 !== null &&
-        checkNumber.trim() !== '';
+  isReviewDone &&
+  !!file1 &&
+  !!file2 &&
+  checkNumber.trim() !== '';
+
+    useEffect(() => {
+  if (canContinue) {
+    import(/* webpackPrefetch: true */ './FinalDealPage').catch(() => {});
+  }
+}, [canContinue]);
+
 
 
     useEffect(() => {
@@ -178,28 +190,41 @@ function StepReviewReportPage() {
     };
 
 
-    const handleContinue = async () => {
-        if (!canContinue || !orderId || !order) return;
+const handleContinue = () => {
+  if (!canContinue || !orderId || !order || !file1 || !file2) return;
 
-        const payload: any = {
-            step: 7,
-            review_screenshot: file1,
-            receipt_screenshot: file2,
-            receipt_number: checkNumber,
-        };
+  // анти-дребезг
+  const now = performance.now();
+  if (now - lastClickRef.current < 250 || sending) return;
+  lastClickRef.current = now;
+  setSending(true);
 
-        if (order.product.payment_time === PayoutTime.AFTER_DELIVERY || order.product.payment_time === PayoutTime.ON_15TH_DAY) {
-            // YYYY-MM-DD
-            payload.order_date = new Date().toISOString().slice(0, 10);
-        }
+  // мгновенная навигация
+  startT(() => navigate(`/order/${orderId}/order-info`));
 
-        try {
-            await updateOrder(orderId, payload);
-            navigate(`/order/${orderId}/order-info`);
-        } catch (err) {
-            console.error('Ошибка при обновлении заказа:', err);
-        }
-    };
+  // фоновой апдейт — обычный объект, как и раньше
+  queueMicrotask(async () => {
+    try {
+      await updateOrder(orderId, {
+        step: 7,
+        review_screenshot: file1,
+        receipt_screenshot: file2,
+        receipt_number: checkNumber,
+        ...(
+          order.product.payment_time === PayoutTime.AFTER_DELIVERY ||
+          order.product.payment_time === PayoutTime.ON_15TH_DAY
+        ? { order_date: new Date().toISOString().slice(0, 10) }
+        : {}
+        ),
+      });
+    } catch (err) {
+      console.error('Фоновое обновление шага 7 упало:', err);
+    } finally {
+      setSending(false);
+    }
+  });
+};
+
 
     const handleSupportClick = () => {
         if (window.Telegram?.WebApp?.close) {
@@ -417,12 +442,15 @@ function StepReviewReportPage() {
             <section className="flex flex-col gap-2 mt-2 mb-2">
 
                 <button
-                    onClick={handleContinue}
-                    disabled={!canContinue}
-                    className={`w-full py-2 rounded text-brand mb-4 ${canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'}`}
-                >
-                    Продолжить
-                </button>
+  onPointerUp={handleContinue}
+  disabled={!canContinue}
+  className={`w-full py-2 rounded text-brand mb-4 ${
+    canContinue ? 'bg-brand text-white' : 'bg-gray-200-400 border border-brand cursor-not-allowed'
+  } ${sending ? 'opacity-90' : ''}`}
+>
+  {sending ? 'Продолжаем…' : 'Продолжить'}
+</button>
+
             </section>
 
             <div className="space-y-4">
@@ -479,7 +507,7 @@ function StepReviewReportPage() {
                                                             </p>
                                                             <img
                                                                 src={GetUploadLink(reportData.search_screenshot_path)}
-                                                                alt="Скриншот поискового запроса в WB"
+                                                                alt="1. Скриншот поискового запроса в WB"
                                                                 className="mt-1 w-full rounded"
                                                             />
                                                         </div>
@@ -490,7 +518,7 @@ function StepReviewReportPage() {
                                                                 WB</p>
                                                             <img
                                                                 src={GetUploadLink(reportData.cart_screenshot_path)}
-                                                                alt="Скриншот корзины в WB"
+                                                                alt="2. Скриншот корзины в WB"
                                                                 className="mt-1 w-full rounded"
                                                             />
                                                         </div>

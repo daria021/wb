@@ -26,6 +26,7 @@ interface OrderReport {
 
 interface UserInOrder {
     nickname: string;
+    phone_number: string;
 }
 
 interface Order {
@@ -50,7 +51,7 @@ function OrderReportPage() {
     const [error, setError] = useState('');
     const [order, setOrder] = useState<Order | null>(null);
     const location = useLocation();
-  const fromModerator = location.state?.from === "moderator";
+    const fromModerator = location.state?.from === "moderator";
 
     const copyToClipboard = useCallback((text: string) => {
         navigator.clipboard.writeText(text)
@@ -122,10 +123,11 @@ function OrderReportPage() {
         }
     };
 
+
     if (loading) {
         return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
     if (error || !report) {
         return <div className="p-6 text-center text-red-600 text-lg">{error || 'Отчет не найден'}</div>;
@@ -135,38 +137,43 @@ function OrderReportPage() {
         <div className="min-h-screen bg-gray-200 py-6">
             <div className="max-w-screen-md mx-auto bg-white shadow-lg rounded-lg p-6">
                 <h1 className="text-lg font-bold mb-6 text-center">Отчёт по сделке выкупа товара</h1>
-          <section className="mb-6 p-4 bg-gray-200 rounded-md">
-  {order?.order_date && order?.transaction_code && (
-    <>
-      <p>
-        Дата сделки по выкупу товара:{' '}
-        <strong>
-          {new Date(order.order_date as any).toLocaleDateString('ru-RU')}
-        </strong>
-      </p>
-      <p>
-        Код сделки: <strong>{order.transaction_code}</strong>
-      </p>
-        <p>
-        Сумма кешбэка к выплате: <strong>{report.cashback} ₽</strong>
-      </p>
-        <p>
-        Условия выплаты кешбэка: <strong>{order.product.payment_time}</strong>
-      </p>
-       <p>
-    Покупатель:{' '}
-    <a
-        href={`https://t.me/${order!.user.nickname}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
-    >
-        @{order!.user.nickname}
-    </a>
-</p>
-    </>
-  )}
-</section>
+                <section className="mb-6 p-4 bg-gray-200 rounded-md">
+                    {order?.order_date && order?.transaction_code && (
+                        <>
+                            <p>
+                                Дата сделки по выкупу товара:{' '}
+                                <strong>
+                                    {new Date(order.order_date as any).toLocaleDateString('ru-RU')}
+                                </strong>
+                            </p>
+                            <p>
+                                Код сделки: <strong>{order.transaction_code}</strong>
+                            </p>
+                            <p>
+                                Сумма кешбэка к выплате: <strong>{report.cashback} ₽</strong>
+                            </p>
+                            <p>
+                                Условия выплаты кешбэка: <strong>{order.product.payment_time}</strong>
+                            </p>
+                            <p>
+                                Покупатель:{' '}
+                                {order.user.nickname ? (
+                                    <a
+                                        href={`https://t.me/${order.user.nickname}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:underline"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {order.user.nickname}
+                                    </a>
+                                ) : (
+                                    <span className="text-gray-600">{order.user.phone_number}</span>
+                                )}
+                            </p>
+                        </>
+                    )}
+                </section>
 
 
                 {(report.search_screenshot_path || report.cart_screenshot) && (
@@ -199,85 +206,85 @@ function OrderReportPage() {
                 )}
 
                 {report.step > 2 && (
-                <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                    <h2 className="text-lg font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
-                    <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
-                </section>
+                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
+                        <h2 className="text-lg font-semibold mb-2">Шаг 3. Товар и бренд добавлены в избранное</h2>
+                        <p className="text-base">Ваш товар и бренд успешно добавлены в избранное.</p>
+                    </section>
                 )}
 
                 {report.step > 3 && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                    <h2 className="text-lg font-semibold mb-2">Шаг 4. Реквизиты для получения кешбэка</h2>
-                                    {(report.card_number || report.phone_number || report.name || report.bank) && (
-                    <section className="mb-6 p-4 bg-gray-200 rounded-md">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="text-lg font-semibold">Реквизиты</h2>
-                        </div>
-                        {report.card_number && (
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Номер карты: {report.card_number}</span>
-                                <button
-                                    onClick={() => copyToClipboard(report.card_number!)}
-                                    className="ml-2"
-                                >
-                                    <img
-                                        src="/icons/copy.png"
-                                        alt="Скопировать"
-                                        className="w-5 h-5"
-                                    />
-                                </button>
-                            </div>
-                        )}
-                        {report.phone_number && (
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Номер телефона: {report.phone_number}</span>
-                                <button
-                                    onClick={() => copyToClipboard(report.phone_number!)}
-                                    className="ml-2"
-                                >
-                                    <img
-                                        src="/icons/copy.png"
-                                        alt="Скопировать"
-                                        className="w-5 h-5"
-                                    />
-                                </button>
-                            </div>
-                        )}
-                        {report.name && (
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Получатель: {report.name}</span>
-                                <button
-                                    onClick={() => copyToClipboard(report.name!)}
-                                    className="ml-2"
-                                >
-                                    <img
-                                        src="/icons/copy.png"
-                                        alt="Скопировать"
-                                        className="w-5 h-5"
-                                    />
-                                </button>
-                            </div>
-                        )}
-                        {report.bank && (
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-base">Банк: {report.bank}</span>
-                                <button
-                                    onClick={() => copyToClipboard(report.bank!)}
-                                    className="ml-2"
-                                >
-                                    <img
-                                        src="/icons/copy.png"
-                                        alt="Скопировать"
-                                        className="w-5 h-5"
-                                    />
-                                </button>
-                            </div>
+                        <h2 className="text-lg font-semibold mb-2">Шаг 4. Реквизиты для получения кешбэка</h2>
+                        {(report.card_number || report.phone_number || report.name || report.bank) && (
+                            <section className="mb-6 p-4 bg-gray-200 rounded-md">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h2 className="text-lg font-semibold">Реквизиты</h2>
+                                </div>
+                                {report.card_number && (
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-base">Номер карты: {report.card_number}</span>
+                                        <button
+                                            onClick={() => copyToClipboard(report.card_number!)}
+                                            className="ml-2"
+                                        >
+                                            <img
+                                                src="/icons/copy.png"
+                                                alt="Скопировать"
+                                                className="w-5 h-5"
+                                            />
+                                        </button>
+                                    </div>
+                                )}
+                                {report.phone_number && (
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-base">Номер телефона: {report.phone_number}</span>
+                                        <button
+                                            onClick={() => copyToClipboard(report.phone_number!)}
+                                            className="ml-2"
+                                        >
+                                            <img
+                                                src="/icons/copy.png"
+                                                alt="Скопировать"
+                                                className="w-5 h-5"
+                                            />
+                                        </button>
+                                    </div>
+                                )}
+                                {report.name && (
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-base">Получатель: {report.name}</span>
+                                        <button
+                                            onClick={() => copyToClipboard(report.name!)}
+                                            className="ml-2"
+                                        >
+                                            <img
+                                                src="/icons/copy.png"
+                                                alt="Скопировать"
+                                                className="w-5 h-5"
+                                            />
+                                        </button>
+                                    </div>
+                                )}
+                                {report.bank && (
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-base">Банк: {report.bank}</span>
+                                        <button
+                                            onClick={() => copyToClipboard(report.bank!)}
+                                            className="ml-2"
+                                        >
+                                            <img
+                                                src="/icons/copy.png"
+                                                alt="Скопировать"
+                                                className="w-5 h-5"
+                                            />
+                                        </button>
+                                    </div>
+                                )}
+                            </section>
                         )}
                     </section>
-                )}
-                </section>
 
-)}
+                )}
 
                 {report.final_cart_screenshot_path && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
@@ -339,20 +346,20 @@ function OrderReportPage() {
                 )}
 
                 {report.status === OrderStatus.CASHBACK_NOT_PAID && !fromModerator &&
-                <section className="flex flex-col gap-2">
-                         <button
-                        onClick={() => handleCashbackPaid(orderId!)}
-                        className="py-2 px-4 rounded-lg font-semibold border border-green-500 text-green-500 bg-transparent"
-                    >
-                        Отметить как оплаченный
-                    </button>
-                    <button
-                        onClick={() => handleCashbackRejected(orderId!)}
-className="py-2 px-4 rounded-lg font-semibold border border-red-500 text-red-500 bg-transparent"
-                    >
-                        Отклонить начисление кешбэка
-                    </button>
-                </section>
+                    <section className="flex flex-col gap-2">
+                        <button
+                            onClick={() => handleCashbackPaid(orderId!)}
+                            className="py-2 px-4 rounded-lg font-semibold border border-green-500 text-green-500 bg-transparent"
+                        >
+                            Отметить как оплаченный
+                        </button>
+                        <button
+                            onClick={() => handleCashbackRejected(orderId!)}
+                            className="py-2 px-4 rounded-lg font-semibold border border-red-500 text-red-500 bg-transparent"
+                        >
+                            Отклонить начисление кешбэка
+                        </button>
+                    </section>
                 }
             </div>
         </div>
