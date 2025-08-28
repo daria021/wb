@@ -72,6 +72,8 @@ function MyOrdersPage() {
     const [statusOptions, setStatusOptions] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebounce(searchQuery, 600);
+    const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
+
 
     // вверху файла, рядом с STEP_NAMES
     const STATUS_LABELS: { [key in OrderStatus]: string } = {
@@ -346,25 +348,60 @@ function MyOrdersPage() {
                             return (
                                 <div key={order.id} className="relative">
                                     {/* КНОПКА вне <Link>, но выше по z-index + на тачах предотвращаем навигацию */}
-                                    {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID &&
-                                        order.status !== OrderStatus.CASHBACK_REJECTED && (
-                                            <button
-                                                className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition touch-manipulation"
-                                                onTouchStart={(e) => {
+                                    {!isCancelled &&
+ order.status !== OrderStatus.CASHBACK_PAID &&
+ order.status !== OrderStatus.CASHBACK_REJECTED && (
+<button
+  className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition"
+  onClick={(e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setConfirmCancelId(order.id);
+  }}
+>
+  Отменить
+</button>
 
-                                                    // вызовем сразу отмену — на iOS onTouchStart сработает быстрее onClick
-                                                    handleCancelOrder(order.id, e as unknown as React.MouseEvent);
-                                                }}
-                                                onMouseDown={(e) => {
+)}
+                                    {confirmCancelId === order.id && (
+  <div className="absolute right-2 top-10 z-50 bg-white border border-red-300 rounded-md shadow p-2 flex gap-2 items-center">
+    <span className="text-xs">Отменить заказ?</span>
+    <button
+      className="text-xs px-2 py-1 rounded bg-red-600 text-white"
+      onClick={async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        // пробуем через Telegram API; если он не покажет модалку — всё равно продолжаем
+        try { await confirmTG('Вы уверены, что хотите отменить заказ?'); } catch {}
+        try {
+          const fd = new FormData();
+          fd.append('status', 'cancelled');
+          await updateOrderStatus(order.id, fd);
+          await alertTG('Заказ отменён');
+          setConfirmCancelId(null);
+          fetchOrders();
+        } catch (err) {
+          console.error('Ошибка отмены заказа:', err);
+          await alertTG('Ошибка отмены заказа');
+          setConfirmCancelId(null);
+        }
+      }}
+    >
+      Да
+    </button>
+    <button
+      className="text-xs px-2 py-1 rounded border"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setConfirmCancelId(null);
+      }}
+    >
+      Нет
+    </button>
+  </div>
+)}
 
-                                                }}
-                                                onClick={(e) => {
-                                                    handleCancelOrder(order.id, e);
-                                                }}
-                                            >
-                                                Отменить
-                                            </button>
-                                        )}
 
                                     {/* ССЫЛКА-КАРТОЧКА: навигируем только если событие НЕ предотвращено */}
                                     <Link
@@ -373,7 +410,7 @@ function MyOrdersPage() {
                                             if (e.defaultPrevented) return; // кнопку уже нажали
                                             // иначе обычная навигация
                                         }}
-                                        className="block relative bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition z-0"
+  className="block relative overflow-visible bg-white border border-darkGray rounded-md shadow-sm p-3 hover:shadow-md transition z-0"
                                     >
                                         {isCancelled && (
                                             <div className="absolute top-2 right-2 text-gray-500 text-xs">

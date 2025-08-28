@@ -51,10 +51,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  useEffect(() => {
-    if (!localStorage.getItem('authToken')) return;
-    load();
+// src/contexts/UserProvider.tsx (фрагмент)
+useEffect(() => {
+  const token = localStorage.getItem('authToken');
+  if (!token) return;                // не дергаем /users/me без токена
+  void load();                       // грузим профиль только когда токен есть
 }, []);
+
 
   return (
     <UserContext.Provider value={{ user, loading, error, refresh: load }}>

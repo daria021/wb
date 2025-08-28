@@ -52,6 +52,8 @@ function MyProductsPage() {
     const [searchQuery, setSearchQuery] = useState('');
 
     const {user, loading: userLoading, refresh} = useUser();
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
 
 
     const totalCount = products.length;
@@ -482,7 +484,7 @@ function MyProductsPage() {
                             <div
                                 key={product.id}
                                 onClick={() => navigate(`/product/${product.id}/seller`)}
-                                className={`relative border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
+                                className={`relative overflow-visible border border-gray-200 rounded-md p-3 hover:shadow transition-shadow duration-300 cursor-pointer ${
                                     product.status.toLowerCase() === 'active'
                                         ? 'bg-green-100'
                                         : product.status.toLowerCase() === 'archived'
@@ -509,23 +511,60 @@ function MyProductsPage() {
                                     )}
 
                                     {product.status === ProductStatus.ARCHIVED && (
-                                        <button
-                                            onClick={(e) => handleDeleteProduct(e, product.id)}
-                                            disabled={deletingId === product.id}
-                                            aria-label="Удалить товар"
-                                            title="Удалить товар"
-                                            className={`group p-1 rounded-md transition
-                  ${deletingId === product.id
-                                                ? 'opacity-40 pointer-events-none'
-                                                : 'hover:bg-red-50 active:scale-95'}`}
-                                        >
-                                            <img
-                                                src="/icons/trash.png"
-                                                alt=""
-                                                className={`w-5 h-5 ${deletingId === product.id ? '' : 'opacity-80 group-hover:opacity-100'}`}
-                                            />
-                                        </button>
-                                    )}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+    e.preventDefault();
+    setConfirmDeleteId(product.id);
+    }}
+    disabled={deletingId === product.id}
+    aria-label="Удалить товар"
+    title="Удалить товар"
+    className={`group p-1 rounded-md transition ${deletingId === product.id ? 'opacity-40 pointer-events-none' : 'hover:bg-red-50 active:scale-95'}`}
+  >
+    <img src="/icons/trash.png" alt="" className={`w-5 h-5 ${deletingId === product.id ? '' : 'opacity-80 group-hover:opacity-100'}`} />
+  </button>
+)}
+
+                                    {confirmDeleteId === product.id && (
+  <div className="absolute right-2 top-10 z-50 bg-white border border-red-300 rounded-md shadow p-2 flex gap-2 items-center">
+    <span className="text-xs">Удалить навсегда?</span>
+    <button
+      className="text-xs px-2 py-1 rounded bg-red-600 text-white"
+      onClick={async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        // пробуем Telegram-модалку (если доступна) — но не зависим от неё
+        try { await confirmTG('Удалить товар навсегда? Это действие необратимо.'); } catch {}
+        try {
+          setDeletingId(product.id);
+          await deleteProduct(product.id);
+          setProducts(prev => prev.filter(p => p.id !== product.id));
+          await alertTG('Товар удалён');
+        } catch (err) {
+          console.error('Не удалось удалить товар', err);
+          await alertTG('Не удалось удалить товар');
+        } finally {
+          setDeletingId(null);
+          setConfirmDeleteId(null);
+        }
+      }}
+    >
+      Да
+    </button>
+    <button
+      className="text-xs px-2 py-1 rounded border"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setConfirmDeleteId(null);
+      }}
+    >
+      Нет
+    </button>
+  </div>
+)}
+
                                 </div>
 
 
