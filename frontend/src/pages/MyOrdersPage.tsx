@@ -217,26 +217,24 @@ function MyOrdersPage() {
 
 
     const handleCancelOrder = async (
-  orderId: string,
-  e: React.MouseEvent | React.TouchEvent
-) => {
-  e.stopPropagation();
-  e.preventDefault();
+        orderId: string,
+        e: React.MouseEvent | React.TouchEvent
+    ) => {
 
-  const ok = await confirmTG('Вы уверены, что хотите отменить заказ?');
-  if (!ok) return;
+        const ok = await confirmTG('Вы уверены, что хотите отменить заказ?');
+        if (!ok) return;
 
-  try {
-    const formData = new FormData();
-    formData.append('status', 'cancelled');
-    await updateOrderStatus(orderId, formData);
-    await alertTG('Заказ отменён');
-    fetchOrders();
-  } catch (err) {
-    console.error('Ошибка отмены заказа:', err);
-    await alertTG('Ошибка отмены заказа');
-  }
-};
+        try {
+            const formData = new FormData();
+            formData.append('status', 'cancelled');
+            await updateOrderStatus(orderId, formData);
+            await alertTG('Заказ отменён');
+            fetchOrders();
+        } catch (err) {
+            console.error('Ошибка отмены заказа:', err);
+            await alertTG('Ошибка отмены заказа');
+        }
+    };
 
     const handleShowMore = () => {
         setShowCount(prev => prev + 5);
@@ -349,29 +347,24 @@ function MyOrdersPage() {
                                 <div key={order.id} className="relative">
                                     {/* КНОПКА вне <Link>, но выше по z-index + на тачах предотвращаем навигацию */}
                                     {!isCancelled && order.status !== OrderStatus.CASHBACK_PAID &&
-                                        order.status !== OrderStatus.CASHBACK_REJECTED &&(
-                                        <button
-                                            className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition touch-manipulation"
-                                            onTouchStart={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                // вызовем сразу отмену — на iOS onTouchStart сработает быстрее onClick
-                                                handleCancelOrder(order.id, e as unknown as React.MouseEvent);
-                                            }}
-                                            onMouseDown={(e) => {
-                                                // для некоторых Android WebView onMouseDown надёжнее
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                handleCancelOrder(order.id, e);
-                                            }}
-                                        >
-                                            Отменить
-                                        </button>
-                                    )}
+                                        order.status !== OrderStatus.CASHBACK_REJECTED && (
+                                            <button
+                                                className="absolute top-2 right-2 z-50 pointer-events-auto text-red-600 border border-red-500 text-xs rounded px-2 py-1 hover:bg-red-50 active:bg-red-100 transition touch-manipulation"
+                                                onTouchStart={(e) => {
+
+                                                    // вызовем сразу отмену — на iOS onTouchStart сработает быстрее onClick
+                                                    handleCancelOrder(order.id, e as unknown as React.MouseEvent);
+                                                }}
+                                                onMouseDown={(e) => {
+
+                                                }}
+                                                onClick={(e) => {
+                                                    handleCancelOrder(order.id, e);
+                                                }}
+                                            >
+                                                Отменить
+                                            </button>
+                                        )}
 
                                     {/* ССЫЛКА-КАРТОЧКА: навигируем только если событие НЕ предотвращено */}
                                     <Link
