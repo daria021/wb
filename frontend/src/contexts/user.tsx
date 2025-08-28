@@ -1,4 +1,3 @@
-// src/context/UserContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import {fetchMe} from "../services/api";
 
@@ -52,10 +51,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  // вызываем один раз при монтировании
   useEffect(() => {
-    load()
-  }, [])
+    if (!localStorage.getItem('authToken')) return;
+    load();
+}, []);
 
   return (
     <UserContext.Provider value={{ user, loading, error, refresh: load }}>
