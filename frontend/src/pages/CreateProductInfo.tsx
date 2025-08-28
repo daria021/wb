@@ -105,14 +105,11 @@ function CreateProductInfo() {
         }
     };
 
-    if (loading) {
-        return <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
-            </div>;
-    }
 
-    if (error || !product) {
-        return <div className="p-4 text-red-600">{error || 'Товар не найден'}</div>;
+    if (loading || error || !product) {
+        return <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
+        </div>;
     }
 
     const getReviewComment = (review: ModeratorReview): string | null => {
