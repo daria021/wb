@@ -4,6 +4,7 @@ import {deleteProduct, getAllOrderBySellerId, getProductsBySellerId, updateProdu
 
 import {ProductStatus} from '../enums';
 import {useUser} from "../contexts/user";
+import {alertTG, confirmTG} from "../utils/telegram";
 
 interface ModeratorReview {
     id: string;
@@ -66,39 +67,6 @@ function MyProductsPage() {
 
 
     const [deletingId, setDeletingId] = useState<string | null>(null);
-
-    const tg = (window as any)?.Telegram?.WebApp;
-
-    async function confirmTG(message: string): Promise<boolean> {
-        if (tg?.showConfirm) return await tg.showConfirm(message);
-        if (tg?.showPopup) {
-            const id = await tg.showPopup({
-                title: 'Подтверждение',
-                message,
-                buttons: [
-                    {id: 'yes', text: 'Удалить', type: 'destructive'},
-                    {id: 'no', text: 'Отмена', type: 'default'},
-                ],
-            });
-            return id === 'yes';
-        }
-        // локальная разработка вне Telegram
-        return window.confirm(message);
-    }
-
-    async function alertTG(message: string): Promise<void> {
-        if (tg?.showAlert) return tg.showAlert(message);
-        if (tg?.showPopup) {
-            await tg.showPopup({
-                title: '',
-                message,
-                buttons: [{id: 'ok', text: 'ОК', type: 'default'}],
-            });
-            return;
-        }
-        // локальная разработка
-        window.alert(message);
-    }
 
 
     const handleDeleteProduct = async (

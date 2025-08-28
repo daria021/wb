@@ -5,26 +5,23 @@ function getTG() {
 export async function confirmTG(message: string): Promise<boolean> {
   const tg = getTG();
 
-  // сначала пробуем popup (есть везде)
   if (tg?.showPopup) {
     const id = await tg.showPopup({
       title: 'Подтверждение',
       message,
       buttons: [
-        { id: 'yes', text: 'Да',       type: 'destructive' },
-        { id: 'no',  text: 'Отмена',   type: 'default' },
+        { id: 'yes', text: 'Да', type: 'destructive' },
+        { id: 'no',  text: 'Отмена', type: 'default' },
       ],
     });
     return id === 'yes';
   }
 
-  // (если доступен) showConfirm
   if (tg?.showConfirm) {
     return await tg.showConfirm(message);
   }
 
-  // фолбэк — только для локалки вне Telegram
-  return window.confirm(message);
+  return false;
 }
 
 export async function alertTG(message: string): Promise<void> {
@@ -34,6 +31,7 @@ export async function alertTG(message: string): Promise<void> {
     await tg.showAlert(message);
     return;
   }
+
   if (tg?.showPopup) {
     await tg.showPopup({
       title: '',
@@ -43,6 +41,5 @@ export async function alertTG(message: string): Promise<void> {
     return;
   }
 
-  // фолбэк — только для локалки вне Telegram
-  window.alert(message);
+  console.log('ALERT:', message);
 }
