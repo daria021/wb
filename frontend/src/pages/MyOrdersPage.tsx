@@ -4,6 +4,7 @@ import {getUserOrders, updateOrderStatus} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from '../hooks/useDebounce';
 import {OrderStatus} from "../enums";
+import {alertTG, confirmTG} from "../utils/telegram";
 
 
 export const STEP_NAMES: { [key: number]: string } = {
@@ -80,34 +81,6 @@ function MyOrdersPage() {
         [OrderStatus.PAYMENT_CONFIRMED]: 'Оплата подтверждена',
         [OrderStatus.CASHBACK_REJECTED]: 'Кешбэк отклонен',
     };
-
-    // сверху файла (после импортов)
-const tg = (window as any).Telegram?.WebApp;
-
-async function confirmTG(message: string): Promise<boolean> {
-  // 1) нативный API Telegram
-  if (tg?.showConfirm) return await tg.showConfirm(message);
-  if (tg?.showPopup) {
-    const id = await tg.showPopup({
-      title: 'Подтверждение',
-      message,
-      buttons: [
-        { id: 'yes', type: 'destructive', text: 'Отменить' },
-        { id: 'no',  type: 'default',    text: 'Нет' },
-      ],
-    });
-    return id === 'yes';
-  }
-  // 2) фолбэк (локальная среда вне Telegram)
-  return window.confirm(message);
-}
-
-async function alertTG(message: string): Promise<void> {
-  if (tg?.showAlert) return tg.showAlert(message);
-  // фолбэк для локалки
-  alert(message);
-}
-
 
 
     useEffect(() => {
@@ -264,7 +237,6 @@ async function alertTG(message: string): Promise<void> {
     await alertTG('Ошибка отмены заказа');
   }
 };
-
 
     const handleShowMore = () => {
         setShowCount(prev => prev + 5);
