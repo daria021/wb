@@ -6,21 +6,6 @@ import {Combobox} from '@headlessui/react';
 import {BootstrapContext} from '../contexts/bootstrap';
 import {OrderStatus, PayoutTime, ProductStatus} from "../enums";
 
-interface Product {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    wb_price: number;
-    article: string;
-    category: string;
-    seller_id: string;
-    image_path?: string;
-    status: ProductStatus;
-    payment_time?: PayoutTime | string;
-    updated_at: Date;
-}
-
 interface Seller {
     id: string;
     nickname: string;
@@ -42,13 +27,7 @@ function CatalogPage() {
 
 
     const [sellerQuery, setSellerQuery] = useState('');
-    // const {loading: authLoading} = useAuth();
-    // const retryCnt = useRef(0);
 
-
-
-
-    const abortRef = useRef<AbortController | null>(null);
     // отфильтрованный список продавцов под комбо
     const filteredSellers = sellerQuery === ''
         ? sellerOptions
@@ -89,7 +68,6 @@ function CatalogPage() {
         if (next >= 2 && next <= 7) return `/order/${id}/step-${next}`;
         return `/order/${id}/order-info`;
     };
-
 
 // Сопоставление именно по productId (не цепляем чужие заказы)
     const matchesProduct = (o: any, pid: string) => {
@@ -173,22 +151,17 @@ function CatalogPage() {
         )
         .filter(p => filterCategory === '' || p.category === filterCategory)
         .filter(p => filterSeller === '' || p.seller_id === filterSeller)
-      .filter(p =>
-    filterPayoutTime === '' ||
-    (String(p.payment_time)) === (String(filterPayoutTime)))
-                .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-;
+        .filter(p =>
+            filterPayoutTime === '' ||
+            (String(p.payment_time)) === (String(filterPayoutTime)))
+        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+    ;
 
 
-const categories = React.useMemo(
-  () => Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[],
-  [products]
-);
-
-const normalize = (v: unknown) =>
-  String(v ?? '').toLowerCase().replace(/\s+/g, '');
-
-
+    const categories = React.useMemo(
+        () => Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[],
+        [products]
+    );
 
     const leftColumn = filtered.filter((_, i) => i % 2 === 0);
     const rightColumn = filtered.filter((_, i) => i % 2 === 1);
@@ -319,32 +292,33 @@ const normalize = (v: unknown) =>
                             </div>
                         </div>
 
-<div>
-  <label className="block text-sm font-medium mb-1">Условия выплаты кешбэка</label>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Условия выплаты кешбэка</label>
 
-  <div className="relative">
-    <select
-      value={filterPayoutTime}
-      onChange={e => setFilterPayoutTime(e.target.value as PayoutTime | '')}
-      className="h-10 w-full appearance-none rounded-md border border-brand bg-white
+                            <div className="relative">
+                                <select
+                                    value={filterPayoutTime}
+                                    onChange={e => setFilterPayoutTime(e.target.value as PayoutTime | '')}
+                                    className="h-10 w-full appearance-none rounded-md border border-brand bg-white
                  pl-3 pr-10 text-sm font-medium text-gray-800
                  focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-      aria-label="Фильтр по условиям выплаты"
-    >
-      <option value="">Все выплаты</option>
-      <option value={PayoutTime.AFTER_REVIEW}>{PayoutTime.AFTER_REVIEW}</option>
-      <option value={PayoutTime.AFTER_DELIVERY}>{PayoutTime.AFTER_DELIVERY}</option>
-      <option value={PayoutTime.ON_15TH_DAY}>{PayoutTime.ON_15TH_DAY}</option>
-    </select>
+                                    aria-label="Фильтр по условиям выплаты"
+                                >
+                                    <option value="">Все выплаты</option>
+                                    <option value={PayoutTime.AFTER_REVIEW}>{PayoutTime.AFTER_REVIEW}</option>
+                                    <option value={PayoutTime.AFTER_DELIVERY}>{PayoutTime.AFTER_DELIVERY}</option>
+                                    <option value={PayoutTime.ON_15TH_DAY}>{PayoutTime.ON_15TH_DAY}</option>
+                                </select>
 
-    {/* Стрелка */}
-    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-      <svg className="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-        <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
-      </svg>
-    </div>
-  </div>
-</div>
+                                {/* Стрелка */}
+                                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                                    <svg className="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor"
+                                         aria-hidden="true">
+                                        <path d="M5.25 7.5l4.5 4.5 4.5-4.5h-9z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <div>
