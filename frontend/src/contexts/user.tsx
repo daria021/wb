@@ -36,7 +36,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({children}
     const [error, setError] = useState<Error | null>(null)
 
     const load = async () => {
+        console.log("Loading...")
         if (user) {
+            console.log(`user ${user.id} found ${loading}`)
+            // if (loading) {
+            //     console.log("set user loaded")
+            //     setLoading(false);
+            // }
             return;
         }
         setLoading(true);
@@ -49,6 +55,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({children}
         } finally {
             setLoading(false);
         }
+
+        console.log("User loaded")
     }
 
 // src/contexts/UserProvider.tsx (фрагмент)

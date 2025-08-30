@@ -177,6 +177,7 @@ export function BootstrapProvider({children}: { children: React.ReactNode }) {
 
     const {phase, data, error, retry, setPhase} = useInitWithTimeout<BootstrapData>(
         async () => {
+            console.log(`using callback ${authLoading}`);
             // ВАЖНО: делаем /init только когда авторизация закончена (даже если токена нет)
             // Интерцепторы apiClient сами попробуют пере-логиниться на 401 (если так настроены).
             const res = await apiClient.get<BootstrapData>('/init');
@@ -188,7 +189,7 @@ export function BootstrapProvider({children}: { children: React.ReactNode }) {
 
     // Когда авторизация ещё идёт — отображаем сплэш, но не стартуем загрузку /init.
     useEffect(() => {
-        console.log(`authLoading: ${authLoading}`)
+        console.log(`authLoading: ${authLoading} ${phase}`)
         if (authLoading) {
             setPhase('auth'); // для читаемости состояния
         } else if (phase === 'auth' || phase === 'idle') {
@@ -202,6 +203,7 @@ export function BootstrapProvider({children}: { children: React.ReactNode }) {
     // Кладём успешные данные в state провайдера
     useEffect(() => {
         if (phase === 'ready' && data) {
+            console.log("bootstrap ready");
             setBootstrapData(data);
         }
     }, [phase, data]);

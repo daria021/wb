@@ -31,9 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       try {
         const res = await apiClient.post('/auth/telegram', payload)
+        console.log(`sent auth request ${res.data} ${loading}`)
         localStorage.setItem('authToken', res.data.access_token)
         localStorage.setItem('refreshToken', res.data.refresh_token)
         restoreClient();
+        console.log(`client restored ${loading}`)
       } catch (err) {
         console.error('Authentication failed', err)
       }
