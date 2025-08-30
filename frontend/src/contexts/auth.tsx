@@ -36,13 +36,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('refreshToken', res.data.refresh_token)
         restoreClient();
         console.log(`client restored ${loading}`)
+        await refresh();
       } catch (err) {
         console.error('Authentication failed', err)
       }
     }
 
-    authenticate()
-  }, [refresh])
+    authenticate();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const userId = user?.id ?? null
   const isModerator = user?.role === 'moderator'
