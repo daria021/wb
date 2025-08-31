@@ -145,12 +145,12 @@ class NotificationService(NotificationServiceInterface):
         # Подбираем корректный маршрут для продолжения шага
         if order.step is None or order.step in (0, 1):
             # Шаг 1 в роутинге идёт как /product/:orderId/step-1
-            path = f"/product/{order.id}/step-1"
+            path = f"product/{order.id}/step-1"
         elif 2 <= order.step <= 7:
-            path = f"/order/{order.id}/step-{order.step}"
+            path = f"order/{order.id}/step-{order.step}"
         else:
             # Запасной вариант — список покупок
-            path = "/user/orders"
+            path = "user/orders"
 
         # Для web_app-кнопки используем прямой URL миниаппа
         web_app_url = f"{settings.web.url}{path}"
