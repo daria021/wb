@@ -203,7 +203,9 @@ async def trigger_inactivity_check():
     now = datetime.now()
 
     # 1) Напоминания для 3+ дней без движения (step==0)
-    for order in await repo.get_inactive_orders(now - timedelta(days=3)):
+    orders = await repo.get_inactive_orders(now - timedelta(days=3))
+    logger.info(f"orders is {orders}")
+    for order in orders:
         await notification_service.send_order_progress_reminder(order.user_id, order.id)
         try:
             user_history_repository = get_user_history_repository()
