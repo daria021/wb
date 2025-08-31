@@ -4,7 +4,7 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Request, Depends
-from fastapi import HTTPException, UploadFile, Form, File
+from fastapi import UploadFile, Form, File
 
 from abstractions.services.upload import UploadServiceInterface
 from dependencies.services.order import get_order_service
@@ -12,7 +12,6 @@ from dependencies.services.upload import get_upload_service
 from domain.dto import UpdateOrderDTO
 from domain.dto.order import CreateOrderDTO
 from infrastructure.enums.order_status import OrderStatus
-from dependencies.services.notification import get_notification_service
 
 router = APIRouter(
     prefix="/orders",
@@ -34,6 +33,7 @@ async def get_order(order_id: UUID, request: Request):
     order_service = get_order_service()
     order = await order_service.get_order(order_id)
     return order
+
 
 @router.post("")
 async def create_order(
@@ -190,40 +190,5 @@ async def delete_order(order_id: UUID, request: Request):
 async def trigger_inactivity_check():
     """Ручной запуск проверки неактивных заказов и рассылки напоминаний/отмены."""
     order_service = get_order_service()
-    notification_service = get_notification_service()
-
-    from datetime import datetime, timedelta
-    from domain.dto import UpdateOrderDTO
-    from infrastructure.enums.order_status import OrderStatus
-    from dependencies.repositories.user_history import get_user_history_repository
-    from domain.dto.user_history import CreateUserHistoryDTO
-    from infrastructure.enums.action import Action
-
-    repo = order_service.order_repository
-    now = datetime.now()
-
-    # 1) Напоминания для 3+ дней без движения (step==0)
-    orders = await repo.get_inactive_orders(now - timedelta(days=3))
-    logger.info(f"orders is {orders}")
-    for order in orders:
-        await notification_service.send_order_progress_reminder(order.user_id, order.id)
-        try:
-            user_history_repository = get_user_history_repository()
-            await user_history_repository.create(CreateUserHistoryDTO(
-                user_id=order.user_id,
-                creator_id=None,
-                product_id=order.product_id,
-                action=Action.REMINDER_SENT,
-                date=now,
-                json_before=None,
-                json_after=None,
-            ))
-        except Exception:
-            # необязательная запись
-            pass
-
-    # 2) Отмена для 4+ дней без движения
-    for order in await repo.get_inactive_after_reminder(now - timedelta(days=4)):
-        await order_service.update_order(order.id, UpdateOrderDTO(status=OrderStatus.CANCELLED))
-
+    await order_service.trigger_inactivity_check()
     return {"ok": True}

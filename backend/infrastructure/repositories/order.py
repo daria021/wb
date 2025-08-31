@@ -1,18 +1,16 @@
 import logging
 from dataclasses import field, dataclass
+from datetime import datetime
 from typing import List, Optional
-from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
 
 from abstractions.repositories import OrderRepositoryInterface
 from domain.dto import CreateOrderDTO, UpdateOrderDTO
 from domain.models import Order, Product as ProductModel, User
 from domain.models import User as UserModel
 from domain.models.order import Order as OrderModel
-from domain.responses.order_report import OrderReport
 from infrastructure.entities import Order, Product
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
