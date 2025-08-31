@@ -1,6 +1,7 @@
 import logging
 from dataclasses import field, dataclass
 from typing import List, Optional
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import select
@@ -178,6 +179,43 @@ class OrderRepository(
             orders = result.scalars().all()
             logger.info(f"orders found {len(orders)} orders(all) for seller {seller_id}")
             logger.info([x.__dict__ for x in orders])
+            return [self.entity_to_model(order) for order in orders]
+
+    async def get_inactive_orders(self, cutoff: datetime) -> list[Order]:
+        """
+        Заказы без движения (step == 0) со статусом CASHBACK_NOT_PAID, созданные не позже cutoff.
+        Используется для автонотификации и автокансела.
+        """
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(
+                    self.entity.step == 0,
+                    self.entity.status == OrderStatus.CASHBACK_NOT_PAID,
+                    self.entity.created_at <= cutoff,
+                )
+                .options(*self.options)
+            )
+            orders = result.scalars().all()
+            return [self.entity_to_model(order) for order in orders]
+
+    async def get_inactive_after_reminder(self, cutoff: datetime) -> list[Order]:
+        """
+        Заказы, по которым уже отправляли напоминание (REMINDER_SENT в user_history) и всё ещё нет движения (step == 0),
+        старше cutoff — под отмену.
+        Примечание: простая реализация без join к user_history; отменяем все, где step==0 и создан до cutoff.
+        """
+        async with self.session_maker() as session:
+            result = await session.execute(
+                select(self.entity)
+                .where(
+                    self.entity.step == 0,
+                    self.entity.status == OrderStatus.CASHBACK_NOT_PAID,
+                    self.entity.created_at <= cutoff,
+                )
+                .options(*self.options)
+            )
+            orders = result.scalars().all()
             return [self.entity_to_model(order) for order in orders]
 
 

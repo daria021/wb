@@ -1,6 +1,8 @@
 import logging
 import subprocess
 from contextlib import asynccontextmanager
+from asyncio import create_task, sleep
+from datetime import datetime, timedelta
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
@@ -10,6 +12,10 @@ from starlette.staticfiles import StaticFiles
 
 import migrations
 from dependencies.services.upload import get_upload_service
+from dependencies.services.order import get_order_service
+from dependencies.services.notification import get_notification_service
+from domain.dto import UpdateOrderDTO
+from infrastructure.enums.order_status import OrderStatus
 from middlewares.auth_middleware import check_for_auth
 from routes import (
     router as api_router,
@@ -43,6 +49,50 @@ async def lifespan(_) -> AsyncGenerator[None, None]:
 
     upload_service = get_upload_service()
     await upload_service.initialize()
+
+    # Фоновая задача: напоминания и автокансел неактивных заказов
+    async def inactivity_watcher():
+        order_service = get_order_service()
+        notification_service = get_notification_service()
+        while True:
+            try:
+                # 1) cutoff для напоминания: 3 дня назад
+                cutoff_reminder = datetime.now() - timedelta(days=3)
+                repo = order_service.order_repository
+                for order in await repo.get_inactive_orders(cutoff_reminder):
+                    try:
+                        await notification_service.send_order_progress_reminder(order.user_id, order.id)
+                        # фиксируем REMINDER_SENT в истории
+                        from dependencies.repositories.user_history import get_user_history_repository
+                        from domain.dto.user_history import CreateUserHistoryDTO
+                        from infrastructure.enums.action import Action
+                        user_history_repository = get_user_history_repository()
+                        await user_history_repository.create(CreateUserHistoryDTO(
+                            user_id=order.user_id,
+                            creator_id=None,
+                            product_id=order.product_id,
+                            action=Action.REMINDER_SENT,
+                            date=datetime.now(),
+                            json_before=None,
+                            json_after=None,
+                        ))
+                    except Exception:
+                        logging.exception("Failed to send reminder")
+
+                # 2) cutoff для отмены: 4 дня назад (сутки после напоминания)
+                cutoff_cancel = datetime.now() - timedelta(days=4)
+                for order in await repo.get_inactive_after_reminder(cutoff_cancel):
+                    try:
+                        await order_service.update_order(order.id, UpdateOrderDTO(status=OrderStatus.CANCELLED))
+                    except Exception:
+                        logging.exception("Failed to cancel inactive order")
+            except Exception:
+                logging.exception("inactivity_watcher iteration failed")
+
+            # выполнять раз в час
+            await sleep(3600)
+
+    create_task(inactivity_watcher())
 
     yield
 

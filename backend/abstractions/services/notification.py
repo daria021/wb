@@ -44,3 +44,8 @@ class NotificationServiceInterface(ABC):
     @abstractmethod
     async def send_new_product(self, product_id: UUID) -> None:
         ...
+
+    @abstractmethod
+    async def send_order_progress_reminder(self, user_id: UUID, order_id: UUID) -> None:
+        """Отправить пользователю напоминание о продолжении выкупа по заказу."""
+        ...

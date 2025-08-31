@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from aiogram import Bot
-from aiogram.types import FSInputFile
+from aiogram.types import FSInputFile, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -137,3 +137,35 @@ class NotificationService(NotificationServiceInterface):
 
     async def delete_push(self, push_id: UUID) -> None:
         return await self.push_repository.delete(push_id)
+
+    async def send_order_progress_reminder(self, user_id: UUID, order_id: UUID) -> None:
+        user = await self.users_repository.get(user_id)
+        order = await self.orders_repository.get(order_id)
+
+        # Подбираем корректный маршрут для продолжения шага
+        if order.step is None or order.step in (0, 1):
+            # Шаг 1 в роутинге идёт как /product/:orderId/step-1
+            path = f"/product/{order.id}/step-1"
+        elif 2 <= order.step <= 7:
+            path = f"/order/{order.id}/step-{order.step}"
+        else:
+            # Запасной вариант — список покупок
+            path = "/user/orders"
+
+        # Для web_app-кнопки используем прямой URL миниаппа
+        web_app_url = f"{settings.web.url}{path}"
+
+        kb = InlineKeyboardBuilder()
+        kb.button(
+            text="Продолжить выкуп",
+            web_app=WebAppInfo(url=web_app_url),
+        )
+
+        text = (
+            "Вы начали выкуп, но не завершили. Продолжите оформление заказа, чтобы получить кешбэк."
+        )
+        await self.bot.send_message(
+            chat_id=user.telegram_id,
+            text=text,
+            reply_markup=kb.as_markup(),
+        )
