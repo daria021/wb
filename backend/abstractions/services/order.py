@@ -16,6 +16,11 @@ class OrderServiceInterface(ABC):
         ...
 
     @abstractmethod
+    async def trigger_inactivity_check(self) -> None:
+        ...
+
+
+    @abstractmethod
     async def get_order(self, order_id: UUID) -> Order:
         """
         Возвращает заказ по его ID.

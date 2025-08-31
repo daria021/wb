@@ -2,7 +2,7 @@ import logging
 import random
 import string
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 from typing import List
 from uuid import UUID
 
@@ -20,7 +20,6 @@ from infrastructure.enums.action import Action
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
-from settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +107,32 @@ class OrderService(OrderServiceInterface):
 
         # 5. Возвращаем код для пользователя
         return dto.id
+
+    async def trigger_inactivity_check(self) -> None:
+        now = datetime.now()
+        # 1) Напоминания для 3+ дней без движения (step==0)
+        orders = await self.order_repository.get_inactive_orders(now - timedelta(days=3))
+        logger.info(f"orders is {orders}")
+        for order in orders:
+            await self.notification_service.send_order_progress_reminder(order.user_id, order.id)
+            try:
+                user_history_repository = get_user_history_repository()
+                await user_history_repository.create(CreateUserHistoryDTO(
+                    user_id=order.user_id,
+                    creator_id=None,
+                    product_id=order.product_id,
+                    action=Action.REMINDER_SENT,
+                    date=now,
+                    json_before=None,
+                    json_after=None,
+                ))
+            except Exception:
+                # необязательная запись
+                pass
+
+        # 2) Отмена для 4+ дней без движения
+        for order in await self.order_repository.get_inactive_after_reminder(now - timedelta(days=4)):
+            await self.update_order(order.id, UpdateOrderDTO(status=OrderStatus.CANCELLED))
 
     async def generate_unique_code(self) -> str:
         while True:
