@@ -18,3 +18,4 @@ class Action(StrEnum):
     SEVENTH_STEP_DONE = "seventh_step_done"
     CASHBACK_DONE = "cashback_done"
     CASHBACK_REJECTED = "cashback_rejected"
+    REMINDER_SENT = "reminder_sent"

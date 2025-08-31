@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from datetime import datetime
 from uuid import UUID
 
 from abstractions.repositories import CRUDRepositoryInterface
@@ -33,4 +34,14 @@ class OrderRepositoryInterface(
 
     @abstractmethod
     async def exists_by_code(self, transaction_code: str) -> bool:
+        ...
+
+    @abstractmethod
+    async def get_inactive_orders(self, cutoff: datetime) -> list[Order]:
+        """Вернуть заказы без движения до указанной даты (для напоминаний/отмен)."""
+        ...
+
+    @abstractmethod
+    async def get_inactive_after_reminder(self, cutoff: datetime) -> list[Order]:
+        """Вернуть заказы без движения после отправленного напоминания (для отмены)."""
         ...

@@ -6,3 +6,4 @@ class OrderStatus(StrEnum):
     CANCELLED = "cancelled"
     PAYMENT_CONFIRMED = "payment_confirmed"
     CASHBACK_REJECTED="cashback_rejected"
+    REMINDER_SENT = "reminder_sent"

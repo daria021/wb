@@ -184,6 +184,19 @@ class OrderService(OrderServiceInterface):
                 )
             )
 
+            # Лог: отмена заказа и возврат раздачи
+            await user_history_repository.create(
+                CreateUserHistoryDTO(
+                    user_id=order.user_id,
+                    creator_id=None,
+                    product_id=order.product_id,
+                    action=Action.STATUS_CHANGED,
+                    date=now,
+                    json_before=json_before_order,
+                    json_after=json_after_order,
+                )
+            )
+
         # ---------- шаг 5: повышаем продавца ----------
         if dto.step == 5 and seller.role in {UserRole.CLIENT, UserRole.USER}:
             await self.user_repository.update(

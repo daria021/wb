@@ -77,7 +77,8 @@ const INIT_TIMEOUT_MS = 15_000;
 function useInitWithTimeout<T>(
     loader: () => Promise<T>,
     deps: React.DependencyList,
-    timeoutMs = INIT_TIMEOUT_MS
+    timeoutMs = INIT_TIMEOUT_MS,
+    enabled: boolean = true,
 ) {
     const [phase, setPhase] = useState<Phase>('idle');
     const [data, setData] = useState<T | null>(null);
@@ -85,6 +86,9 @@ function useInitWithTimeout<T>(
     const abortRef = useRef<{ aborted: boolean }>({aborted: false});
 
     useEffect(() => {
+        if (!enabled) {
+            return;
+        }
         let timer: number | null = null;
         abortRef.current.aborted = false;
         setPhase('loading');
@@ -118,7 +122,7 @@ function useInitWithTimeout<T>(
             if (timer) window.clearTimeout(timer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps);
+    }, [enabled, ...deps]);
 
     const retry = useMemo(
         () => () => {
@@ -184,7 +188,9 @@ export function BootstrapProvider({children}: { children: React.ReactNode }) {
             return res.data;
         },
         // завязываемся на переключение authLoading -> false
-        [canInit]
+        [canInit],
+        INIT_TIMEOUT_MS,
+        canInit,
     );
 
     // Когда авторизация ещё идёт — отображаем сплэш, но не стартуем загрузку /init.

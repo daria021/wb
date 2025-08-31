@@ -12,6 +12,7 @@ from dependencies.services.upload import get_upload_service
 from domain.dto import UpdateOrderDTO
 from domain.dto.order import CreateOrderDTO
 from infrastructure.enums.order_status import OrderStatus
+from dependencies.services.notification import get_notification_service
 
 router = APIRouter(
     prefix="/orders",
@@ -183,3 +184,44 @@ async def delete_order(order_id: UUID, request: Request):
     order_service = get_order_service()
     await order_service.delete_order(order_id)
     return {"message": "Order deleted successfully"}
+
+
+@router.post("/inactivity/trigger")
+async def trigger_inactivity_check():
+    """Ручной запуск проверки неактивных заказов и рассылки напоминаний/отмены."""
+    order_service = get_order_service()
+    notification_service = get_notification_service()
+
+    from datetime import datetime, timedelta
+    from domain.dto import UpdateOrderDTO
+    from infrastructure.enums.order_status import OrderStatus
+    from dependencies.repositories.user_history import get_user_history_repository
+    from domain.dto.user_history import CreateUserHistoryDTO
+    from infrastructure.enums.action import Action
+
+    repo = order_service.order_repository
+    now = datetime.now()
+
+    # 1) Напоминания для 3+ дней без движения (step==0)
+    for order in await repo.get_inactive_orders(now - timedelta(days=3)):
+        await notification_service.send_order_progress_reminder(order.user_id, order.id)
+        try:
+            user_history_repository = get_user_history_repository()
+            await user_history_repository.create(CreateUserHistoryDTO(
+                user_id=order.user_id,
+                creator_id=None,
+                product_id=order.product_id,
+                action=Action.REMINDER_SENT,
+                date=now,
+                json_before=None,
+                json_after=None,
+            ))
+        except Exception:
+            # необязательная запись
+            pass
+
+    # 2) Отмена для 4+ дней без движения
+    for order in await repo.get_inactive_after_reminder(now - timedelta(days=4)):
+        await order_service.update_order(order.id, UpdateOrderDTO(status=OrderStatus.CANCELLED))
+
+    return {"ok": True}

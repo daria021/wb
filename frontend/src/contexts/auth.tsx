@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react'
-import { initData } from '@telegram-apps/sdk'
+import { init, initData } from '@telegram-apps/sdk'
 import { apiClient, restoreClient } from '../services/apiClient'
 import { useUser } from './user'
 
@@ -17,6 +17,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     async function authenticate() {
+      // Гарантируем инициализацию SDK до чтения initData
+      try { init(); } catch {}
       initData.restore()
       const data = initData.raw()
       if (!data) {
