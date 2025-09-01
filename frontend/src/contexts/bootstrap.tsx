@@ -221,11 +221,8 @@ export function BootstrapProvider({children}: { children: React.ReactNode }) {
     }
 
     if (phase === 'error') {
-        // Читаемая ошибка для пользователя
-        const message =
-            (error instanceof Error && error.message) ||
-            'Неизвестная ошибка при инициализации';
-        return <FullPageError message={message} onRetry={retry}/>;
+        // Вместо страницы ошибки показываем крутилку
+        return <FullPageSpinner/>;
     }
 
     if (!bootstrapData) {
