@@ -45,3 +45,8 @@ class OrderRepositoryInterface(
     async def get_inactive_after_reminder(self, cutoff: datetime) -> list[Order]:
         """Вернуть заказы без движения после отправленного напоминания (для отмены)."""
         ...
+
+    @abstractmethod
+    async def set_reminder_sent(self, order_id: UUID, when: datetime) -> None:
+        # Совместимость (пока колонка удалена)
+        ...
