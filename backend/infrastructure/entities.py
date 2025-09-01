@@ -205,6 +205,7 @@ class IncreasingBalance(AbstractBase):
 
 class UserHistory(AbstractBase):
     __tablename__ = 'user_history'
+
     user_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey('products.id', ondelete="SET NULL"))
     creator_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey('users.id'))

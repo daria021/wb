@@ -161,8 +161,18 @@ class NotificationService(NotificationServiceInterface):
             web_app=WebAppInfo(url=web_app_url),
         )
 
+        # Текст с названием товара и эмодзи
+        product_name = getattr(getattr(order, "product", None), "name", None)
+        if not product_name and order.product_id:
+            try:
+                product = await self.products_repository.get(order.product_id)
+                product_name = getattr(product, "name", None)
+            except Exception:
+                product_name = None
+
         text = (
-            "Вы начали выкуп, но не завершили. Продолжите оформление заказа, чтобы получить кешбэк."
+            f"🛒 Вы начали выкуп товара «{product_name or 'ваш товар'}», но не завершили.\n"
+            f"Нажмите кнопку ниже, чтобы продолжить и получить кешбэк 💸"
         )
         await self.bot.send_message(
             chat_id=user.telegram_id,

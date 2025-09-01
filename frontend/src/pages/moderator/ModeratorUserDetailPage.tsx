@@ -83,6 +83,7 @@ interface UserHistory {
         | 'moderation_failed'
         | 'ended'
         | 'agree_terms'
+        | 'reminder_sent'
         | 'first_step_done'
         | 'second_step_done'
         | 'third_step_done'
@@ -378,6 +379,7 @@ export default function ModeratorUserDetailPage() {
         return (
             <li key={h.id || `${h.__type}-${i}`} className="border rounded p-3 bg-gray-50">
                 {(() => {
+                    console.log("im here");
                     const isUser = h.__type === 'user';
                     const isReview = h.__type === 'review';
 
@@ -385,8 +387,10 @@ export default function ModeratorUserDetailPage() {
                         (isUser && !!(h as UserHistory).product_id) ||
                         (isReview && !!(h as ModeratorReview).product_id);
 
-                    const canCompare = isUser && (h as UserHistory).action === 'product_changed';
-                    const hasActions = !!(canOpenProduct || canCompare);
+                    const getAction = (uh: UserHistory) => String((uh as any).action || '').toLowerCase();
+                    const canCompare = isUser && getAction(h as UserHistory) === 'product_changed';
+                    const hasBadge = isUser && getAction(h as UserHistory) === 'reminder_sent';
+                    const hasActions = !!(canOpenProduct || canCompare || hasBadge);
 
                     // const title = isUser
                     //     ? historyBase(h as AnyHistory)
@@ -413,6 +417,16 @@ export default function ModeratorUserDetailPage() {
                         title = `модератор оставил комментарий к товару «${p?.name || 'товар'}»`;
                     } else {
                         title = historyBase(h); // <<< balance-ивенты идут сюда
+                    }
+
+                    // плашка для REMINDER_SENT
+                    let badge: React.ReactNode = null;
+                    if (hasBadge) {
+                        badge = (
+                            <span className="ml-2 inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                Напоминание
+                            </span>
+                        );
                     }
 
                     let whoLine = '';
@@ -485,6 +499,7 @@ export default function ModeratorUserDetailPage() {
 
                             {hasActions && (
                                 <div className="flex flex-col items-end gap-2 shrink-0 w-max">
+                                    {badge && <div className="self-end">{badge}</div>}
                                     {canOpenProduct && (
                                         <button
                                             onClick={() =>
@@ -901,6 +916,8 @@ export default function ModeratorUserDetailPage() {
                 return `товар «${name}» закончился в каталоге`;
             case 'agree_terms':
                 return `принял условия выкупа по товару «${name}»`;
+            case 'reminder_sent':
+                return `отправлено напоминание продолжить выкуп по товару «${name}»`;
             case 'first_step_done':
                 return `завершил(а) шаг 1 по товару «${name}»`;
             case 'second_step_done':
@@ -1403,7 +1420,10 @@ export default function ModeratorUserDetailPage() {
                         </div>
                     ) : (
                         <ul className="space-y-2">
-                            {sellerHistory.map((h, i) => renderHistoryItem(h, i))}
+                            {sellerHistory.map((h, i) => {
+                                console.log("im heree");
+                                return renderHistoryItem(h, i);
+                            })}
                         </ul>
                     )}
                 </Collapsible>

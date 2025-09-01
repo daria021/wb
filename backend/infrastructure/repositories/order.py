@@ -5,13 +5,15 @@ from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.sql import exists
 
 from abstractions.repositories import OrderRepositoryInterface
 from domain.dto import CreateOrderDTO, UpdateOrderDTO
 from domain.models import Order, Product as ProductModel, User
 from domain.models import User as UserModel
 from domain.models.order import Order as OrderModel
-from infrastructure.entities import Order, Product
+from infrastructure.entities import Order, Product, UserHistory
+from infrastructure.enums.action import Action
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.repositories.sqlalchemy import AbstractSQLAlchemyRepository
 
@@ -185,12 +187,22 @@ class OrderRepository(
         Используется для автонотификации и автокансела.
         """
         async with self.session_maker() as session:
+            reminder_exists = (
+                select(UserHistory.id)
+                .where(
+                    UserHistory.user_id == self.entity.user_id,
+                    UserHistory.product_id == self.entity.product_id,
+                    UserHistory.action == Action.REMINDER_SENT,
+                )
+                .exists()
+            )
             result = await session.execute(
                 select(self.entity)
                 .where(
                     self.entity.step == 0,
                     self.entity.status == OrderStatus.CASHBACK_NOT_PAID,
                     self.entity.created_at <= cutoff,
+                    ~reminder_exists,  # уже напоминали — больше не шлём
                 )
                 .options(*self.options)
             )
@@ -199,17 +211,26 @@ class OrderRepository(
 
     async def get_inactive_after_reminder(self, cutoff: datetime) -> list[Order]:
         """
-        Заказы, по которым уже отправляли напоминание (REMINDER_SENT в user_history) и всё ещё нет движения (step == 0),
-        старше cutoff — под отмену.
-        Примечание: простая реализация без join к user_history; отменяем все, где step==0 и создан до cutoff.
+        Заказы, по которым уже отправляли напоминание (есть запись в user_history с action=REMINDER_SENT
+        и date <= cutoff) и всё ещё нет движения (step == 0) — под отмену.
         """
         async with self.session_maker() as session:
+            reminder_exists = (
+                select(UserHistory.id)
+                .where(
+                    UserHistory.user_id == self.entity.user_id,
+                    UserHistory.product_id == self.entity.product_id,
+                    UserHistory.action == Action.REMINDER_SENT,
+                    UserHistory.date <= cutoff,
+                )
+                .exists()
+            )
             result = await session.execute(
                 select(self.entity)
                 .where(
                     self.entity.step == 0,
                     self.entity.status == OrderStatus.CASHBACK_NOT_PAID,
-                    self.entity.created_at <= cutoff,
+                    reminder_exists,
                 )
                 .options(*self.options)
             )
@@ -225,3 +246,7 @@ class OrderRepository(
             )
             order = result.scalars().one_or_none()
             return order is not None
+
+    async def set_reminder_sent(self, order_id: UUID, when: datetime) -> None:
+        # Колонку удалили — метод оставляем пустым для совместимости
+        return None

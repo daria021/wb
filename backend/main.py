@@ -62,7 +62,9 @@ async def lifespan(_) -> AsyncGenerator[None, None]:
                 for order in await repo.get_inactive_orders(cutoff_reminder):
                     try:
                         await notification_service.send_order_progress_reminder(order.user_id, order.id)
-                        # фиксируем REMINDER_SENT в истории
+                        # фиксируем отметку, чтобы не слать повторно
+                        # отметка отключена (колонка убрана), используем только history
+                        # и событие в истории
                         from dependencies.repositories.user_history import get_user_history_repository
                         from domain.dto.user_history import CreateUserHistoryDTO
                         from infrastructure.enums.action import Action
