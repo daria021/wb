@@ -3,15 +3,15 @@ import random
 import string
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
 
 from abstractions.repositories import OrderRepositoryInterface, ProductRepositoryInterface, UserRepositoryInterface
+from abstractions.repositories.user_history import UserHistoryRepositoryInterface
 from abstractions.services import OrderServiceInterface
 from abstractions.services.notification import NotificationServiceInterface
-from dependencies.repositories.user_history import get_user_history_repository
 from domain.dto import UpdateOrderDTO, CreateOrderDTO, UpdateUserDTO, UpdateProductDTO
 from domain.dto.user_history import CreateUserHistoryDTO
 from domain.models import Order
@@ -29,6 +29,7 @@ class OrderService(OrderServiceInterface):
     product_repository: ProductRepositoryInterface
     notification_service: NotificationServiceInterface
     user_repository: UserRepositoryInterface
+    user_history_repository: UserHistoryRepositoryInterface
 
     async def create_order(self, dto: CreateOrderDTO) -> UUID:
         # 1. Проверяем, что товар есть в наличии
@@ -64,11 +65,9 @@ class OrderService(OrderServiceInterface):
                 )
             )
         )
-        user_history_repository = get_user_history_repository()
-
 
         if dto.step == 0:
-            await user_history_repository.create(CreateUserHistoryDTO(
+            await self.user_history_repository.create(CreateUserHistoryDTO(
                 user_id=dto.user_id,
                 creator_id=dto.user_id,
                 product_id=product.id,
@@ -81,9 +80,8 @@ class OrderService(OrderServiceInterface):
             updated = await self.product_repository.get(product.id)
             json_after = updated.model_dump(mode="json")
 
-
             # 1) Товар закончился
-            await user_history_repository.create(CreateUserHistoryDTO(
+            await self.user_history_repository.create(CreateUserHistoryDTO(
                 user_id=dto.seller_id,
                 creator_id=None,
                 product_id=product.id,
@@ -95,7 +93,7 @@ class OrderService(OrderServiceInterface):
 
             # 2) Статус поменялся на ARCHIVED — фиксируем смену статуса (проверяем факт изменения)
             if updated.status != old_status:
-                await user_history_repository.create(CreateUserHistoryDTO(
+                await self.user_history_repository.create(CreateUserHistoryDTO(
                     user_id=dto.seller_id,
                     creator_id=None,
                     product_id=product.id,
@@ -108,16 +106,26 @@ class OrderService(OrderServiceInterface):
         # 5. Возвращаем код для пользователя
         return dto.id
 
-    async def trigger_inactivity_check(self) -> None:
+    async def trigger_inactivity_check(self, force: bool = False, order_id: Optional[UUID] = None) -> None:
         now = datetime.now()
-        # 1) Напоминания для 3+ дней без движения (step==0)
+        if force:
+            # Тестовый режим: отправить напоминание без изменения истории/статусов
+            if order_id is not None:
+                order = await self.order_repository.get(order_id)
+                await self.notification_service.send_order_progress_reminder(order.user_id, order.id)
+            else:
+                # всем подходящим step==0, cashback_not_paid (без REMINDER_SENT не проверяем, чтобы можно было тестить)
+                orders = await self.order_repository.get_inactive_orders(now + timedelta(days=3650))  # заглушка cutoff
+                for order in orders:
+                    await self.notification_service.send_order_progress_reminder(order.user_id, order.id)
+            return
+
+        # Обычный режим: по 3 дням + запись REMINDER_SENT и отмена через сутки после напоминания
         orders = await self.order_repository.get_inactive_orders(now - timedelta(days=3))
-        logger.info(f"orders is {orders}")
         for order in orders:
             await self.notification_service.send_order_progress_reminder(order.user_id, order.id)
             try:
-                user_history_repository = get_user_history_repository()
-                await user_history_repository.create(CreateUserHistoryDTO(
+                await self.user_history_repository.create(CreateUserHistoryDTO(
                     user_id=order.user_id,
                     creator_id=None,
                     product_id=order.product_id,
@@ -127,11 +135,9 @@ class OrderService(OrderServiceInterface):
                     json_after=None,
                 ))
             except Exception:
-                # необязательная запись
                 pass
 
-        # 2) Отмена для 4+ дней без движения
-        for order in await self.order_repository.get_inactive_after_reminder(now - timedelta(days=4)):
+        for order in await self.order_repository.get_inactive_after_reminder(now - timedelta(days=1)):
             await self.update_order(order.id, UpdateOrderDTO(status=OrderStatus.CANCELLED))
 
     async def generate_unique_code(self) -> str:
@@ -162,7 +168,6 @@ class OrderService(OrderServiceInterface):
         json_after_order = order.model_dump(mode="json")
         now = datetime.now()
 
-        user_history_repository = get_user_history_repository()
         # +++ шаги 1–7
         logger.info(f"debug: {dto.step} {dto.step is not None} {dto.step != old_order.step}")
         if dto.step is not None and dto.step != old_order.step:
@@ -176,9 +181,9 @@ class OrderService(OrderServiceInterface):
                 7: Action.SEVENTH_STEP_DONE,
             }
             action = step_to_action.get(dto.step)
-            logger.info(f"action: {action}")
+            print(f"action: {action}")
             if action is not None:
-                await user_history_repository.create(
+                await self.user_history_repository.create(
                     CreateUserHistoryDTO(
                         user_id=order.user_id,
                         creator_id=order.user_id,
@@ -210,7 +215,7 @@ class OrderService(OrderServiceInterface):
             )
 
             # Лог: отмена заказа и возврат раздачи
-            await user_history_repository.create(
+            await self.user_history_repository.create(
                 CreateUserHistoryDTO(
                     user_id=order.user_id,
                     creator_id=None,
@@ -243,11 +248,9 @@ class OrderService(OrderServiceInterface):
                 UpdateUserDTO(role=UserRole.CLIENT)
             )
 
-        user_history_repository = get_user_history_repository()
-
         # +++ кэшбэк выплачен
         if dto.status == OrderStatus.CASHBACK_PAID and old_status != OrderStatus.CASHBACK_PAID:
-            await user_history_repository.create(
+            await self.user_history_repository.create(
                 CreateUserHistoryDTO(
                     user_id=order.user_id,
                     creator_id=order.seller_id,  # системное событие
@@ -262,7 +265,7 @@ class OrderService(OrderServiceInterface):
         # +++ кэшбэк отклонён
         if dto.status == OrderStatus.CASHBACK_REJECTED and old_status != OrderStatus.CASHBACK_REJECTED:
 
-            await user_history_repository.create(
+            await self.user_history_repository.create(
                 CreateUserHistoryDTO(
                     user_id=order.user_id,
                     creator_id=order.seller_id,  # системное событие

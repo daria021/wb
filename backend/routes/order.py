@@ -187,8 +187,15 @@ async def delete_order(order_id: UUID, request: Request):
 
 
 @router.post("/inactivity/trigger")
-async def trigger_inactivity_check():
-    """Ручной запуск проверки неактивных заказов и рассылки напоминаний/отмены."""
+async def trigger_inactivity_check(
+        force: bool = False,
+        order_id: Optional[UUID] = None,
+):
+    """Ручной запуск проверки неактивных заказов и рассылки.
+
+    force=True — тестовый режим: сразу отправить напоминание (без проставления истории/статусов),
+    игнорируя 3 дня. Можно ограничить конкретным order_id.
+    """
     order_service = get_order_service()
-    await order_service.trigger_inactivity_check()
+    await order_service.trigger_inactivity_check(force=force, order_id=order_id)
     return {"ok": True}
