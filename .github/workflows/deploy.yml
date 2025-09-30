@@ -19,6 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare Env
+        run: |
+          touch .env
+          
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+
       - name: Compose up
         run: |
           sudo docker compose stop

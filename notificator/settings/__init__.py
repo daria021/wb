@@ -2,13 +2,14 @@ import os
 from pathlib import Path
 from typing import Type, Tuple
 
-from pydantic import SecretStr
+from pydantic import SecretStr, Field
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
     PydanticBaseSettingsSource,
-    JsonConfigSettingsSource,
 )
+
+from .merged_source import MergedSettingsSource
 
 
 class DBSettings(BaseSettings):
@@ -25,18 +26,19 @@ class DBSettings(BaseSettings):
             f"{self.host}:{self.port}/{self.name}"
         )
 
+
 class BotTokenSettings(BaseSettings):
-      local: str
-      dev: str
-  
-      @property
-      def token(self) -> str:
-          match os.getenv("ENVIRONMENT", "local"):
-              case "dev":
-                  return self.dev
-              case "local":
-                  return self.local
-  
+    local: str
+    dev: str = Field(..., alias="BOT_TOKEN")
+
+    @property
+    def token(self) -> str:
+        match os.getenv("ENVIRONMENT", "local"):
+            case "dev":
+                return self.dev
+            case "local":
+                return self.local
+
 
 class Settings(BaseSettings):
     db: DBSettings
@@ -61,7 +63,13 @@ class Settings(BaseSettings):
             file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         return (
-            JsonConfigSettingsSource(settings_cls),  # Fallback to JSON
+            MergedSettingsSource(
+                settings_cls,
+                init_settings,
+                env_settings,
+                dotenv_settings,
+                file_secret_settings,
+            ),
         )
 
 
