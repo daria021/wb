@@ -1,16 +1,16 @@
 import os
 from pathlib import Path
 from typing import Type, Tuple
-from unittest import case
 from uuid import UUID
 
-from pydantic import SecretStr
+from pydantic import SecretStr, Field
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
     PydanticBaseSettingsSource,
-    JsonConfigSettingsSource,
 )
+
+from .merged_source import MergedSettingsSource
 
 ENV = os.getenv("ENVIRONMENT", "local")
 
@@ -44,7 +44,7 @@ class JwtSettings(BaseSettings):
 
 
 class BotTokenSettings(BaseSettings):
-    token: str
+    token: str = Field(..., alias="BOT_TOKEN")
     username: str
     app_short_name: str
     channel_id: int
@@ -130,7 +130,13 @@ class Settings(BaseSettings):
             file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         return (
-            JsonConfigSettingsSource(settings_cls),  # Fallback to JSON
+            MergedSettingsSource(
+                settings_cls,
+                init_settings,
+                env_settings,
+                dotenv_settings,
+                file_secret_settings,
+            ),
         )
 
 

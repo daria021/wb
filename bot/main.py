@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "local")}.env')
 
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.getenv('BOT_TOKEN')
 WEB_APP_URL = os.getenv('WEB_APP_URL')
 
 # Configure logging
