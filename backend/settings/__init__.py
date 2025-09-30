@@ -1,26 +1,24 @@
 import os
 from pathlib import Path
-from typing import Type, Tuple
 from uuid import UUID
 
 from pydantic import SecretStr, Field
 from pydantic_settings import (
-    BaseSettings,
     SettingsConfigDict,
-    PydanticBaseSettingsSource,
 )
 
+from .abstract import AbstractSettings
 from .merged_source import MergedSettingsSource
 
 ENV = os.getenv("ENVIRONMENT", "local")
 
 
-class WebAppSettings(BaseSettings):
+class WebAppSettings(AbstractSettings):
     url: str
     system_user_id: UUID
 
 
-class DBSettings(BaseSettings):
+class DBSettings(AbstractSettings):
     host: str
     port: int
     name: str
@@ -35,7 +33,7 @@ class DBSettings(BaseSettings):
         )
 
 
-class JwtSettings(BaseSettings):
+class JwtSettings(AbstractSettings):
     secret_key: SecretStr
     issuer: str
     audience: str
@@ -43,7 +41,7 @@ class JwtSettings(BaseSettings):
     refresh_expire: int
 
 
-class BotTokenSettings(BaseSettings):
+class BotTokenSettings(AbstractSettings):
     token: str = Field(..., alias="BOT_TOKEN")
     username: str
     app_short_name: str
@@ -52,7 +50,7 @@ class BotTokenSettings(BaseSettings):
     free_topic_id: int
 
 
-class BotSettings(BaseSettings):
+class BotSettings(AbstractSettings):
     local: BotTokenSettings
     dev: BotTokenSettings
 
@@ -105,7 +103,7 @@ class BotSettings(BaseSettings):
                 return self.local.free_topic_id
 
 
-class Settings(BaseSettings):
+class Settings(AbstractSettings):
     db: DBSettings
     jwt: JwtSettings
 
@@ -119,25 +117,6 @@ class Settings(BaseSettings):
         json_file=Path(__file__).parent / "settings.json",
         json_file_encoding="utf-8",
     )
-
-    @classmethod
-    def settings_customise_sources(
-            cls,
-            settings_cls: Type[BaseSettings],
-            init_settings: PydanticBaseSettingsSource,
-            env_settings: PydanticBaseSettingsSource,
-            dotenv_settings: PydanticBaseSettingsSource,
-            file_secret_settings: PydanticBaseSettingsSource,
-    ) -> Tuple[PydanticBaseSettingsSource, ...]:
-        return (
-            MergedSettingsSource(
-                settings_cls,
-                init_settings,
-                env_settings,
-                dotenv_settings,
-                file_secret_settings,
-            ),
-        )
 
 
 settings = Settings()
