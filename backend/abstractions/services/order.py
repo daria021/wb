@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from domain.dto.order import CreateOrderDTO, UpdateOrderDTO
@@ -16,7 +16,7 @@ class OrderServiceInterface(ABC):
         ...
 
     @abstractmethod
-    async def trigger_inactivity_check(self) -> None:
+    async def trigger_inactivity_check(self, force: bool = False, order_id: Optional[UUID] = None) -> None:
         ...
 
 
