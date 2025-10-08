@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import re
+from time import sleep
 from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 
 from aiogram import Bot, Dispatcher, types
@@ -9,17 +10,26 @@ from aiogram.filters import CommandStart, CommandObject
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=f'{os.getenv("ENVIRONMENT", "local")}.env')
-
-TOKEN = os.getenv('BOT_TOKEN')
-WEB_APP_URL = os.getenv('WEB_APP_URL')
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
+TOKEN = os.getenv('BOT_TOKEN')
+logger.info(f"TOKEN: {TOKEN}")
+
+env = os.getenv("ENVIRONMENT", "local")
+logger.info(f"loading env {env}.env")
+load_dotenv(dotenv_path=f'{env}.env')
+
+logger.info("getting token from env")
+TOKEN = os.getenv('BOT_TOKEN')
+logger.info(f"TOKEN: {TOKEN}")
+
+WEB_APP_URL = os.getenv('WEB_APP_URL')
+
 
 # ---------- helpers ----------
 B64URL_RE = re.compile(r'^[A-Za-z0-9_-]{20,24}$')
@@ -38,8 +48,12 @@ def make_webapp_url(base_url: str, ref: str | None) -> str:
         return append_query(base_url, ref=ref)
     return base_url
 # -----------------------------
+try:
+    bot = Bot(token=TOKEN)
+except Exception as e:
+    logger.error(f"BOT ERROR: {e}", exc_info=True)
+    sleep(10000)
 
-bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 WELCOME_TEXT = (
