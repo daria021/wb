@@ -114,7 +114,7 @@ class Settings(AbstractSettings):
 
     model_config = SettingsConfigDict(
         extra="ignore",
-        json_file=Path(__file__).parent / "settings.json",
+        json_file=Path(__file__).parent.parent  / "settings.json",
         json_file_encoding="utf-8",
     )
 
