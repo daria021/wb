@@ -22,8 +22,12 @@ jobs:
       - name: Prepare Env
         run: |
           touch .env
-          
+
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "BOT_USERNAME=cashbackwb_ru_bot" >> .env
+          echo "BOT_CHANNEL_ID=-1001206912181" >> .env
+          echo "BOT_PAID_TOPIC_ID=13" >> .env
+          echo "BOT_FREE_TOPIC_ID=1151" >> .env
 
       - name: Compose up
         run: |

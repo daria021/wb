@@ -41,66 +41,13 @@ class JwtSettings(AbstractSettings):
     refresh_expire: int
 
 
-class BotTokenSettings(AbstractSettings):
-    token: str = Field(..., alias="BOT_TOKEN")
-    username: str
-    app_short_name: str
-    channel_id: int
-    paid_topic_id: int
-    free_topic_id: int
-
-
 class BotSettings(AbstractSettings):
-    local: BotTokenSettings
-    dev: BotTokenSettings
-
-    @property
-    def token(self) -> str:
-        match ENV:
-            case "dev":
-                return self.dev.token
-            case "local":
-                return self.local.token
-
-    @property
-    def username(self) -> str:
-        match ENV:
-            case "dev":
-                return self.dev.username
-            case "local":
-                return self.local.username
-
-    @property
-    def channel_id(self) -> int:
-        match ENV:
-            case "dev":
-                return self.dev.channel_id
-            case "local":
-                return self.local.channel_id
-
-    @property
-    def app_short_name(self) -> str:
-        match ENV:
-            case "dev":
-                return self.dev.app_short_name
-            case "local":
-                return self.local.app_short_name
-
-    @property
-    def paid_topic_id(self) -> int:
-        match ENV:
-            case "dev":
-                return self.dev.paid_topic_id
-            case "local":
-                return self.local.paid_topic_id
-
-    @property
-    def free_topic_id(self) -> int:
-        match ENV:
-            case "dev":
-                return self.dev.free_topic_id
-            case "local":
-                return self.local.free_topic_id
+    token: str = Field(..., alias="BOT_TOKEN")
+    username: str = Field(..., alias="BOT_USERNAME")
+    app_short_name: str
+    channel_id: int = Field(..., alias="BOT_CHANNEL_ID")
+    paid_topic_id: int = Field(..., alias="BOT_PAID_TOPIC_ID")
+    free_topic_id: int = Field(..., alias="BOT_FREE_TOPIC_ID")
 
 
 class Settings(AbstractSettings):
@@ -114,7 +61,7 @@ class Settings(AbstractSettings):
 
     model_config = SettingsConfigDict(
         extra="ignore",
-        json_file=Path(__file__).parent.parent  / "settings.json",
+        json_file=Path(__file__).parent.parent / "settings.json",
         json_file_encoding="utf-8",
     )
 

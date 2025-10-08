@@ -14,22 +14,12 @@
     "refresh_expire": 18000
   },
   "bot": {
-    "local": {
-      "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
-      "username": "WBJarvisBot",
-      "channel_id": -3058867439,
-      "paid_topic_id": 4,
-      "free_topic_id": 1,
-      "app_short_name": "cashback"
-    },
-    "dev": {
-      "token": "",
-      "username": "cashbackwb_ru_bot",
-      "channel_id": -1001206912181,
-      "paid_topic_id": 13,
-      "free_topic_id": 1151,
-      "app_short_name": "cashback"
-    }
+    "token": "7782070677:AAHtu78aPEQSf15dYsXJbBhcbfMoz7bDXQg",
+    "username": "WBJarvisBot",
+    "channel_id": -3058867439,
+    "paid_topic_id": 4,
+    "free_topic_id": 1,
+    "app_short_name": "cashback"
   },
   "web": {
     "url": "https://cashbackwb.ru/",
