@@ -13,6 +13,7 @@ services:
       - ./backend/upload/:/app/upload/
     ports:
       - "9090:8080"
+
   bot:
     build:
       context: ./bot
@@ -23,10 +24,13 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+
   db:
     image: postgres:17
     container_name: wb-db
-    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     ports:
       - "5432:5432"
     restart: unless-stopped
