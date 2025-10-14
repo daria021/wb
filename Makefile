@@ -1,7 +1,12 @@
 localup:
 	@echo "Building and running local compose setup"
-	docker compose stop
+	docker compose -f local.compose.yml stop
 	docker compose -f local.compose.yml up --build -d
+.PHONY: tunnel-sync
+tunnel-sync:
+	@echo "Syncing tunnel URLs into frontend/local.env and bot/local.env"
+	python3 scripts/sync_tunnel_env.py
+
 
 
 LOAD_COMPOSE := loadtest.compose.yml

@@ -55,7 +55,7 @@ const ProductDetailPage: React.FC = () => {
 
   const openInstruction = () => navigate(`/product/${product.id}/instruction`);
   const openInstructionPreview = () => navigate(`/instruction`);
-  const openSellerChat = () => window.open(`https://t.me/${sellerNickname}`, '_blank');
+  const openSellerChat = () => navigate(`/black-list/${sellerNickname}`);
   const openSellerProducts = () => navigate(`/catalog?seller=${product.seller_id}`, { state: { fromProductDetail: true } });
 
   return (

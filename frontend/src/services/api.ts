@@ -390,11 +390,11 @@ export const updatePush = async (pushId: string, formData: FormData) => {
     });
 }
 
-export async function increaseReferralBonus(userId: string, data: { bonus: number }) {
-    return apiClient.post(`/moderator/users/${userId}/use-discount`, data, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+export async function increaseReferralBonus(userId: string, amount: number) {
+    // Начисление/списание реферального бонуса пригласителю
+    // Бэкенд ожидает параметр amount (query), тело не требуется
+    return apiClient.post(`/moderator/users/${userId}/referral-purchase`, null, {
+        params: { amount },
     });
 }
 

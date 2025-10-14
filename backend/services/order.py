@@ -20,6 +20,8 @@ from infrastructure.enums.action import Action
 from infrastructure.enums.order_status import OrderStatus
 from infrastructure.enums.product_status import ProductStatus
 from infrastructure.enums.user_role import UserRole
+from infrastructure.enums.order_status import OrderStatus as OS
+from domain.dto.order import UpdateOrderDTO
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +158,11 @@ class OrderService(OrderServiceInterface):
         old_status = old_order.status
 
         json_before_order = old_order.model_dump(mode="json")
+
+        # 2. если меняем статус на CASHBACK_PAID и даты нет — выставим paid_at сейчас
+        if dto.status == OS.CASHBACK_PAID or dto.status == OS.CASHBACK_REJECTED:
+            dto.paid_at = datetime.now()
+
 
         # 2. патчим заказ
         await self.order_repository.update(order_id, dto)

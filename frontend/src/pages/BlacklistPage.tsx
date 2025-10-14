@@ -125,103 +125,105 @@ const BlacklistPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-brandlight p-4">
-            <div className="max-w-lg mx-auto">
-                <h1 className="text-2xl font-semibold text-brand mb-4">Чёрный список продавцов</h1>
-                <div ref={wrapperRef} className="relative mb-4">
+        <div className="min-h-screen bg-gray-200 flex items-start justify-center p-4 pt-8 text-sm">
+            <div className="max-w-screen-lg w-full bg-white border border-brand rounded-lg shadow-lg p-6">
+                {/* Заголовок */}
+                <h1 className="relative text-2xl font-medium mb-4 text-center"><strong>Чёрный список продавцов</strong></h1>
 
-                    <input
-                        type="text"
-                        placeholder="Никнейм продавца"
-                        value={sellerNickname}
-                        onFocus={() => {
-                            setShowDropdown(true);
-                        }}
-                        onChange={e => {
-                            setSellerNickname(e.target.value);
-                            setShowDropdown(true);
-                            setHasChecked(false);
-                            setError(null);
-                            setReviews([]);
-                        }}
-                        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                    />
-                    {showDropdown && filteredSellers.length > 0 && (
-                        <ul className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow z-10">
-                            {filteredSellers.map(s => (
-                                <li onClick={() => {
-                                    setSellerNickname(s);
-                                    setShowDropdown(false);
-                                    setHasChecked(false);
-                                    setError(null);
-                                    setReviews([]);
-                                    handleCheck();
-                                }}
-                                    className="px-4 py-2 hover:bg-brandlight cursor-pointer"
+                {/* Поиск продавца */}
+                <section className="mb-6">
+                    <div ref={wrapperRef} className="relative">
+                        <input
+                            type="text"
+                            placeholder="Никнейм продавца"
+                            value={sellerNickname}
+                            onFocus={() => setShowDropdown(true)}
+                            onChange={e => {
+                                setSellerNickname(e.target.value);
+                                setShowDropdown(true);
+                                setHasChecked(false);
+                                setError(null);
+                                setReviews([]);
+                            }}
+                            className="w-full p-3 border border-darkGray rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                        />
+                        {showDropdown && filteredSellers.length > 0 && (
+                            <ul className="absolute top-full left-0 w-full mt-1 bg-white border border-darkGray rounded-lg shadow z-10">
+                                {filteredSellers.map(s => (
+                                    <li
+                                        key={s}
+                                        onClick={() => {
+                                            setSellerNickname(s);
+                                            setShowDropdown(false);
+                                            setHasChecked(false);
+                                            setError(null);
+                                            setReviews([]);
+                                            handleCheck();
+                                        }}
+                                        className="px-4 py-2 hover:bg-brandlight cursor-pointer"
+                                    >
+                                        {s}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
 
-                                >
-                                    {s}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-
-
-                <div className="flex space-x-4 mb-6">
-                    <button
-                        onClick={handleCheck}
-                        className="flex-1 py-3 text-base font-semibold rounded-lg bg-brand text-white hover:bg-brand-light transition"
-                    >
-                        Проверить продавца
-                    </button>
-                    <button
-                        onClick={() => {
-                            setIsAdding(true);
-                            setError(null);
-                        }}
-                        className="flex-1 py-3 text-base font-semibold rounded-lg bg-brand text-white hover:bg-brand-light transition"
-                    >
-                        Добавить в ЧС
-                    </button>
-                </div>
-
-                {isAdding && (
-                    <div className="relative mb-4">
-            <textarea
-                placeholder="Ваш отзыв о продавце"
-                value={reviewText}
-                onChange={(e) => setReviewText(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                rows={4}
-            />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                         <button
-                            onClick={handleAdd}
-                            className="absolute right-2 bottom-4 py-1 px-3 text-sm font-semibold rounded bg-brand text-white hover:bg-brand-light transition"
+                            onClick={handleCheck}
+                            className="py-2 px-4 rounded-lg font-semibold border border-brand text-brand bg-transparent"
                         >
-                            Сохранить
+                            Проверить продавца
+                        </button>
+                        <button
+                            onClick={() => { setIsAdding(true); setError(null); }}
+                            className="py-2 px-4 rounded-lg font-semibold border border-brand text-brand bg-transparent"
+                        >
+                            Добавить в ЧС
                         </button>
                     </div>
+                    {error && <p className="mt-2 text-center text-gray-600 text-sm">{error}</p>}
+                </section>
+
+                {/* Добавить отзыв */}
+                {isAdding && (
+                    <section className="mb-6">
+                        <label className="block text-sm font-medium mb-2">Ваш отзыв о продавце</label>
+                        <div className="relative">
+                            <textarea
+                                placeholder="Опишите проблему: задержка выплат, обман, невыход на связь…"
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                className="w-full p-3 border border-darkGray rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                                rows={4}
+                            />
+                            <button
+                                onClick={handleAdd}
+                                className="absolute right-2 bottom-3 py-1 px-3 text-sm font-semibold rounded border border-brand text-brand bg-white hover:bg-brandlight transition"
+                            >
+                                Сохранить
+                            </button>
+                        </div>
+                    </section>
                 )}
 
-                {hasChecked && !isAdding && reviews.length === 0 && !error && (
-                    <p className="text-center text-gray-600 mt-4">Этого продавца нет в черном списке</p>
+                {/* Результаты проверки */}
+                {!isAdding && hasChecked && reviews.length === 0 && !error && (
+                    <p className="text-center text-gray-600 mt-2">Этого продавца нет в чёрном списке</p>
                 )}
-
-                {error && <p className="mt-2 text-center text-gray-600 text-sm">{error}</p>}
 
                 {reviews.length > 0 && (
-                    <div className="space-y-4">
+                    <section className="space-y-4">
+                        <h2 className="text-lg font-semibold">Отзывы</h2>
                         {reviews.map((rev) => (
-                            <div key={rev.id} className="p-4 bg-white rounded-lg shadow-sm">
+                            <div key={rev.id} className="p-4 bg-white border border-darkGray rounded-lg shadow-sm">
                                 <p className="text-gray-800 font-medium">{rev.sender_nickname}</p>
-                                <p className="text-gray-700 mt-1">{rev.review}</p>
-                                <p className="text-gray-500 text-xs mt-2">
-                                    Добавлен: {new Date(rev.created_at).toLocaleDateString()}
-                                </p>
+                                <p className="text-gray-700 mt-1 whitespace-pre-wrap">{rev.review}</p>
+                                <p className="text-gray-500 text-xs mt-2">Добавлен: {new Date(rev.created_at).toLocaleDateString()}</p>
                             </div>
                         ))}
-                    </div>
+                    </section>
                 )}
             </div>
         </div>

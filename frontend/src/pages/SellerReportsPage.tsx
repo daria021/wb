@@ -56,6 +56,7 @@ interface Order {
     status: OrderStatus;
     product: Product;
     user: User;
+    paid_at?: string; // ISO timestamp when cashback was actually paid
 }
 
 const addDays = (date: Date, days: number) => {
@@ -202,6 +203,7 @@ function SellerReportsPage() {
         });
 
     const isPaidTab = activeTab === OrderStatus.CASHBACK_PAID;
+    const sortedFiltered = filteredOrders; // сортировка теперь на бэке по paid_at DESC
 
 
     if (loading) {
@@ -289,8 +291,8 @@ function SellerReportsPage() {
                 </div>
 
 <div className="flex flex-col gap-4">
-  {filteredOrders.length ? (
-    filteredOrders.map((order) => {
+  {sortedFiltered.length ? (
+    sortedFiltered.map((order: Order) => {
       const isRejected = order.status === OrderStatus.CASHBACK_REJECTED;
 
       return (
@@ -328,11 +330,14 @@ function SellerReportsPage() {
               {isRejected ? (
                 <p className="text-sm text-red-600 font-semibold">
                   Отказ в выплате кешбэка
+                  Дата отказа: {order.paid_at ? new Date(order.paid_at as any).toLocaleDateString('ru-RU') : '—'}
+                </p>
+              ) : isPaidTab ? (
+                <p className="text-sm text-gray-600">
+                  Дата выплаты: {order.paid_at ? new Date(order.paid_at as any).toLocaleDateString('ru-RU') : '—'}
                 </p>
               ) : (
-                <p className="text-sm text-gray-600">
-                  Выплатить до: {getPayoutDue(order)}
-                </p>
+                <p className="text-sm text-gray-600">Выплатить до: {getPayoutDue(order)}</p>
               )}
               <p className="text-sm text-gray-600">
                 Сумма кешбэка: {(order?.product.wb_price ?? 0) - (order?.product.price ?? 0)}

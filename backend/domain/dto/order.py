@@ -29,6 +29,7 @@ class CreateOrderDTO(CreateDTO):
     receipt_screenshot_path: Optional[str] = None
     receipt_number: Optional[str] = None
     order_date: Optional[datetime] = None
+    paid_at: Optional[datetime] = None
 
 
 
@@ -51,3 +52,4 @@ class UpdateOrderDTO(UpdateDTO):
     receipt_number: Optional[str] = None
     status: Optional[OrderStatus] = None
     order_date: Optional[datetime] = None
+    paid_at: Optional[datetime] = None

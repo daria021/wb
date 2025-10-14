@@ -118,6 +118,8 @@ class Order(AbstractBase):
     order_date: Mapped[Optional[datetime]] = mapped_column(
         server_default=text("'1970-01-01 00:00:00'")
     )
+    # Дата фактической выплаты кешбэка
+    paid_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), default="CASHBACK_NOT_PAID")
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="user_orders")

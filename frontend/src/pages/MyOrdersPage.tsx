@@ -439,7 +439,7 @@ function MyOrdersPage() {
                                             </div>
 
                                             <div className="flex-1 min-w-0">
-                                                <div className="font-semibold text-sm pr-12 truncate max-w-[25ch]">
+                                                <div className="font-semibold text-sm pr-24 truncate">
                                                     {order.product.name}
                                                 </div>
                                                 <div className="font-bold text-brand">{order.product.price} ₽</div>

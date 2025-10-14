@@ -30,6 +30,7 @@ class Order(BaseModel):
     receipt_number: Optional[str]
     status: OrderStatus
     order_date: datetime
+    paid_at: Optional[datetime] = None
 
     product: Optional[Product] = None
     user: User
