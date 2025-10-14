@@ -8,7 +8,7 @@ import GetUploadLink from "../components/GetUploadLink";
 interface OrderReport {
     step: number;
     search_screenshot_path?: string;
-    cart_screenshot?: string;
+    cart_screenshot_path?: string;
     card_number?: string;
     phone_number?: string;
     name?: string;
@@ -188,9 +188,9 @@ function OrderReportPage() {
                             />
                         )}
                         <p>2. Скриншот корзины в WB</p>
-                        {report.cart_screenshot && (
+                        {report.cart_screenshot_path && (
                             <img
-                                src={GetUploadLink(report.cart_screenshot)}
+                                src={GetUploadLink(report.cart_screenshot_path)}
                                 alt="Скриншот корзины в WB"
                                 className="mt-2 w-full rounded-md"
                             />

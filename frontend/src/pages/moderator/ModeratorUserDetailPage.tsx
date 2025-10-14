@@ -799,10 +799,17 @@ export default function ModeratorUserDetailPage() {
         }
     };
 
-    // Изменение реферального бонуса на delta
+    // Изменение реферального бонуса у ПРИГЛАСИТЕЛЯ на delta
     const changeBonus = async (delta: number) => {
-        await increaseReferralBonus(user.id, {bonus: delta});
-        setUser(u => u && {...u, referrer_bonus: u.referrer_bonus + delta});
+        const inviterId = user.inviter?.id;
+        if (!inviterId) {
+            alert('У пользователя нет пригласившего — начислять некому');
+            return;
+        }
+        await increaseReferralBonus(inviterId, delta);
+        // локально обновим только отображение пригласителя через перезагрузку его карточки при переходе,
+        // а на текущей карточке никаких бонусов не меняем
+        alert(delta > 0 ? 'Бонус начислен пригласившему' : 'Бонус списан у пригласившего');
     };
     const clearBonus = async () => {
         if (user.referrer_bonus > 0) {
@@ -1228,38 +1235,40 @@ export default function ModeratorUserDetailPage() {
             {user.invited_by && (
                 <div className="bg-white rounded shadow p-4 space-y-2">
                     <h2 className="text-lg font-bold text-brand">Реферальный бонус</h2>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                         <input
                             type="number"
                             placeholder="Сумма"
                             value={bonusInput}
                             onChange={e => setBonusInput(e.target.value)}
-                            className="flex-1 border p-2 rounded"
+                            className="w-full border p-2 rounded"
                         />
-                        <button
-                            onClick={async () => {
-                                const v = parseInt(bonusInput, 10);
-                                if (v > 0) {
-                                    await changeBonus(v);
-                                    setBonusInput('');
-                                }
-                            }}
-                            className="bg-brand text-white px-3 rounded"
-                        >
-                            Начислить
-                        </button>
-                        <button
-                            onClick={async () => {
-                                const v = parseInt(bonusInput, 10);
-                                if (v > 0) {
-                                    await changeBonus(-v);
-                                    setBonusInput('');
-                                }
-                            }}
-                            className="bg-red-500 text-white px-3 rounded"
-                        >
-                            Списать
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={async () => {
+                                    const v = parseInt(bonusInput, 10);
+                                    if (v > 0) {
+                                        await changeBonus(v);
+                                        setBonusInput('');
+                                    }
+                                }}
+                                className="bg-brand text-white px-3 py-2 rounded flex-1"
+                            >
+                                Начислить
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    const v = parseInt(bonusInput, 10);
+                                    if (v > 0) {
+                                        await changeBonus(-v);
+                                        setBonusInput('');
+                                    }
+                                }}
+                                className="bg-red-500 text-white px-3 py-2 rounded flex-1"
+                            >
+                                Списать
+                            </button>
+                        </div>
                     </div>
                     <button onClick={clearBonus} className="bg-gray-200 text-black w-full rounded p-2">
                         Обнулить бонус

@@ -58,6 +58,7 @@ export default function FinalDealPage() {
   const [reportData, setReportData] = useState<OrderReport | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+  const [pollAttempts, setPollAttempts] = useState(0);
 
   const toggleStep = (step: number) => {
       setExpandedSteps(prev => ({...prev, [step]: !prev[step]}));
@@ -81,6 +82,28 @@ export default function FinalDealPage() {
               console.error('Ошибка при загрузке отчета:', err);
           });
   }, [orderId]);
+
+  // Короткий рефетч отчёта, пока бек не успел сохранить шаг 7/скриншоты
+  useEffect(() => {
+    if (!orderId) return;
+    if (pollAttempts >= 5) return; // лимит попыток
+
+    const needMore = !reportData ||
+      reportData.step < 7 ||
+      (!reportData.review_screenshot_path && !reportData.receipt_screenshot_path);
+
+    if (!needMore) return; // всё есть — не опрашиваем
+
+    const t = setTimeout(async () => {
+      try {
+        const res: AxiosResponse<OrderReport> = await getOrderReport(orderId);
+        setReportData(res.data);
+      } catch {}
+      setPollAttempts((n) => n + 1);
+    }, 900);
+
+    return () => clearTimeout(t);
+  }, [orderId, reportData, pollAttempts]);
 
   if (loading) return <div className="fixed inset-0 z-50 flex items-center justify-center">
                 <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-gray-600 always-spin"/>
@@ -347,14 +370,9 @@ export default function FinalDealPage() {
                                                 </svg>
                                             </button>
                                             {expandedSteps[4] && (
-                                                <div className="border-t p-4 space-y-1">
-                                                    {reportData.card_number &&
-                                                        <p className="text-sm">Номер карты: {reportData.card_number}</p>}
-                                                    {reportData.phone_number &&
-                                                        <p className="text-sm">Номер телефона: {reportData.phone_number}</p>}
-                                                    {reportData.name && <p className="text-sm">Получатель: {reportData.name}</p>}
-                                                    {reportData.bank && <p className="text-sm">Банк: {reportData.bank}</p>}
-                                                </div>
+                                                <div className="border-t p-4">
+                                                <p className="text-sm">Добавлены</p>
+                                            </div>
                                             )}
                                         </div>
 

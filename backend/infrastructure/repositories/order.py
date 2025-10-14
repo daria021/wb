@@ -53,6 +53,7 @@ class OrderRepository(
             receipt_number=dto.receipt_number,
             status=dto.status,
             order_date=dto.order_date,
+            paid_at=dto.paid_at,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )
@@ -120,6 +121,7 @@ class OrderRepository(
             seller=_map_user(entity.seller),
             transaction_code=entity.transaction_code,
             order_date=entity.order_date,
+            paid_at=entity.paid_at,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
@@ -150,6 +152,7 @@ class OrderRepository(
             result = await session.execute(
                 select(self.entity)
                 .where(self.entity.seller_id == seller_id, self.entity.step == 7)
+                .order_by(self.entity.paid_at.desc().nullslast(), self.entity.created_at.desc())
                 .options(*self.options)
             )
             orders = result.scalars().all()

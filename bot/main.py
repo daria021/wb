@@ -17,17 +17,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-TOKEN = os.getenv('BOT_TOKEN')
-logger.info(f"TOKEN: {TOKEN}")
-
 env = os.getenv("ENVIRONMENT", "local")
-logger.info(f"loading env {env}.env")
 load_dotenv(dotenv_path=f'{env}.env')
 
-logger.info("getting token from env")
 TOKEN = os.getenv('BOT_TOKEN')
-logger.info(f"TOKEN: {TOKEN}")
-
 WEB_APP_URL = os.getenv('WEB_APP_URL')
 
 

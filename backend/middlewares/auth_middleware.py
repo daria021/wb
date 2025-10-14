@@ -19,6 +19,7 @@ async def check_for_auth(
             url_path.startswith("/docs") or
             url_path.startswith("/openapi") or
             url_path.startswith("/upload") or
+            url_path.startswith("/deeplink") or  # разрешаем резолв старт-параметра без авторизации
             request.method == 'OPTIONS'
     ):
         response = await call_next(request)
