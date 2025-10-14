@@ -176,7 +176,7 @@ function OrderReportPage() {
                 </section>
 
 
-                {(report.search_screenshot_path || report.cart_screenshot) && (
+                {(report.search_screenshot_path || report.cart_screenshot_path) && (
                     <section className="mb-6 p-4 bg-gray-200 rounded-md">
                         <h2 className="text-lg font-semibold mb-2">Шаг 1. Скриншоты поиска и корзины</h2>
                         <p>1. Скриншот поискового запроса в WB</p>
