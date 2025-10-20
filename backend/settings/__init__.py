@@ -19,11 +19,11 @@ class WebAppSettings(AbstractSettings):
 
 
 class DBSettings(AbstractSettings):
-    host: str
-    port: int
-    name: str
-    user: str
-    password: SecretStr
+    host: str = Field(..., alias="DB_HOST")
+    port: int = Field(..., alias="DB_PORT")
+    name: str = Field(..., alias="DB_NAME")
+    user: str = Field(..., alias="DB_USER")
+    password: SecretStr = Field(..., alias="DB_PASSWORD")
 
     @property
     def url(self):

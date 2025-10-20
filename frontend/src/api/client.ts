@@ -4,7 +4,7 @@ import {loginWithTelegramOnce} from "../auth/auth";
 
 
 export const api = axios.create({
-  baseURL: '/', // свой baseURL
+  baseURL: '/api',
   withCredentials: true,
 });
 
