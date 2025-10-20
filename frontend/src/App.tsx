@@ -2,12 +2,13 @@ import React, {lazy, Suspense, useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
 import {DeepLinkRouter} from "./components/DeepLinkRouter";
-import {expandViewport, init, mountViewport} from '@telegram-apps/sdk';
 import ReactDOM from 'react-dom';
+import {expandViewport, init, mountViewport} from '@telegram-apps/sdk';
 import BackButtonManager from "./components/BackButtonManager";
 import InstructionSellerPage from "./pages/InstructionSellerPage";
+import TabBar from "./components/TabBar";
 
-const HomePage = lazy(() => import('./pages/HomePage'));
+const SupportPage = lazy(() => import('./pages/SupportPage'));
 const CatalogPage = lazy(() => import('./pages/CatalogPage'));
 const SellerCabinet = lazy(() => import('./pages/SellerCabinet'));
 const MyProductsPage = lazy(() => import('./pages/MyProductsPage'));
@@ -84,6 +85,9 @@ function App() {
                 })
                 .catch(console.error);
         }
+        return () => {
+            // no-op
+        };
     }, []);
 
     return (
@@ -100,14 +104,16 @@ function App() {
             >
                 <DeepLinkRouter/>
                 <BackButtonManager/>
+                <div className="pb-16">
                 <Routes>
-                    <Route path="/" element={<HomePage/>}/>
+                    <Route path="/" element={<CatalogPage/>}/>
                     <Route path="/invite" element={<InviteFriendsPage/>}/>
                     <Route path="/about" element={<AboutPage/>}/>
                     <Route path="/instruction" element={<CompleteInstructionPage/>}/>
                     <Route path="/requirements" element={<RequirementsPage/>}/>
                     <Route path="/question" element={<QuestionPage/>}/>
                     <Route path="/catalog" element={<CatalogPage/>}/>
+                    <Route path="/support" element={<SupportPage/>}/>
                     <Route path="/product/:productId" element={<ProductDetailPage/>}/>
                     <Route path="/product/:productId/instruction" element={<InstructionPage/>}/>
                     <Route path="/product/:orderId/step-1" element={<CartScreenshotPage/>}/>
@@ -135,7 +141,6 @@ function App() {
                     <Route path="/moderator/products" element={<ModeratorProductsPage/>}/>
                     <Route path="/moderator/products/:productId"
                            element={<ModeratorProductReviewPage/>}/>
-                    <Route path="/" element={<HomePage/>}/>
                     <Route path="/moderator" element={<ModeratorDashboard/>}/>
                     <Route path="/moderator/users" element={<ModeratorUsersPage/>}/>
                     <Route path="/moderator/users/:userId" element={<ModeratorUserDetailPage/>}/>
@@ -150,6 +155,8 @@ function App() {
                     <Route path="/moderator/orders" element={<ModeratorOrdersPage/>}/>
                     {/*<Route path="/moderator/orders/:orderId" element={<ModeratorOrderDetailPage/>}/>*/}
                 </Routes>
+                </div>
+                <TabBar/>
             </Suspense>
         </BrowserRouter>
         // </AuthProvider>

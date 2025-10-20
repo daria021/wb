@@ -17,8 +17,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 1) Загружаем .env (если есть) — для секретов на сервере
+load_dotenv()
+
+# 2) Догружаем {ENVIRONMENT}.env — заполняем отсутствующие переменные
 env = os.getenv("ENVIRONMENT", "local")
-load_dotenv(dotenv_path=f'{env}.env')
+load_dotenv(dotenv_path=f"{env}.env")
 
 TOKEN = os.getenv('BOT_TOKEN')
 WEB_APP_URL = os.getenv('WEB_APP_URL')
@@ -42,6 +46,8 @@ def make_webapp_url(base_url: str, ref: str | None) -> str:
     return base_url
 # -----------------------------
 try:
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN is empty. Check .env or {ENVIRONMENT}.env")
     bot = Bot(token=TOKEN)
 except Exception as e:
     logger.error(f"BOT ERROR: {e}", exc_info=True)
