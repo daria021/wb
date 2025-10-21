@@ -39,7 +39,7 @@ function CatalogPage() {
 
     const [searchParams] = useSearchParams();
     const location = useLocation();
-    const isOnCatalog = location.pathname === ('/catalog');
+    const isOnCatalog = location.pathname === '/catalog' || location.pathname === '/';
     const searchRef = useRef<HTMLInputElement>(null);
     const [filterCashback, setFilterCashback] = useState<number | ''>('');
 
@@ -323,7 +323,7 @@ function CatalogPage() {
 
                         <div>
                             <label className="block text-sm font-medium mb-1">Продавец</label>
-                            <Combobox value={filterSeller} onChange={setFilterSeller} as="div" className="relative">
+                            <Combobox value={filterSeller} onChange={(val: string | null) => setFilterSeller(val ?? '')} as="div" className="relative">
                                 <Combobox.Input
                                     className="h-10 w-full appearance-none rounded-md border border-brand bg-white
                    pl-3 pr-10 text-sm font-medium text-gray-800
