@@ -190,7 +190,11 @@ class SellerReview(AbstractBase):
 
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     sender_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
+    rating: Mapped[int]
     review: Mapped[Optional[str]]
+
+    seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id])
+    sender: Mapped["User"] = relationship("User", foreign_keys=[sender_id])
 
 
 class Deeplink(AbstractBase):

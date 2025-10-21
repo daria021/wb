@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById, getBlackListUser } from '../services/api';
+import { getProductById, getBlackListUser, getSellerReviewSummary } from '../services/api';
+import SellerReviewsModal from '../components/SellerReviewsModal';
 import { AxiosResponse } from 'axios';
 import GetUploadLink from '../components/GetUploadLink';
 
@@ -21,6 +22,9 @@ const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [sellerNickname, setSellerNickname] = useState<string>('');
+  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [reviewsCount, setReviewsCount] = useState<number>(0);
+  const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showGuide, setShowGuide] = useState<boolean>(false);
 
   useEffect(() => {
@@ -36,6 +40,19 @@ const ProductDetailPage: React.FC = () => {
       .then(res => setSellerNickname(res.data.nickname))
       .catch(err => console.error('Ошибка загрузки продавца:', err));
   }, [product]);
+
+  useEffect(() => {
+    if (!sellerNickname) return;
+    getSellerReviewSummary(sellerNickname.replace(/^@+/, ''))
+      .then(res => {
+        setAvgRating(res.data.avg_rating);
+        setReviewsCount(res.data.reviews_count);
+      })
+      .catch(() => {
+        setAvgRating(null);
+        setReviewsCount(0);
+      });
+  }, [sellerNickname]);
 
   if (!product) {
     return (
@@ -89,16 +106,16 @@ const ProductDetailPage: React.FC = () => {
       {/* Actions */}
       <div className="flex gap-2">
         <button
-          onClick={openSellerChat}
-          className="flex-1 bg-white border border-brand py-2 rounded-lg"
+          onClick={() => setShowReviews(true)}
+          className="flex-1 bg-white border border-brand py-3 px-4 rounded-lg text-sm"
         >
-          Проверить продавца
+          Отзывы
         </button>
         <button
           onClick={openInstruction}
-          className="flex-1 bg-brand text-white py-2 rounded-lg"
+          className="flex-1 bg-brand text-white py-3 px-4 rounded-lg text-sm"
         >
-          Выкупить товар
+          Выкупить
         </button>
       </div>
 
@@ -120,11 +137,14 @@ const ProductDetailPage: React.FC = () => {
           <span className="text-green-600 ">💰 Скидка: <strong>{discountPercent}%</strong></span>{' '}
           <span className="text-gray-800">(экономите {savedAmount} ₽)</span>
         </p>        <p>💳 Условия выплаты кешбэка: {product.payment_time}</p>
-        <p>
-          👤 Продавец:{' '}
+        <p className="flex items-center gap-2">
+          <span>👤 Продавец:</span>
           <button onClick={openSellerChat} className="text-blue-600 hover:underline">
             @{sellerNickname}
           </button>
+          {avgRating != null && (
+            <span className="text-sm text-yellow-600">★ {avgRating.toFixed(2)} ({reviewsCount})</span>
+          )}
         </p>
       </div>
 
@@ -157,12 +177,24 @@ const ProductDetailPage: React.FC = () => {
       </div>
 
       {/* Other products */}
-      <button
-        onClick={openSellerProducts}
-        className="w-full bg-white border border-brand py-2 rounded-lg"
-      >
-        Посмотреть другие товары продавца
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={openSellerProducts}
+          className="flex-1 bg-white border border-brand py-3 px-4 rounded-lg text-sm"
+        >
+          Другие товары
+        </button>
+        <button
+          onClick={openSellerChat}
+          className="flex-1 bg-white border border-brand py-3 px-4 rounded-lg text-sm"
+        >
+          Проверить продавца
+        </button>
+      </div>
+
+      {showReviews && (
+        <SellerReviewsModal nickname={`@${sellerNickname}`} onClose={() => setShowReviews(false)} />
+      )}
     </div>
   );
 };
