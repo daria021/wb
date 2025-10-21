@@ -4,6 +4,7 @@ from typing import List
 from uuid import UUID
 
 from abstractions.repositories import ReviewRepositoryInterface, UserRepositoryInterface
+from abstractions.repositories.order import OrderRepositoryInterface
 from abstractions.repositories.seller_review import SellerReviewRepositoryInterface
 from abstractions.services.seller_review import SellerReviewServiceInterface
 from domain.dto import CreateReviewDTO, UpdateReviewDTO
@@ -20,14 +21,24 @@ logger = logging.getLogger(__name__)
 class SellerReviewService(SellerReviewServiceInterface):
     seller_review_repository: SellerReviewRepositoryInterface
     seller_repository: UserRepositoryInterface
+    order_repository: OrderRepositoryInterface
 
     async def create_seller_review(self, seller_review_req: SellerReviewRequest, sender_id: UUID) -> None:
         seller = await self.seller_repository.get_by_nickname(seller_review_req.seller_nickname)
         if not seller:
             raise NoSuchEntity
+        # Разрешаем отзыв только если у отправителя есть завершённые заказы с этим продавцом
+        user_orders = await self.order_repository.get_orders_by_user(sender_id)
+        has_finished = any(
+            o.seller_id == seller.id and o.status in {"cashback_paid", "cashback_rejected"}
+            for o in user_orders
+        )
+        if not has_finished:
+            raise NoSuchEntity  # или свой PermissionDenied
         dto = CreateSellerReviewDTO(
             seller_id=seller.id,
             sender_id=sender_id,
+            rating=seller_review_req.rating,
             review=seller_review_req.review,
         )
         logger.info("AAAAAAAAAAAAAA dto")

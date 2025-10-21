@@ -5,3 +5,8 @@
 **/.idea
 scrape.py
 collected_py_files.json
+collected_project_files.json
+**/local.env
+**/tunnel.env
+local.compose.yml
+sync_tunnel_env.py

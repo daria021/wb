@@ -6,6 +6,8 @@ from fastapi import APIRouter, Request, HTTPException
 from routes.requests.seller_review import SellerReviewRequest
 from routes.utils import get_user_id_from_request
 from services.exceptions import NoSuchEntity
+from fastapi import Query
+from typing import Any
 
 router = APIRouter(
     prefix="/seller_review",
@@ -31,6 +33,19 @@ async def get_seller_reviews_by_seller(seller_nickname: str, request: Request):
             status_code=404,
             detail="No such seller"
         )
+
+
+@router.get("/seller/summary")
+async def get_seller_review_summary(seller_nickname: str = Query(...)) -> dict[str, Any]:
+    seller_review_service = get_seller_review_service()
+    try:
+        reviews = await seller_review_service.get_seller_reviews_by_seller(seller_nickname)
+        if not reviews:
+            return {"avg_rating": None, "reviews_count": 0}
+        avg = round(sum(r.rating for r in reviews) / len(reviews), 2)
+        return {"avg_rating": avg, "reviews_count": len(reviews)}
+    except NoSuchEntity:
+        raise HTTPException(status_code=404, detail="No such seller")
 
 
 @router.post("")

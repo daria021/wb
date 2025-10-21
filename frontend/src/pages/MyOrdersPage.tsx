@@ -1,10 +1,12 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
-import {getUserOrders, updateOrderStatus} from '../services/api';
+import {createSellerReview, getBlackListUser, getUserOrders, updateOrderStatus} from '../services/api';
 import GetUploadLink from "../components/GetUploadLink";
 import {useDebounce} from '../hooks/useDebounce';
 import {OrderStatus} from "../enums";
 import {alertTG, confirmTG} from "../utils/telegram";
+import Modal from "../components/Modal";
+import SellerReviewsModal from "../components/SellerReviewsModal";
 
 
 export const STEP_NAMES: { [key: number]: string } = {
@@ -73,6 +75,12 @@ function MyOrdersPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebounce(searchQuery, 600);
     const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
+    const [reviewOrderId, setReviewOrderId] = useState<string | null>(null);
+    const [reviewSellerNickname, setReviewSellerNickname] = useState<string>('');
+    const [reviewRating, setReviewRating] = useState<number>(5);
+    const [reviewText, setReviewText] = useState<string>('');
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [showReview, setShowReview] = useState(false);
 
 
     // вверху файла, рядом с STEP_NAMES
@@ -240,6 +248,40 @@ function MyOrdersPage() {
 
     const handleShowMore = () => {
         setShowCount(prev => prev + 5);
+    };
+
+    const openReviewModal = async (order: Order, e: React.MouseEvent | React.TouchEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        try {
+            setReviewOrderId(order.id);
+            setReviewRating(5);
+            setReviewText('');
+            // Получаем никнейм продавца по seller_id
+            const res = await getBlackListUser(order.product.seller_id);
+            setReviewSellerNickname(res.data.nickname || '');
+            setShowReview(true);
+        } catch (err) {
+            console.error('Не удалось получить ник продавца', err);
+            await alertTG('Не удалось получить ник продавца');
+            setReviewOrderId(null);
+        }
+    };
+
+    const submitReview = async () => {
+        if (!reviewOrderId || !reviewSellerNickname) return;
+        try {
+            setSubmittingReview(true);
+            await createSellerReview(reviewSellerNickname.replace(/^@+/, ''), reviewRating, reviewText);
+            await alertTG('Спасибо! Отзыв сохранён');
+            setReviewOrderId(null);
+            setShowReview(false);
+        } catch (e) {
+            console.error('Ошибка отправки отзыва', e);
+            await alertTG('Не удалось отправить отзыв');
+        } finally {
+            setSubmittingReview(false);
+        }
     };
 
     return (
@@ -465,6 +507,16 @@ function MyOrdersPage() {
             </span>
                                                     </div>
                                                 )}
+                                                {(order.status === OrderStatus.CASHBACK_PAID || order.status === OrderStatus.CASHBACK_REJECTED) && (
+                                                    <div className="mt-2">
+                                                        <button
+                                                            className="text-xs px-3 py-1 rounded border border-brand text-brand hover:bg-brandlight"
+                                                            onClick={(e) => openReviewModal(order, e)}
+                                                        >
+                                                            Оставить отзыв о продавце
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </Link>
@@ -510,7 +562,118 @@ function MyOrdersPage() {
                         )}
                     </div>)}
             </div>
+            {showReview && (
+                <ReviewModal
+                    nickname={reviewSellerNickname.replace(/^@+/, '')}
+                    rating={reviewRating}
+                    setRating={setReviewRating}
+                    text={reviewText}
+                    setText={setReviewText}
+                    onClose={() => setShowReview(false)}
+                    onSubmit={submitReview}
+                    submitting={submittingReview}
+                />
+            )}
         </div>)
 }
 
 export default MyOrdersPage;
+
+// Модалка отзыва
+function ReviewModal({
+    nickname,
+    rating,
+    setRating,
+    text,
+    setText,
+    onClose,
+    onSubmit,
+    submitting,
+}: {
+    nickname: string;
+    rating: number;
+    setRating: (n: number) => void;
+    text: string;
+    setText: (s: string) => void;
+    onClose: () => void;
+    onSubmit: () => void;
+    submitting: boolean;
+}) {
+    return (
+<Modal onClose={onClose} maxWidthClass="max-w-xl">
+  <div className="w-[92vw] max-w-lg bg-white rounded-2xl shadow-xl">
+    {/* Header */}
+    <div className="px-6 pt-6 pb-3 text-center">
+      <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
+        Отзыв о продавце
+      </h3>
+      <div className="mt-2 inline-flex items-center justify-center gap-2 text-gray-800">
+        <img src="/icons/star.png" alt="" className="w-4 h-4 opacity-90" />
+        <span className="font-medium">@{nickname}</span>
+      </div>
+    </div>
+
+    {/* Divider */}
+    <div className="h-px bg-gray-200 mx-6" />
+
+    {/* Content */}
+    <div className="px-6 py-5">
+      {/* Rating */}
+      <div className="flex items-center justify-center gap-1.5 mb-1">
+        {[1,2,3,4,5].map((s) => (
+          <button
+            key={s}
+            onClick={() => setRating(s)}
+            aria-label={`Оценка ${s}`}
+            aria-pressed={s <= rating}
+            className={
+              "text-3xl leading-none transition-transform duration-150 select-none " +
+              (s <= rating ? "text-yellow-500" : "text-gray-300") +
+              " hover:scale-110 active:scale-95"
+            }
+          >
+            ★
+          </button>
+        ))}
+      </div>
+      <div className="text-center text-sm text-gray-500 mb-4">
+        {rating} из 5
+      </div>
+
+      {/* Textarea */}
+      <textarea
+        value={text}
+        onChange={(e)=>setText(e.target.value)}
+        placeholder="Короткий комментарий"
+        rows={4}
+        className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50
+                   focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/60
+                   focus:border-brand/60 p-4 text-[15px] leading-6 placeholder:text-gray-400
+                   mb-4"
+      />
+
+      {/* Footer */}
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 rounded-xl border border-gray-300 text-gray-800
+                     hover:bg-gray-50 transition-colors"
+        >
+          Отмена
+        </button>
+        <button
+          onClick={onSubmit}
+          disabled={submitting}
+          className="px-4 py-2 rounded-xl bg-brand text-white border border-brand
+                     shadow-sm hover:opacity-90 active:opacity-80 transition
+                     disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {submitting ? 'Сохраняю…' : 'Сохранить'}
+        </button>
+      </div>
+    </div>
+  </div>
+</Modal>
+
+    );
+}
