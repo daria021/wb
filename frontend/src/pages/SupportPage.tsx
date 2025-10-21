@@ -1,8 +1,10 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useAuth} from '../contexts/auth';
 
 function SupportPage() {
     const navigate = useNavigate();
+    const {isModerator, loading} = useAuth();
 
 
     window.onerror = (message, source, lineno, colno, error) => {
@@ -59,13 +61,17 @@ function SupportPage() {
                 </div>
             </div>
 
-            {/* Убраны центральные большие карточки */}
-
-            {/* Реферальная кнопка скрыта на странице поддержки */}
-
-            {/* Блок модерации скрыт на странице поддержки */}
+      
 
             <div className="flex flex-col gap-4">
+                {!loading && isModerator && (
+                    <div
+                        onClick={() => navigate('/moderator')}
+                        className="bg-white border border-brand rounded-full shadow-sm p-4 mb-2 text-sm font-semibold cursor-pointer text-center"
+                    >
+                        <span className="font-body">Помодерируем?</span>
+                    </div>
+                )}
 
             <div
                     onClick={handleSupportClick}
