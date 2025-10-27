@@ -12,6 +12,7 @@ interface User {
     is_banned: boolean;
     is_seller: boolean;
     balance: number;
+    created_at?: string;
     invited_by?: string;
     inviter_tg?: string;
     phone_number?: string;
@@ -211,6 +212,7 @@ function ModeratorUsersPage() {
                             <th className="py-1 px-1">Забанен</th>
                             <th className="py-1 px-1">Продавец</th>
                             <th className="py-1 px-1">Баланс</th>
+                            <th className="py-1 px-1">Дата регистрации</th>
                             <th className="py-1 px-1">Пригласивший</th>
                         </tr>
                         </thead>
@@ -260,6 +262,12 @@ function ModeratorUsersPage() {
                                 <td className="px-1 py-1">{user.is_banned ? "Да" : "Нет"}</td>
                                 <td className="px-1 py-1">{user.is_seller ? "Да" : "Нет"}</td>
                                 <td className="px-1 py-1">{user.balance || 0}</td>
+                                <td className="px-1 py-1 text-[7px]">
+                                    {user.created_at ? new Date(user.created_at).toLocaleString('ru-RU', {
+                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                        hour: '2-digit', minute: '2-digit'
+                                    }) : '—'}
+                                </td>
                                 <td className="px-1 py-1 text-[7px]">
                                     {user.invited_by && user.inviter_tg ? (
                                         <a

@@ -105,12 +105,10 @@ app.mount("/static/images", StaticFiles(directory="upload"), name="upload")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-    ],
-    allow_origin_regex=r"https:\/\/.*\.trycloudflare\.com",
+    allow_origins=[],
+    allow_origin_regex=r".*",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 app.middleware('http')(check_for_auth)

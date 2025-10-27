@@ -11,6 +11,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ~/upload/:/app/upload/
     env_file: .env
+    ports:
+      - "8080:8080"
 
   bot:
     build:
@@ -44,6 +46,8 @@ services:
     restart: unless-stopped
     volumes:
       - "./frontend/public:/app/public"
+    ports:
+      - "3000:80"
 
   notificator:
     build:
