@@ -13,6 +13,7 @@ interface Product {
   image_path?: string;
   wb_price: number;
   price: number;
+  tg: string;
   payment_time: string;
   seller_id: string;
 }
@@ -34,12 +35,6 @@ const ProductDetailPage: React.FC = () => {
       .catch(err => console.error('Ошибка загрузки товара:', err));
   }, [productId]);
 
-  useEffect(() => {
-    if (!product?.seller_id) return;
-    getBlackListUser(product.seller_id)
-      .then(res => setSellerNickname(res.data.nickname))
-      .catch(err => console.error('Ошибка загрузки продавца:', err));
-  }, [product]);
 
   useEffect(() => {
     if (!sellerNickname) return;
@@ -76,7 +71,7 @@ const ProductDetailPage: React.FC = () => {
   const openSellerProducts = () => navigate(`/catalog?seller=${product.seller_id}`, { state: { fromProductDetail: true } });
 
   return (
-    <div className="p-4 max-w-screen-md mx-auto bg-gray-200 space-y-6">
+    <div className="p-4 pb-12 max-w-screen-md mx-auto bg-gray-200 space-y-6">
       {/* Image */}
       <div className="relative w-full h-60 overflow-hidden rounded-lg">
         {product.image_path ? (
@@ -140,7 +135,7 @@ const ProductDetailPage: React.FC = () => {
         <p className="flex items-center gap-2">
           <span>👤 Продавец:</span>
           <button onClick={openSellerChat} className="text-blue-600 hover:underline">
-            @{sellerNickname}
+            {product.tg}
           </button>
           {avgRating != null && (
             <span className="text-sm text-yellow-600">★ {avgRating.toFixed(2)} ({reviewsCount})</span>
@@ -180,13 +175,13 @@ const ProductDetailPage: React.FC = () => {
       <div className="flex gap-2">
         <button
           onClick={openSellerProducts}
-          className="flex-1 bg-white border border-brand py-3 px-4 rounded-lg text-sm"
+          className="flex-1 bg-white border border-brand py-2 px-3 rounded-md text-xs"
         >
           Другие товары
         </button>
         <button
           onClick={openSellerChat}
-          className="flex-1 bg-white border border-brand py-3 px-4 rounded-lg text-sm"
+          className="flex-1 bg-white border border-brand py-2 px-3 rounded-md text-xs"
         >
           Проверить продавца
         </button>

@@ -470,8 +470,8 @@ function CatalogPage() {
                             })}
                         </div>
 
-                        {/* Правая колонка (смещена на 72 px вниз) */}
-                        <div className="flex flex-col gap-[24px] flex-[0_0_calc(50%-12px)] min-w-0 mt-[40px]">
+                        {/* Правая колонка (смещение отключено; чтобы вернуть — добавить класс mt-[40px]) */}
+                        <div className="flex flex-col gap-[24px] flex-[0_0_calc(50%-12px)] min-w-0">{/* was: mt-[40px] */}
                             {rightColumn.map(product => {
                                 const seller = sellerOptions.find(s => s.id === product.seller_id);
                                 return (

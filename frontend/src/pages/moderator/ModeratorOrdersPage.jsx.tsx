@@ -77,8 +77,8 @@ export const ModeratorOrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Управление заказами</h1>
+    <div className="bg-gray-200 h-screen p-2">
+      <h1 className="text-xl font-bold mb-3 text-center">Управление заказами</h1>
 
       {/* Tabs */}
       <div className="flex border-b border-darkGray mb-4">
@@ -125,20 +125,20 @@ export const ModeratorOrdersPage: React.FC = () => {
           <p className="text-sm text-gray-700">{error}</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto bg-white rounded-lg shadow-sm">
-            <thead className="bg-brand text-white text-sm">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full table-auto divide-y divide-gray-200 text-[8px]">
+            <thead className="bg-brand text-white text-center">
               <tr>
-                <th className="px-4 py-2">ID сделки</th>
-                <th className="px-4 py-2">Дата</th>
-                <th className="px-4 py-2">Покупатель</th>
-                <th className="px-4 py-2">Продавец</th>
-                <th className="px-4 py-2">Товар</th>
-                <th className="px-4 py-2">Статус</th>
-                <th className="px-4 py-2">Этап</th>
+                <th className="py-1 px-1">ID сделки</th>
+                <th className="py-1 px-1">Дата</th>
+                <th className="py-1 px-1">Покупатель</th>
+                <th className="py-1 px-1">Продавец</th>
+                <th className="py-1 px-1">Товар</th>
+                <th className="py-1 px-1">Статус</th>
+                <th className="py-1 px-1">Этап</th>
               </tr>
             </thead>
-<tbody className="text-sm divide-y">
+<tbody className="bg-white divide-y divide-gray-200 text-center">
   {displayList.length > 0 ? (
     displayList.map(order => {
       const reportLink = `/seller-cabinet/reports/${order.id}`; // страница отчёта
@@ -149,13 +149,13 @@ export const ModeratorOrdersPage: React.FC = () => {
           className="hover:bg-gray-100 cursor-pointer"
     onClick={() => navigate(reportLink, { state: { from: "moderator" } })}
         >
-          <td className="px-4 py-2">{order.transaction_code}</td>
-          <td className="px-4 py-2">
-            {new Date(order.created_at).toLocaleString()}
+          <td className="px-1 py-1">{order.transaction_code}</td>
+          <td className="px-1 py-1">
+            {new Date(order.created_at).toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
           </td>
 
           {/* Покупатель */}
-          <td className="px-4 py-2">
+          <td className="px-1 py-1">
             <button
               onClick={e => {
                 e.stopPropagation();                        // не даём строке сработать
@@ -168,7 +168,7 @@ export const ModeratorOrdersPage: React.FC = () => {
           </td>
 
           {/* Продавец */}
-          <td className="px-4 py-2">
+          <td className="px-1 py-1">
             <button
               onClick={e => {
                 e.stopPropagation();
@@ -180,9 +180,9 @@ export const ModeratorOrdersPage: React.FC = () => {
             </button>
           </td>
 
-          <td className="px-4 py-2">{order.product.name}</td>
-          <td className="px-4 py-2">{getStatusLabel(order.status)}</td>
-          <td className="px-4 py-2">{order.step}</td>
+          <td className="px-1 py-1">{order.product.name}</td>
+          <td className="px-1 py-1">{getStatusLabel(order.status)}</td>
+          <td className="px-1 py-1">{order.step}</td>
         </tr>
       );
     })
