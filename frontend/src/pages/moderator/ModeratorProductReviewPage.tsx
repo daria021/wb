@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {getModeratorProductById, reviewProduct} from '../../services/api';
+import {getModeratorProductById, reviewProduct, updateProduct} from '../../services/api';
 import {ProductStatus} from '../../enums';
 import GetUploadLink from "../../components/GetUploadLink";
 
@@ -19,6 +19,7 @@ function ModeratorProductReviewPage() {
     const [commentModerator, setCommentModerator] = useState('');
     const [commentSeller, setCommentSeller] = useState('');
     const navigate = useNavigate();
+    const [alwaysShow, setAlwaysShow] = useState<boolean>(false);
 
     const statusLabels: Partial<Record<ProductStatus, string>> = {
         [ProductStatus.CREATED]: 'Создано',
@@ -33,6 +34,7 @@ function ModeratorProductReviewPage() {
             const response = await getModeratorProductById(productId!);
             setProduct(response.data);
             setStatus(response.data.status);
+            setAlwaysShow(!!response.data.always_show);
         } catch (error) {
             console.error('Ошибка при получении продукта:', error);
         } finally {
@@ -46,10 +48,11 @@ function ModeratorProductReviewPage() {
 
     const handleSubmit = async () => {
         try {
-            const payload = {
+            const payload: any = {
                 status,
                 commentModerator,
-                commentSeller
+                commentSeller,
+                always_show: alwaysShow,
             };
             await reviewProduct(productId!, payload);
             alert('Проверка продукта обновлена!');
@@ -100,6 +103,18 @@ function ModeratorProductReviewPage() {
                     <p><strong>Статус:</strong> {product.status}</p>
                     <p><strong>Создано:</strong> {new Date(product.created_at).toLocaleString()}</p>
                     <p><strong>Обновлено:</strong> {new Date(product.updated_at).toLocaleString()}</p>
+                </div>
+                <div className="mt-4 flex items-center gap-2">
+                    <input
+                        id="always-show"
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={alwaysShow}
+                        onChange={(e) => setAlwaysShow(e.target.checked)}
+                    />
+                    <label htmlFor="always-show" className="text-sm">
+                        Всегда показывать в каталоге
+                    </label>
                 </div>
             </div>
 

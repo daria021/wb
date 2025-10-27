@@ -23,6 +23,7 @@ interface Product {
     created_at: string;
     updated_at: string;
     status: ProductStatus;
+    always_show?: boolean;
 }
 
 interface Order {

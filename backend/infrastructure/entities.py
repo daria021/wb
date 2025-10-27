@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID as pyUUID
 
-from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum, text
+from sqlalchemy import DateTime, ForeignKey, UUID, BigInteger, Enum, text, Boolean
 from sqlalchemy.dialects.postgresql import TSVECTOR, JSONB
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -46,6 +46,8 @@ class Product(AbstractBase):
     image_path: Mapped[Optional[str]]
     seller_id: Mapped[pyUUID] = mapped_column(ForeignKey('users.id'))
     status: Mapped[ProductStatus] = mapped_column(Enum(ProductStatus), default=ProductStatus.CREATED)
+    # Флаг: показывать в каталоге даже если нет раздач
+    always_show: Mapped[bool] = mapped_column(server_default=text('false'))
 
     reviews: Mapped[List['Review']] = relationship('Review', back_populates='product', passive_deletes=True)
     orders: Mapped[List['Order']] = relationship('Order', back_populates='product', passive_deletes=True)
