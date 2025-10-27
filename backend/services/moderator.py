@@ -88,10 +88,10 @@ class ModeratorService(ModeratorServiceInterface):
         approved_by_moderator = (request.status == ProductStatus.ACTIVE)
         rejected_by_moderator = (request.status is not None and request.status != ProductStatus.ACTIVE)
 
-        # 3) Обновляем статус товара
+        # 3) Обновляем статус товара + флаг always_show, если передан
         await self.products_repository.update(
             obj_id=product_id,
-            obj=UpdateProductDTO(status=final_status)
+            obj=UpdateProductDTO(status=final_status, always_show=request.always_show)
         )
 
         # +++ перечитываем продукт и делаем снимок «после»

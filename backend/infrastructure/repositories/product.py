@@ -36,7 +36,15 @@ class ProductRepository(
 
     async def get_active_products(self, limit=100, offset=0, search: Optional[str] = None):
         async with self.session_maker() as session:
-            stmt = select(self.entity).where(self.entity.status == ProductStatus.ACTIVE, self.entity.deleted_at == None)
+            # Показываем активные товары, а также тестовые (show_even_if_empty),
+            # даже если remaining_products == 0
+            stmt = select(self.entity).where(
+                self.entity.deleted_at == None,
+                (
+                    (self.entity.status == ProductStatus.ACTIVE) |
+                    (self.entity.always_show == True)
+                )
+            )
             if search:
                 # разбиваем запрос на слова и делаем префиксный поиск по каждому
                 tokens = [tok for tok in search.strip().split() if tok]
@@ -105,6 +113,7 @@ class ProductRepository(
             seller_id=dto.seller_id,
             status=ProductStatus.CREATED,
             image_path=dto.image_path,
+            always_show=dto.always_show,
             created_at=dto.created_at,
             updated_at=dto.updated_at,
         )
@@ -132,6 +141,7 @@ class ProductRepository(
             seller_id=entity.seller_id,
             status=entity.status,
             image_path=entity.image_path,
+            always_show=getattr(entity, 'always_show', False),
             created_at=entity.created_at,
             updated_at=entity.updated_at,
             moderator_reviews=[

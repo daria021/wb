@@ -20,6 +20,7 @@ class CreateProductRequest(BaseModel):
     payment_time: PayoutTime = Field(..., description="Время выплаты")
     review_requirements: str = Field(..., description="Требования к отзыву")
     image_path: Optional[str] = Field(None, description="Путь к изображению товара")
+    always_show: Optional[bool] = Field(False, description="Показывать в каталоге даже если нет раздач")
 
 
 class UpdateProductRequest(BaseModel):
@@ -36,3 +37,4 @@ class UpdateProductRequest(BaseModel):
     payment_time: Optional[PayoutTime] = Field(None, description="Время выплаты")
     review_requirements: Optional[str] = Field(None, description="Требования к отзыву")
     image_path: Optional[str] = Field(None, description="Путь к изображению товара")
+    always_show: Optional[bool] = Field(None, description="Показывать в каталоге даже если нет раздач")

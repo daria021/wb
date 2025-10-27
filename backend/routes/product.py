@@ -115,6 +115,7 @@ async def create_product(
         requirements_agree: bool = Form(...),
         image: Optional[UploadFile] = File(None),
         upload_service: UploadServiceInterface = Depends(get_upload_service),
+        always_show: bool = Form(False),
 ) -> UUID:
     logger.info(f"Create product: {name}")
     seller_id = get_user_id_from_request(request)
@@ -136,6 +137,7 @@ async def create_product(
         requirements_agree=requirements_agree,
         article=article,
         image_path=image_path,
+        always_show=always_show,
         seller_id=seller_id
     )
 

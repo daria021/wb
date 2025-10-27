@@ -16,6 +16,8 @@ interface Product {
   tg: string;
   payment_time: string;
   seller_id: string;
+  remaining_products?: number;
+  always_show?: boolean;
 }
 
 const ProductDetailPage: React.FC = () => {
@@ -27,6 +29,7 @@ const ProductDetailPage: React.FC = () => {
   const [reviewsCount, setReviewsCount] = useState<number>(0);
   const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showGuide, setShowGuide] = useState<boolean>(false);
+  const [showOutOfStock, setShowOutOfStock] = useState<boolean>(false);
 
   useEffect(() => {
     if (!productId) return;
@@ -65,7 +68,14 @@ const ProductDetailPage: React.FC = () => {
     ? product.image_path
     : GetUploadLink(product.image_path || '');
 
-  const openInstruction = () => navigate(`/product/${product.id}/instruction`);
+  const openInstruction = () => {
+    const outOfStock = (product.remaining_products ?? 0) <= 0;
+    if (outOfStock) {
+      setShowOutOfStock(true);
+      return;
+    }
+    navigate(`/product/${product.id}/instruction`);
+  };
   const openInstructionPreview = () => navigate(`/instruction`);
   const openSellerChat = () => navigate(`/black-list/${sellerNickname}`);
   const openSellerProducts = () => navigate(`/catalog?seller=${product.seller_id}`, { state: { fromProductDetail: true } });
@@ -108,7 +118,11 @@ const ProductDetailPage: React.FC = () => {
         </button>
         <button
           onClick={openInstruction}
-          className="flex-1 bg-brand text-white py-3 px-4 rounded-lg text-sm"
+          className={`flex-1 py-3 px-4 rounded-lg text-sm ${
+            (product.remaining_products ?? 0) <= 0
+              ? 'bg-gray-300 text-gray-600 cursor-pointer'
+              : 'bg-brand text-white'
+          }`}
         >
           Выкупить
         </button>
@@ -189,6 +203,29 @@ const ProductDetailPage: React.FC = () => {
 
       {showReviews && (
         <SellerReviewsModal nickname={`@${sellerNickname}`} onClose={() => setShowReviews(false)} />
+      )}
+
+      {showOutOfStock && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow p-4 w-80 text-center">
+            <div className="text-lg font-semibold mb-2">Товар недоступен</div>
+            <div className="text-sm text-gray-700 mb-4">Раздачи закончились. Выберите другой товар из каталога.</div>
+            <div className="flex gap-2">
+              <button
+                className="flex-1 bg-brand text-white py-2 rounded-md"
+                onClick={() => navigate('/catalog')}
+              >
+                В каталог
+              </button>
+              <button
+                className="flex-1 border border-darkGray py-2 rounded-md"
+                onClick={() => setShowOutOfStock(false)}
+              >
+                Закрыть
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -23,3 +23,4 @@ class UpdateProductForm(BaseModel):
     payment_time: Optional[PayoutTime] = None
     review_requirements: Optional[str] = None
     image: Optional[UploadFile] = None
+    always_show: Optional[bool] = None

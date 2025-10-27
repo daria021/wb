@@ -10,7 +10,7 @@ interface TabItem {
 const tabs: TabItem[] = [
     { label: 'Каталог', icon: '/icons/about.png', path: '/' },
     { label: 'Мои товары', icon: '/icons/instruction.png', path: '/my-products' },
-    { label: 'Кабинет продавца', icon: '/icons/book.png', path: '/seller-cabinet' },
+    { label: 'Мой кабинет', icon: '/icons/book.png', path: '/seller-cabinet' },
     { label: 'Поддержка', icon: '/icons/support.png', path: '/support' },
 ];
 

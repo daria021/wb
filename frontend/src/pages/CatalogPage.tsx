@@ -139,7 +139,8 @@ function CatalogPage() {
     })
 
     const filtered = products
-        .filter(p => p.status === ProductStatus.ACTIVE)
+        // Показываем активные или помеченные как тестовые (show_even_if_empty)
+        .filter(p => p.status === ProductStatus.ACTIVE || (p as any).always_show)
         .filter(p =>
             searchQuery.trim() === '' ||
             p.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -463,6 +464,11 @@ function CatalogPage() {
                                                         Кешбэк {product.wb_price - product.price} ₽
                                                     </p>
                                                 )}
+                                                {('remaining_products' in product && (product as any).remaining_products <= 0) && (
+                                                    <span className="inline-block mt-1 text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                                                        Недоступен
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -529,6 +535,11 @@ function CatalogPage() {
                                                     <p className="text-sm text-green-600">
                                                         Кешбэк {product.wb_price - product.price} ₽
                                                     </p>
+                                                )}
+                                                {('remaining_products' in product && (product as any).remaining_products <= 0) && (
+                                                    <span className="inline-block mt-1 text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                                                        Недоступен
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>

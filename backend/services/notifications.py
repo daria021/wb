@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from aiogram import Bot
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import FSInputFile, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -106,18 +107,46 @@ class NotificationService(NotificationServiceInterface):
             f"Цена: <b>{product.price} ₽</b>"
         )
 
-        photo_path = self.upload_service.get_file_path(product.image_path)
-        input_file = FSInputFile(photo_path)
-        thread_id = settings.bot.free_topic_id if product.price == 0 else settings.bot.paid_topic_id
+        # Если канал не задан — выходим тихо (не ломаем модерацию)
+        channel_id = getattr(settings.bot, "channel_id", None)
+        if not channel_id:
+            logger.warning("Notification skipped: settings.bot.channel_id is not set")
+            return
 
-        await self.bot.send_photo(
-            chat_id=settings.bot.channel_id,
-            message_thread_id=thread_id,
-            photo=input_file,
-            caption=caption,
-            parse_mode="HTML",
-            reply_markup=kb.as_markup(),
-        )
+        # Попробуем отправить фото в нужный топик (если указан и чат поддерживает темы)
+        thread_id = getattr(settings.bot, "free_topic_id", None) if product.price == 0 else getattr(settings.bot, "paid_topic_id", None)
+        try:
+            photo_path = self.upload_service.get_file_path(product.image_path)
+            input_file = FSInputFile(photo_path)
+
+            kwargs = dict(
+                chat_id=channel_id,
+                photo=input_file,
+                caption=caption,
+                parse_mode="HTML",
+                reply_markup=kb.as_markup(),
+            )
+            if thread_id:
+                kwargs["message_thread_id"] = thread_id
+
+            await self.bot.send_photo(**kwargs)
+        except TelegramBadRequest as e:
+            # Фоллбек: если канал/топик не найден или нет прав — не валим модерацию
+            logger.warning(f"send_photo failed: {e}. Falling back to send_message without photo")
+            try:
+                kwargs = dict(
+                    chat_id=channel_id,
+                    text=caption,
+                    parse_mode="HTML",
+                    reply_markup=kb.as_markup(),
+                )
+                if thread_id:
+                    kwargs["message_thread_id"] = thread_id
+                await self.bot.send_message(**kwargs)
+            except Exception as e2:
+                logger.error(f"send_message fallback failed: {e2}")
+        except Exception as e:
+            logger.error(f"Unexpected error while sending new product notification: {e}")
 
     async def create_push(self, push: CreatePushDTO) -> None:
         await self.push_repository.create(push)

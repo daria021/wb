@@ -29,6 +29,7 @@ class Product(BaseModel):
     image_path: str | None = None
     seller_id: UUID
     status: ProductStatus
+    always_show: bool = False
     created_at: datetime
     updated_at: datetime
 

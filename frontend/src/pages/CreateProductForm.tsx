@@ -289,7 +289,7 @@ function ProductForm() {
 
 
     return (
-        <div className="p-4 max-w-screen-sm bg-gray-200 mx-auto">
+        <div className="p-4 pb-12 max-w-screen-sm bg-gray-200 mx-auto">
             <div className="sticky top-0 z-10 bg-gray-200">
                 <div className="flex justify-between items-center px-2 py-1">
                     <button

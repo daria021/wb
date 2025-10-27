@@ -18,6 +18,7 @@ class ProductResponse(BaseModel):
     category: Category
     key_word: str
     general_repurchases: int
+    remaining_products: int
     # daily_repurchases: int
     price: float
     wb_price: float
@@ -28,6 +29,7 @@ class ProductResponse(BaseModel):
     image_path: str | None = None
     seller_id: UUID
     status: ProductStatus
+    always_show: bool = False
     created_at: datetime
     updated_at: datetime
 

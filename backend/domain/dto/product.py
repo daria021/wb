@@ -28,6 +28,7 @@ class CreateProductDTO(CreateDTO):
     seller_id: UUID
     status: ProductStatus = Field(default=ProductStatus.CREATED)
     image_path: Optional[str] = None
+    always_show: bool = False
 
 
 class UpdateProductDTO(UpdateDTO):
@@ -47,3 +48,4 @@ class UpdateProductDTO(UpdateDTO):
     review_requirements: Optional[str] = None
     requirements_agree: Optional[bool] = None
     image_path: Optional[str] = None
+    always_show: Optional[bool] = None
